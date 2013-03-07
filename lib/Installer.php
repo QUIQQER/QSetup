@@ -341,13 +341,26 @@ class Installer
         file_put_contents( $etc_dir .'conf.ini', '' );
         $this->_writeIni( $etc_dir .'conf.ini', $config );
 
+        // create composer file
+        $composer_json = file_get_contents( 'lib/composer.tpl' );
 
-        // download quiqqer
+        $composer_json = str_replace(
+        	'{$packages_dir}',
+            $opt_dir,
+            $composer_json
+        );
 
+        $composer_json = str_replace(
+        	'{$composer_cache_dir}',
+            $var_dir .'composer/',
+            $composer_json
+        );
 
-        // create composer file and download composer
+        file_put_contents( $cms_dir .'composer.json', $composer_json );
 
-
+        // download composer file
+        system( 'curl -sS https://getcomposer.org/installer | php -- --install-dir='. $cms_dir );
+        system( 'php composer.phar install' );
     }
 
     /**

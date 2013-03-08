@@ -263,7 +263,7 @@ class Installer
               `name` varchar(50) NOT NULL,
               `admin` tinyint(2) NOT NULL,
               `parent` int(11) NOT NULL,
-              `active` tinyint(1) NOT NULL
+              `active` tinyint(1) NOT NULL,
               PRIMARY KEY (`id`),
               KEY `parent` (`parent`)
             ) CHARACTER SET utf8;

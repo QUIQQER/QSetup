@@ -269,7 +269,7 @@ class Installer
             ) CHARACTER SET utf8;
         ';
 
-        $this->_PDO->query( $create_user_table );
+        $this->_PDO->query( $create_group_table );
 
         // create root group
         $Statement = $this->_PDO->prepare(

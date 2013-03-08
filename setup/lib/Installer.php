@@ -229,9 +229,11 @@ class Installer
         $password = trim( fgets( STDIN ) );
 
         // exist user table ?
-        $user_table_exist = $this->_PDO->query(
-            'SHOW TABLES FROM `'. $this->_params['db_database'] .'` LIKE "'. $user_table .'"'
-        )->fetchAll()->count();
+        $user_table_exist = count(
+            $this->_PDO->query(
+                'SHOW TABLES FROM `'. $this->_params['db_database'] .'` LIKE "'. $user_table .'"'
+            )->fetchAll()
+        );
 
         if ( $user_table_exist )
         {
@@ -241,9 +243,11 @@ class Installer
         }
 
         // exist group table ?
-        $group_table_exist = $this->_PDO->query(
-            'SHOW TABLES FROM `'. $this->_params['db_database'] .'` LIKE "'. $group_table .'"'
-        )->fetchAll()->count();
+        $group_table_exist = count(
+            $this->_PDO->query(
+                'SHOW TABLES FROM `'. $this->_params['db_database'] .'` LIKE "'. $group_table .'"'
+            )->fetchAll()
+        );
 
         if ( $group_table_exist )
         {

@@ -25,6 +25,12 @@ class Installer
     protected $_params;
 
     /**
+     * the database object
+     * @var PDO $_PDO
+     */
+    protected $_PDO = null;
+
+    /**
      * installer constructor
      *
      * @param array $params - installation params
@@ -51,6 +57,9 @@ class Installer
 
         // create quiqqer - boooya
         $this->_create();
+
+        // @todo delete the setup
+
     }
 
     /**
@@ -169,6 +178,8 @@ class Installer
 
             $PDO->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
 
+            $this->_PDO = $PDO;
+
         } catch ( \PDOException $Exception )
         {
             $this->_params['db_driver']   = '';
@@ -181,6 +192,11 @@ class Installer
 
             $this->database();
         }
+
+        // database prefix
+        $this->writeLn( "Want you a prefix for your database tables? if no, leave it empty:" );
+        $this->_params['db_prefix'] = trim( fgets( STDIN ) );
+
     }
 
     /**
@@ -191,13 +207,116 @@ class Installer
         $this->_step = 'paths';
 
         $this->writeLn( '=========================================' );
-        $this->writeLn( 'Step 2 set a user for QUIQQER' );
+        $this->writeLn( 'Step 2 set a root / administrator user for QUIQQER' );
 
         $this->writeLn( '' );
 
-        // @todo generate salt
-        // @todo genrate salt length
+        $this->_params['salt']       = md5( uniqid( rand(), true ) );
+        $this->_params['saltlength'] = mt_rand( 0, 10 );
 
+        $this->_params['rootuser'] =  mt_rand( 100, 1000000000 );
+        $this->_params['root']     = mt_rand( 1, 1000000000 );
+
+        // check if a user exist
+        $user_table  = $this->_params['db_prefix'] .'users';
+        $group_table = $this->_params['db_prefix'] .'groups';
+
+        // database prefix
+        $this->writeLn( "Please enter a username:" );
+        $username = trim( fgets( STDIN ) );
+
+        $this->writeLn( "Please enter a password:" );
+        $password = trim( fgets( STDIN ) );
+
+        // exist user table ?
+        $user_table_exist = $this->_PDO->query(
+            'SHOW TABLES FROM `'. $this->_params['db_database'] .'` LIKE "'. $user_table .'"'
+        )->fetchAll()->count();
+
+        if ( $user_table_exist )
+        {
+            throw new Exception(
+            	'The user table already exist. You cannot install QUIQQER or create a new user.'
+            );
+        }
+
+        // exist group table ?
+        $group_table_exist = $this->_PDO->query(
+            'SHOW TABLES FROM `'. $this->_params['db_database'] .'` LIKE "'. $group_table .'"'
+        )->fetchAll()->count();
+
+        if ( $group_table_exist )
+        {
+            throw new Exception(
+            	'The user table already exist. You cannot install QUIQQER or create a new user.'
+            );
+        }
+
+        // create the group table
+        $create_group_table = '
+            CREATE TABLE IF NOT EXISTS `'. $group_table .'` (
+              `id` int(11) NOT NULL,
+              `name` varchar(50) NOT NULL,
+              `admin` tinyint(2) NOT NULL,
+              `parent` int(11) NOT NULL,
+              `active` tinyint(1) NOT NULL
+              PRIMARY KEY (`id`),
+              KEY `parent` (`parent`)
+            ) CHARACTER SET utf8;
+        ';
+
+        $this->_PDO->query( $create_user_table );
+
+        // create root group
+        $Statement = $this->_PDO->prepare(
+        	"INSERT INTO '. $group_table .' (`id`, `name`, `admin`, `active`)
+        		VALUES (:id, :name, :admin, :active)"
+        );
+
+        $Statement->execute(array(
+        	':id'     => $this->_params['root'],
+            ':name'   => 'root',
+            ':admin'  => 1,
+            ':active' => 1
+        ));
+
+
+        // create the user table
+        $create_user_table = '
+            CREATE TABLE IF NOT EXISTS `'. $user_table .'` (
+              `id` int(11) NOT NULL AUTO_INCREMENT,
+              `username` varchar(50) NOT NULL DEFAULT \'\',
+              `password` varchar(50) NOT NULL DEFAULT \'\',
+              `usergroup` text NOT NULL,
+              `email` varchar(50) DEFAULT NULL,
+              `active` int(1) NOT NULL DEFAULT \'0\',
+              `regdate` int(11) NOT NULL DEFAULT \'0\',
+              `lastvisit` int(11) NOT NULL DEFAULT \'0\',
+              `su` tinyint(1) NOT NULL,
+              `expire` timestamp NULL DEFAULT NULL,
+              `lastedit` timestamp NOT NULL DEFAULT \'0000-00-00 00:00:00\',
+              PRIMARY KEY (`id`),
+              KEY `username` (`username`),
+              KEY `password` (`password`)
+    		) CHARACTER SET utf8;
+		';
+
+        $this->_PDO->query( $create_user_table );
+
+        // create user
+        $Statement = $this->_PDO->prepare(
+        	"INSERT INTO '. $user_table .' (`id`, `username`, `password`) VALUES (:id, :username, :password)"
+        );
+
+        // password salted
+        $salt = substr( $this->_params['salt'], 0, SALT_LENGTH );
+	    $pass = $salt . md5( $salt . $password );
+
+        $Statement->execute(array(
+        	':username' => $username,
+            ':password' => $pass,
+            ':id'       => $this->_params['rootuser']
+        ));
 
 
     }
@@ -215,7 +334,10 @@ class Installer
         $this->writeLn( '' );
         $this->writeLn( 'If you not know what you do, please use the default settings.' );
 
-        $this->writeLn( 'Do you want to change the paths? [NO/yes] ' );
+        $this->writeLn( 'Do you want to change the following installation path of quiqqer? ' );
+        $this->writeLn( $cms_dir );
+        $this->write( '[NO/yes]: ' );
+
         $_edit_paths = trim( fgets( STDIN ) );
 
         $edit_paths = false;
@@ -309,10 +431,10 @@ class Installer
                 "opt_dir" => $opt_dir,
                 "url_dir" => "/",
 
-                "salt"       => "",
-                "saltlength" => "",
-                "rootuser"   => "",
-                "root"       => "",
+                "salt"       => $this->_params['salt'],
+                "saltlength" => $this->_params['saltlength'],
+                "rootuser"   => $this->_params['rootuser'],
+                "root"       => $this->_params['root'],
 
                 "cache"       => 0,
                 "host"        => "http://hen",

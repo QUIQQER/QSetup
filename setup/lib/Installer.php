@@ -238,7 +238,7 @@ class Installer
 
         if ( $user_table_exist )
         {
-            throw new Exception(
+            throw new \Exception(
             	'The user table already exist. You cannot install QUIQQER or create a new user.'
             );
         }
@@ -252,7 +252,7 @@ class Installer
 
         if ( $group_table_exist )
         {
-            throw new Exception(
+            throw new \Exception(
             	'The user table already exist. You cannot install QUIQQER or create a new user.'
             );
         }

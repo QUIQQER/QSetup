@@ -191,6 +191,7 @@ class Installer
             $this->writeLn( $Exception->getMessage() );
 
             $this->database();
+            return;
         }
 
         // database prefix
@@ -273,13 +274,13 @@ class Installer
 
         // create root group
         $Statement = $this->_PDO->prepare(
-        	"INSERT INTO '. $group_table .' (`id`, `name`, `admin`, `active`)
-        		VALUES (:id, :name, :admin, :active)"
+        	'INSERT INTO '. $group_table .' (`id`, `name`, `admin`, `active`)
+        		VALUES (:id, :gname, :admin, :active)'
         );
 
         $Statement->execute(array(
         	':id'     => $this->_params['root'],
-            ':name'   => 'root',
+            ':gname'  => 'root',
             ':admin'  => 1,
             ':active' => 1
         ));

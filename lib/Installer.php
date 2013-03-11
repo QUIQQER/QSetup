@@ -69,6 +69,9 @@ class Installer
 
         // create quiqqer - boooya
         $this->_create();
+
+        // @todo delete the setup
+
     }
 
     /**
@@ -233,19 +236,11 @@ class Installer
         $perm2group  = $this->_params['db_prefix'] .'permissions2groups';
 
         // database prefix
-        while ( empty( $this->_username ) )
-        {
-            $this->writeLn( "Please enter a username:" );
-            $this->_username = trim( fgets( STDIN ) );
-        }
+        $this->writeLn( "Please enter a username:" );
+        $this->_username = trim( fgets( STDIN ) );
 
-        $this->writeLn( '' );
-
-        while ( empty( $this->_password ) )
-        {
-            $this->writeLn( "Please enter a password:" );
-            $this->_password = trim( fgets( STDIN ) );
-        }
+        $this->writeLn( "Please enter a password:" );
+        $this->_password = trim( fgets( STDIN ) );
 
 
         // exist user table ?
@@ -606,7 +601,6 @@ class Installer
         );
 
         // delete the setup
-
 
     }
 

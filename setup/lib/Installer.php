@@ -308,6 +308,7 @@ class Installer
               `su` tinyint(1) NOT NULL,
               `expire` timestamp NULL DEFAULT \'0000-00-00 00:00:00\',
               `lastedit` timestamp NOT NULL DEFAULT \'0000-00-00 00:00:00\',
+              `user_agent` text NOT NULL,
               PRIMARY KEY (`id`),
               KEY `username` (`username`),
               KEY `password` (`password`)

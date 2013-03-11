@@ -318,8 +318,8 @@ class Installer
 
         // create user
         $Statement = $this->_PDO->prepare(
-        	'INSERT INTO '. $user_table .' (`id`, `username`, `password`, `usergroup`, `su`, `:active`)
-        		VALUES (:id, :username, :password, :usergroup, :su)'
+        	'INSERT INTO '. $user_table .' (`id`, `username`, `password`, `usergroup`, `su`, `active`)
+        		VALUES (:id, :username, :password, :usergroup, :su, :active)'
         );
 
         // password salted

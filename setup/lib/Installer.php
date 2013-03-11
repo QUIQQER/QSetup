@@ -487,7 +487,10 @@ class Installer
             )
         );
 
+        // needle inis
         file_put_contents( $etc_dir .'conf.ini', '' );
+        file_put_contents( $etc_dir .'plugins.ini', '' );
+
         $this->_writeIni( $etc_dir .'conf.ini', $config );
 
         //

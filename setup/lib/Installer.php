@@ -484,12 +484,17 @@ class Installer
 
             "auth" => array(
                 "type" => "standard"
+            ),
+
+            "template" => array(
+                "engine" => "smarty3"
             )
         );
 
         // needle inis
         file_put_contents( $etc_dir .'conf.ini', '' );
         file_put_contents( $etc_dir .'plugins.ini', '' );
+        file_put_contents( $etc_dir .'projects.ini', '' );
 
         $this->_writeIni( $etc_dir .'conf.ini', $config );
 
@@ -540,6 +545,15 @@ class Installer
         {
             file_put_contents( '.htaccess', $htaccess );
         }
+
+        // execute the main setup from quiqqer
+
+        require_once $lib_dir .'QUI.php';
+        \QUI::load();
+
+
+        // delete the setup
+
     }
 
     /**

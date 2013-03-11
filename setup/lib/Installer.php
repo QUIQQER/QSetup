@@ -436,6 +436,10 @@ class Installer
 
         $url_dir = "/";
 
+        if ( !isset( $this->_params['httpshost'] ) ) {
+            $this->_params['httpshost'] = '';
+        }
+
         //
         // create the etc, the global config
         //

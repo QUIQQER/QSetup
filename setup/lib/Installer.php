@@ -31,6 +31,18 @@ class Installer
     protected $_PDO = null;
 
     /**
+     * the cms user
+     * @var String $_username
+     */
+    protected $_username = '';
+
+    /**
+     * the password for the cms user
+     * @var String $_password
+     */
+    protected $_password = '';
+
+    /**
      * installer constructor
      *
      * @param array $params - installation params
@@ -224,10 +236,10 @@ class Installer
 
         // database prefix
         $this->writeLn( "Please enter a username:" );
-        $username = trim( fgets( STDIN ) );
+        $this->_username = trim( fgets( STDIN ) );
 
         $this->writeLn( "Please enter a password:" );
-        $password = trim( fgets( STDIN ) );
+        $this->_password = trim( fgets( STDIN ) );
 
 
         // exist user table ?
@@ -325,10 +337,10 @@ class Installer
 
         // password salted
         $salt = substr( $this->_params['salt'], 0, $this->_params['saltlength'] );
-	    $pass = $salt . md5( $salt . $password );
+	    $pass = $salt . md5( $salt . $this->_password );
 
         $Statement->execute(array(
-        	':username'  => $username,
+        	':username'  => $this->_username,
             ':password'  => $pass,
             ':id'        => $this->_params['rootuser'],
             ':usergroup' => $this->_params['root'],
@@ -546,11 +558,13 @@ class Installer
             file_put_contents( '.htaccess', $htaccess );
         }
 
+        //
         // execute the main setup from quiqqer
-
-        require_once $lib_dir .'QUI.php';
-        \QUI::load();
-
+        // so, the tables have the actualy state
+        //
+        system(
+        	'cd '. $cms_dir .'; php admin/console.php --username='. $this->_username .' --password='. $this->_password .' --tool=ConsoleSetup'
+        );
 
         // delete the setup
 

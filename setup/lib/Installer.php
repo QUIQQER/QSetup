@@ -381,7 +381,7 @@ class Installer
 
         $Statement->execute(array(
         	':group_id'    => $this->_params['root'],
-            ':permissions' => json_decode( $permissions, true )
+            ':permissions' => json_encode( $permissions )
         ));
     }
 

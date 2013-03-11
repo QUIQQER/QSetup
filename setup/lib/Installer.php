@@ -229,6 +229,7 @@ class Installer
         $this->writeLn( "Please enter a password:" );
         $password = trim( fgets( STDIN ) );
 
+
         // exist user table ?
         $user_table_exist = count(
             $this->_PDO->query(
@@ -238,9 +239,11 @@ class Installer
 
         if ( $user_table_exist )
         {
-            throw new \Exception(
-            	'The user table already exist. You cannot install QUIQQER or create a new user.'
+            $this->writeLn(
+            	'The user table already exist. You cannot install QUIQQER.'
             );
+
+            exit;
         }
 
         // exist group table ?
@@ -252,12 +255,16 @@ class Installer
 
         if ( $group_table_exist )
         {
-            throw new \Exception(
-            	'The user table already exist. You cannot install QUIQQER or create a new user.'
+            $this->writeLn(
+            	'The group table already exist. You cannot install QUIQQER.'
             );
+
+            exit;
         }
 
+        //
         // create the group table
+        //
         $create_group_table = '
             CREATE TABLE IF NOT EXISTS `'. $group_table .'` (
               `id` int(11) NOT NULL,
@@ -285,8 +292,9 @@ class Installer
             ':active' => 1
         ));
 
-
+        //
         // create the user table
+        //
         $create_user_table = '
             CREATE TABLE IF NOT EXISTS `'. $user_table .'` (
               `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -310,17 +318,19 @@ class Installer
 
         // create user
         $Statement = $this->_PDO->prepare(
-        	"INSERT INTO '. $user_table .' (`id`, `username`, `password`) VALUES (:id, :username, :password)"
+        	'INSERT INTO '. $user_table .' (`id`, `username`, `password`, `usergroup`)
+        		VALUES (:id, :username, :password, :usergroup)'
         );
 
         // password salted
-        $salt = substr( $this->_params['salt'], 0, SALT_LENGTH );
+        $salt = substr( $this->_params['salt'], 0, $this->_params['saltlength'] );
 	    $pass = $salt . md5( $salt . $password );
 
         $Statement->execute(array(
-        	':username' => $username,
-            ':password' => $pass,
-            ':id'       => $this->_params['rootuser']
+        	':username'  => $username,
+            ':password'  => $pass,
+            ':id'        => $this->_params['rootuser'],
+            ':usergroup' => $this->_params['root']
         ));
 
 
@@ -332,6 +342,7 @@ class Installer
     public function paths()
     {
         $this->_step = 'paths';
+        $cms_dir     = getcwd() .'/';
 
         $this->writeLn( '=========================================' );
         $this->writeLn( 'Step 3 set the installation paths and the host of QUIQQER' );
@@ -341,12 +352,11 @@ class Installer
 
         $this->writeLn( 'Do you want to change the following installation path of quiqqer? ' );
         $this->writeLn( $cms_dir );
+        $this->writeLn( '' );
         $this->write( '[NO/yes]: ' );
 
         $_edit_paths = trim( fgets( STDIN ) );
-
-        $edit_paths = false;
-        $cms_dir    = getcwd() .'/';
+        $edit_paths  = false;
 
         if ( $_edit_paths == 'yes' ) {
             $edit_paths = true;
@@ -424,7 +434,11 @@ class Installer
         \QUI\utils\system\File::mkdir( $opt_dir );
         \QUI\utils\system\File::mkdir( $usr_dir );
 
-        // create the etc
+        $url_dir = "/";
+
+        //
+        // create the etc, the global config
+        //
         $config = array(
             "globals" => array(
                 "cms_dir" => $cms_dir,
@@ -434,7 +448,7 @@ class Installer
                 "usr_dir" => $usr_dir,
                 "sys_dir" => $cms_dir ."admin/",
                 "opt_dir" => $opt_dir,
-                "url_dir" => "/",
+                "url_dir" => $url_dir,
 
                 "salt"       => $this->_params['salt'],
                 "saltlength" => $this->_params['saltlength'],
@@ -442,8 +456,8 @@ class Installer
                 "root"       => $this->_params['root'],
 
                 "cache"       => 0,
-                "host"        => "http://hen",
-                "httpshost"   => "",
+                "host"        => $this->_params['host'],
+                "httpshost"   => $this->_params['httpshost'],
                 "development" => 0,
         		"debug_mode"  => 0,
                 "emaillogin"  => 0,
@@ -457,7 +471,8 @@ class Installer
                 "host"     => $this->_params['db_host'],
                 "database" => $this->_params['db_database'],
                 "user"     => $this->_params['db_user'],
-                "password" => $this->_params['db_password']
+                "password" => $this->_params['db_password'],
+                "prfx"     => $this->_params['db_prefix']
 			),
 
             "auth" => array(
@@ -468,7 +483,9 @@ class Installer
         file_put_contents( $etc_dir .'conf.ini', '' );
         $this->_writeIni( $etc_dir .'conf.ini', $config );
 
+        //
         // create composer file
+        //
         $composer_json = file_get_contents( 'lib/composer.tpl' );
 
         $composer_json = str_replace(
@@ -488,6 +505,31 @@ class Installer
         // download composer file
         system( 'curl -sS https://getcomposer.org/installer | php -- --install-dir='. $cms_dir );
         system( 'php composer.phar install' );
+
+        //
+        // create the htaccess
+        //
+        $htaccess = '' .
+        'RewriteEngine On' ."\n".
+        'RewriteBase '. $url_dir ."\n".
+        'RewriteCond  %{REQUEST_FILENAME} !^.*bin/' ."\n".
+        'RewriteRule ^.*lib/|^.*etc/|^.*var/|^.*opt/|^.*admin/index.php|^.*media/sites/ / [L]' ."\n".
+        'RewriteRule  ^/(.*)     /$' ."\n".
+        'RewriteCond %{REQUEST_FILENAME} !-f' ."\n".
+        'RewriteCond %{REQUEST_FILENAME} !-d' ."\n".
+		"\n".
+        'RewriteRule ^(.*)$ index.php?_url=$1&%{QUERY_STRING}';
+
+        if ( file_exists( '.htaccess' ) )
+        {
+            $this->writeLn( 'A .htaccess file already exist. Please at the following to the htacess file:' );
+            $this->writeLn( '' );
+            $this->writeLn( $htaccess );
+
+        } else
+        {
+            file_put_contents( '.htaccess', $htaccess );
+        }
     }
 
     /**

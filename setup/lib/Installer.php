@@ -233,6 +233,7 @@ class Installer
         // check if a user exist
         $user_table  = $this->_params['db_prefix'] .'users';
         $group_table = $this->_params['db_prefix'] .'groups';
+        $perm2group  = $this->_params['db_prefix'] .'permissions2groups';
 
         // database prefix
         $this->writeLn( "Please enter a username:" );
@@ -348,7 +349,40 @@ class Installer
             ':active'    => 1
         ));
 
+        //
+        // set permissions to the root group
+        //
+        $create_group_perm_table = '
+            CREATE TABLE IF NOT EXISTS `'. $perm2group .'` (
+              `group_id` int(11) NOT NULL,
+              `permissions` text
+            );
+        ';
 
+        $this->_PDO->query( $create_group_perm_table );
+
+        $permissions = array(
+            "quiqqer.admin.users.edit"   => true,
+            "quiqqer.admin.groups.edit"  => true,
+            "quiqqer.admin.users.view"   => true,
+            "quiqqer.admin.groups.view"  => true,
+            "quiqqer.system.cache"       => true,
+            "quiqqer.system.permissions" => true,
+            "quiqqer.system.update"      => true,
+            "quiqqer.su"    => true,
+            "quiqqer.admin" => true
+        );
+
+        // create user
+        $Statement = $this->_PDO->prepare(
+        	'INSERT INTO '. $perm2group .' (`group_id`, `permissions`)
+        		VALUES (:group_id, :permissions)'
+        );
+
+        $Statement->execute(array(
+        	':group_id'    => $this->_params['root'],
+            ':permissions' => json_decode( $permissions, true )
+        ));
     }
 
     /**
@@ -477,7 +511,7 @@ class Installer
                 "cache"       => 0,
                 "host"        => $this->_params['host'],
                 "httpshost"   => $this->_params['httpshost'],
-                "development" => 0,
+                "development" => 1,
         		"debug_mode"  => 0,
                 "emaillogin"  => 0,
                 "maintenance" => 0,

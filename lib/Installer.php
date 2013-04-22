@@ -123,23 +123,23 @@ class Installer
 
         $needles = array(
             'db_driver' => array(
-            	'default'  => "mysql",
+                'default'  => "mysql",
                 'question' => "Database Driver:"
             ),
             'db_host' => array(
-            	'default'  => "localhost",
+                'default'  => "localhost",
                 'question' => "Database Host:"
             ),
             'db_database' => array(
-            	'default'  => "",
+                'default'  => "",
                 'question' => "Database:"
             ),
             'db_user' => array(
-            	'default'  => "",
+                'default'  => "",
                 'question' => "Database user:"
             ),
             'db_password' => array(
-            	'default'  => "",
+                'default'  => "",
                 'question' => "Database password:"
             )
         );
@@ -253,7 +253,7 @@ class Installer
         if ( $user_table_exist )
         {
             $this->writeLn(
-            	'The user table already exist. You cannot install QUIQQER.'
+                'The user table already exist. You cannot install QUIQQER.'
             );
 
             exit;
@@ -269,7 +269,7 @@ class Installer
         if ( $group_table_exist )
         {
             $this->writeLn(
-            	'The group table already exist. You cannot install QUIQQER.'
+                'The group table already exist. You cannot install QUIQQER.'
             );
 
             exit;
@@ -294,12 +294,12 @@ class Installer
 
         // create root group
         $Statement = $this->_PDO->prepare(
-        	'INSERT INTO '. $group_table .' (`id`, `name`, `admin`, `active`)
-        		VALUES (:id, :gname, :admin, :active)'
+            'INSERT INTO '. $group_table .' (`id`, `name`, `admin`, `active`)
+                VALUES (:id, :gname, :admin, :active)'
         );
 
         $Statement->execute(array(
-        	':id'     => $this->_params['root'],
+            ':id'     => $this->_params['root'],
             ':gname'  => 'root',
             ':admin'  => 1,
             ':active' => 1
@@ -325,23 +325,23 @@ class Installer
               PRIMARY KEY (`id`),
               KEY `username` (`username`),
               KEY `password` (`password`)
-    		) CHARACTER SET utf8;
-		';
+            ) CHARACTER SET utf8;
+        ';
 
         $this->_PDO->query( $create_user_table );
 
         // create user
         $Statement = $this->_PDO->prepare(
-        	'INSERT INTO '. $user_table .' (`id`, `username`, `password`, `usergroup`, `su`, `active`)
-        		VALUES (:id, :username, :password, :usergroup, :su, :active)'
+            'INSERT INTO '. $user_table .' (`id`, `username`, `password`, `usergroup`, `su`, `active`)
+                VALUES (:id, :username, :password, :usergroup, :su, :active)'
         );
 
         // password salted
         $salt = substr( $this->_params['salt'], 0, $this->_params['saltlength'] );
-	    $pass = $salt . md5( $salt . $this->_password );
+        $pass = $salt . md5( $salt . $this->_password );
 
         $Statement->execute(array(
-        	':username'  => $this->_username,
+            ':username'  => $this->_username,
             ':password'  => $pass,
             ':id'        => $this->_params['rootuser'],
             ':usergroup' => $this->_params['root'],
@@ -375,12 +375,12 @@ class Installer
 
         // create user
         $Statement = $this->_PDO->prepare(
-        	'INSERT INTO '. $perm2group .' (`group_id`, `permissions`)
-        		VALUES (:group_id, :permissions)'
+            'INSERT INTO '. $perm2group .' (`group_id`, `permissions`)
+                VALUES (:group_id, :permissions)'
         );
 
         $Statement->execute(array(
-        	':group_id'    => $this->_params['root'],
+            ':group_id'    => $this->_params['root'],
             ':permissions' => json_encode( $permissions )
         ));
     }
@@ -413,31 +413,31 @@ class Installer
 
         $needles = array(
             'cms' => array(
-            	'default'  => $cms_dir,
+                'default'  => $cms_dir,
                 'question' => "Please enter the cms-dir - The main directory contains the whole QUIQQER system."
             ),
             'lib' => array(
-            	'default'  => $cms_dir ."lib",
+                'default'  => $cms_dir ."lib",
                 'question' => "Please enter the lib-dir - The lib directory contains all the quiqqer libraries."
             ),
             'bin' => array(
-            	'default'  => $cms_dir ."bin",
+                'default'  => $cms_dir ."bin",
                 'question' => "Please enter the bin-dir - The bin directory contains all the files you need to be accessible from the Web-Server."
             ),
             'usr' => array(
-            	'default'  => $cms_dir ."usr",
+                'default'  => $cms_dir ."usr",
                 'question' => "Please enter the usr-dir - The usr directory contains all the project templates."
             ),
             'opt' => array(
-            	'default'  => $cms_dir ."packages",
+                'default'  => $cms_dir ."packages",
                 'question' => "Please enter the opt-dir - The opt directory contains all plugins and packages. Its the vendor vendor-dir for composer."
             ),
             'var' => array(
-            	'default'  => $cms_dir ."var",
+                'default'  => $cms_dir ."var",
                 'question' => "Please enter the var-dir - The var directory contains all temp files, like the cache, temporary uploads, logs and many more."
             ),
             'host' => array(
-            	'default'  => "",
+                'default'  => "",
                 'question' => "Please enter the host - Under which url / domain is quiqqer accessed? (eq: http://www.my-domain.de)"
             )
         );
@@ -512,11 +512,11 @@ class Installer
                 "host"        => $this->_params['host'],
                 "httpshost"   => $this->_params['httpshost'],
                 "development" => 1,
-        		"debug_mode"  => 0,
+                "debug_mode"  => 0,
                 "emaillogin"  => 0,
                 "maintenance" => 0,
 
-        		"mailprotection" => 1
+                "mailprotection" => 1
             ),
 
             "db" => array(
@@ -526,7 +526,7 @@ class Installer
                 "user"     => $this->_params['db_user'],
                 "password" => $this->_params['db_password'],
                 "prfx"     => $this->_params['db_prefix']
-			),
+            ),
 
             "auth" => array(
                 "type" => "standard"
@@ -550,13 +550,13 @@ class Installer
         $composer_json = file_get_contents( 'lib/composer.tpl' );
 
         $composer_json = str_replace(
-        	'{$packages_dir}',
+            '{$packages_dir}',
             $opt_dir,
             $composer_json
         );
 
         $composer_json = str_replace(
-        	'{$composer_cache_dir}',
+            '{$composer_cache_dir}',
             $var_dir .'composer/',
             $composer_json
         );
@@ -578,7 +578,7 @@ class Installer
         'RewriteRule  ^/(.*)     /$' ."\n".
         'RewriteCond %{REQUEST_FILENAME} !-f' ."\n".
         'RewriteCond %{REQUEST_FILENAME} !-d' ."\n".
-		"\n".
+        "\n".
         'RewriteRule ^(.*)$ index.php?_url=$1&%{QUERY_STRING}';
 
         if ( file_exists( '.htaccess' ) )
@@ -597,7 +597,7 @@ class Installer
         // so, the tables have the actualy state
         //
         system(
-        	'cd '. $cms_dir .'; php admin/console.php --username='. $this->_username .' --password='. $this->_password .' --tool=ConsoleSetup'
+            'cd '. $cms_dir .'; php quiqqer.php --username='. $this->_username .' --password='. $this->_password .' --tool=ConsoleSetup'
         );
 
         // delete the setup
@@ -624,10 +624,10 @@ class Installer
     protected function _writeIni($filename, $options)
     {
         if ( !is_writeable( $filename ) ) {
-    		throw new \Exception( 'Config is not writable' );
-		}
+            throw new \Exception( 'Config is not writable' );
+        }
 
-		$tmp = '';
+        $tmp = '';
 
         foreach ( $options as $section => $values )
         {

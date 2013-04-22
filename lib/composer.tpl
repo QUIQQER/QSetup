@@ -1,10 +1,10 @@
 {
-	"name" : "quiqqer/setup",
-	"description" : "Setup for the QUIQQER system",
-	"version" : "dev-master",
-	"license" : "GPL-3.0+",
+    "name" : "quiqqer/setup",
+    "description" : "Setup for the QUIQQER system",
+    "version" : "dev-master",
+    "license" : "GPL-3.0+",
 
-	"authors" : [{
+    "authors" : [{
         "name": "Henning Leutz",
         "email": "leutz@pcsg.de",
         "homepage": "http://www.pcsg.de",
@@ -29,7 +29,7 @@
     "require": {
         "php" : ">=5.3.2",
         "phpmailer/phpmailer" : "dev-master",
-        "smarty/smarty": "v3.1.12",
+        "quiqqer/smarty": "3.1.12",
         "quiqqer/installer" : "dev-master",
         "quiqqer/smarty3" : "dev-master",
         "quiqqer/ckeditor3" : "1.*",

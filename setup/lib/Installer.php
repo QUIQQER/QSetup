@@ -617,9 +617,23 @@ class Installer
         system( 'php quiqqer.php --username='. $this->_username .' --password='. $this->_password .' --tool=ConsoleSetup' );
 
         // delete the setup
-        if ( file_exists( 'quiqqer.phar' ) ) {
-            unlink( 'quiqqer.phar' );
+        if ( file_exists( 'quiqqer.php' ) ) {
+            unlink( 'quiqqer.php' );
         }
+
+        if ( file_exists( 'composer.json' ) ) {
+            unlink( 'composer.json' );
+        }
+
+        if ( file_exists( 'composer.lock' ) ) {
+            unlink( 'composer.lock' );
+        }
+
+        // move composer.phar to composer var
+        rename(
+            $cms_dir .'composer.phar',
+            $var_dir .'composer/composer.phar'
+        );
 
         // move dirs to temp
         $dirs = array( 'css' );

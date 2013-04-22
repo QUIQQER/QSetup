@@ -24,14 +24,7 @@ require __DIR__ .'/Installer.php';
 require __DIR__ .'/utils/String.php';
 require __DIR__ .'/utils/system/File.php';
 
-$Installer = new \QUI\Installer(array(
-    'db_driver'   => 'mysql',
-    'db_host'     => '192.168.1.5',
-    'db_database' => 'hen_quiqqer_test',
-    'db_user'     => 'cms',
-    'db_password' => 'cms_07'
-));
-
+$Installer = new \QUI\Installer();
 $Installer->start();
 
 ?>

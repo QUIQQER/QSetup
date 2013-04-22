@@ -617,8 +617,8 @@ class Installer
         system( 'php quiqqer.php --username='. $this->_username .' --password='. $this->_password .' --tool=ConsoleSetup' );
 
         // delete the setup
-        if ( file_exists( 'quiqqer.php' ) ) {
-            unlink( 'quiqqer.php' );
+        if ( file_exists( 'quiqqer.phar' ) ) {
+            unlink( 'quiqqer.phar' );
         }
 
         if ( file_exists( 'composer.json' ) ) {

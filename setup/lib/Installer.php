@@ -371,6 +371,9 @@ class Installer
             "quiqqer.admin.groups.edit"  => true,
             "quiqqer.admin.users.view"   => true,
             "quiqqer.admin.groups.view"  => true,
+            "quiqqer.admin.projects.create" => true,
+            "quiqqer.admin.users.edit"      => true,
+            "quiqqer.admin.users.view"      => true,
             "quiqqer.system.cache"       => true,
             "quiqqer.system.permissions" => true,
             "quiqqer.system.update"      => true,
@@ -609,6 +612,11 @@ class Installer
             file_put_contents( '.htaccess', $htaccess );
         }
 
+        // move composer.phar to composer var
+        rename(
+            $cms_dir .'composer.phar',
+            $var_dir .'composer/composer.phar'
+        );
         //
         // execute the main setup from quiqqer
         // so, the tables have the actualy state
@@ -629,11 +637,6 @@ class Installer
             unlink( 'composer.lock' );
         }
 
-        // move composer.phar to composer var
-        rename(
-            $cms_dir .'composer.phar',
-            $var_dir .'composer/composer.phar'
-        );
 
         // move dirs to temp
         $dirs = array( 'css' );

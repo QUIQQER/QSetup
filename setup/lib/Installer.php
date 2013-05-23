@@ -118,95 +118,44 @@ class Installer
         $this->writeLn( 'Step 1 Database connection' );
         $this->writeLn( '' );
 
-        $needles = array(
-            'db_driver' => array(
-                'default'  => "mysql",
-                'question' => "Database Driver:"
-            ),
-            'db_host' => array(
-                'default'  => "localhost",
-                'question' => "Database Host:"
-            ),
-            'db_database' => array(
-                'default'  => "",
-                'question' => "Database:"
-            ),
-            'db_user' => array(
-                'default'  => "",
-                'question' => "Database user:"
-            ),
-            'db_password' => array(
-                'default'  => "",
-                'question' => "Database password:"
-            )
-        );
+        // driver
+        $this->write( 'Database Driver (mysql,sqlite) [mysql]: ' );
+        $this->_params['db_driver'] = trim( fgets( STDIN ) );
 
-        foreach ( $needles as $needle => $param )
-        {
-            if ( isset( $this->_params[ $needle ] ) &&
-                 !empty( $this->_params[ $needle ] ) )
-            {
-                continue;
-            }
-
-            $this->write( $param['question'] );
-
-            if ( !empty( $param['default'] )) {
-                $this->write( ' ['. $param['default'] .']' );
-            }
-
-            $this->write( ' ' );
-
-            $this->_params[ $needle ] = trim( fgets( STDIN ) );
-
-
-            if ( !empty( $this->_params[ $needle ] ) ) {
-                continue;
-            }
-
-            if ( !empty( $param['default'] )) {
-                $this->_params[ $needle ] = $param['default'];
-            }
+        if ( empty( $this->_params['db_driver'] ) ) {
+            $this->_params['db_driver'] = 'mysql';
         }
 
-        // check database connection
-        try
+        // swtch to the right db installer
+        switch ( $this->_params['db_driver'] )
         {
-            $dsn = $this->_params['db_driver'] .
-                   ':dbname='. $this->_params['db_database'] .
-                   ';host='. $this->_params['db_host'];
+            case 'sqlite':
+                require_once 'installer/SQLite.php';
 
-            $PDO = new \PDO(
-                $dsn,
-                $this->_params['db_user'],
-                $this->_params['db_password'],
-                array(
-                    \PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"
-                )
-            );
+                $result = \QUI\Installer\SQLite::database(
+                    $this->_params,
+                    $this
+                );
 
-            $PDO->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
+            break;
 
-            $this->_PDO = $PDO;
+            case 'mysql':
+                require_once 'installer/DataBase.php';
 
-        } catch ( \PDOException $Exception )
-        {
-            $this->_params['db_driver']   = '';
-            $this->_params['db_host']     = '';
-            $this->_params['db_database'] = '';
-            $this->_params['db_user']     = '';
-            $this->_params['db_password'] = '';
+                $result = \QUI\Installer\DataBase::database(
+                    $this->_params,
+                    $this
+                );
 
-            $this->writeLn( $Exception->getMessage() );
-
-            $this->database();
-            return;
+            break;
         }
+
+        $this->_PDO    = $result['PDO'];
+        $this->_params = array_merge( $this->_params, $result['params'] );
 
         // database prefix
         $this->writeLn( "Want you a prefix for your database tables? if no, leave it empty:" );
         $this->_params['db_prefix'] = trim( fgets( STDIN ) );
-
     }
 
     /**

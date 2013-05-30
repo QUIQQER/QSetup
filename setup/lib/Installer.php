@@ -650,5 +650,3 @@ class Installer
         file_put_contents( $filename, $tmp );
     }
 }
-
-?>

@@ -8,28 +8,41 @@ html, body {
     text-align: left;
     color: #333;
 
-    font-size: 15px;
+    font-size: 14px;
+    font-weight: 400;
+    font-family: 'Open Sans', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    line-height: 1.2;
+}
+
+p {
+    clear: both;
+}
+
+.loader {
+    background: url('../bin/loader.gif') no-repeat center center;
+    width: 26px;
+    height: 26px;
+    float: left;
+}
+
+.list {
+    text-align: center;
+}
+
+.step {
+    clear: both;
 }
 
 .container {
-	float: left;
-	width: 100%;
     background: #fff;
     padding: 40px 0;
-    margin: 50px 0 0;
+    margin: 50px auto;
 
     box-shadow: 2px 0 5px #999;
-}
-
-.logo {
-    margin: 40px 0 10px -237px;
-    left: 50%;
-    position: relative;
-}
-
-section.step {
-    width: 960px;
-    margin: 0 auto;
+    max-width: 900px;
 }
 
 section.step h1 {
@@ -37,17 +50,17 @@ section.step h1 {
 }
 
 label {
-	font-size: 0.8em;
-    float: left;
-    width: 150px;
     cursor: pointer;
+    padding: 0 !important;
+    line-height: 30px;
 }
 
+input, select {
+    margin: 0 0 5px 0;
+}
 
 footer {
     clear: both;
     padding-top: 20px;
     text-align: center;
-    font-size: 0.8em;
 }
-

@@ -26,5 +26,3 @@ require __DIR__ .'/utils/system/File.php';
 
 $Installer = new \QUI\Installer();
 $Installer->start();
-
-?>

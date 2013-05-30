@@ -49,12 +49,23 @@ class SQLite
 
         $db_params['db_database'] = $sqlitedb;
 
+        return array(
+            'PDO'    => self::check($sqlitedb),
+            'params' => $db_params
+        );
+    }
+
+    /**
+     * Create a PDO Object
+     *
+     * @param unknown $db_params
+     * @return PDO
+     */
+    static function check($sqlitedb)
+    {
         $PDO = new \PDO( 'sqlite:'. $sqlitedb );
         $PDO->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
 
-        return array(
-            'PDO'    => $PDO,
-            'params' => $db_params
-        );
+        return $PDO;
     }
 }

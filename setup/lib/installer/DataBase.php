@@ -73,23 +73,8 @@ class DataBase
         // check database connection
         try
         {
-            $dsn = $db_params['db_driver'] .
-                    ':dbname='. $db_params['db_database'] .
-                    ';host='. $db_params['db_host'];
-
-            $PDO = new \PDO(
-                $dsn,
-                $db_params['db_user'],
-                $db_params['db_password'],
-                array(
-                    \PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"
-                )
-            );
-
-            $PDO->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
-
             return array(
-                'PDO'    => $PDO,
+                'PDO'    => self::check( $db_params ),
                 'params' => $db_params
             );
 
@@ -105,5 +90,32 @@ class DataBase
 
             return self::database( $db_params, $Installer ) ;
         }
+    }
+
+    /**
+     * create a pdo object
+     *
+     * @throws PDOException
+     * @param Array $db_params
+     * @return \PDO
+     */
+    static function check($db_params)
+    {
+        $dsn = $db_params['db_driver'] .
+                ':dbname='. $db_params['db_database'] .
+                ';host='. $db_params['db_host'];
+
+        $PDO = new \PDO(
+            $dsn,
+            $db_params['db_user'],
+            $db_params['db_password'],
+            array(
+                \PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"
+            )
+        );
+
+        $PDO->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
+
+        return $PDO;
     }
 }

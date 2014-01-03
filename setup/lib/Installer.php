@@ -571,11 +571,11 @@ class Installer
         // so, the tables have the actualy state
         //
         chdir( $cms_dir );
-        system( 'php quiqqer.php --username='. $this->_username .' --password='. $this->_password .' --tool=ConsoleSetup' );
+        system( 'php quiqqer.php --username="'. $this->_username .'" --password="'. $this->_password .'" --tool="quiqqer:setup"' );
 
         // delete the setup
-        if ( file_exists( 'quiqqer.phar' ) ) {
-            unlink( 'quiqqer.phar' );
+        if ( file_exists( 'quiqqer.zip' ) ) {
+            unlink( 'quiqqer.zip' );
         }
 
         if ( file_exists( 'composer.json' ) ) {

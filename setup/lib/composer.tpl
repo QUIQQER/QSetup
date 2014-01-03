@@ -31,6 +31,8 @@
         "quiqqer/quiqqer" : "dev-master"
     },
 
+    "minimum-stability": "dev",
+
     "config": {
         "vendor-dir" : "{$packages_dir}",
         "cache-dir"  : "{$composer_cache_dir}"

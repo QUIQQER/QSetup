@@ -28,14 +28,6 @@
 
     "require": {
         "php" : ">=5.3.2",
-        "phpmailer/phpmailer" : "dev-master",
-        "quiqqer/smarty": "3.1.12",
-        "quiqqer/installer" : "dev-master",
-        "quiqqer/smarty3" : "dev-master",
-        "quiqqer/ckeditor3" : "dev-master",
-        "quiqqer/calendar" : "dev-master",
-        "quiqqer/colorpicker" : "dev-master",
-        "quiqqer/translator" : "dev-master",
         "quiqqer/quiqqer" : "dev-master"
     },
 

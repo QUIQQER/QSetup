@@ -32,11 +32,11 @@
         "quiqqer/smarty": "3.1.12",
         "quiqqer/installer" : "dev-master",
         "quiqqer/smarty3" : "dev-master",
-        "quiqqer/ckeditor3" : "1.*",
+        "quiqqer/ckeditor3" : "dev-master",
         "quiqqer/calendar" : "dev-master",
         "quiqqer/colorpicker" : "dev-master",
         "quiqqer/translator" : "dev-master",
-        "quiqqer/quiqqer" : "1.*"
+        "quiqqer/quiqqer" : "dev-master"
     },
 
     "config": {

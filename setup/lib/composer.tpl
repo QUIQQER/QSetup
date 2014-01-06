@@ -28,13 +28,15 @@
 
     "require": {
         "php" : ">=5.3.2",
-        "quiqqer/quiqqer" : "dev-master"
+        "quiqqer/quiqqer" : "dev-master",
+        "robloach/component-installer" : "*"
     },
 
     "minimum-stability": "dev",
 
     "config": {
         "vendor-dir" : "{$packages_dir}",
-        "cache-dir"  : "{$composer_cache_dir}"
+        "cache-dir"  : "{$composer_cache_dir}",
+        "cache-dir"  : "{$packages_dir}/bin",
     }
 }

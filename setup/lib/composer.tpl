@@ -35,8 +35,8 @@
     "minimum-stability": "dev",
 
     "config": {
-        "vendor-dir" : "{$packages_dir}",
-        "cache-dir"  : "{$composer_cache_dir}",
-        "cache-dir"  : "{$packages_dir}bin"
+        "vendor-dir"    : "{$packages_dir}",
+        "cache-dir"     : "{$composer_cache_dir}",
+        "component-dir" : "{$packages_dir}bin"
     }
 }

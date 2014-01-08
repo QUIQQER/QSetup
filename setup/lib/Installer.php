@@ -553,7 +553,7 @@ class Installer
 
         if ( file_exists( '.htaccess' ) )
         {
-            $this->writeLn( 'A .htaccess file already exist. Please at the following to the htacess file:' );
+            $this->writeLn( 'A .htaccess file already exist. Please add the following to the htacess file:' );
             $this->writeLn( '' );
             $this->writeLn( $htaccess );
 

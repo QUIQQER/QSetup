@@ -327,7 +327,8 @@ class Installer
             "quiqqer.system.permissions" => true,
             "quiqqer.system.update"      => true,
             "quiqqer.su"    => true,
-            "quiqqer.admin" => true
+            "quiqqer.admin" => true,
+            "quiqqer.admin.projects.create" => true
         );
 
         // create user

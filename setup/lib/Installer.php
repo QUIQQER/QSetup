@@ -601,6 +601,9 @@ class Installer
                 );
             }
         }
+
+        // create the first project
+        system( 'php quiqqer.php --username="'. $this->_username .'" --password="'. $this->_password .'" --tool="quiqqer:create-project"' );
     }
 
     /**

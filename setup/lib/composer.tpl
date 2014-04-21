@@ -28,8 +28,11 @@
 
     "require": {
         "php" : ">=5.3.2",
-        "quiqqer/quiqqer" : "dev-master",
-        "robloach/component-installer" : "*"
+        "composer/composer": "1.0.*@dev",
+        "robloach/component-installer" : "*",
+        "quiqqer/utils" : "dev-master",
+        "tedivm/stash" : "0.11.*",
+        "phpmailer/phpmailer" : "dev-master"
     },
 
     "minimum-stability": "dev",

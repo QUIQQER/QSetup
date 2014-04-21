@@ -1,66 +1,62 @@
-@CHARSET "UTF-8";
-
-html, body {
-    margin: 0;
-    padding: 0;
-    background: #dedede;
-
-    text-align: left;
-    color: #333;
-
-    font-size: 14px;
-    font-weight: 400;
-    font-family: 'Open Sans', sans-serif;
+* {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }
 
-h1, h2, h3, h4, h5, h6 {
-    line-height: 1.2;
+html, body {
+    background: rgb(47, 143, 198);
+    color: #444444;
+    font-size: 13px;
+    font-weight: 400;
+    font-family: 'Open Sans', sans-serif;
+    height: 100%;
+    margin: 0;
+    width: 100%;
+}
+
+th {
+    text-align: left;
+}
+
+h1, h2 {
+    margin: 0 0 10px;
 }
 
 p {
     clear: both;
-}
-
-.loader {
-    background: url('../bin/loader.gif') no-repeat center center;
-    width: 26px;
-    height: 26px;
     float: left;
-}
-
-.list {
-    text-align: center;
-}
-
-.step {
-    clear: both;
-}
-
-.container {
-    background: #fff;
-    padding: 40px 0;
-    margin: 50px auto;
-
-    box-shadow: 2px 0 5px #999;
-    max-width: 900px;
-}
-
-section.step h1 {
-    margin-bottom: 20px !important;
+    margin: 0 0 10px;
+    width: 100%;
 }
 
 label {
-    cursor: pointer;
-    padding: 0 !important;
     line-height: 30px;
 }
 
-input, select {
-    margin: 0 0 5px 0;
+select, input {
+    margin: 0;
+    padding: 8px;
+}
+
+section {
+    margin-bottom: 20px;
 }
 
 footer {
-    clear: both;
-    padding-top: 20px;
+    color: #FFFFFF;
+    margin: 10px 0;
+    text-align: center;
+}
+
+.grid-container {
+    background: #FFFFFF;
+    margin: 0 auto;
+    max-width: 600px;
+    padding: 20px;
+    width: 100%;
+}
+
+.logo {
     text-align: center;
 }

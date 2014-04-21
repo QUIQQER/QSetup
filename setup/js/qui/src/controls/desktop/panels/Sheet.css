@@ -1,0 +1,74 @@
+
+.qui-panel-sheet {
+    background: #F8F8F8;
+    border: none
+    height: 100%;
+    left: 0px;
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    z-index: 5;
+}
+
+.qui-panel-sheet-header {
+    border-bottom: 2px solid #0069B4;
+    background: #2F8FC6;
+    color: #FFFFFF;
+    font-size: 12px;
+    font-weight: bold;
+    height: 40px;
+    line-height: 40px;
+    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    padding: 0 0 0 20px;
+    position: relative;
+}
+
+.qui-panel-sheet-header button {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    color: #FFFFFF;
+    height: 40px;
+    margin: 0;
+
+            box-shadow: none;
+       -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+}
+
+.qui-panel-sheet-header .qui-buttons-seperator {
+    border-left: 1px solid #FFFFFF;
+    float: left;
+    height: 28px;
+    margin: 6px 0;
+}
+
+.qui-panel-sheet-content {
+    clear: both;
+    float: left;
+    width: 100%;
+}
+
+.qui-panel-sheet-btn-container {
+    background: #666;
+    border-top: 1px solid #ddd;
+    clear: both;
+    float: left;
+    height: 59px;
+    width: 100%;
+}
+
+.qui-panel-sheet-buttons {
+    margin: 0 auto;
+}
+
+.qui-panel-sheet-buttons .qui-button-text,
+.qui-panel-sheet-buttons .qui-button-text-image {
+    line-height: 20px;
+}
+
+.qui-panel-sheet-buttons .qui-button-text-image {
+    padding: 0;
+}

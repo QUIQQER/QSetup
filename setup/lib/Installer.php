@@ -43,6 +43,12 @@ class Installer
     protected $_password = '';
 
     /**
+     * no output flag, if it is true, than no output
+     * @var Bool
+     */
+    protected $_no_output = false;
+
+    /**
      * installer constructor
      *
      * @param array $params - installation params
@@ -68,7 +74,7 @@ class Installer
         $this->paths();
 
         // create quiqqer - boooya
-        $this->_create();
+        $this->execute();
     }
 
     /**
@@ -78,6 +84,10 @@ class Installer
      */
     public function writeLn($str)
     {
+        if ( $this->_no_output ) {
+            return;
+        }
+
         echo $str ."\n";
     }
 
@@ -88,6 +98,10 @@ class Installer
      */
     public function write($str)
     {
+        if ( $this->_no_output ) {
+            return;
+        }
+
         echo $str;
     }
 
@@ -102,6 +116,13 @@ class Installer
         return $this->_step == $step ? true : false;
     }
 
+    /**
+     * Set the no output flag to true
+     */
+    public function setNoOutput()
+    {
+        $this->_no_output = true;
+    }
 
     /**
      * Steps
@@ -119,11 +140,14 @@ class Installer
         $this->writeLn( '' );
 
         // driver
-        $this->write( 'Database Driver (mysql,sqlite) [mysql]: ' );
-        $this->_params['db_driver'] = trim( fgets( STDIN ) );
+        if ( !isset( $this->_params['db_driver'] ) || empty( $this->_params['db_driver'] ) )
+        {
+            $this->write( 'Database Driver (mysql,sqlite) [mysql]: ' );
+            $this->_params['db_driver'] = trim( fgets( STDIN ) );
 
-        if ( empty( $this->_params['db_driver'] ) ) {
-            $this->_params['db_driver'] = 'mysql';
+            if ( empty( $this->_params['db_driver'] ) ) {
+                $this->_params['db_driver'] = 'mysql';
+            }
         }
 
         // swtch to the right db installer
@@ -154,8 +178,11 @@ class Installer
         $this->_params = array_merge( $this->_params, $result['params'] );
 
         // database prefix
-        $this->writeLn( "Want you a prefix for your database tables? if no, leave it empty:" );
-        $this->_params['db_prefix'] = trim( fgets( STDIN ) );
+        if ( !isset( $this->_params['db_prefix'] ) )
+        {
+            $this->writeLn( "Want you a prefix for your database tables? if no, leave it empty:" );
+            $this->_params['db_prefix'] = trim( fgets( STDIN ) );
+        }
     }
 
     /**
@@ -173,7 +200,7 @@ class Installer
         $this->_params['salt']       = md5( uniqid( rand(), true ) );
         $this->_params['saltlength'] = mt_rand( 0, 10 );
 
-        $this->_params['rootuser'] =  mt_rand( 100, 1000000000 );
+        $this->_params['rootuser'] = mt_rand( 100, 1000000000 );
         $this->_params['root']     = mt_rand( 1, 1000000000 );
 
         // check if a user exist
@@ -181,17 +208,29 @@ class Installer
         $group_table = $this->_params['db_prefix'] .'groups';
         $perm2group  = $this->_params['db_prefix'] .'permissions2groups';
 
-        // database prefix
+        // username
+        if ( isset( $this->_params['username'] ) &&
+             !empty( $this->_params['username'] ) )
+        {
+            $this->_username = $this->_params['username'];
+        }
+
+        if ( isset( $this->_params['password'] ) &&
+             !empty( $this->_params['password'] ) )
+        {
+            $this->_password = $this->_params['password'];
+        }
+
         while ( empty( $this->_username ) )
         {
             $this->writeLn( "Please enter a username:" );
             $this->_username = trim( fgets( STDIN ) );
         }
 
-        $this->writeLn( '' );
-
         while ( empty( $this->_password ) )
         {
+            $this->writeLn( '' );
+
             $this->writeLn( "Please enter a password:" );
             $this->_password = trim( fgets( STDIN ) );
         }
@@ -348,11 +387,21 @@ class Installer
      */
     public function paths()
     {
-        $this->_step = 'paths';
-        $cms_dir     = getcwd() .'/';
-
         $this->writeLn( '=========================================' );
         $this->writeLn( 'Step 3 set the installation paths and the host of QUIQQER' );
+
+        if ( isset( $this->_params['cms'] ) && !empty( $this->_params['cms'] ) &&
+             isset( $this->_params['var'] ) && !empty( $this->_params['var'] ) &&
+             isset( $this->_params['lib'] ) && !empty( $this->_params['lib'] ) &&
+             isset( $this->_params['bin'] ) && !empty( $this->_params['bin'] ) &&
+             isset( $this->_params['opt'] ) && !empty( $this->_params['opt'] ) &&
+             isset( $this->_params['usr'] ) && !empty( $this->_params['usr'] ) )
+        {
+            return;
+        }
+
+        $this->_step = 'paths';
+        $cms_dir     = getcwd() .'/';
 
         $this->writeLn( '' );
         $this->writeLn( 'If you not know what you do, please use the default settings.' );
@@ -423,8 +472,12 @@ class Installer
     /**
      * Create QUIQQER
      */
-    protected function _create()
+    public function execute()
     {
+        $this->writeLn( '' );
+        $this->writeLn( '=========================================' );
+        $this->writeLn( 'Downloading and installing the system' );
+
         $cms_dir = $this->_cleanPath( $this->_params['cms'] );
         $var_dir = $this->_cleanPath( $this->_params['var'] );
         $lib_dir = $this->_cleanPath( $this->_params['lib'] );
@@ -496,10 +549,13 @@ class Installer
         );
 
         // needle inis
+        mkdir( $etc_dir .'wysiwyg/' );
+
         file_put_contents( $etc_dir .'conf.ini', '' );
         file_put_contents( $etc_dir .'plugins.ini', '' );
         file_put_contents( $etc_dir .'projects.ini', '' );
         file_put_contents( $etc_dir .'source.list.ini', '' );
+        file_put_contents( $etc_dir .'wysiwyg/editors.ini', '' );
 
         $this->_writeIni( $etc_dir .'conf.ini', $config );
 
@@ -517,7 +573,7 @@ class Installer
         //
         // create composer file
         //
-        $composer_json = file_get_contents( 'lib/composer.tpl' );
+        $composer_json = file_get_contents( dirname(__FILE__) .'/composer.tpl' );
 
         $composer_json = str_replace(
             '{$packages_dir}',
@@ -534,8 +590,10 @@ class Installer
         file_put_contents( $cms_dir .'composer.json', $composer_json );
 
         // download composer file
-        system( 'curl -sS https://getcomposer.org/installer | php -- --install-dir='. $cms_dir );
-        system( 'php composer.phar install' );
+        file_put_contents(
+            $cms_dir ."composer.phar",
+            fopen("https://getcomposer.org/composer.phar", 'r')
+        );
 
         //
         // create the htaccess
@@ -562,21 +620,63 @@ class Installer
             file_put_contents( '.htaccess', $htaccess );
         }
 
+        if ( !is_dir( $var_dir .'composer/' ) ) {
+            mkdir( $var_dir .'composer/' );
+        }
+
         // move composer.phar to composer var
         rename(
             $cms_dir .'composer.phar',
             $var_dir .'composer/composer.phar'
         );
+
+        $this->writeLn( '' );
+        $this->writeLn( 'Installing Composer and QUIQQER can may take a little bit ... I suggest you drink a coffee ... ;-)' );
+        $this->writeLn( '' );
+
+        // installation
+        $exec = 'COMPOSER_HOME="'. $var_dir .'composer/" '.
+                'php '. $var_dir .'composer/composer.phar --working-dir="'. $cms_dir .'" install 2>&1';
+
+        system( $exec, $retval );
+
+        if ( strpos( $retval, 'RuntimeException' ) !== false ) {
+            exit;
+        }
+
+        $this->writeLn( '' );
+        $this->writeLn( 'Downloading QUIQQER' );
+
+        $exec = 'COMPOSER_HOME="'. $var_dir .'composer/" '.
+                'php '. $var_dir .'composer/composer.phar --working-dir="'. $cms_dir .'" '.
+                'require "quiqqer/quiqqer:dev-master" 2>&1';
+
+        system( $exec, $retval );
+
+        $this->writeLn( 'Composer and quiqqer successful downloaded' );
+
         //
         // execute the main setup from quiqqer
         // so, the tables have the actualy state
         //
+
         chdir( $cms_dir );
-        system( 'php quiqqer.php --username="'. $this->_username .'" --password="'. $this->_password .'" --tool="quiqqer:setup"' );
+        system( 'php '. $cms_dir .'quiqqer.php --username="'. $this->_username .'" --password="'. $this->_password .'" --tool="quiqqer:setup"' );
+
+        // translation
+        system( 'php '. $cms_dir .'quiqqer.php --username="'. $this->_username .'" --password="'. $this->_password .'" --tool="package:translator"' );
+
+
+        $this->writeLn( '' );
+        $this->writeLn( 'Starting cleanup' );
 
         // delete the setup
         if ( file_exists( 'quiqqer.zip' ) ) {
             unlink( 'quiqqer.zip' );
+        }
+
+        if ( file_exists( 'quiqqer.setup' ) ) {
+            unlink( 'quiqqer.setup' );
         }
 
         if ( file_exists( 'composer.json' ) ) {
@@ -589,7 +689,7 @@ class Installer
 
 
         // move dirs to temp
-        $dirs = array( 'css' );
+        $dirs = array( 'css', 'locale', 'js' );
 
         foreach ( $dirs as $dir )
         {
@@ -602,8 +702,12 @@ class Installer
             }
         }
 
+        $this->writeLn( '' );
+        $this->writeLn( '=========================================' );
+        $this->writeLn( 'Setup completed' );
+
         // create the first project
-        system( 'php quiqqer.php --username="'. $this->_username .'" --password="'. $this->_password .'" --tool="quiqqer:create-project"' );
+        // system( 'php quiqqer.php --username="'. $this->_username .'" --password="'. $this->_password .'" --tool="quiqqer:create-project"' );
     }
 
     /**

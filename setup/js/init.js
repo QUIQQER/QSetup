@@ -1,24 +1,27 @@
 
 "use strict";
 
-var QUI;
-
 var PATH = window.location
                  .pathname
                  .replace( 'quiqqer.php', '' );
 
 // require config
 require.config({
-    baseUrl : PATH +'js/libs/',
+    baseUrl : PATH +'js',
     paths   : {
-        "lib"      : PATH +'js/lib/',
-        "classes"  : PATH +'js/classes/',
-        "mootools" : PATH +'js/libs/mootools/'
+        "qui"    : PATH +'js/qui/src',
+        "extend" : PATH +'js/qui/extend'
     },
 
     waitSeconds : 0,
     locale      : "de-de",
-    catchError  : true
+    catchError  : true,
+
+    map : {
+        '*': {
+            'css': PATH +'js/qui/src/lib/css.js'
+        }
+    }
 });
 
 /**
@@ -28,28 +31,48 @@ require.config({
 document.addEvent('domready', function()
 {
     require([
-
-        'classes/QUIQQER'
-
-    ], function(QUIQQER)
+        'qui/QUI',
+        'qui/controls/buttons/Button',
+        'Setup'
+    ], function(QUI, QUIButton, Setup)
     {
-        QUI = new QUIQQER();
+        var Installer = new Setup();
 
-        require([
+        // database
+        new QUIButton({
+            text   : 'Check database settings',
+            events :
+            {
+                onClick : function() {
+                    Installer.checkDatabase();
+                }
+            },
+            styles : {
+                margin : 0,
+                width  : '50%'
+            }
+        }).inject( document.getElement( '.database-btn' ) );
 
-             'classes/installer/DataBase',
-             'classes/installer/Paths',
+        // paths
+        document.id( 'host' ).value = window.location.host;
 
-             'classes/utils/Utils',
-             'lib/Ajax'
-
-        ], function(DataBase, Paths, Utils)
+        // start setup
+        require(['css!extend/buttons.css'], function()
         {
-            QUI.Utils = new Utils();
-            QUI.Utils.$ajax = window.location.pathname;
-
-            new DataBase().load();
-            new Paths().load();
+            new QUIButton({
+                text    : 'Start setup',
+                'class' : 'btn-green',
+                styles : {
+                    width: '100%'
+                },
+                events  :
+                {
+                    onClick : function() {
+                        Installer.execute();
+                    }
+                }
+            }).inject( document.getElement( 'form' ) );
         });
+
     });
 });

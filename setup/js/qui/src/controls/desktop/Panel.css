@@ -1,0 +1,281 @@
+
+.qui-panel {
+    background: #FFFFFF;
+    /* border: 1px solid #e6e9ed; */
+    border-radius: 3px;
+    clear: both;
+    float: left;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.qui-panel-header {
+    border-bottom: 2px solid #0069B4;
+    background: #2F8FC6;
+    color: #FFFFFF;
+    font-size: 12px;
+    height: 40px;
+    line-height: 40px;
+    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    position: relative;
+}
+
+.qui-panel-close {
+    background: #DEDEDE;
+    border-bottom: 2px solid #8F9399;
+    color: #8F9399;
+}
+
+.qui-panel-header button {
+    background: transparent;
+    border-radius: 0;
+    border-color: #0069B4;
+    border-style: solid;
+    border-width: 0;
+    color: #FFFFFF;
+    height: 40px;
+    margin: 0;
+
+            box-shadow: none;
+       -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+}
+
+.qui-panel-header .qui-buttons-seperator {
+    border-left: 1px solid #FFFFFF;
+    float: left;
+    height: 28px;
+    margin: 6px 0;
+}
+
+.qui-panel-title {
+    color: #FFFFFF;
+    display: inline-block;
+    float: left;
+    font-size: 12px;
+    height: 40px;
+    line-height: 40px;
+    margin: 0;
+    overflow: hidden;
+}
+
+.qui-panel-close .qui-panel-title {
+    color: #8F9399;
+}
+
+.qui-panel-icon {
+    float: left;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    width: 30px;
+}
+
+.qui-panel-footer {
+    border-top: 1px solid #D3D3D3;
+    clear: both;
+    float: left;
+    height: 30px;
+    line-height: 30px;
+    padding-left: 10px;
+    width: 100%;
+}
+
+.qui-panel-expand,
+.qui-panel-collapse {
+    /*background: url(images/collapse-expand.gif) left top no-repeat;*/
+    cursor: pointer;
+    float: right;
+    height: 40px;
+    line-height: 40px;
+    padding-right: 5px;
+    text-align: center;
+    width: 40px;
+}
+
+.qui-panel-expand {
+    /*background: url(images/collapse-expand.gif) left -16px no-repeat;*/
+}
+
+.qui-panel-content {
+    background: #FFFFFF;
+    float: left;
+    padding: 20px;
+    position: relative;
+    width: 100%;
+}
+
+.qui-panel-highlight {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    width: 100%;
+    z-index: 100;
+
+    background-color: #6C98D9;
+
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+    filter: alpha(opacity=50);
+    -moz-opacity: 0.5;
+    -khtml-opacity: 0.5;
+    opacity: 0.5;
+}
+
+/* Panel topic buttons
+ ================================================================= */
+
+.qui-panel-buttons {
+    background: #e1e4e9;
+    height: 50px;
+    position: relative;
+    width: 100%;
+}
+
+.qui-panel-buttons .qui-toolbar {
+    border-bottom: 1px solid #DEDEDE;
+    height: 100%;
+    width: 100%;
+}
+
+.qui-panel-buttons button {
+    color: #8f9399;
+    background: transparent;
+    border-radius: 0;
+    border-width: 0 1px 0 0;
+    border-color: #e1e4e9;
+    border-style: solid;
+    font-size: 14px;
+    font-weight: bold;
+    height: 50px;
+    line-height: 50px;
+    margin: 0;
+    padding: 0 10px;
+    box-shadow: none;
+}
+
+.qui-panel-buttons button.qui-button-active {
+    background: #C3C3C3 !important;
+    color: #222;
+}
+
+.qui-panel-buttons button:hover {
+    background: #d1d4da;
+}
+
+.qui-panel-buttons .qui-button-text-image {
+    line-height: 50px;
+}
+
+.qui-panel-buttons .qui-button-text {
+    white-space: nowrap;
+}
+
+.qui-panel-buttons .qui-select {
+    margin: 10px;
+}
+
+/*
+.qui-panel-buttons:before {
+    content: "";
+    width: 100%;
+    height: 3px;
+    display: block;
+    position: relative;
+    top: -2px;
+
+    background-color: transparent;
+    background-image: -moz-linear-gradient(center top , rgba(0, 0, 0, 0.2), transparent);
+    background-image: -webkit-gradient(linear, center top, left bottom, from(rgba(0, 0, 0, 0.2)), to(transparent));
+    background-image: -webkit-linear-gradient(top, rgba(0, 0, 0, 0.2), transparent);
+    background-image: -o-linear-gradient(top, rgba(0, 0, 0, 0.2), transparent);
+    background-image: -ms-linear-gradient(top, rgba(0, 0, 0, 0.2), transparent);
+    background-image: linear-gradient(top, rgba(0, 0, 0, 0.2), transparent);
+}
+
+.qui-panel-buttons:after {
+    content: "";
+    width: 100%;
+    height: 3px;
+    display: block;
+    position: relative;
+    top: 43px;
+
+    background-color: transparent;
+    background-image: -moz-linear-gradient(center bottom , rgba(0, 0, 0, 0.2), transparent);
+    background-image: -webkit-gradient(linear, center bottom, left bottom, from(rgba(0, 0, 0, 0.2)), to(transparent));
+    background-image: -webkit-linear-gradient(bottom, rgba(0, 0, 0, 0.2), transparent);
+    background-image: -o-linear-gradient(bottom, rgba(0, 0, 0, 0.2), transparent);
+    background-image: -ms-linear-gradient(bottom, rgba(0, 0, 0, 0.2), transparent);
+    background-image: linear-gradient(bottom, rgba(0, 0, 0, 0.2), transparent);
+}
+*/
+.qui-panel-buttons .qui-buttons-seperator {
+    border-left: 2px solid #cccfd5;
+    float: left;
+    margin: 5px 4px 2px 7px;
+    height: 40px;
+}
+
+/* Panel breadcrumb
+ ================================================================= */
+
+.qui-panel-breadcrumb {
+    height: 40px;
+    width: 100%;
+    background: #fff;
+    padding-left: 20px;
+    border-bottom: 1px solid #dedede;
+}
+
+
+/* Panel left buttons - categories
+ ================================================================= */
+
+.qui-panel-categories {
+    float: left;
+    width: 190px;
+    height: 100%;
+    border-right: 1px solid #dedede;
+    overflow: hidden;
+    padding-top: 20px;
+}
+
+.qui-panel-categories .qui-button {
+    border-width: 0 0 1px 0;
+    border-style: solid;
+    border-color: #dedede;
+    border-radius: 0px;
+    color: #8F9399;
+    background: transparent;
+    padding: 10px 5px;
+    margin: 0 !important;
+    clear: both;
+    width: 190px;
+}
+
+.qui-panel-categories .qui-button-active {
+    background: #C3C3C3 !important;
+    color: #222;
+    border-width: 0 0 1px 0px !important;
+    border-style: solid !important;
+    border-color: #909090 !important;
+    border-radius: 0px !important;
+}
+
+.qui-panel-categories .qui-button-over {
+    background: #2F8FC6 !important;
+    color: #fff;
+    border-width: 0 0 1px 0 !important;
+    border-style: solid !important;
+    border-color: #2F8FC6 !important;
+    border-radius: 0px !important;
+    box-shadow: none !important;
+}
+
+.qui-panel-categories .qui-button .image-container {
+    font-size: 20px;
+}

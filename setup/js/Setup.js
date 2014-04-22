@@ -43,6 +43,8 @@ define('Setup', [
                         QUI.getMessageHandler(function(MH) {
                             MH.addError( result.message );
                         });
+
+                        return;
                     }
 
                     if ( typeOf( callback ) === 'function' ) {
@@ -80,6 +82,8 @@ define('Setup', [
                         QUI.getMessageHandler(function(MH) {
                             MH.addError( result.message );
                         });
+
+                        return;
                     }
 
                     QUI.getMessageHandler(function(MH) {
@@ -143,10 +147,6 @@ define('Setup', [
 
             this.check(function(result)
             {
-                if ( result.code !== 200 ) {
-                    return;
-                }
-
                 self.createSetup(function()
                 {
                     document.getElements( '.step' ).destroy();

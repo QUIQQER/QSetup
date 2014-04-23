@@ -119,7 +119,7 @@ class DataBase
              empty( $db_params['db_user'] ) ||
              empty( $db_params['db_password'] ) )
         {
-            throw new Exception(
+            throw new \Exception(
                 'please enter correct database data.'
             );
         }

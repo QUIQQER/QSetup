@@ -89,6 +89,18 @@ class DataBase
             $Installer->writeLn( $Exception->getMessage() );
 
             return self::database( $db_params, $Installer ) ;
+
+        } catch ( \Exception $Exception )
+        {
+            //$this->_params['db_driver']   = '';
+            $db_params['db_host']     = '';
+            $db_params['db_database'] = '';
+            $db_params['db_user']     = '';
+            $db_params['db_password'] = '';
+
+            $Installer->writeLn( $Exception->getMessage() );
+
+            return self::database( $db_params, $Installer ) ;
         }
     }
 
@@ -101,6 +113,17 @@ class DataBase
      */
     static function check($db_params)
     {
+        if ( empty( $db_params['db_driver'] ) ||
+             empty( $db_params['db_database'] ) ||
+             empty( $db_params['db_host'] ) ||
+             empty( $db_params['db_user'] ) ||
+             empty( $db_params['db_password'] ) )
+        {
+            throw new Exception(
+                'please enter correct database data.'
+            );
+        }
+
         $dsn = $db_params['db_driver'] .
                 ':dbname='. $db_params['db_database'] .
                 ';host='. $db_params['db_host'];

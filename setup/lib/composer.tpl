@@ -32,7 +32,8 @@
         "robloach/component-installer" : "*",
         "quiqqer/utils" : "dev-master",
         "tedivm/stash" : "0.11.*",
-        "phpmailer/phpmailer" : "dev-master"
+        "phpmailer/phpmailer" : "dev-master",
+        "symfony/http-foundation" : "*"
     },
 
     "minimum-stability": "dev",

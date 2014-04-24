@@ -207,6 +207,7 @@ class Installer
         $user_table  = $this->_params['db_prefix'] .'users';
         $group_table = $this->_params['db_prefix'] .'groups';
         $perm2group  = $this->_params['db_prefix'] .'permissions2groups';
+        $sessions    = $this->_params['db_prefix'] .'sessions';
 
         // username
         if ( isset( $this->_params['username'] ) &&
@@ -380,6 +381,16 @@ class Installer
             ':group_id'    => $this->_params['root'],
             ':permissions' => json_encode( $permissions )
         ));
+
+        // create session table
+        $this->_PDO->query(
+            "CREATE TABLE IF NOT EXISTS `{$sessions}` (
+              `session_id` varchar(255) NOT NULL,
+              `session_value` text NOT NULL,
+              `session_time` int(11) NOT NULL,
+              PRIMARY KEY (`session_id`)
+            )"
+        );
     }
 
     /**

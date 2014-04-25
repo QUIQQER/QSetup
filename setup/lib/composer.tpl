@@ -22,7 +22,7 @@
     },
 
     "repositories": [{
-        packagist": false
+        "packagist": false
     }, {
         "type": "composer",
         "url": "http://update.quiqqer.com"

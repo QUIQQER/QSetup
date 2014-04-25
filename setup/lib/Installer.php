@@ -350,7 +350,7 @@ class Installer
             CREATE TABLE IF NOT EXISTS `'. $perm2group .'` (
               `group_id` int(11) NOT NULL,
               `permissions` text
-            );
+            ) CHARACTER SET utf8;
         ';
 
         $this->_PDO->query( $create_group_perm_table );
@@ -389,7 +389,7 @@ class Installer
               `session_value` text NOT NULL,
               `session_time` int(11) NOT NULL,
               PRIMARY KEY (`session_id`)
-            )"
+            ) CHARACTER SET utf8;"
         );
     }
 

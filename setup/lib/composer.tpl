@@ -22,8 +22,13 @@
     },
 
     "repositories": [{
+        packagist": false
+    }, {
         "type": "composer",
         "url": "http://update.quiqqer.com"
+    }, {
+        "type": "composer",
+        "url": "http://composer.quiqqer.com"
     }],
 
     "require": {

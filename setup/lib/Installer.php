@@ -562,15 +562,15 @@ class Installer
         // needle inis
         mkdir( $etc_dir .'wysiwyg/' );
 
-        file_put_contents( $etc_dir .'conf.ini', '' );
-        file_put_contents( $etc_dir .'plugins.ini', '' );
-        file_put_contents( $etc_dir .'projects.ini', '' );
-        file_put_contents( $etc_dir .'source.list.ini', '' );
-        file_put_contents( $etc_dir .'wysiwyg/editors.ini', '' );
+        file_put_contents( $etc_dir .'conf.ini.php', '' );
+        file_put_contents( $etc_dir .'plugins.ini.php', '' );
+        file_put_contents( $etc_dir .'projects.ini.php', '' );
+        file_put_contents( $etc_dir .'source.list.ini.php', '' );
+        file_put_contents( $etc_dir .'wysiwyg/editors.ini.php', '' );
 
-        $this->_writeIni( $etc_dir .'conf.ini', $config );
+        $this->_writeIni( $etc_dir .'conf.ini.php', $config );
 
-        $this->_writeIni( $etc_dir .'source.list.ini', array(
+        $this->_writeIni( $etc_dir .'source.list.ini.php', array(
             'packagist' => array(
                 'active' => 1
             ),

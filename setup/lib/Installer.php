@@ -362,7 +362,6 @@ class Installer
             "quiqqer.admin.groups.edit"  => true,
             "quiqqer.admin.users.view"   => true,
             "quiqqer.admin.groups.view"  => true,
-            "quiqqer.admin.projects.create" => true,
             "quiqqer.admin.users.edit"      => true,
             "quiqqer.admin.users.view"      => true,
             "quiqqer.system.cache"       => true,
@@ -370,7 +369,7 @@ class Installer
             "quiqqer.system.update"      => true,
             "quiqqer.su"    => true,
             "quiqqer.admin" => true,
-            "quiqqer.admin.projects.create" => true
+            "quiqqer.projects.create" => true
         );
 
         // create user

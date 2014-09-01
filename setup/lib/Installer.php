@@ -593,7 +593,10 @@ class Installer
         ));
 
         // standard toolbar
-        copy( 'standardToolbar.xml' , $etc_dir .'wysiwyg/toolbars/standard.xml' );
+        copy(
+            dirname( __FILE__ ) .'/standardToolbar.xml',
+            $etc_dir .'wysiwyg/toolbars/standard.xml'
+        );
 
 
 

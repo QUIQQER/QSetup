@@ -289,7 +289,7 @@ class Installer
 
         // create root group
         $Statement = $this->_PDO->prepare(
-            'INSERT INTO '. $group_table .' (`id`, `name`, `admin`, `active`. `toolbar`)
+            'INSERT INTO '. $group_table .' (`id`, `name`, `admin`, `active`, `toolbar`)
                 VALUES (:id, :gname, :admin, :active, :toolbar)'
         );
 

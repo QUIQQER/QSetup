@@ -92,6 +92,39 @@ class DataBase
 
         } catch ( \Exception $Exception )
         {
+            // not exist, should created?
+            if ( $Exception->getCode() == 404 )
+            {
+                $Installer->writeLn( 'The Database not exists. Should the Database to be created? [YES,no]' );
+                $res = trim( fgets( STDIN ) );
+
+                if ( empty( $res ) || $res == 'YES' )
+                {
+                    try
+                    {
+                        self::createDatabase( $db_params );
+
+                        return array(
+                            'PDO'    => self::check( $db_params ),
+                            'params' => $db_params
+                        );
+
+                    } catch ( \PDOException $Exception )
+                    {
+                        //$this->_params['db_driver']   = '';
+                        $db_params['db_host']     = '';
+                        $db_params['db_database'] = '';
+                        $db_params['db_user']     = '';
+                        $db_params['db_password'] = '';
+
+                        $Installer->writeLn( $Exception->getMessage() );
+                    }
+
+                    return self::database( $db_params, $Installer ) ;
+                }
+            }
+
+
             //$this->_params['db_driver']   = '';
             $db_params['db_host']     = '';
             $db_params['db_database'] = '';
@@ -124,9 +157,33 @@ class DataBase
             );
         }
 
+        // check if the database exists
+        // if not, ask if create
+        $dsn = $db_params['db_driver'] .
+                ':dbname='. $db_params['db_database'] .
+                ';host='. $db_params['db_host'] .';dbname=INFORMATION_SCHEMA;';
+
+        $PDO = new \PDO(
+            $dsn,
+            $db_params['db_user'],
+            $db_params['db_password']
+        );
+
+        // if not, throw excetion
+        if ( !$PDO )
+        {
+            throw new \Exception(
+                'Database not exist', 404
+            );
+        }
+
+
+
+        // db connection
         $dsn = $db_params['db_driver'] .
                 ':dbname='. $db_params['db_database'] .
                 ';host='. $db_params['db_host'];
+
 
         $PDO = new \PDO(
             $dsn,
@@ -140,5 +197,34 @@ class DataBase
         $PDO->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
 
         return $PDO;
+    }
+
+    /**
+     * create the database
+     *
+     * @throws PDOException
+     * @param Array $db_params
+     * @return \PDO
+     */
+    static function createDatabase($db_params)
+    {
+        // create the database
+        $PDO = new \PDO(
+            $db_params['db_driver'] .":host=". $db_params['db_host'],
+            $db_params['db_user'],
+            $db_params['db_password'],
+            array(
+                \PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"
+            )
+        );
+
+        $PDO->exec(
+            "CREATE DATABASE `{$db_params['db_database']}`;
+            CREATE USER '{$db_params['db_user']}'@'localhost' IDENTIFIED BY '{$db_params['db_password']}';
+            GRANT ALL ON `{$db_params['db_database']}`.* TO '{$db_params['db_user']}'@'localhost';
+            FLUSH PRIVILEGES;"
+        );
+
+
     }
 }

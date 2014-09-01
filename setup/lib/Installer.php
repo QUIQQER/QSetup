@@ -279,6 +279,7 @@ class Installer
               `admin` tinyint(2) NOT NULL,
               `parent` int(11) NOT NULL,
               `active` tinyint(1) NOT NULL,
+              `toolbar` varchar(128),
               PRIMARY KEY (`id`),
               KEY `parent` (`parent`)
             ) CHARACTER SET utf8;
@@ -288,15 +289,16 @@ class Installer
 
         // create root group
         $Statement = $this->_PDO->prepare(
-            'INSERT INTO '. $group_table .' (`id`, `name`, `admin`, `active`)
-                VALUES (:id, :gname, :admin, :active)'
+            'INSERT INTO '. $group_table .' (`id`, `name`, `admin`, `active`. `toolbar`)
+                VALUES (:id, :gname, :admin, :active, :toolbar)'
         );
 
         $Statement->execute(array(
-            ':id'     => $this->_params['root'],
-            ':gname'  => 'root',
-            ':admin'  => 1,
-            ':active' => 1
+            ':id'      => $this->_params['root'],
+            ':gname'   => 'root',
+            ':admin'   => 1,
+            ':active'  => 1,
+            ':toolbar' => 'standard.xml'
         ));
 
         //
@@ -415,7 +417,7 @@ class Installer
         $cms_dir     = getcwd() .'/';
 
         $this->writeLn( '' );
-        $this->writeLn( 'If you not know what you do, please use the default settings.' );
+        $this->writeLn( 'If you dont\'t know what you do, please use the default settings.' );
 
         $this->writeLn( 'Do you want to change the following installation path of quiqqer? ' );
         $this->writeLn( $cms_dir );
@@ -561,12 +563,14 @@ class Installer
 
         // needle inis
         mkdir( $etc_dir .'wysiwyg/' );
+        mkdir( $etc_dir .'wysiwyg/toolbars/' );
 
         file_put_contents( $etc_dir .'conf.ini.php', '' );
         file_put_contents( $etc_dir .'plugins.ini.php', '' );
         file_put_contents( $etc_dir .'projects.ini.php', '' );
         file_put_contents( $etc_dir .'source.list.ini.php', '' );
         file_put_contents( $etc_dir .'wysiwyg/editors.ini.php', '' );
+        file_put_contents( $etc_dir .'wysiwyg/conf.ini.php', '' );
 
         $this->_writeIni( $etc_dir .'conf.ini.php', $config );
 
@@ -580,6 +584,19 @@ class Installer
                 'type'   => "composer"
             )
         ));
+
+        // wyiswyg editor
+        $this->_writeIni( $etc_dir .'wysiwyg/conf.ini.php', array(
+            'settings' => array(
+                'standard' => 'ckeditor4'
+            )
+        ));
+
+        // standard toolbar
+        copy( 'standardToolbar.xml' , $etc_dir .'wysiwyg/toolbars/standard.xml' );
+
+
+
 
         //
         // create composer file
@@ -613,7 +630,7 @@ class Installer
         'RewriteEngine On' ."\n".
         'RewriteBase '. $url_dir ."\n".
         'RewriteCond  %{REQUEST_FILENAME} !^.*bin/' ."\n".
-        'RewriteRule ^.*lib/|^.*etc/|^.*var/|^.*opt/|^.*admin/index.php|^.*media/sites/ / [L]' ."\n".
+        'RewriteRule ^.*lib/|^.*etc/|^.*var/|^.*opt/|^.*media/sites/ / [L]' ."\n".
         'RewriteRule  ^/(.*)     /$' ."\n".
         'RewriteCond %{REQUEST_FILENAME} !-f' ."\n".
         'RewriteCond %{REQUEST_FILENAME} !-d' ."\n".

@@ -764,17 +764,12 @@ class Installer
           ¶   ¶¶¶¶¶¶¶¶¶¶¶¶                   ¶¶
           ¶¶           ¶  ¶¶                ¶¶
           ¶¶¶¶¶¶¶¶¶¶¶¶    ¶¶            ¶¶
-                          ¶¶¶¶¶¶¶¶¶¶¶
+                            ¶¶¶¶¶¶¶¶¶¶¶
 
         " );
 
+        $this->write( "\033[0m" );
         $this->writeLn( '' );
-
-        // color clear
-        array_map(
-            create_function( '$a', 'print chr($a);' ),
-            array( 27, 91, 72, 27, 91, 50, 74 )
-        );
 
         // create the first project
         // system( 'php quiqqer.php --username="'. $this->_username .'" --password="'. $this->_password .'" --tool="quiqqer:create-project"' );

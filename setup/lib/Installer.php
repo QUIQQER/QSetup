@@ -691,10 +691,10 @@ class Installer
         //
 
         chdir( $cms_dir );
-        system( 'php '. $cms_dir .'quiqqer.php --username="'. $this->_username .'" --password="'. $this->_password .'" --tool="quiqqer:setup"' );
+        system( 'php '. $cms_dir .'quiqqer.php --username="'. $this->_username .'" --password="'. $this->_password .'" --tool="quiqqer:setup" --noLogo' );
 
         // translation
-        system( 'php '. $cms_dir .'quiqqer.php --username="'. $this->_username .'" --password="'. $this->_password .'" --tool="package:translator"' );
+        system( 'php '. $cms_dir .'quiqqer.php --username="'. $this->_username .'" --password="'. $this->_password .'" --tool="package:translator" --noLogo' );
 
 
         $this->writeLn( '' );
@@ -734,6 +734,13 @@ class Installer
 
         $this->writeLn( '' );
         $this->writeLn( '=========================================' );
+
+        // check file system permission
+        system( 'php quiqqer.php --username="'. $this->_username .'" --password="'. $this->_password .'" --tool="quiqqer:health" --noLogo' );
+
+        $this->writeLn( '' );
+        $this->writeLn( '=========================================' );
+
         $this->writeLn( 'Setup completed' );
 
         // create the first project

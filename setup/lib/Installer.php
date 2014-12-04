@@ -629,15 +629,20 @@ class Installer
         $packageDir = str_replace( $cms_dir, '', $opt_dir );
 
         $htaccess = '' .
-        'RewriteEngine On' ."\n".
-        'RewriteBase '. $url_dir ."\n".
-        'RewriteCond  %{REQUEST_FILENAME} !^.*bin/' ."\n".
-        'RewriteRule ^.*lib/|^.*etc/|^.*var/|^.*'. $packageDir .'|^.*media/sites/ / [L]' ."\n".
-        'RewriteRule  ^/(.*)     /$' ."\n".
-        'RewriteCond %{REQUEST_FILENAME} !-f' ."\n".
-        'RewriteCond %{REQUEST_FILENAME} !-d' ."\n".
-        "\n".
-        'RewriteRule ^(.*)$ index.php?_url=$1&%{QUERY_STRING}';
+        '# QUIQQER htaccess rules'.
+        '<IfModule mod_rewrite.c>'.
+            'SetEnv HTTP_MOD_REWRITE On'.
+            ''.
+            'RewriteEngine On' ."\n".
+            'RewriteBase '. $url_dir ."\n".
+            'RewriteCond  %{REQUEST_FILENAME} !^.*bin/' ."\n".
+            'RewriteRule ^.*lib/|^.*etc/|^.*var/|^.*'. $packageDir .'|^.*media/sites/ / [L]' ."\n".
+            'RewriteRule  ^/(.*)     /$' ."\n".
+            'RewriteCond %{REQUEST_FILENAME} !-f' ."\n".
+            'RewriteCond %{REQUEST_FILENAME} !-d' ."\n".
+            "\n".
+            'RewriteRule ^(.*)$ index.php?_url=$1&%{QUERY_STRING}'.
+        '</IfModule>';
 
         if ( file_exists( '.htaccess' ) )
         {
@@ -735,8 +740,12 @@ class Installer
         $this->writeLn( '' );
         $this->writeLn( '=========================================' );
 
-        // check file system permission
+        // start quiqqer health
         system( 'php quiqqer.php --username="'. $this->_username .'" --password="'. $this->_password .'" --tool="quiqqer:health" --noLogo' );
+
+        // start quiqqer tests
+        system( 'php quiqqer.php --username="'. $this->_username .'" --password="'. $this->_password .'" --tool="quiqqer:tests" --noLogo' );
+
 
         $this->writeLn( '' );
         $this->writeLn( '=========================================' );

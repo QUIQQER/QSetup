@@ -26,7 +26,7 @@ class Installer
 
     /**
      * the database object
-     * @var PDO $_PDO
+     * @var \PDO $_PDO
      */
     protected $_PDO = null;
 
@@ -156,20 +156,14 @@ class Installer
             case 'sqlite':
                 require_once 'installer/SQLite.php';
 
-                $result = \QUI\Installer\SQLite::database(
-                    $this->_params,
-                    $this
-                );
+                $result = installer\SQLite::database( $this->_params, $this );
 
             break;
 
             case 'mysql':
                 require_once 'installer/DataBase.php';
 
-                $result = \QUI\Installer\DataBase::database(
-                    $this->_params,
-                    $this
-                );
+                $result = installer\DataBase::database( $this->_params, $this );
 
             break;
         }
@@ -362,14 +356,12 @@ class Installer
             "quiqqer.admin.groups.edit"  => true,
             "quiqqer.admin.users.view"   => true,
             "quiqqer.admin.groups.view"  => true,
-            "quiqqer.admin.users.edit"      => true,
-            "quiqqer.admin.users.view"      => true,
             "quiqqer.system.cache"       => true,
             "quiqqer.system.permissions" => true,
             "quiqqer.system.update"      => true,
-            "quiqqer.su"    => true,
-            "quiqqer.admin" => true,
-            "quiqqer.projects.create" => true
+            "quiqqer.su"                 => true,
+            "quiqqer.admin"              => true,
+            "quiqqer.projects.create"    => true
         );
 
         // create user
@@ -501,11 +493,11 @@ class Installer
         $etc_dir = $cms_dir .'etc/';
         $tmp_dir = $var_dir .'temp/';
 
-        \QUI\utils\system\File::mkdir( $cms_dir );
-        \QUI\utils\system\File::mkdir( $etc_dir );
-        \QUI\utils\system\File::mkdir( $tmp_dir );
-        \QUI\utils\system\File::mkdir( $opt_dir );
-        \QUI\utils\system\File::mkdir( $usr_dir );
+        utils\system\File::mkdir( $cms_dir );
+        utils\system\File::mkdir( $etc_dir );
+        utils\system\File::mkdir( $tmp_dir );
+        utils\system\File::mkdir( $opt_dir );
+        utils\system\File::mkdir( $usr_dir );
 
         $url_dir = "/";
 
@@ -582,6 +574,11 @@ class Installer
             'http://update.quiqqer.com/' => array(
                 'active' => 1,
                 'type'   => "composer"
+            ),
+
+            'http://composer.quiqqer.com/' => array(
+                'active' => 1,
+                'type'   => "composer"
             )
         ));
 
@@ -629,11 +626,13 @@ class Installer
         //
         // create the htaccess
         //
+        $packageDir = str_replace( $cms_dir, '', $opt_dir );
+
         $htaccess = '' .
         'RewriteEngine On' ."\n".
         'RewriteBase '. $url_dir ."\n".
         'RewriteCond  %{REQUEST_FILENAME} !^.*bin/' ."\n".
-        'RewriteRule ^.*lib/|^.*etc/|^.*var/|^.*opt/|^.*media/sites/ / [L]' ."\n".
+        'RewriteRule ^.*lib/|^.*etc/|^.*var/|^.*'. $packageDir .'|^.*media/sites/ / [L]' ."\n".
         'RewriteRule  ^/(.*)     /$' ."\n".
         'RewriteCond %{REQUEST_FILENAME} !-f' ."\n".
         'RewriteCond %{REQUEST_FILENAME} !-d' ."\n".
@@ -792,6 +791,7 @@ class Installer
      *
      * @param String $filename - path to file
      * @param Array $options - ini options
+     * @throws \Exception
      */
     protected function _writeIni($filename, $options)
     {

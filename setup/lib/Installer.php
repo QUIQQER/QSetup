@@ -684,7 +684,7 @@ class Installer
 
         $exec = 'COMPOSER_HOME="'. $var_dir .'composer/" '.
                 'php '. $var_dir .'composer/composer.phar --working-dir="'. $cms_dir .'" '.
-                'require "quiqqer/quiqqer:dev-master" 2>&1';
+                'require "quiqqer/quiqqer:1.*" 2>&1';
 
         system( $exec, $retval );
 

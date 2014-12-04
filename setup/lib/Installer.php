@@ -679,6 +679,11 @@ class Installer
             exit;
         }
 
+        if ( strpos( $retval, 'RuntimeException' ) !== false ) {
+            exit;
+        }
+
+
         $this->writeLn( '' );
         $this->writeLn( 'Downloading QUIQQER' );
 
@@ -687,6 +692,12 @@ class Installer
                 'require "quiqqer/quiqqer:~1" 2>&1';
 
         system( $exec, $retval );
+
+
+        // some composer versions have a bug, and dont install packages with require
+        $exec = 'php '. $var_dir .'composer/composer.phar --working-dir="'. $cms_dir .'" update 2>&1';
+        system( $exec, $retval );
+
 
         $this->writeLn( 'Composer and quiqqer successful downloaded' );
 

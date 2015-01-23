@@ -48,6 +48,8 @@ class Installer
      */
     protected $_no_output = false;
 
+    public $Locale;
+
     /**
      * installer constructor
      *
@@ -57,6 +59,10 @@ class Installer
     {
         $this->_params = $params;
         $this->_step   = 0;
+
+        require 'Locale.php';
+
+        $this->Locale = new Locale();
     }
 
     /**
@@ -64,6 +70,9 @@ class Installer
      */
     public function start()
     {
+        // set the paths
+        $this->language();
+
         // database
         $this->database();
 
@@ -129,6 +138,38 @@ class Installer
      */
 
     /**
+     * Language step
+     */
+    public function language()
+    {
+        $this->writeLn( '=========================================' );
+        $this->writeLn( 'Step 1 Language of QUIQQER' );
+        $this->writeLn( '' );
+
+        $this->writeLn( "Which language do you want to use? (de=German,en=English) [en]: " );
+        $lang = trim( fgets( STDIN ) );
+
+        if ( empty( $lang ) ) {
+            $lang = 'en';
+        }
+
+        switch ( $lang )
+        {
+            case 'en':
+            case 'de':
+                include 'locale/'. $lang .'.php';
+
+                $this->Locale->setCurrent( $lang );
+            break;
+
+            default:
+                $this->writeLn( "Language not found ... " );
+                $this->language();
+            break;
+        }
+    }
+
+    /**
      * Database step
      */
     public function database()
@@ -136,13 +177,13 @@ class Installer
         $this->_step = 'database';
 
         $this->writeLn( '=========================================' );
-        $this->writeLn( 'Step 1 Database connection' );
+        $this->writeLn( $this->Locale->get( 'quiqqer/installer', 'step.2.title' ) );
         $this->writeLn( '' );
 
         // driver
         if ( !isset( $this->_params['db_driver'] ) || empty( $this->_params['db_driver'] ) )
         {
-            $this->write( 'Database Driver (mysql,sqlite) [mysql]: ' );
+            $this->write( $this->Locale->get( 'quiqqer/installer', 'step.2.db.question' ) );
             $this->_params['db_driver'] = trim( fgets( STDIN ) );
 
             if ( empty( $this->_params['db_driver'] ) ) {
@@ -174,7 +215,7 @@ class Installer
         // database prefix
         if ( !isset( $this->_params['db_prefix'] ) )
         {
-            $this->writeLn( "Want you a prefix for your database tables? if no, leave it empty:" );
+            $this->writeLn( $this->Locale->get( 'quiqqer/installer', 'step.2.db.prefix' ) );
             $this->_params['db_prefix'] = trim( fgets( STDIN ) );
         }
     }
@@ -187,7 +228,7 @@ class Installer
         $this->_step = 'paths';
 
         $this->writeLn( '=========================================' );
-        $this->writeLn( 'Step 2 set a root / administrator user for QUIQQER' );
+        $this->writeLn( $this->Locale->get( 'quiqqer/installer', 'step.3.title' ) );
 
         $this->writeLn( '' );
 
@@ -218,7 +259,7 @@ class Installer
 
         while ( empty( $this->_username ) )
         {
-            $this->writeLn( "Please enter a username:" );
+            $this->writeLn( $this->Locale->get( 'quiqqer/installer', 'step.3.enter.username' ) );
             $this->_username = trim( fgets( STDIN ) );
         }
 
@@ -226,7 +267,7 @@ class Installer
         {
             $this->writeLn( '' );
 
-            $this->writeLn( "Please enter a password:" );
+            $this->writeLn( $this->Locale->get( 'quiqqer/installer', 'step.3.enter.password' ) );
             $this->_password = trim( fgets( STDIN ) );
         }
 
@@ -241,7 +282,7 @@ class Installer
         if ( $user_table_exist )
         {
             $this->writeLn(
-                'The user table already exist. You cannot install QUIQQER.'
+                $this->Locale->get( 'quiqqer/installer', 'step.3.error.user.exist' )
             );
 
             exit;
@@ -257,7 +298,7 @@ class Installer
         if ( $group_table_exist )
         {
             $this->writeLn(
-                'The group table already exist. You cannot install QUIQQER.'
+                $this->Locale->get( 'quiqqer/installer', 'step.3.error.group.exist' )
             );
 
             exit;
@@ -383,7 +424,7 @@ class Installer
               `session_time` int(11) NOT NULL,
               `session_lifetime` int(11) NOT NULL,
               PRIMARY KEY (`session_id`)
-            ) CHARACTER SET utf8;"
+            ) CHARACTER SET utf8 ENGINE = MEMORY;"
         );
     }
 
@@ -393,7 +434,7 @@ class Installer
     public function paths()
     {
         $this->writeLn( '=========================================' );
-        $this->writeLn( 'Step 3 set the installation paths and the host of QUIQQER' );
+        $this->writeLn( $this->Locale->get( 'quiqqer/installer', 'step.4.title' ) );
 
         if ( isset( $this->_params['cms'] ) && !empty( $this->_params['cms'] ) &&
              isset( $this->_params['var'] ) && !empty( $this->_params['var'] ) &&
@@ -409,48 +450,48 @@ class Installer
         $cms_dir     = getcwd() .'/';
 
         $this->writeLn( '' );
-        $this->writeLn( 'If you dont\'t know what you do, please use the default settings.' );
+        $this->writeLn( $this->Locale->get( 'quiqqer/installer', 'step.4.attention' ) );
 
-        $this->writeLn( 'Do you want to change the following installation path of quiqqer? ' );
+        $this->writeLn( $this->Locale->get( 'quiqqer/installer', 'step.4.paths.change' ) );
         $this->writeLn( $cms_dir );
         $this->writeLn( '' );
-        $this->write( '[NO/yes]: ' );
+        $this->write( $this->Locale->get( 'quiqqer/installer', 'step.4.paths.change.a' ) );
 
         $_edit_paths = trim( fgets( STDIN ) );
         $edit_paths  = false;
 
-        if ( $_edit_paths == 'yes' ) {
+        if ( $_edit_paths == $this->Locale->get( 'quiqqer/installer', 'yes' ) ) {
             $edit_paths = true;
         }
 
         $needles = array(
             'cms' => array(
                 'default'  => $cms_dir,
-                'question' => "Please enter the cms-dir - The main directory contains the whole QUIQQER system."
+                'question' => $this->Locale->get( 'quiqqer/installer', 'step.4.paths.q1' )
             ),
             'lib' => array(
                 'default'  => $cms_dir ."lib",
-                'question' => "Please enter the lib-dir - The lib directory contains all the quiqqer libraries."
+                'question' => $this->Locale->get( 'quiqqer/installer', 'step.4.paths.q2' )
             ),
             'bin' => array(
                 'default'  => $cms_dir ."bin",
-                'question' => "Please enter the bin-dir - The bin directory contains all the files you need to be accessible from the Web-Server."
+                'question' => $this->Locale->get( 'quiqqer/installer', 'step.4.paths.q3' )
             ),
             'usr' => array(
                 'default'  => $cms_dir ."usr",
-                'question' => "Please enter the usr-dir - The usr directory contains all the project templates."
+                'question' => $this->Locale->get( 'quiqqer/installer', 'step.4.paths.q4' )
             ),
             'opt' => array(
                 'default'  => $cms_dir ."packages",
-                'question' => "Please enter the opt-dir - The opt directory contains all plugins and packages. Its the vendor vendor-dir for composer."
+                'question' => $this->Locale->get( 'quiqqer/installer', 'step.4.paths.q5' )
             ),
             'var' => array(
                 'default'  => $cms_dir ."var",
-                'question' => "Please enter the var-dir - The var directory contains all temp files, like the cache, temporary uploads, logs and many more."
+                'question' => $this->Locale->get( 'quiqqer/installer', 'step.4.paths.q6' )
             ),
             'host' => array(
                 'default'  => "",
-                'question' => "Please enter the host - Under which url / domain is quiqqer accessed? (eq: http://www.my-domain.de)"
+                'question' => $this->Locale->get( 'quiqqer/installer', 'step.4.paths.q7' )
             )
         );
 
@@ -481,7 +522,7 @@ class Installer
     {
         $this->writeLn( '' );
         $this->writeLn( '=========================================' );
-        $this->writeLn( 'Downloading and installing the system' );
+        $this->writeLn( $this->Locale->get( 'quiqqer/installer', 'step.5.title' ) );
 
         $cms_dir = $this->_cleanPath( $this->_params['cms'] );
         $var_dir = $this->_cleanPath( $this->_params['var'] );
@@ -646,7 +687,7 @@ class Installer
 
         if ( file_exists( '.htaccess' ) )
         {
-            $this->writeLn( 'A .htaccess file already exist. Please add the following to the htacess file:' );
+            $this->writeLn( $this->Locale->get( 'quiqqer/installer', 'step.5.htaccess.exists' ) );
             $this->writeLn( '' );
             $this->writeLn( $htaccess );
 
@@ -666,7 +707,7 @@ class Installer
         );
 
         $this->writeLn( '' );
-        $this->writeLn( 'Installing Composer and QUIQQER can may take a little bit ... I suggest you drink a coffee ... ;-)' );
+        $this->writeLn( $this->Locale->get( 'quiqqer/installer', 'step.5.install.message' ) );
         $this->writeLn( '' );
 
         // installation
@@ -699,12 +740,21 @@ class Installer
         system( $exec, $retval );
 
 
-        $this->writeLn( 'Composer and quiqqer successful downloaded' );
+        $this->writeLn( $this->Locale->get( 'quiqqer/installer', 'step.5.download.successful' ) );
 
         //
         // execute the main setup from quiqqer
         // so, the tables have the actualy state
         //
+
+        // translation
+        system(
+            'php '. $cms_dir .'quiqqer.php --username="'. $this->_username .'" '.
+                                           '--password="'. $this->_password .'" '.
+                                           '--tool="package:translator" '.
+                                           '--newLanguage="'. $this->Locale->getCurrent() .'" '.
+                                           '--noLogo'
+        );
 
         chdir( $cms_dir );
         system( 'php '. $cms_dir .'quiqqer.php --username="'. $this->_username .'" --password="'. $this->_password .'" --tool="quiqqer:setup" --noLogo' );
@@ -714,7 +764,7 @@ class Installer
 
 
         $this->writeLn( '' );
-        $this->writeLn( 'Starting cleanup' );
+        $this->writeLn( $this->Locale->get( 'quiqqer/installer', 'step.5.cleanup' ) );
 
         // delete the setup
         if ( file_exists( 'quiqqer.zip' ) ) {
@@ -765,7 +815,7 @@ class Installer
         $this->write( "\033[0;32m" );
 
         $this->writeLn( '' );
-        $this->writeLn( 'Setup completed' );
+        $this->writeLn( $this->Locale->get( 'quiqqer/installer', 'step.5.successful' ) );
 
         $this->writeLn("
                            ¶¶¶¶¶¶¶¶¶¶¶¶
@@ -815,8 +865,11 @@ class Installer
      */
     protected function _writeIni($filename, $options)
     {
-        if ( !is_writeable( $filename ) ) {
-            throw new \Exception( 'Config is not writable' );
+        if ( !is_writeable( $filename ) )
+        {
+            throw new \Exception(
+                $this->Locale->get( 'quiqqer/installer', 'config.not.writable' )
+            );
         }
 
         $tmp = '';

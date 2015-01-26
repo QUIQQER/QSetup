@@ -57,6 +57,48 @@ function addTest($test)
  * Tests
  */
 
+
+// apache mod rewrite
+addTest(function() {
+    $test = array(
+        'name' => 'PHP Memory Limit (min. 128 MB)',
+        'help' => ''
+    );
+
+    // get bytes limit
+    $limit = ini_get( 'memory_limit' );
+    $last  = '';
+
+    if ( is_string( $limit ) )
+    {
+        $limit = trim( $limit );
+        $last  = strtolower( mb_substr($limit, -1) );
+    }
+
+    switch ( $last )
+    {
+        case 'g':
+            $limit *= 1024;
+        case 'm':
+            $limit *= 1024;
+        case 'k':
+            $limit *= 1024;
+    }
+
+    // calc to mb
+    $limit = round( (int)$limit / 1048576 );
+
+    if ( $limit > 128 )
+    {
+        $test['result'] = STATUS_OK;
+    } else
+    {
+        $test['result'] = STATUS_ERROR;
+    }
+
+    return $test;
+});
+
 // apache mod rewrite
 addTest(function()
 {

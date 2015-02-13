@@ -670,10 +670,10 @@ class Installer
         $packageDir = str_replace( $cms_dir, '', $opt_dir );
 
         $htaccess = '' .
-        '# QUIQQER htaccess rules'.
-        '<IfModule mod_rewrite.c>'.
-            'SetEnv HTTP_MOD_REWRITE On'.
-            ''.
+        '# QUIQQER htaccess rules'."\n".
+        '<IfModule mod_rewrite.c>'."\n".
+            'SetEnv HTTP_MOD_REWRITE On'."\n".
+            "\n".
             'RewriteEngine On' ."\n".
             'RewriteBase '. $url_dir ."\n".
             'RewriteCond  %{REQUEST_FILENAME} !^.*bin/' ."\n".

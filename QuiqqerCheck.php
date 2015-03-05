@@ -20,7 +20,7 @@ if ( php_sapi_name() != 'cli' )
 } else
 {
     echo "Dieser Test ist nur für die Ausführung im Browser
-und NICHT für die Ausführung über die Kommandozeile gedacht."
+und NICHT für die Ausführung über die Kommandozeile gedacht.";
 }
 
 define( 'STATUS_ERROR', 0 );

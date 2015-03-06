@@ -33,12 +33,12 @@
 
     "require": {
         "php" : ">=5.3.2",
-        "composer/composer": "1.0.*@dev",
+        "composer/composer": "1.0.0-alpha9",
         "robloach/component-installer" : "0.0.12",
         "quiqqer/utils" : "~1",
         "tedivm/stash" : "0.11.6",
         "phpmailer/phpmailer" : "v5.2.9",
-        "symfony/http-foundation" : "2.6.*@dev"
+        "symfony/http-foundation" : "2.6.4"
     },
 
     "minimum-stability": "dev",

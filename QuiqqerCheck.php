@@ -14,8 +14,13 @@ header( "Pragma: no-cache" );
  */
 
 // cli / net
-if ( php_sapi_name() != 'cli' ) {
+if ( php_sapi_name() != 'cli' )
+{
     echo "<pre>";
+} else
+{
+    echo "Dieser Test ist nur für die Ausführung im Browser
+und NICHT für die Ausführung über die Kommandozeile gedacht.";
 }
 
 define( 'STATUS_ERROR', 0 );
@@ -88,7 +93,7 @@ addTest(function() {
     // calc to mb
     $limit = round( (int)$limit / 1048576 );
 
-    if ( $limit > 128 )
+    if ( $limit >= 128 )
     {
         $test['result'] = STATUS_OK;
     } else
@@ -279,7 +284,6 @@ echo "
 
 Tests:
 ===========================================
-
 ";
 
 $errors  = 0;

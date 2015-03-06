@@ -416,6 +416,16 @@ class Installer
             ':permissions' => json_encode( $permissions )
         ));
 
+//        // create session table
+//        $this->_PDO->query(
+//            "CREATE TABLE IF NOT EXISTS `{$sessions}` (
+//              `session_id` varchar(255) NOT NULL,
+//              `session_value` text NOT NULL,
+//              `session_time` int(11) NOT NULL,
+//              `session_lifetime` int(11) NOT NULL,
+//              PRIMARY KEY (`session_id`)
+//            ) CHARACTER SET utf8 ENGINE = MEMORY;"
+//        );
         // create session table
         $this->_PDO->query(
             "CREATE TABLE IF NOT EXISTS `{$sessions}` (
@@ -424,7 +434,7 @@ class Installer
               `session_time` int(11) NOT NULL,
               `session_lifetime` int(11) NOT NULL,
               PRIMARY KEY (`session_id`)
-            ) CHARACTER SET utf8 ENGINE = MEMORY;"
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;"
         );
     }
 

@@ -12,9 +12,12 @@ $this->Locale->set('en', 'quiqqer/installer', array(
     'no'  => 'no',
 
     // db
-    'step.2.title'       => 'Step 2 Database connection',
-    'step.2.db.question' => 'Database Driver (mysql,sqlite) [mysql]: ',
-    'step.2.db.prefix'   => 'Want you a prefix for your database tables? if no, leave it empty: ',
+    'step.2.title'         => 'Step 2 Database connection',
+    'step.2.db.prefix'     => 'Want you a prefix for your database tables? if no, leave it empty: ',
+    'step.2.db.driver'     => 'Database driver (mysql,sqlite) [mysql]: ',
+    'step.2.db.new'        => 'Name of new database [quiqqer]: ',
+    'step.2.db.old'        => 'Name of existing database: ',
+    'step.2.db.create.new' => 'Would you like to use an existing database? [NO/yes] :',
 
     // user
     'step.3.title'             => 'Step 3 set a root / administrator user for QUIQQER',

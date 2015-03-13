@@ -181,18 +181,82 @@ class Installer
         $this->writeLn( '' );
 
         // driver
-        if ( !isset( $this->_params['db_driver'] ) || empty( $this->_params['db_driver'] ) )
-        {
-            $this->write( $this->Locale->get( 'quiqqer/installer', 'step.2.db.question' ) );
-            $this->_params['db_driver'] = trim( fgets( STDIN ) );
+        $this->writeLn( $this->Locale->get( 'quiqqer/installer', 'step.2.db.driver' ) );
+        $this->_params[ 'db_driver' ] = trim( fgets( STDIN ) );
 
-            if ( empty( $this->_params['db_driver'] ) ) {
-                $this->_params['db_driver'] = 'mysql';
+        if ( empty( $this->_params[ 'db_driver' ] ) ) {
+            $this->_params[ 'db_driver' ] = 'mysql';
+        }
+
+        // create new or use existent
+        $this->writeLn( $this->Locale->get( 'quiqqer/installer', 'step.2.db.create.new' ) );
+        $createNewInput = trim( fgets( STDIN ) );
+        $this->_params[ 'db_new' ] = true;
+
+        if ( $createNewInput == $this->Locale->get( 'quiqqer/installer', 'yes' ) ) {
+            $this->_params[ 'db_new' ] = false;
+        }
+
+        $needles = array(
+            'db_host' => array(
+                'default'  => "localhost",
+                'question' => "Database host:"
+            ),
+            'db_user' => array(
+                'default'  => "",
+                'question' => "Database user:"
+            ),
+            'db_password' => array(
+                'default'  => "",
+                'question' => "Database password:"
+            )
+        );
+
+        foreach ( $needles as $needle => $param )
+        {
+            if ( isset( $db_params[ $needle ] ) &&
+                !empty( $db_params[ $needle ] ) )
+            {
+                continue;
+            }
+
+            $this->write( $param[ 'question' ] );
+
+            if ( !empty( $param[ 'default' ] )) {
+                $this->write( ' ['. $param['default'] .']' );
+            }
+
+            $this->write( ' ' );
+
+            $db_params[ $needle ] = trim( fgets( STDIN ) );
+
+
+            if ( !empty( $db_params[ $needle ] ) ) {
+                continue;
+            }
+
+            if ( !empty( $param[ 'default' ] ) ) {
+                $db_params[ $needle ] = $param[ 'default' ];
             }
         }
 
-        // swtch to the right db installer
-        switch ( $this->_params['db_driver'] )
+        // db name
+        if ( $this->_params[ 'db_new' ] )
+        {
+            $this->writeLn( $this->Locale->get( 'quiqqer/installer', 'step.2.db.new' ) );
+        } else
+        {
+            $this->writeLn( $this->Locale->get( 'quiqqer/installer', 'step.2.db.old' ) );
+        }
+
+        $this->_params[ 'db_database' ] = trim( fgets( STDIN ) );
+
+        if ( empty( $this->_params[ 'db_database' ] ) ) {
+            $this->_params[ 'db_database' ] = 'quiqqer';
+        }
+
+        // switch to the right db installer
+        switch ( $this->_params[ 'db_driver' ] )
         {
             case 'sqlite':
                 require_once 'installer/SQLite.php';

@@ -12,9 +12,12 @@ $this->Locale->set('de', 'quiqqer/installer', array(
     'no'  => 'nein',
 
     // db
-    'step.2.title'       => 'Schritt 2 : Datenbank Verbindung',
-    'step.2.db.question' => 'Datenbanktreiber (mysql,sqlite) [mysql]: ',
-    'step.2.db.prefix'   => 'Möchten Sie einen Prefix für Ihre Datenbanktabellen? Keine Eingabe heißt kein Prefix: ',
+    'step.2.title'         => 'Schritt 2 : Datenbank-Verbindung',
+    'step.2.db.driver'     => 'Datenbanktreiber (mysql,sqlite) [mysql]: ',
+    'step.2.db.new'        => 'Name der zu erstellenden Datenbank [quiqqer]: ',
+    'step.2.db.old'        => 'Name der bestehenden Datenbank: ',
+    'step.2.db.create.new' => 'Möchten Sie QUIQQER in eine bereits bestehende Datenbank installieren? [NEIN/ja] :',
+    'step.2.db.prefix'     => 'Möchten Sie einen Prefix für Ihre Datenbanktabellen? Keine Eingabe heißt kein Prefix: ',
 
     // user
     'step.3.title'             => 'Schritt 3 : Einen Administrator für QUIQQER festlegen',

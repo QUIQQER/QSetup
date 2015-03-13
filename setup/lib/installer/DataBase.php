@@ -23,56 +23,13 @@ class DataBase
      */
     static function database($db_params, \QUI\Installer $Installer)
     {
-        $needles = array(
-            'db_host' => array(
-                'default'  => "localhost",
-                'question' => "Database Host:"
-            ),
-            'db_database' => array(
-                'default'  => "",
-                'question' => "Database:"
-            ),
-            'db_user' => array(
-                'default'  => "",
-                'question' => "Database user:"
-            ),
-            'db_password' => array(
-                'default'  => "",
-                'question' => "Database password:"
-            )
-        );
-
-        foreach ( $needles as $needle => $param )
-        {
-            if ( isset( $db_params[ $needle ] ) &&
-                 !empty( $db_params[ $needle ] ) )
-            {
-                continue;
-            }
-
-            $Installer->write( $param['question'] );
-
-            if ( !empty( $param['default'] )) {
-                 $Installer->write( ' ['. $param['default'] .']' );
-            }
-
-            $Installer->write( ' ' );
-
-            $db_params[ $needle ] = trim( fgets( STDIN ) );
-
-
-            if ( !empty( $db_params[ $needle ] ) ) {
-                continue;
-            }
-
-            if ( !empty( $param['default'] )) {
-                 $db_params[ $needle ] = $param['default'];
-            }
-        }
-
         // check database connection
         try
         {
+            if ( $db_params[ 'db_new' ] ) {
+                self::createDatabase( $db_params );
+            }
+
             return array(
                 'PDO'    => self::check( $db_params ),
                 'params' => $db_params

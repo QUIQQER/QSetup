@@ -21,8 +21,6 @@ echo '
 ini_set( 'display_errors', true );
 
 require __DIR__ .'/Installer.php';
-require __DIR__ .'/utils/String.php';
-require __DIR__ .'/utils/system/File.php';
 
 $Installer = new \QUI\Installer();
 $Installer->start();

@@ -181,7 +181,49 @@ class DataBase
             GRANT ALL ON `{$db_params['db_database']}`.* TO '{$db_params['db_user']}'@'localhost';
             FLUSH PRIVILEGES;"
         );
+    }
 
+    static function importTables($dbparams, $dbfields)
+    {
+        $DB    = self::getDatabase( $dbparams );
+        $Table = $DB->Table();
 
+        // globale tabellen erweitern / anlegen
+        if ( isset( $dbfields['globals'] ) )
+        {
+            foreach ( $dbfields['globals'] as $table )
+            {
+                $tbl = $dbparams[ 'db_prefix' ] . $table['suffix'];
+
+                $Table->appendFields( $tbl, $table['fields'] );
+
+                if ( isset( $table['primary'] ) ) {
+                    $Table->setPrimaryKey( $tbl, $table['primary'] );
+                }
+
+                if ( isset( $table['index'] ) ) {
+                    $Table->setIndex( $tbl, $table['index'] );
+                }
+
+                if ( isset( $table[ 'auto_increment' ] ) ) {
+                    $Table->setAutoIncrement( $tbl, $table[ 'auto_increment' ] );
+                }
+
+                if ( isset( $table[ 'fulltext' ] ) ) {
+                    $Table->setFulltext( $tbl, $table[ 'fulltext' ] );
+                }
+            }
+        }
+    }
+
+    static function getDatabase($dbparams)
+    {
+        return new \QUI\Database\DB(array(
+            'host'     => $dbparams[ 'db_host' ],
+            'driver'   => 'mysql',
+            'user'     => $dbparams[ 'db_user' ],
+            'password' => $dbparams[ 'db_password' ],
+            'dbname'   => $dbparams[ 'db_database' ]
+        ));
     }
 }

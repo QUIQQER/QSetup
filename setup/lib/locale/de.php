@@ -11,6 +11,11 @@ $this->Locale->set('de', 'quiqqer/installer', array(
     'yes' => 'ja',
     'no'  => 'nein',
 
+    // version
+    'step.version.title'   => 'Versionswahl',
+    'step.version.list'    => 'Folgende Versionen stehen zur Auswahl: ',
+    'step.version.choice'  => 'Version',
+
     // db
     'step.2.title'         => 'Schritt 2 : Datenbank-Verbindung',
     'step.2.db.driver'     => 'Datenbanktreiber (mysql,sqlite) [mysql]: ',
@@ -20,11 +25,12 @@ $this->Locale->set('de', 'quiqqer/installer', array(
     'step.2.db.prefix'     => 'Möchten Sie einen Prefix für Ihre Datenbanktabellen? Keine Eingabe heißt kein Prefix: ',
 
     // user
-    'step.3.title'             => 'Schritt 3 : Einen Administrator für QUIQQER festlegen',
-    'step.3.error.user.exist'  => 'Die Benutzertabelle existiert bereits. QUIQQER kann nicht installiert werden.',
-    'step.3.error.group.exist' => 'Die Gruppentabelle existiert bereits. QUIQQER kann nicht installiert werden.',
-    'step.3.enter.username'    => 'Bitte geben Sie einen Benutzernamen ein:',
-    'step.3.enter.password'    => 'Bitte geben Sie ein Passwort ein:',
+    'step.3.title'                 => 'Schritt 3 : Einen Administrator für QUIQQER festlegen',
+    'step.3.error.user.exist'      => 'Die Benutzertabelle existiert bereits. QUIQQER kann nicht installiert werden.',
+    'step.3.error.group.exist'     => 'Die Gruppentabelle existiert bereits. QUIQQER kann nicht installiert werden.',
+    'step.3.enter.username'        => 'Bitte geben Sie einen Benutzernamen ein:',
+    'step.3.enter.password'        => 'Bitte geben Sie ein Passwort ein:',
+    'step.3.error.dbxml.not.exist' => 'Konnte database.xml für die gewählte Version nicht finden. QUIQQER kann nicht installiert werden.',
 
     // paths
     'step.4.title'          => 'Schritt 4 : Installationspfade fpr QUIQQER festlegen',

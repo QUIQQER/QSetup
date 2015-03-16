@@ -48,6 +48,12 @@ class Installer
      */
     protected $_no_output = false;
 
+    /**
+     * currentyl available QUIQQER versions
+     * @var array
+     */
+    protected $_versions = array();
+
     public $Locale;
 
     /**
@@ -70,8 +76,13 @@ class Installer
      */
     public function start()
     {
+        // set the version
+
         // set the paths
         $this->language();
+
+        // version
+        $this->version();
 
         // database
         $this->database();
@@ -166,6 +177,37 @@ class Installer
                 $this->writeLn( "Language not found ... " );
                 $this->language();
             break;
+        }
+    }
+
+    /**
+     * Version step
+     */
+    public function version()
+    {
+        $versions = Utils\System\File::readDir( dirname( dirname( __FILE__ ) ) . '/versions/' );
+
+        sort( $versions );
+
+        $this->_versions = $versions;
+
+        $this->writeLn( '=========================================' );
+        $this->writeLn( $this->Locale->get( 'quiqqer/installer', 'step.version.title' ) );
+        $this->writeLn( '' );
+        $this->writeLn( $this->Locale->get( 'quiqqer/installer', 'step.version.list' ) );
+        $this->writeLn( implode( ', ', $versions ) );
+        $this->writeLn( '' );
+        $this->writeLn(
+            $this->Locale->get( 'quiqqer/installer', 'step.version.choice' ) .
+            " [" . current( $versions ) . "] :"
+        );
+
+        $this->_params[ 'version' ] = trim( fgets( STDIN ) );
+
+        if ( empty( $this->_params[ 'version' ] ) ||
+             !in_array( $this->_params[ 'version' ], $versions ) )
+        {
+            $this->_params[ 'version' ] = current( $versions );
         }
     }
 
@@ -335,126 +377,54 @@ class Installer
             $this->_password = trim( fgets( STDIN ) );
         }
 
+        $DB     = installer\DataBase::getDatabase( $this->_params );
+        $Tables = $DB->Table();
 
-        // exist user table ?
-        $user_table_exist = count(
-            $this->_PDO->query(
-                'SHOW TABLES FROM `'. $this->_params['db_database'] .'` LIKE "'. $user_table .'"'
-            )->fetchAll()
-        );
+        $ver   = $this->_params[ 'version' ];
+        $dbXML = dirname( dirname( __FILE__ ) ) . '/versions/' . $ver . '/database.xml';
 
-        if ( $user_table_exist )
+        if ( !file_exists( $dbXML ) )
         {
             $this->writeLn(
-                $this->Locale->get( 'quiqqer/installer', 'step.3.error.user.exist' )
+                $this->Locale->get( 'quiqqer/installer', 'step.3.error.dbxml.not.exist' )
             );
 
             exit;
         }
 
-        // exist group table ?
-        $group_table_exist = count(
-            $this->_PDO->query(
-                'SHOW TABLES FROM `'. $this->_params['db_database'] .'` LIKE "'. $group_table .'"'
-            )->fetchAll()
+        // create alle tables
+        installer\DataBase::importTables(
+            $this->_params,
+            Utils\XML::getDataBaseFromXml( $dbXML )
         );
-
-        if ( $group_table_exist )
-        {
-            $this->writeLn(
-                $this->Locale->get( 'quiqqer/installer', 'step.3.error.group.exist' )
-            );
-
-            exit;
-        }
-
-        //
-        // create the group table
-        //
-        $create_group_table = '
-            CREATE TABLE IF NOT EXISTS `'. $group_table .'` (
-              `id` int(11) NOT NULL,
-              `name` varchar(50) NOT NULL,
-              `admin` tinyint(2) NOT NULL,
-              `parent` int(11) NOT NULL,
-              `active` tinyint(1) NOT NULL,
-              `toolbar` varchar(128),
-              PRIMARY KEY (`id`),
-              KEY `parent` (`parent`)
-            ) CHARACTER SET utf8;
-        ';
-
-        $this->_PDO->query( $create_group_table );
 
         // create root group
-        $Statement = $this->_PDO->prepare(
-            'INSERT INTO '. $group_table .' (`id`, `name`, `admin`, `active`, `toolbar`)
-                VALUES (:id, :gname, :admin, :active, :toolbar)'
+        $DB->insert(
+            $group_table,
+            array(
+                'id'      => $this->_params[ 'root' ],
+                'name'   => 'root',
+                'admin'   => 1,
+                'active'  => 1,
+                'toolbar' => 'standard.xml'
+            )
         );
-
-        $Statement->execute(array(
-            ':id'      => $this->_params['root'],
-            ':gname'   => 'root',
-            ':admin'   => 1,
-            ':active'  => 1,
-            ':toolbar' => 'standard.xml'
-        ));
-
-        //
-        // create the user table
-        //
-        $create_user_table = '
-            CREATE TABLE IF NOT EXISTS `'. $user_table .'` (
-              `id` int(11) NOT NULL AUTO_INCREMENT,
-              `username` varchar(50) NOT NULL DEFAULT \'\',
-              `password` varchar(50) NOT NULL DEFAULT \'\',
-              `usergroup` text NOT NULL,
-              `email` varchar(50) DEFAULT NULL,
-              `active` int(1) NOT NULL DEFAULT \'0\',
-              `regdate` int(11) NOT NULL DEFAULT \'0\',
-              `lastvisit` int(11) NOT NULL DEFAULT \'0\',
-              `su` tinyint(1) NOT NULL,
-              `expire` timestamp NULL DEFAULT \'0000-00-00 00:00:00\',
-              `lastedit` timestamp NOT NULL DEFAULT \'0000-00-00 00:00:00\',
-              `user_agent` text NOT NULL,
-              PRIMARY KEY (`id`),
-              KEY `username` (`username`),
-              KEY `password` (`password`)
-            ) CHARACTER SET utf8;
-        ';
-
-        $this->_PDO->query( $create_user_table );
 
         // create user
-        $Statement = $this->_PDO->prepare(
-            'INSERT INTO '. $user_table .' (`id`, `username`, `password`, `usergroup`, `su`, `active`)
-                VALUES (:id, :username, :password, :usergroup, :su, :active)'
-        );
-
-        // password salted
         $salt = substr( $this->_params['salt'], 0, $this->_params['saltlength'] );
         $pass = $salt . md5( $salt . $this->_password );
 
-        $Statement->execute(array(
-            ':username'  => $this->_username,
-            ':password'  => $pass,
-            ':id'        => $this->_params['rootuser'],
-            ':usergroup' => $this->_params['root'],
-            ':su'        => 1,
-            ':active'    => 1
-        ));
-
-        //
-        // set permissions to the root group
-        //
-        $create_group_perm_table = '
-            CREATE TABLE IF NOT EXISTS `'. $perm2group .'` (
-              `group_id` int(11) NOT NULL,
-              `permissions` text
-            ) CHARACTER SET utf8;
-        ';
-
-        $this->_PDO->query( $create_group_perm_table );
+        $DB->insert(
+            $user_table,
+            array(
+                'username'  => $this->_username,
+                'password'  => $pass,
+                'id'        => $this->_params['rootuser'],
+                'usergroup' => $this->_params['root'],
+                'su'        => 1,
+                'active'    => 1
+            )
+        );
 
         $permissions = array(
             "quiqqer.admin.users.edit"   => true,
@@ -469,36 +439,13 @@ class Installer
             "quiqqer.projects.create"    => true
         );
 
-        // create user
-        $Statement = $this->_PDO->prepare(
-            'INSERT INTO '. $perm2group .' (`group_id`, `permissions`)
-                VALUES (:group_id, :permissions)'
-        );
-
-        $Statement->execute(array(
-            ':group_id'    => $this->_params['root'],
-            ':permissions' => json_encode( $permissions )
-        ));
-
-//        // create session table
-//        $this->_PDO->query(
-//            "CREATE TABLE IF NOT EXISTS `{$sessions}` (
-//              `session_id` varchar(255) NOT NULL,
-//              `session_value` text NOT NULL,
-//              `session_time` int(11) NOT NULL,
-//              `session_lifetime` int(11) NOT NULL,
-//              PRIMARY KEY (`session_id`)
-//            ) CHARACTER SET utf8 ENGINE = MEMORY;"
-//        );
-        // create session table
-        $this->_PDO->query(
-            "CREATE TABLE IF NOT EXISTS `{$sessions}` (
-              `session_id` varchar(255) NOT NULL,
-              `session_value` text NOT NULL,
-              `session_time` int(11) NOT NULL,
-              `session_lifetime` int(11) NOT NULL,
-              PRIMARY KEY (`session_id`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;"
+        // create permissions
+        $DB->insert(
+            $perm2group,
+            array(
+                'group_id'    => $this->_params['root'],
+                'permissions' => json_encode( $permissions )
+            )
         );
     }
 
@@ -608,11 +555,11 @@ class Installer
         $etc_dir = $cms_dir .'etc/';
         $tmp_dir = $var_dir .'temp/';
 
-        utils\system\File::mkdir( $cms_dir );
-        utils\system\File::mkdir( $etc_dir );
-        utils\system\File::mkdir( $tmp_dir );
-        utils\system\File::mkdir( $opt_dir );
-        utils\system\File::mkdir( $usr_dir );
+        Utils\System\File::mkdir( $cms_dir );
+        Utils\System\File::mkdir( $etc_dir );
+        Utils\System\File::mkdir( $tmp_dir );
+        Utils\System\File::mkdir( $opt_dir );
+        Utils\System\File::mkdir( $usr_dir );
 
         $url_dir = "/";
 
@@ -802,9 +749,19 @@ class Installer
         $this->writeLn( '' );
         $this->writeLn( 'Downloading QUIQQER' );
 
+        $v = $this->_params[ 'version' ];
+
+        switch ( $v )
+        {
+            case 'dev':
+            case 'master':
+                $v = 'dev-' . $v;
+            break;
+        }
+
         $exec = 'COMPOSER_HOME="'. $var_dir .'composer/" '.
                 'php '. $var_dir .'composer/composer.phar --working-dir="'. $cms_dir .'" '.
-                'require "quiqqer/quiqqer:~1" 2>&1';
+                'require "quiqqer/quiqqer:' . $v . '" 2>&1';
 
         system( $exec, $retval );
 

@@ -377,9 +377,7 @@ class Installer
             $this->_password = trim( fgets( STDIN ) );
         }
 
-        $DB     = installer\DataBase::getDatabase( $this->_params );
-        $Tables = $DB->Table();
-
+        $DB    = installer\DataBase::getDatabase( $this->_params );
         $ver   = $this->_params[ 'version' ];
         $dbXML = dirname( dirname( __FILE__ ) ) . '/versions/' . $ver . '/database.xml';
 

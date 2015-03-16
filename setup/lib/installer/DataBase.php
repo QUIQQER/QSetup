@@ -202,7 +202,7 @@ class DataBase
                 }
 
                 if ( isset( $table['index'] ) ) {
-                    $Table->setIndex( $tbl, $table['index'] );
+                    $Table->setIndex( $tbl, explode( ',', $table['index'] ) );
                 }
 
                 if ( isset( $table[ 'auto_increment' ] ) ) {

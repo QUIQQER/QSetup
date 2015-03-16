@@ -38,7 +38,8 @@
         "quiqqer/utils" : "~1",
         "tedivm/stash" : "0.11.6",
         "phpmailer/phpmailer" : "v5.2.9",
-        "symfony/http-foundation" : "2.6.4"
+        "symfony/http-foundation" : "2.6.4",
+        "symfony/console":  "2.4.10"
     },
 
     "minimum-stability": "dev",

@@ -70,6 +70,10 @@ if ( file_exists( $file ) )
     {
         $versionsDir = __DIR__ . '/setup/versions/';
 
+        if ( !is_dir( $versionsDir ) ) {
+            mkdir( $versionsDir );
+        }
+
         if ( !is_dir( $versionsDir . $ver ) ) {
             mkdir( $versionsDir . $ver );
         }

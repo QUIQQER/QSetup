@@ -256,8 +256,8 @@ class Installer
 
         foreach ( $needles as $needle => $param )
         {
-            if ( isset( $db_params[ $needle ] ) &&
-                !empty( $db_params[ $needle ] ) )
+            if ( isset( $this->_params[ $needle ] ) &&
+                !empty( $this->_params[ $needle ] ) )
             {
                 continue;
             }
@@ -270,15 +270,15 @@ class Installer
 
             $this->write( ' ' );
 
-            $db_params[ $needle ] = trim( fgets( STDIN ) );
+            $this->_params[ $needle ] = trim( fgets( STDIN ) );
 
 
-            if ( !empty( $db_params[ $needle ] ) ) {
+            if ( !empty( $this->_params[ $needle ] ) ) {
                 continue;
             }
 
             if ( !empty( $param[ 'default' ] ) ) {
-                $db_params[ $needle ] = $param[ 'default' ];
+                $this->_params[ $needle ] = $param[ 'default' ];
             }
         }
 

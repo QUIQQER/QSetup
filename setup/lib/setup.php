@@ -87,8 +87,6 @@ The QUIQQER setup is being prepared ...
 ini_set( 'display_errors', true );
 
 require 'Installer.php';
-require 'utils/String.php';
-require 'utils/system/File.php';
 
 $setupDir = dirname(dirname( __FILE__ ));
 

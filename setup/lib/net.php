@@ -8,15 +8,15 @@
 
     <title>QUIQQER Setup</title>
 
-    <link rel="stylesheet" href="css/grid.css" />
-    <link rel="stylesheet" href="js/qui/extend/elements.css" />
-    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="../css/grid.css" />
+    <link rel="stylesheet" href="../js/qui/extend/elements.css" />
+    <link rel="stylesheet" href="../css/style.css" />
 
-    <script src="js/qui/src/lib/mootools-core.js"></script>
-    <script src="js/qui/src/lib/mootools-more.js"></script>
-    <script src="js/qui/src/lib/moofx.js"></script>
+    <script src="../js/qui/src/lib/mootools-core.js"></script>
+    <script src="../js/qui/src/lib/mootools-more.js"></script>
+    <script src="../js/qui/src/lib/moofx.js"></script>
 
-    <link rel="shortcut icon" href="favicon.ico" />
+    <link rel="shortcut icon" href="../favicon.ico" />
 
     <?php
         $dir = getcwd();
@@ -35,7 +35,7 @@
         <div class="grid-container container" role="main">
 
             <section class="logo grid-100 mobile-grid-100 grid-parent">
-                <img src="bin/quiqqer.png"
+                <img src="../bin/quiqqer.png"
                     alt="QUIQQER"
                     title="QUIQQER"
                     class="logo"
@@ -256,7 +256,7 @@
     </div>
 
     <!-- javascript -->
-    <script src="js/qui/src/lib/requirejs.js"></script>
-    <script src="js/init.js"></script>
+    <script src="../js/qui/src/lib/requirejs.js"></script>
+    <script src="../js/init.js"></script>
 </body>
 </html>

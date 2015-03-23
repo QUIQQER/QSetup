@@ -68,5 +68,9 @@ if ( php_sapi_name() == 'cli' )
 
 } else
 {
+    if ( isset( $_REQUEST[ 'setuplang' ] ) ) {
+        $lang = $_REQUEST[ 'setuplang' ];
+    }
+
     require 'lib/net.php';
 }

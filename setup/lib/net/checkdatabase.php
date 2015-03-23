@@ -6,27 +6,48 @@ ini_set( 'display_errors', true );
 require_once dirname( dirname( __FILE__ ) ) . '/classes/Locale.php';
 
 $Locale = new \QUI\Locale();
+$Locale->setCurrent( $_POST[ 'lang' ] );
 
 try
 {
-    if ( !isset( $_POST['db_driver'] ) || empty( $_POST['db_driver'] ) ) {
-        throw new \Exception( 'Please enter a database driver', 403 );
+    if ( !isset( $_POST['db_driver'] ) || empty( $_POST['db_driver'] ) )
+    {
+        throw new \Exception(
+            $Locale->get( 'quiqqer/websetup', 'missing.db.driver' ),
+            403
+        );
     }
 
-    if ( !isset( $_POST['db_host'] ) || empty( $_POST['db_host'] ) ) {
-        throw new \Exception( 'Please enter a database host', 403 );
+    if ( !isset( $_POST['db_host'] ) || empty( $_POST['db_host'] ) )
+    {
+        throw new \Exception(
+            $Locale->get( 'quiqqer/websetup', 'missing.db.host' ),
+            403
+        );
     }
 
-    if ( !isset( $_POST['db_database'] ) || empty( $_POST['db_database'] ) ) {
-        throw new \Exception( 'Please enter a database', 403 );
+    if ( !isset( $_POST['db_database'] ) || empty( $_POST['db_database'] ) )
+    {
+        throw new \Exception(
+            $Locale->get( 'quiqqer/websetup', 'missing.db.database' ),
+            403
+        );
     }
 
-    if ( !isset( $_POST['db_user'] ) || empty( $_POST['db_user'] ) ) {
-        throw new \Exception( 'Please enter a database user', 403 );
+    if ( !isset( $_POST['db_user'] ) || empty( $_POST['db_user'] ) )
+    {
+        throw new \Exception(
+            $Locale->get( 'quiqqer/websetup', 'missing.db.user' ),
+            403
+        );
     }
 
-    if ( !isset( $_POST['db_password'] ) || empty( $_POST['db_password'] ) ) {
-        throw new \Exception( 'Please enter a database password', 403 );
+    if ( !isset( $_POST['db_password'] ) || empty( $_POST['db_password'] ) )
+    {
+        throw new \Exception(
+            $Locale->get( 'quiqqer/websetup', 'missing.db.password' ),
+            403
+        );
     }
 
     switch ( $_POST['db_driver'] )
@@ -55,7 +76,7 @@ try
 
         default:
             echo json_encode(array(
-                'message' => 'This Database Driver is not supported',
+                'message' => $Locale->get( 'quiqqer/websetup', 'db.driver.not.supported' ),
                 'code'    => 403,
             ));
 

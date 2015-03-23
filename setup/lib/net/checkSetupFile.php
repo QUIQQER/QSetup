@@ -24,6 +24,15 @@ $validSetup = \QUI\Installer::$setupData;
 
 $incomplete = false;
 
+// lang
+if ( !isset( $setup[ 'lang' ] ) )
+{
+    $incomplete = true;
+} else
+{
+    $validSetup[ 'lang' ] = $setup[ 'lang' ];
+}
+
 // database
 if ( !isset( $setup[ 'database' ] ) ) {
     $incomplete = true;

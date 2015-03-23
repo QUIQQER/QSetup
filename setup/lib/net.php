@@ -31,6 +31,14 @@
         sort( $versions );
 
         $Locale = new Locale();
+
+        if ( isset( $lang ) )
+        {
+            $Locale->setCurrent( $lang );
+        } else
+        {
+            $Locale->setCurrent( 'en' );
+        }
     ?>
 
 </head>
@@ -53,6 +61,8 @@
                 />
             </section>
 
+            <form action="" method="POST" id="setup-form">
+
             <section class="welcome grid-100 mobile-grid-100">
 
                 <?php echo $Locale->get( 'quiqqer/websetup', 'welcome' ); ?>
@@ -69,17 +79,19 @@
                     <?php echo $Locale->get( 'quiqqer/websetup', 'lang.label' ); ?>
                 </label>
                 <select name="lang" id="lang">
-                    <option value="en" selected="selected">
+                    <option value="en"
+                        <?php if ( isset( $lang ) && $lang === 'en' ) { echo ' selected="selected"'; } ?>
+                        >
                         <?php echo $Locale->get( 'quiqqer/websetup', 'lang.en' ); ?>
                     </option>
-                    <option value="de">
+                    <option value="de"
+                        <?php if ( isset( $lang ) && $lang === 'de' ) { echo ' selected="selected"'; } ?>
+                        >
                         <?php echo $Locale->get( 'quiqqer/websetup', 'lang.de' ); ?>
                     </option>
                 </select>
 
             </section>
-
-            <form action="" method="POST" id="setup-form">
 
             <section class="step setupfile grid-100 mobile-grid-100 ">
                 <h2>
@@ -305,6 +317,9 @@
                         />
                     </p>
 
+                    <div id="paths-extra-btn"></div>
+
+                    <div id="paths-extra">
                     <p>
                         <label for="bin-dir" class="grid-50 mobile-grid-100 grid-parent">
                             <?php echo $Locale->get( 'quiqqer/websetup', 'paths.bin.label' ); ?>
@@ -334,7 +349,7 @@
                         />
                     </p>
                     <p>
-                        <label for="package-dir" class="grid-50 mobile-grid-100 grid-parent">
+                        <label for="opt-dir" class="grid-50 mobile-grid-100 grid-parent">
                             <?php echo $Locale->get( 'quiqqer/websetup', 'paths.packages.label' ); ?>
                             <span>
                                 <?php echo $Locale->get( 'quiqqer/websetup', 'paths.packages.desc' ); ?>
@@ -375,6 +390,9 @@
                             value="<?php echo $dir .'/var/'; ?>"
                         />
                     </p>
+
+                    </div>
+
                 </section>
 
             </form>

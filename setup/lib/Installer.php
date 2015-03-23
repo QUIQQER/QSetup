@@ -21,6 +21,8 @@ class Installer
 {
     // setup file template with essential packages and repositories
     static public $setupData = array(
+        'lang'         => '',
+        'langs'        => '',
         'database'     => array(
             'driver'   => '',
             'database' => '',
@@ -45,7 +47,7 @@ class Installer
             'php'                          => '>=5.3.2',
             'composer/composer'            => '1.0.0-alpha9',
             'robloach/component-installer' => '0.0.12',
-            'quiqqer/utils'                => 'dev-master',
+            'quiqqer/utils'                => 'dev-dev',
             'tedivm/stash'                 => '0.11.6',
             'phpmailer/phpmailer'          => 'v5.2.9',
             'symfony/http-foundation'      => '2.6.4',
@@ -231,12 +233,12 @@ class Installer
 
         $this->writeLn( "Which language do you want to use? (de=German,en=English) [en]: " );
 
-        if ( !isset( $this->_params[ 'lang' ] ) )
+        if ( !isset( $this->_setup[ 'lang' ] ) )
         {
-            $lang = '';//trim( fgets( STDIN ) );
+            $lang = trim( fgets( STDIN ) );
         } else
         {
-            $lang = 'en';
+            $lang = $this->_setup[ 'lang' ];
         }
 
         if ( empty( $lang ) ) {
@@ -257,6 +259,8 @@ class Installer
                 $this->language();
                 break;
         }
+
+        $this->_params[ 'lang' ] = $lang;
     }
 
     /**
@@ -510,10 +514,11 @@ class Installer
             $group_table,
             array(
                 'id'      => $this->_params[ 'root' ],
-                'name'   => 'root',
+                'name'    => 'root',
                 'admin'   => 1,
                 'active'  => 1,
-                'toolbar' => 'standard.xml'
+                'toolbar' => 'standard.xml',
+                'lang'    => $this->_setup[ 'lang' ]
             )
         );
 
@@ -939,22 +944,42 @@ class Installer
 
         // execute QUIQQER setup to create all necessary package tables
         chdir( $cms_dir );
-
         system( 'php '. $cms_dir .'quiqqer.php --username="'. $this->_username .'" --password="'. $this->_password .'" --tool="quiqqer:setup" --noLogo' );
 
-        // @todo
-        // add translator language for selected lang
-        system(
-            'php '. $cms_dir .'quiqqer.php --username="'. $this->_username . '" '  .
-            '--password="'. $this->_password . '" ' .
-            '--tool="package:translator" ' .
-            '--newLanguage="'. $this->Locale->getCurrent() . '" ' .
-            '--noLogo'
+        // add translator languages
+        $this->writeLn( '' );
+        $this->writeLn( '=========================================' );
+        $this->writeLn(
+            $this->Locale->get( 'quiqqer/installer', 'start.langs' )
         );
+
+        foreach ( $this->_setup[ 'langs' ] as $lang )
+        {
+            system(
+                'php '. $cms_dir .'quiqqer.php --username="'. $this->_username . '" '  .
+                '--password="'. $this->_password . '" ' .
+                '--tool="package:translator" ' .
+                '--newLanguage="'. $lang . '" ' .
+                '--noLogo'
+            );
+        }
+
+        if ( !in_array( $this->_setup[ 'lang' ], $this->_setup[ 'langs' ] ) )
+        {
+            system(
+                'php '. $cms_dir .'quiqqer.php --username="'. $this->_username . '" '  .
+                '--password="'. $this->_password . '" ' .
+                '--tool="package:translator" ' .
+                '--newLanguage="'. $this->_setup[ 'lang' ] . '" ' .
+                '--noLogo'
+            );
+        }
+
+        // execute setup again to import translation variables
+        system( 'php '. $cms_dir .'quiqqer.php --username="'. $this->_username .'" --password="'. $this->_password .'" --tool="quiqqer:setup" --noLogo' );
 
         // create translations
         system( 'php '. $cms_dir .'quiqqer.php --username="'. $this->_username .'" --password="'. $this->_password .'" --tool="package:translator" --noLogo' );
-
 
         $this->writeLn( '' );
         $this->writeLn( $this->Locale->get( 'quiqqer/installer', 'step.5.cleanup' ) );
@@ -1009,7 +1034,7 @@ class Installer
                     '--projectname="' . $project[ 'project' ] . '" ' .
                     '--projectlangs="' . $project[ 'langs' ] . '" ' .
                     '--projectlang="' . $project[ 'lang' ] . '" ' .
-                    '--template="' . $project[ 'template' ] . '" '
+                    '--template="' . $project[ 'template' ] . '" --noLogo'
                 );
             }
         }
@@ -1113,10 +1138,34 @@ class Installer
         file_put_contents( $filename, $tmp );
     }
 
+    /**
+     * checks the (generated) setup-file structure
+     *
+     * @param array $check
+     * @return array - correct setup data
+     */
     protected function _checkSetupFile($check)
     {
         $valid  = $this::$setupData;
         $result = array();
+
+        // langs
+        if ( !isset( $check[ 'langs' ] ) || !is_string( $check[ 'langs' ] ) )
+        {
+            $result[ 'langs' ] = array( 'en' );
+        } else
+        {
+            $result[ 'langs' ] = explode( ',', $check[ 'langs' ] );
+        }
+
+        // lang
+        if ( !isset( $check[ 'lang' ] ) )
+        {
+            $result[ 'lang' ] = current( $result[ 'langs' ] );
+        } else
+        {
+            $result[ 'lang' ] = $check[ 'lang' ];
+        }
 
         // database
         if ( !isset( $check[ 'database' ] ) )

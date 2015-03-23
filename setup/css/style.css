@@ -34,6 +34,12 @@ label {
     line-height: 30px;
 }
 
+label span {
+    float: left;
+    font-size: 11px;
+    line-height: 12px;
+}
+
 select, input {
     margin: 0;
     padding: 8px;
@@ -64,4 +70,8 @@ footer {
 form {
     overflow: hidden;
     position: relative;
+}
+
+#paths-extra {
+    float: left;
 }

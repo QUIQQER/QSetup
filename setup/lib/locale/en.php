@@ -62,14 +62,26 @@ $this->Locale->set( 'en', 'quiqqer/websetup', array(
     'paths.bin.desc'       => 'This is the directory that is accessible from the web server.',
     'paths.lib.label'      => 'LIB directory',
     'paths.lib.desc'       => 'This is the directory where all QUIQQER libraries are.',
-    'paths.packages.label' => 'Packages directory',
+    'paths.packages.label' => 'OPT directory',
     'paths.packages.desc'  => 'This is the directory where all QUIQQER packages and plugins are. <i>composer</i> uses this as its vendor directory.',
     'paths.usr.label'      => 'USR directory',
     'paths.usr.desc'       => 'This is the directory for alle QUIQQER project templates and layouts.',
     'paths.var.label'      => 'VAR directory',
     'paths.var.desc'       => 'This directory contains all temp files, like the cache, temporary uploads, logs and many more.',
 
-    'footer' => 'visit us at <a href="http://www.quiqqer.com" target="_blank">www.quiqqer.com</a>'
+    'footer' => 'visit us at <a href="http://www.quiqqer.com" target="_blank">www.quiqqer.com</a>',
+
+    'missing.db.driver'       => 'Please provide a database driver.',
+    'missing.db.host'         => 'Please provide a database host',
+    'missing.db.database'     => 'Please provide a database name',
+    'missing.db.user'         => 'Please provide a database username',
+    'missing.db.password'     => 'Please provide a database user password',
+    'db.driver.not.supported' => 'This database driver is not yet supported by QUIQQER.',
+
+    'missing.username' => 'Please provide a root username.',
+    'missing.password' => 'Please provide a root user password.',
+
+    'missing.folder' => 'Please provide a [folder] path.'
 
 ));
 
@@ -135,6 +147,7 @@ $this->Locale->set('en', 'quiqqer/installer', array(
     'config.not.writable' => 'Config is not writable',
 
     'create.projects' => 'Creating projects...',
-    'start.tests'     => 'Executing QUIQQER Health Check and Unit Tests'
+    'start.tests'     => 'Executing QUIQQER Health Check and Unit Tests',
+    'start.langs'     => 'Add languages...'
 
 ));

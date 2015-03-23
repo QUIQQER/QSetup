@@ -61,14 +61,26 @@ $this->Locale->set( 'de', 'quiqqer/websetup', array(
     'paths.bin.desc'       => 'Dies ist das Verzeichnis, welches von Ihrem Web-Server aus erreichbar ist.',
     'paths.lib.label'      => 'LIB Verzeichnis',
     'paths.lib.desc'       => 'Dies ist das Verzeichnis für alle QUIQQER-Bibliotheken.',
-    'paths.packages.label' => 'Packages Verzeichnis',
+    'paths.packages.label' => 'OPT Verzeichnis',
     'paths.packages.desc'  => 'Dies ist das Verzeichnis für alle QUIQQER-Pakete. <i>composer</i> benutzt dies als vendor-Verzeichnis.',
     'paths.usr.label'      => 'USR Verzeichnis',
     'paths.usr.desc'       => 'Dies ist das Verzeichnis für alle QUIQQER-Projekt-Templates und -Layouts.',
     'paths.var.label'      => 'VAR Verzeichnis',
     'paths.var.desc'       => 'In diesem Verzeichnis befinden sich alle temporären Dateien wie Cache-, Log- und temporäre Upload-Dateien.',
 
-    'footer' => 'besuchen Sie uns auf <a href="http://www.quiqqer.com" target="_blank">www.quiqqer.com</a>'
+    'footer' => 'besuchen Sie uns auf <a href="http://www.quiqqer.com" target="_blank">www.quiqqer.com</a>',
+
+    'missing.db.driver'       => 'Bitte legen Sie einen Datenbank-Treiber fest.',
+    'missing.db.host'         => 'Bitte geben Sie einen Datenbank-Host an.',
+    'missing.db.database'     => 'Bitte geben Sie einen Datenbank-Namen an.',
+    'missing.db.user'         => 'Bitte geben Sie einen Datenbank-Benutzer an.',
+    'missing.db.password'     => 'Bitte geben Sie ein Datenbank-Benutzer Passwort an.',
+    'db.driver.not.supported' => 'Dieser Datenbank-Treiber wird von QUIQQER noch nicht unterstützt.',
+
+    'missing.username' => 'Bitte geben Sie einen root-Benutzer an.',
+    'missing.password' => 'Bitte geben Sie ein Passwort für den root-Benutzer an.',
+
+    'missing.folder' => 'Bitte geben Sie einen [folder]-Pfad an.'
 
 ));
 
@@ -125,8 +137,8 @@ $this->Locale->set('de', 'quiqqer/installer', array(
     // install & download
     'step.5.title'               => 'Download und Installation des Systems',
     'step.5.htaccess.exists'     => 'Eine .htaccess Datei besteht bereits. Bitte fügen Sie folgende Anweisungen der Datei hinzu:',
-    'step.5.install.message'     => 'Die Installation von Composer und QUIQQER kann ein bißchen dauern ... Ich empfehle dir einen Kaffee zu hohlen ... ;-)',
-    'step.5.download.successful' => 'Composer und QUIQQER wurde erfolgreich herrunter geladen',
+    'step.5.install.message'     => 'Die Installation von Composer und QUIQQER kann ein bisschen dauern. Der perfekte Zeitpunkt für einen frischen Kaffee... ;-)',
+    'step.5.download.successful' => 'Composer und QUIQQER wurden erfolgreich heruntergeladen',
     'step.5.cleanup'             => 'Starte Säuberung',
     'step.5.successful'          => 'Setup erfolgreich durchgeführt',
 
@@ -134,5 +146,6 @@ $this->Locale->set('de', 'quiqqer/installer', array(
     'config.not.writable' => 'Config ist nicht schreibbar',
 
     'create.projects' => 'Erstelle Projekte...',
-    'start.tests'     => 'Führe QUIQQER System-Gesundheits-Check und Unit Tests aus...'
+    'start.tests'     => 'Führe QUIQQER System-Gesundheits-Check und Unit Tests aus...',
+    'start.langs'     => 'Füge Sprachen hinzu...'
 ));

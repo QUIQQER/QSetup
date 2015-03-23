@@ -16,6 +16,9 @@ if ( empty( $setupData ) )
     $setupData = json_decode( $_REQUEST[ 'setupData' ], true );
 }
 
+// lang
+$setupData[ 'lang' ] = $formData[ 'lang' ];
+
 // version
 $setupData[ 'packages' ][ 'quiqqer/quiqqer' ] = $formData[ 'version' ];
 

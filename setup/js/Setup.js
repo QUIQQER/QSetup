@@ -249,6 +249,7 @@ define('Setup', [
                                     });
 
                                     CreateDB.send(Object.toQueryString({
+                                        lang        : document.id( 'lang' ).value,
                                         db_driver   : document.id( 'db_driver' ).value,
                                         db_host     : document.id( 'db_host' ).value,
                                         db_database : document.id( 'db_database' ).value,
@@ -267,7 +268,9 @@ define('Setup', [
                     }
 
                     QUI.getMessageHandler(function(MH) {
-                        MH.addSuccess( 'Database connection successfully tested. :-)' );
+                        MH.addSuccess(
+                            Locale.get( 'quiqqer/websetup', 'database.test.success' )
+                        );
                     });
 
                     if ( typeOf( callback ) === 'function' ) {
@@ -277,6 +280,7 @@ define('Setup', [
             });
 
             Check.send(Object.toQueryString({
+                lang        : document.id( 'lang' ).value,
                 db_driver   : document.id( 'db_driver' ).value,
                 db_host     : document.id( 'db_host' ).value,
                 db_database : document.id( 'db_database' ).value,

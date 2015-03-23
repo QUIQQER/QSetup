@@ -9,25 +9,7 @@ $Locale = new \QUI\Locale();
 
 try
 {
-    if ( !isset( $_POST['db_driver'] ) || empty( $_POST['db_driver'] ) ) {
-        throw new \Exception( 'Please enter a database driver', 403 );
-    }
-
-    if ( !isset( $_POST['db_host'] ) || empty( $_POST['db_host'] ) ) {
-        throw new \Exception( 'Please enter a database host', 403 );
-    }
-
-    if ( !isset( $_POST['db_database'] ) || empty( $_POST['db_database'] ) ) {
-        throw new \Exception( 'Please enter a database', 403 );
-    }
-
-    if ( !isset( $_POST['db_user'] ) || empty( $_POST['db_user'] ) ) {
-        throw new \Exception( 'Please enter a database user', 403 );
-    }
-
-    if ( !isset( $_POST['db_password'] ) || empty( $_POST['db_password'] ) ) {
-        throw new \Exception( 'Please enter a database password', 403 );
-    }
+    $created = false;
 
     switch ( $_POST['db_driver'] )
     {
@@ -49,18 +31,19 @@ try
                 'password' => $_POST['db_password']
             );
 
-//            \QUI\Installer\DataBase::createDatabase( $db );
-            \QUI\Installer\DataBase::check( $db );
+            $created = \QUI\Installer\DataBase::createDatabase( $db );
+//            \QUI\Installer\DataBase::check( $db );
         break;
+    }
 
-        default:
-            echo json_encode(array(
-                'message' => 'This Database Driver is not supported',
-                'code'    => 403,
-            ));
+    if ( $created === false )
+    {
+        echo json_encode(array(
+            'message' => $Locale->get( 'quiqqer/database', 'check.could.not.create' ),
+            'code'    => 1,
+        ));
 
-            exit;
-        break;
+        exit;
     }
 
     if ( !isset( $noecho ) )

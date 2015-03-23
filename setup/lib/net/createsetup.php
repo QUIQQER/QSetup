@@ -1,48 +1,89 @@
 <?php
 
+require_once dirname( dirname( __FILE__ ) ) . '/Installer.php';
+
 error_reporting( E_ALL );
 ini_set( 'display_errors', true );
 
-$require = array(
-    'cms-dir',
-    'var-dir',
-    'lib-dir',
-    'bin-dir',
-    'opt-dir',
-    'usr-dir',
-    'host',
-    'user_username',
-    'user_password',
-    'db_driver'
+$formData  = json_decode( $_REQUEST[ 'formData' ], true );
+$setupData = json_decode( $_REQUEST[ 'setupData' ], true );
+
+if ( empty( $setupData ) )
+{
+    $setupData = \QUI\Installer::$setupData;
+} else
+{
+    $setupData = json_decode( $_REQUEST[ 'setupData' ], true );
+}
+
+// version
+$setupData[ 'packages' ][ 'quiqqer/quiqqer' ] = $formData[ 'version' ];
+
+// database
+$db = array();
+
+$db[ 'driver' ]   = $formData[ 'db_driver' ];
+$db[ 'database' ] = $formData[ 'db_database' ];
+$db[ 'host' ]     = $formData[ 'db_host' ];
+$db[ 'username' ] = $formData[ 'db_user' ];
+$db[ 'password' ] = $formData[ 'db_password' ];
+
+$setupData[ 'database' ] = $db;
+
+// users
+$checkName = $formData[ 'user_username' ];
+
+foreach ( $setupData[ 'users' ] as $k => $user )
+{
+    if ( $user[ 'name' ] == $checkName )
+    {
+        unset( $setupData[ 'users' ][ $k ] );
+        break;
+    }
+}
+
+$setupData[ 'users' ][] = array(
+    'name'      => $formData[ 'user_username' ],
+    'password'  => $formData[ 'user_password' ],
+    'superuser' => true
 );
 
-$data = array();
+// host
+$setupData[ 'host' ] = $formData[ 'host' ];
 
-$data['cms']  = trimPath( $_POST['cms-dir'] );
-$data['var']  = trimPath( $_POST['var-dir'] );
-$data['lib']  = trimPath( $_POST['lib-dir'] );
-$data['bin']  = trimPath( $_POST['bin-dir'] );
-$data['opt']  = trimPath( $_POST['opt-dir'] );
-$data['usr']  = trimPath( $_POST['usr-dir'] );
-$data['host'] = trimPath( $_POST['host'] );
+// paths
+$p = array();
 
-$data['username'] = $_POST['user_username'];
-$data['password'] = $_POST['user_password'];
+$p[ 'url' ]      = trimPath( $formData[ 'url-dir' ] );
+$p[ 'cms' ]      = trimPath( $formData[ 'cms-dir' ] );
+$p[ 'bin' ]      = trimPath( $formData[ 'bin-dir' ] );
+$p[ 'lib' ]      = trimPath( $formData[ 'lib-dir' ] );
+$p[ 'packages' ] = trimPath( $formData[ 'opt-dir' ] );
+$p[ 'usr' ]      = trimPath( $formData[ 'usr-dir' ] );
+$p[ 'var' ]      = trimPath( $formData[ 'var-dir' ] );
 
-$data['db_driver']   = $_POST['db_driver'];
-$data['db_host']     = $_POST['db_host'];
-$data['db_database'] = $_POST['db_database'];
-$data['db_user']     = $_POST['db_user'];
-$data['db_password'] = $_POST['db_password'];
-$data['db_prefix']   = '';
+$setupData[ 'paths' ] = $p;
 
-$setupfile = $data['cms'] .'quiqqer.setup';
+//$require = array(
+//    'cms-dir',
+//    'var-dir',
+//    'lib-dir',
+//    'bin-dir',
+//    'opt-dir',
+//    'usr-dir',
+//    'host',
+//    'user_username',
+//    'user_password',
+//    'db_driver',
+//    'version'
+//);
 
+$setupfile = dirname( dirname( dirname( __FILE__ ) ) ) .'/quiqqer.setup';
 
 // create the setup file
 file_put_contents(
     $setupfile,
-    prettyPrint( json_encode( $data ) )
+    prettyPrint( json_encode( $setupData ) )
 );
 
 

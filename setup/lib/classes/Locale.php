@@ -42,6 +42,16 @@ class Locale
      */
     protected $_inis = array();
 
+    public $Locale = null;
+
+    public function __construct()
+    {
+        $this->Locale = $this;
+
+        require_once dirname( dirname( __FILE__ ) ) . '/locale/de.php';
+        require_once dirname( dirname( __FILE__ ) ) . '/locale/en.php';
+    }
+
     /**
      * Locale toString
      * @return String

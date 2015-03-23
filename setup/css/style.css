@@ -60,3 +60,8 @@ footer {
 .logo {
     text-align: center;
 }
+
+form {
+    overflow: hidden;
+    position: relative;
+}

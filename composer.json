@@ -36,7 +36,7 @@
     },
 
     "config": {
-        "vendor-dir" : "setup\/packages\/"
+        "vendor-dir" : "setup\/setup_packages\/"
     }
 
 }

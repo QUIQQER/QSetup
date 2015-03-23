@@ -26,9 +26,9 @@ class DataBase
         // check database connection
         try
         {
-            if ( $db_params[ 'db_new' ] ) {
+//            if ( $db_params[ 'new' ] ) {
                 self::createDatabase( $db_params );
-            }
+//            }
 
             return array(
                 'PDO'    => self::check( $db_params ),
@@ -37,11 +37,11 @@ class DataBase
 
         } catch ( \PDOException $Exception )
         {
-            //$this->_params['db_driver']   = '';
-            $db_params['db_host']     = '';
-            $db_params['db_database'] = '';
-            $db_params['db_user']     = '';
-            $db_params['db_password'] = '';
+            //$this->_params['driver']   = '';
+            $db_params['host']     = '';
+            $db_params['database'] = '';
+            $db_params['username'] = '';
+            $db_params['password'] = '';
 
             $Installer->writeLn( $Exception->getMessage() );
 
@@ -68,11 +68,11 @@ class DataBase
 
                     } catch ( \PDOException $Exception )
                     {
-                        //$this->_params['db_driver']   = '';
-                        $db_params['db_host']     = '';
-                        $db_params['db_database'] = '';
-                        $db_params['db_user']     = '';
-                        $db_params['db_password'] = '';
+                        //$this->_params['driver']   = '';
+                        $db_params['host']     = '';
+                        $db_params['database'] = '';
+                        $db_params['username']     = '';
+                        $db_params['password'] = '';
 
                         $Installer->writeLn( $Exception->getMessage() );
                     }
@@ -82,11 +82,11 @@ class DataBase
             }
 
 
-            //$this->_params['db_driver']   = '';
-            $db_params['db_host']     = '';
-            $db_params['db_database'] = '';
-            $db_params['db_user']     = '';
-            $db_params['db_password'] = '';
+            //$this->_params['driver']   = '';
+            $db_params['host']     = '';
+            $db_params['database'] = '';
+            $db_params['username']     = '';
+            $db_params['password'] = '';
 
             $Installer->writeLn( $Exception->getMessage() );
 
@@ -103,27 +103,27 @@ class DataBase
      */
     static function check($db_params)
     {
-        if ( empty( $db_params['db_driver'] ) ||
-             empty( $db_params['db_database'] ) ||
-             empty( $db_params['db_host'] ) ||
-             empty( $db_params['db_user'] ) ||
-             empty( $db_params['db_password'] ) )
+        if ( empty( $db_params['driver'] ) ||
+             empty( $db_params['database'] ) ||
+             empty( $db_params['host'] ) ||
+             empty( $db_params['username'] ) ||
+             empty( $db_params['password'] ) )
         {
             throw new \Exception(
-                'please enter correct database data.'
+//                $Locale->
             );
         }
 
         // check if the database exists
         // if not, ask if create
-        $dsn = $db_params['db_driver'] .
-                ':dbname='. $db_params['db_database'] .
-                ';host='. $db_params['db_host'] .';dbname=INFORMATION_SCHEMA;';
+        $dsn = $db_params['driver'] .
+                ':dbname='. $db_params['database'] .
+                ';host='. $db_params['host'] .';dbname=INFORMATION_SCHEMA;';
 
         $PDO = new \PDO(
             $dsn,
-            $db_params['db_user'],
-            $db_params['db_password']
+            $db_params['username'],
+            $db_params['password']
         );
 
         // if not, throw excetion
@@ -137,15 +137,15 @@ class DataBase
 
 
         // db connection
-        $dsn = $db_params['db_driver'] .
-                ':dbname='. $db_params['db_database'] .
-                ';host='. $db_params['db_host'];
+        $dsn = $db_params['driver'] .
+                ':dbname='. $db_params['database'] .
+                ';host='. $db_params['host'];
 
 
         $PDO = new \PDO(
             $dsn,
-            $db_params['db_user'],
-            $db_params['db_password'],
+            $db_params['username'],
+            $db_params['password'],
             array(
                 \PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"
             )
@@ -161,24 +161,24 @@ class DataBase
      *
      * @throws PDOException
      * @param Array $db_params
-     * @return \PDO
+     * @return Bool
      */
     static function createDatabase($db_params)
     {
         // create the database
         $PDO = new \PDO(
-            $db_params['db_driver'] .":host=". $db_params['db_host'],
-            $db_params['db_user'],
-            $db_params['db_password'],
+            $db_params['driver'] .":host=". $db_params['host'],
+            $db_params['username'],
+            $db_params['password'],
             array(
                 \PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"
             )
         );
 
-        $PDO->exec(
-            "CREATE DATABASE `{$db_params['db_database']}`;
-            CREATE USER '{$db_params['db_user']}'@'localhost' IDENTIFIED BY '{$db_params['db_password']}';
-            GRANT ALL ON `{$db_params['db_database']}`.* TO '{$db_params['db_user']}'@'localhost';
+        return $PDO->exec(
+            "CREATE DATABASE IF NOT EXISTS`{$db_params['database']}`;
+            CREATE USER '{$db_params['username']}'@'localhost' IDENTIFIED BY '{$db_params['password']}';
+            GRANT ALL ON `{$db_params['database']}`.* TO '{$db_params['username']}'@'localhost';
             FLUSH PRIVILEGES;"
         );
     }
@@ -193,7 +193,7 @@ class DataBase
         {
             foreach ( $dbfields['globals'] as $table )
             {
-                $tbl = $dbparams[ 'db_prefix' ] . $table['suffix'];
+                $tbl = $dbparams[ 'prefix' ] . $table['suffix'];
 
                 $Table->appendFields( $tbl, $table['fields'] );
 
@@ -219,11 +219,11 @@ class DataBase
     static function getDatabase($dbparams)
     {
         return new \QUI\Database\DB(array(
-            'host'     => $dbparams[ 'db_host' ],
-            'driver'   => 'mysql',
-            'user'     => $dbparams[ 'db_user' ],
-            'password' => $dbparams[ 'db_password' ],
-            'dbname'   => $dbparams[ 'db_database' ]
+            'host'     => $dbparams[ 'host' ],
+            'driver'   => $dbparams[ 'driver' ],
+            'user'     => $dbparams[ 'username' ],
+            'password' => $dbparams[ 'password' ],
+            'dbname'   => $dbparams[ 'database' ]
         ));
     }
 }

@@ -4,11 +4,6 @@ if ( file_exists( __DIR__ .'/quiqqer.zip' ) ) {
     unlink( __DIR__ .'/quiqqer.zip' );
 }
 
-// create setup
-// $Setup = new Phar( __DIR__ .'/quiqqer.phar', 0, "quiqqer.phar" );
-// $Setup->buildFromDirectory( __DIR__ ."/setup" );
-// $Setup->setStub( $Setup->createDefaultStub( "quiqqer.php", "quiqqer.php" ) );
-
 // composer
 if ( file_exists( __DIR__ . '/composer.phar' ) )
 {
@@ -22,10 +17,10 @@ if ( file_exists( __DIR__ . '/composer.phar' ) )
 
 if ( !file_exists( __DIR__ . '/composer.phar' ) )
 {
-    echo "\nWARNING: Konnte composer.phar nicht laden :(";
+    exitError( "Konnte composer.phar nicht laden :(." );
 } else
 {
-    echo "\nLade essentielle Pakete herunter...\n";
+    echo "\nLade für das Setup notwendige QUIQQER-Pakete herunter...\n";
     shell_exec( 'php composer.phar update' );
 }
 
@@ -47,7 +42,7 @@ if ( file_exists( $file ) )
         
         foreach ( $quiqqerPackages as $ver => $info )
         {
-            if ( mb_strpos( $ver, '.0.0' ) === false &&
+            if ( mb_substr( $ver, -2 ) !== '.0' &&
                  $ver !== 'dev-dev' &&
                  $ver !== 'dev-master' )
             {
@@ -108,8 +103,7 @@ if ( file_exists( $file ) )
     }
 } else
 {
-    echo "\nFEHLER: Konnte http://update.quiqqer.com/packages.json nicht herunterladen :(.";
-    exit( 1 );
+    exitError( "Konnte http://update.quiqqer.com/packages.json nicht herunterladen :(." );
 }
 
 // Hilfsklassen
@@ -142,7 +136,7 @@ foreach ( $helpClasses as $class )
     } else
     {
         echo " Fehlschlag :(.";
-        exit( 1 );
+        exitError( "Konnte nicht alle Hilfsklassen laden." );
     }
 }
 
@@ -152,11 +146,20 @@ echo "\n\nPacke alles in quiqqer.zip zusammen...";
 chdir( __DIR__ .'/setup' );
 shell_exec( 'zip -q -9 -r ../quiqqer.zip ./*' );
 
-if ( !file_exists( '../quiqqer.zip' ) )
-{
-    echo "\nFEHLER: Konnte zip-Datei nicht erstellen :(.";
-    exit( 1 );
+if ( !file_exists( '../quiqqer.zip' ) ) {
+    exitError( "Konnte zip-Datei nicht erstellen." );
 }
 
-echo "\nquiqqer.zip erfolgreich erstellt.\n\n";
-exit( 0 );
+exitSuccess( "quiqqer.zip erfolgreich erstellt." );
+
+function exitSuccess($msg)
+{
+    echo "\n\n" . $msg . "\n";
+    exit( 0 );
+}
+
+function exitError($msg)
+{
+    echo "\n\nERROR: " . $msg . "\nBitte Fehler beheben und Programm erneut ausführen.\n";
+    exit( 1 );
+}

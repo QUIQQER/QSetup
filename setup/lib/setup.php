@@ -2,7 +2,7 @@
 
 /**
  * Start the setup if quiqqer.setup exist
- * This file can be display in an iframe
+ * This file can be displayed in an iframe
  */
 
 header( 'Content-type: text/html; charset=UTF-8' );
@@ -88,7 +88,7 @@ ini_set( 'display_errors', true );
 
 require 'Installer.php';
 
-$setupDir = dirname(dirname( __FILE__ ));
+$setupDir = dirname( dirname( __FILE__ ) );
 
 if ( !file_exists( $setupDir .'/quiqqer.setup' ) )
 {
@@ -96,44 +96,7 @@ if ( !file_exists( $setupDir .'/quiqqer.setup' ) )
     exit;
 }
 
-$setupData = json_decode(
-    file_get_contents( $setupDir .'/quiqqer.setup' ),
-    true
-);
+//putenv( "COMPOSER_HOME=" . dirname( dirname( __FILE__ ) ) );
 
-$Installer = new \QUI\Installer( $setupData );
+$Installer = new \QUI\Installer( $setupDir .'/quiqqer.setup' );
 $Installer->start();
-
-
-/*
-echo "Download Composer...\n\n";
-
-file_put_contents(
-    "composer.phar",
-    fopen("https://getcomposer.org/composer.phar", 'r')
-);
-
-echo "Generate Setup...\n\n";
-
-$composerJson = '{
-
-    "repositories": [{
-        "type": "composer",
-        "url": "http://update.quiqqer.com"
-    }],
-
-    "require": {
-        "php" : ">=5.3.2",
-        "quiqqer/qui" : "dev-master",
-        "robloach/component-installer" : "*"
-    },
-
-    "minimum-stability": "dev"
-
-}';
-
-file_put_contents( 'composer.json', $composerJson );
-*/
-
-// system('php composer.phar install 2>&1');
-

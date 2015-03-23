@@ -2,8 +2,6 @@
 
 spl_autoload_register(function($className)
 {
-    var_dump( $className );
-
     if ( class_exists( $className ) ) {
         return true;
     }
@@ -11,7 +9,15 @@ spl_autoload_register(function($className)
     $className = str_replace( 'QUI\\', '', $className );
     $className = str_replace( '\\', '/', $className ) . '.php';
 
-    $classesDir = dirname( __FILE__ ) . '/lib/classes/';
+    $libDir = dirname( __FILE__ ) . '/lib/';
+
+    if ( file_exists( $libDir . $className ) )
+    {
+        require_once $libDir . $className;
+        return true;
+    }
+
+    $classesDir = $libDir . '/classes/';
 
     if ( file_exists( $classesDir . $className ) )
     {
@@ -19,7 +25,7 @@ spl_autoload_register(function($className)
         return true;
     }
 
-    $packagesDir = dirname( __FILE__ ) . '/packages/quiqqer/';
+    $packagesDir = dirname( __FILE__ ) . '/setup_packages/quiqqer/';
 
     // quiqqer packages
     $packages = array(
@@ -45,6 +51,11 @@ if ( file_exists( 'quiqqer.setup' ) )
 {
     error_reporting( E_ALL );
     ini_set( 'display_errors', true );
+
+//    if ( PHP_SAPI === 'cli' )
+//    {
+//
+//    }
 
     require 'lib/setup.php';
     exit;

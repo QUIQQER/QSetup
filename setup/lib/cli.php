@@ -11,10 +11,10 @@ echo '
 (____\/_)(_______)\_______/(____\/_)(____\/_)(_______/|/   \__/
 
 
-    Welcome to the QUIQQER Installation.
+    Welcome to the QUIQQER Setup.
 
-    Please follow the instructions to install quiqqer correctly.
-    For questions or help, please visit www.quiqqer.com
+    Please follow the instructions to install QUQIQER on your system.
+    For questions or help, please visit www.quiqqer.com!
 
 ';
 
@@ -22,5 +22,19 @@ ini_set( 'display_errors', true );
 
 require __DIR__ .'/Installer.php';
 
-$Installer = new \QUI\Installer();
+$setupFile = null;
+
+if ( isset( $argv[ 1 ] ) )
+{
+    $arg = explode( '=', $argv[ 1 ] );
+
+    if ( $arg[ 0 ] === '--setupfile' &&
+        isset( $arg[ 1 ] ) &&
+        !empty( $arg[ 1 ] ) )
+    {
+        $setupFile = $arg[ 1 ];
+    }
+}
+
+$Installer = new \QUI\Installer( $setupFile );
 $Installer->start();

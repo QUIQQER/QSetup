@@ -1,3 +1,5 @@
+<?php namespace QUI; ?>
+
 <!doctype html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -20,6 +22,15 @@
 
     <?php
         $dir = getcwd();
+
+        if ( $dir === false ) {
+            $dir = dirname( dirname( __FILE__ ) );
+        }
+
+        $versions = Utils\System\File::readDir( dirname( dirname( __FILE__ ) ) . '/versions/' );
+        sort( $versions );
+
+        $Locale = new Locale();
     ?>
 
 </head>
@@ -27,7 +38,7 @@
 
     <noscript>
         <div class="noscript-info">
-            JavaScript seems to be deactivated on your computer. In order to use QUIQQER, please activate JavaScript.
+            <?php echo $Locale->get( 'quiqqer/websetup', 'noscript' ); ?>
         </div>
     </noscript>
 
@@ -43,27 +54,90 @@
             </section>
 
             <section class="welcome grid-100 mobile-grid-100">
-                <h1>
-                    Welcome to the QUIQQER Setup
-                </h1>
 
-                <ul>
-                    <li>Please follow the instructions to install quiqqer correctly.</li>
-                    <li>For questions or help, please visit <a href="http://www.quiqqer.com" target="_blank">www.quiqqer.com</a></li>
-                </ul>
+                <?php echo $Locale->get( 'quiqqer/websetup', 'welcome' ); ?>
+
+                <h2>
+                    <?php echo $Locale->get( 'quiqqer/websetup', 'lang.title' ); ?>
+                </h2>
+
+                <p>
+                    <?php echo $Locale->get( 'quiqqer/websetup', 'lang.desc' ); ?>
+                </p><br/><br/>
+
+                <label for="lang" class="grid-50 mobile-grid-100 grid-parent">
+                    <?php echo $Locale->get( 'quiqqer/websetup', 'lang.label' ); ?>
+                </label>
+                <select name="lang" id="lang">
+                    <option value="en" selected="selected">
+                        <?php echo $Locale->get( 'quiqqer/websetup', 'lang.en' ); ?>
+                    </option>
+                    <option value="de">
+                        <?php echo $Locale->get( 'quiqqer/websetup', 'lang.de' ); ?>
+                    </option>
+                </select>
+
             </section>
 
-            <form action="" method="POST">
+            <form action="" method="POST" id="setup-form">
+
+            <section class="step setupfile grid-100 mobile-grid-100 ">
+                <h2>
+                    <?php echo $Locale->get( 'quiqqer/websetup', 'setupfile.title' ); ?>
+                </h2>
+
+                <p>
+                    <?php echo $Locale->get( 'quiqqer/websetup', 'setupfile.desc' ); ?>
+                </p><br /><br />
+
+                <label for="setupfile" class="grid-50 mobile-grid-100 grid-parent">
+                    <?php echo $Locale->get( 'quiqqer/websetup', 'setupfile.label' ); ?>
+                </label>
+                <input type="file" name="setupfile" id="setupfile" />
+                <p class="setupfile-btn">
+                    <label class="grid-50 hide-on-mobile">&nbsp;</label>
+                </p>
+            </section>
+
+            <section class="step version grid-100 mobile-grid-100 ">
+
+                <h2>
+                    <?php echo $Locale->get( 'quiqqer/websetup', 'version.title' ); ?>
+                </h2>
+
+                <p>
+                    <?php echo $Locale->get( 'quiqqer/websetup', 'version.desc' ); ?>
+                </p><br/><br/>
+
+                <label for="version" class="grid-50 mobile-grid-100 grid-parent">
+                    <?php echo $Locale->get( 'quiqqer/websetup', 'version.label' ); ?>
+                </label>
+                <select name="version" id="version">
+
+                <?php
+
+                    foreach ( $versions as $ver ) {
+                        echo '<option value="' . $ver . '">' . $ver . '</option>';
+                    }
+
+                ?>
+
+                </select>
+
+            </section>
+
                 <section class="step database grid-100 mobile-grid-100 ">
                     <h2>
-                        1 - Database connection
+                        <?php echo $Locale->get( 'quiqqer/websetup', 'database.title' ); ?>
                     </h2>
 
-                    <p>Please enter your database settings <br /><br /></p>
+                    <p>
+                        <?php echo $Locale->get( 'quiqqer/websetup', 'database.desc' ); ?>
+                    </p>
 
                     <p>
                         <label for="db_driver" class="grid-50 mobile-grid-100 grid-parent">
-                            Driver
+                            <?php echo $Locale->get( 'quiqqer/websetup', 'database.driver.label' ); ?>
                         </label>
                         <select name="db_driver"
                             id="db_driver"
@@ -76,7 +150,7 @@
 
                     <p>
                         <label for="db_host" class="grid-50 mobile-grid-100 grid-parent">
-                            Database host
+                            <?php echo $Locale->get( 'quiqqer/websetup', 'database.host.label' ); ?>
                         </label>
                         <input type="text"
                             name="db_host"
@@ -89,7 +163,7 @@
 
                     <p>
                         <label for="db_database" class="grid-50 mobile-grid-100 grid-parent">
-                            Database name
+                            <?php echo $Locale->get( 'quiqqer/websetup', 'database.name.label' ); ?>
                         </label>
                         <input type="text"
                             name="db_database"
@@ -101,7 +175,7 @@
 
                     <p>
                         <label for="db_user" class="grid-50 mobile-grid-100 grid-parent">
-                            Database user
+                            <?php echo $Locale->get( 'quiqqer/websetup', 'database.user.label' ); ?>
                         </label>
                         <input type="text"
                             name="db_user"
@@ -113,7 +187,7 @@
 
                     <p>
                         <label for="db_password" class="grid-50 mobile-grid-100 grid-parent">
-                            Database password
+                            <?php echo $Locale->get( 'quiqqer/websetup', 'database.password.label' ); ?>
                         </label>
                         <input type="password"
                             name="db_password"
@@ -122,6 +196,21 @@
                             required="required"
                         />
                     </p>
+
+                    <p>
+                        <label for="db_prefix" class="grid-50 mobile-grid-100 grid-parent">
+                            <?php echo $Locale->get( 'quiqqer/websetup', 'database.prefix.label' ); ?>
+                            <span>
+                                <?php echo $Locale->get( 'quiqqer/websetup', 'database.prefix.desc' ); ?>
+                            </span>
+                        </label>
+                        <input type="text"
+                               name="db_prefix"
+                               id="db_prefix"
+                               class="grid-50 mobile-grid-100"
+                            />
+                    </p>
+
                     <p class="database-btn">
                         <label class="grid-50 hide-on-mobile">&nbsp;</label>
                     </p>
@@ -130,13 +219,16 @@
 
                 <section class="step user_groups grid-100 mobile-grid-100">
                     <h2>
-                        2 - Set a user for QUIQQER
+                        <?php echo $Locale->get( 'quiqqer/websetup', 'user.title' ); ?>
                     </h2>
-                    <p>Please enter an username and a password for your first user<br /><br /></p>
+
+                    <p>
+                        <?php echo $Locale->get( 'quiqqer/websetup', 'user.desc' ); ?>
+                    </p>
 
                     <p>
                         <label for="user_username" class="grid-50 mobile-grid-100 grid-parent">
-                            Username
+                            <?php echo $Locale->get( 'quiqqer/websetup', 'user.name.label' ); ?>
                         </label>
                         <input type="text"
                             name="user_username"
@@ -147,7 +239,7 @@
                     </p>
                     <p>
                         <label for="user_password" class="grid-50 mobile-grid-100 grid-parent">
-                            Password
+                            <?php echo $Locale->get( 'quiqqer/websetup', 'user.password.label' ); ?>
                         </label>
                         <input type="password"
                             name="user_password"
@@ -161,14 +253,19 @@
 
                 <section class="step paths grid-100 mobile-grid-100">
                     <h2>
-                        3 - Set the installation paths and the host of QUIQQER
+                        <?php echo $Locale->get( 'quiqqer/websetup', 'paths.title' ); ?>
                     </h2>
 
-                    <p>If you don't know what you do, please use the default settings. <br /><br /></p>
+                    <p>
+                        <?php echo $Locale->get( 'quiqqer/websetup', 'paths.desc' ); ?>
+                    </p>
 
                     <p>
                         <label for="host" class="grid-50 mobile-grid-100 grid-parent">
-                            Host
+                            <?php echo $Locale->get( 'quiqqer/websetup', 'paths.host.label' ); ?>
+                            <span>
+                                <?php echo $Locale->get( 'quiqqer/websetup', 'paths.host.desc' ); ?>
+                            </span>
                         </label>
                         <input type="text"
                             name="host"
@@ -179,8 +276,26 @@
                     </p>
 
                     <p>
+                        <label for="url-dir" class="grid-50 mobile-grid-100 grid-parent">
+                            <?php echo $Locale->get( 'quiqqer/websetup', 'paths.url.label' ); ?>
+                            <span>
+                                <?php echo $Locale->get( 'quiqqer/websetup', 'paths.url.desc' ); ?>
+                            </span>
+                        </label>
+                        <input type="text"
+                               name="url-dir"
+                               id="url-dir"
+                               class="grid-50 mobile-grid-100"
+                               value="/"
+                            />
+                    </p>
+
+                    <p>
                         <label for="cms-dir" class="grid-50 mobile-grid-100 grid-parent">
-                            cms-dir
+                            <?php echo $Locale->get( 'quiqqer/websetup', 'paths.cms.label' ); ?>
+                            <span>
+                                <?php echo $Locale->get( 'quiqqer/websetup', 'paths.cms.desc' ); ?>
+                            </span>
                         </label>
                         <input type="text"
                             name="cms-dir"
@@ -192,7 +307,10 @@
 
                     <p>
                         <label for="bin-dir" class="grid-50 mobile-grid-100 grid-parent">
-                            bin-dir
+                            <?php echo $Locale->get( 'quiqqer/websetup', 'paths.bin.label' ); ?>
+                            <span>
+                                <?php echo $Locale->get( 'quiqqer/websetup', 'paths.bin.desc' ); ?>
+                            </span>
                         </label>
                         <input type="text"
                             name="bin-dir"
@@ -203,7 +321,10 @@
                     </p>
                     <p>
                         <label for="lib-dir" class="grid-50 mobile-grid-100 grid-parent">
-                            lib-dir
+                            <?php echo $Locale->get( 'quiqqer/websetup', 'paths.lib.label' ); ?>
+                            <span>
+                                <?php echo $Locale->get( 'quiqqer/websetup', 'paths.lib.desc' ); ?>
+                            </span>
                         </label>
                         <input type="text"
                             name="lib-dir"
@@ -214,18 +335,24 @@
                     </p>
                     <p>
                         <label for="package-dir" class="grid-50 mobile-grid-100 grid-parent">
-                            package-dir
+                            <?php echo $Locale->get( 'quiqqer/websetup', 'paths.packages.label' ); ?>
+                            <span>
+                                <?php echo $Locale->get( 'quiqqer/websetup', 'paths.packages.desc' ); ?>
+                            </span>
                         </label>
                         <input type="text"
                             name="opt-dir"
                             id="opt-dir"
                             class="grid-50 mobile-grid-100"
-                            value="<?php echo $dir .'/opt/'; ?>"
+                            value="<?php echo $dir .'/packages/'; ?>"
                         />
                     </p>
                     <p>
                         <label for="usr-dir" class="grid-50 mobile-grid-100 grid-parent">
-                            usr-dir
+                            <?php echo $Locale->get( 'quiqqer/websetup', 'paths.usr.label' ); ?>
+                            <span>
+                                <?php echo $Locale->get( 'quiqqer/websetup', 'paths.usr.desc' ); ?>
+                            </span>
                         </label>
                         <input type="text"
                             name="usr-dir"
@@ -236,7 +363,10 @@
                     </p>
                     <p>
                         <label for="var-dir" class="grid-50 mobile-grid-100 grid-parent">
-                            var-dir
+                            <?php echo $Locale->get( 'quiqqer/websetup', 'paths.var.label' ); ?>
+                            <span>
+                                <?php echo $Locale->get( 'quiqqer/websetup', 'paths.var.desc' ); ?>
+                            </span>
                         </label>
                         <input type="text"
                             name="var-dir"
@@ -251,7 +381,9 @@
         </div>
 
         <footer>
-            <p> visit us at <a href="http://www.quiqqer.com" target="_blank">www.quiqqer.com</a> </p>
+            <p>
+                <?php echo $Locale->get( 'quiqqer/websetup', 'footer' ); ?>
+            </p>
         </footer>
     </div>
 

@@ -21,26 +21,9 @@
         "url": "http://www.quiqqer.com"
     },
 
-    "repositories": [{
-        "packagist": false
-    }, {
-        "type": "composer",
-        "url": "http://update.quiqqer.com"
-    }, {
-        "type": "composer",
-        "url": "http://composer.quiqqer.com"
-    }],
+    "repositories": [],
 
-    "require": {
-        "php" : ">=5.3.2",
-        "composer/composer": "1.0.0-alpha9",
-        "robloach/component-installer" : "0.0.12",
-        "quiqqer/utils" : "~1",
-        "tedivm/stash" : "0.11.6",
-        "phpmailer/phpmailer" : "v5.2.9",
-        "symfony/http-foundation" : "2.6.4",
-        "symfony/console":  "2.4.10"
-    },
+    "require": {},
 
     "minimum-stability": "dev",
 

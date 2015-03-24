@@ -77,17 +77,12 @@ $this->Locale->set( 'en', 'quiqqer/websetup', array(
     'missing.db.user'         => 'Please provide a database username',
     'missing.db.password'     => 'Please provide a database user password',
     'db.driver.not.supported' => 'This database driver is not yet supported by QUIQQER.',
+    'db.test.error'           => 'The database check produced an error. Please check your database credentials before starting the setup: [error]',
 
     'missing.username' => 'Please provide a root username.',
     'missing.password' => 'Please provide a root user password.',
 
     'missing.folder' => 'Please provide a [folder] path.'
-
-));
-
-$this->Locale->set('de', 'quiqqer/database', array(
-
-    "check.could.not.create" => "The database could not be created. Please check if the user you specified has the necessary rights."
 
 ));
 
@@ -143,8 +138,20 @@ $this->Locale->set('en', 'quiqqer/installer', array(
     'step.5.cleanup'             => 'Starting cleanup',
     'step.5.successful'          => 'Setup completed',
 
+    // success
+    'users.success'    => 'QUIQQER system tables and users succesfully created.',
+    'database.success' => 'Database check successful.',
+    'paths.success'    => 'QUIQQER folders successfully created.',
+
     // exceptions
+    'critical.error'      => 'A critical error occurred. Unfortunately, the setup can not continue...',
     'config.not.writable' => 'Config is not writable',
+    'database.error'      => 'An error occurred during the database connection test: [error]',
+    'users.error'         => 'An error occurred during the QUIQQER system table setup in the database: [error]',
+    'paths.error'         => 'The necessary QUIQQER folders could not be created.',
+    'inifiles.error'      => 'The necessary configuration files could not be written.',
+    'composer.json.error' => 'Could not write composer.json.',
+    'composer.phar.error' => 'Could not download and/or write composer.phar.',
 
     'create.projects' => 'Creating projects...',
     'start.tests'     => 'Executing QUIQQER Health Check and Unit Tests',

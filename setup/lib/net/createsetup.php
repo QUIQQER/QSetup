@@ -30,6 +30,7 @@ $db[ 'database' ] = $formData[ 'db_database' ];
 $db[ 'host' ]     = $formData[ 'db_host' ];
 $db[ 'username' ] = $formData[ 'db_user' ];
 $db[ 'password' ] = $formData[ 'db_password' ];
+$db[ 'prefix' ]   = $formData[ 'db_prefix' ];
 
 $setupData[ 'database' ] = $db;
 
@@ -67,20 +68,6 @@ $p[ 'var' ]      = trimPath( $formData[ 'var-dir' ] );
 
 $setupData[ 'paths' ] = $p;
 
-//$require = array(
-//    'cms-dir',
-//    'var-dir',
-//    'lib-dir',
-//    'bin-dir',
-//    'opt-dir',
-//    'usr-dir',
-//    'host',
-//    'user_username',
-//    'user_password',
-//    'db_driver',
-//    'version'
-//);
-
 $setupfile = dirname( dirname( dirname( __FILE__ ) ) ) .'/quiqqer.setup';
 
 // create the setup file
@@ -90,9 +77,7 @@ file_put_contents(
 );
 
 
-
-
-
+// Helper functions
 /**
  * trim the path
  * every path must begin with / and end with /

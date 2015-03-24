@@ -76,17 +76,12 @@ $this->Locale->set( 'de', 'quiqqer/websetup', array(
     'missing.db.user'         => 'Bitte geben Sie einen Datenbank-Benutzer an.',
     'missing.db.password'     => 'Bitte geben Sie ein Datenbank-Benutzer Passwort an.',
     'db.driver.not.supported' => 'Dieser Datenbank-Treiber wird von QUIQQER noch nicht unterstützt.',
+    'db.test.error'           => 'Bei der Prüfung der Datenbank-Verbindung ist ein Fehler aufgetreten. Bitte überprüfen Sie Ihre Datenbank-Angaben, bevor sie die Installation starten: [error]',
 
     'missing.username' => 'Bitte geben Sie einen root-Benutzer an.',
     'missing.password' => 'Bitte geben Sie ein Passwort für den root-Benutzer an.',
 
     'missing.folder' => 'Bitte geben Sie einen [folder]-Pfad an.'
-
-));
-
-$this->Locale->set('de', 'quiqqer/database', array(
-
-    "check.could.not.create" => "Die Datenbank konnte leider nicht erstellt werden. Bitte prüfen Sie, ob der angegebene Nutzer alle nötigen Rechte hat."
 
 ));
 
@@ -142,8 +137,18 @@ $this->Locale->set('de', 'quiqqer/installer', array(
     'step.5.cleanup'             => 'Starte Säuberung',
     'step.5.successful'          => 'Setup erfolgreich durchgeführt',
 
+    // success
+    'users.success'    => 'QUIQQER System-Tabellen und Benutzer erfolgreich angelegt.',
+    'database.success' => 'Datenbank-Prüfung erfolgreich.',
+    'paths.success'    => 'QUIQQER-Verzeichnisse erfolgreich erstellt.',
+
     // exceptions
+    'critical.error'      => 'Ein kritischer Fehler ist aufgetreten. Die Installation kann leider nicht fortgeführt werden...',
     'config.not.writable' => 'Config ist nicht schreibbar',
+    'database.error'      => 'Bei der Überprüfung der Datenbank-Verbindung ist ein Fehler aufgetreten: [error]',
+    'users.error'         => 'Beim Erstellen der QUIQQER System-Tabellen in der Datenbank ist ein Fehler aufgetreten: [error]',
+    'paths.error'         => 'Die benötigten QUIQQER-Verzeichnisse konnten nicht erstellt werden.',
+    'inifiles.error'      => 'Die nötigen Konfigurations-Dateien konnten nicht geschrieben werden.',
 
     'create.projects' => 'Erstelle Projekte...',
     'start.tests'     => 'Führe QUIQQER System-Gesundheits-Check und Unit Tests aus...',

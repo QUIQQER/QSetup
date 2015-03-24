@@ -98,6 +98,14 @@ define('Setup', [
 
                     var setup = self.$Setup;
 
+                    // version from setupfile
+                    if ( typeof setup.packages !== 'undefined' )
+                    {
+                        if ( typeof setup.packages[ 'quiqqer/quiqqer' ] !== 'undefined' ) {
+                            document.id( 'version' ).value = setup.packages[ 'quiqqer/quiqqer' ];
+                        }
+                    }
+
                     // insert database credentials from setupfile
                     if ( typeof setup.database !== 'undefined' )
                     {
@@ -213,9 +221,11 @@ define('Setup', [
 
                     if ( result.code !== 200 )
                     {
-                        new QUIConfirm({
+                        var CreateDBConfirm = new QUIConfirm({
                             title : Locale.get( 'quiqqer/websetup', 'database.create.confirm' ),
                             icon  : 'icon-asterisk',
+
+                            maxWidth : 400,
 
                             events :
                             {
@@ -258,7 +268,17 @@ define('Setup', [
                                     }));
                                 }
                             }
-                        }).open();
+                        });
+
+                        CreateDBConfirm.create();
+
+                        CreateDBConfirm.setContent(
+                            '<p>' +
+                                Locale.get( 'quiqqer/websetup', 'database.create.text' ) +
+                            '</p>'
+                        );
+
+                        CreateDBConfirm.open();
 
                         QUI.getMessageHandler(function(MH) {
                             MH.addError( result.message );
@@ -337,7 +357,7 @@ define('Setup', [
                         styles    : {
                             height : 500,
                             width  : '100%',
-                            border : 0,
+                            border : 0
                         }
                     }).inject( document.getElement( 'form' ) );
 

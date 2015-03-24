@@ -3,10 +3,13 @@
 error_reporting( E_ALL );
 ini_set( 'display_errors', true );
 
-require_once dirname( dirname( __FILE__ ) ) . '/classes/Locale.php';
+if ( !isset( $Locale ) )
+{
+    require_once dirname( dirname( __FILE__ ) ) . '/classes/Locale.php';
 
-$Locale = new \QUI\Locale();
-$Locale->setCurrent( $_POST[ 'lang' ] );
+    $Locale = new \QUI\Locale();
+    $Locale->setCurrent( $_POST[ 'lang' ] );
+}
 
 try
 {
@@ -96,7 +99,13 @@ try
 } catch ( \Exception $Exception )
 {
     echo json_encode(array(
-        'message' => $Exception->getMessage(),
+        'message' => $Locale->get(
+            'quiqqer/websetup',
+            'db.test.error',
+            array(
+                'error' => $Exception->getMessage()
+            )
+        ),
         'code'    => $Exception->getCode(),
     ));
 

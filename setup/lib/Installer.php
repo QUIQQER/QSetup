@@ -110,6 +110,11 @@ class Installer
      */
     protected $_setup = array();
 
+    protected $_setupProcess = array(
+        'tables'  => false,
+        'folders' => false,
+    );
+
     public $Locale;
 
     /**
@@ -398,9 +403,11 @@ class Installer
         }
 
         // switch to the right db installer
-        switch ( $db[ 'driver' ] )
+        try
         {
-            // @todo sqlite support later
+            switch ( $db[ 'driver' ] )
+            {
+                // @todo sqlite support later
 //            case 'sqlite':
 //                require_once 'installer/SQLite.php';
 //
@@ -408,13 +415,34 @@ class Installer
 //
 //            break;
 
-            case 'mysql':
-                require_once 'installer/DataBase.php';
+                case 'mysql':
+                    require_once 'installer/DataBase.php';
 
-                $result = installer\DataBase::database( $db, $this );
+                    $result = installer\DataBase::database( $db, $this );
 
-                break;
+                    break;
+            }
+
+        } catch ( Exception $Exception )
+        {
+            $this->_exitError(
+                $this->Locale->get(
+                    'quiqqer/installer',
+                    'database.error',
+                    array(
+                        'error' => $Exception->getMessage()
+                    )
+                )
+            );
         }
+
+        $this->writeLn( '' );
+        $this->writeLn(
+            $this->Locale->get(
+                'quiqqer/installer',
+                'database.success'
+            )
+        );
 
         $this->_PDO    = $result[ 'PDO' ];
 //        $this->_params = array_merge( $this->_params, $result[ 'params' ] );
@@ -503,82 +531,101 @@ class Installer
             }
         }
 
-        // create all tables
-        installer\DataBase::importTables(
-            $this->_setup[ 'database' ],
-            Utils\XML::getDataBaseFromXml( $dbXML )
-        );
-
-        // create root group
-        $DB->insert(
-            $group_table,
-            array(
-                'id'      => $this->_params[ 'root' ],
-                'name'    => 'root',
-                'admin'   => 1,
-                'active'  => 1,
-                'toolbar' => 'standard.xml',
-                'lang'    => $this->_setup[ 'lang' ]
-            )
-        );
-
-        // create users
-        $salt = substr( $this->_params[ 'salt' ], 0, $this->_params[ 'saltlength' ] );
-
-        foreach ( $this->_setup[ 'users' ] as $k => $user )
+        try
         {
-            $id   = mt_rand( 100, 1000000000 );
-            $pass = $salt . md5( $salt . $user[ 'password' ] );
-            $su   = 0;
+            // create all tables
+            installer\DataBase::importTables(
+                $this->_setup[ 'database' ],
+                Utils\XML::getDataBaseFromXml( $dbXML )
+            );
 
-            if ( isset( $user[ 'superuser' ] ) &&
-                $user[ 'superuser' ] )
-            {
-                $su = 1;
-            }
-
-            // set first user als "root" user (just for safety, may be deprecated)
-            if ( $k === 0 )
-            {
-                $this->_username = $user[ 'name' ];
-                $this->_password = $user[ 'password' ];
-                $this->_params[ 'rootuser' ] = $id;
-            }
-
+            // create root group
             $DB->insert(
-                $user_table,
+                $group_table,
                 array(
-                    'username'  => $user[ 'name' ],
-                    'password'  => $pass,
-                    'id'        => $id,
-                    'usergroup' => $this->_params['root'],
-                    'su'        => $su,
-                    'active'    => 1
+                    'id'      => $this->_params[ 'root' ],
+                    'name'    => 'root',
+                    'admin'   => 1,
+                    'active'  => 1,
+                    'toolbar' => 'standard.xml'
+                )
+            );
+
+            // create users
+            $salt = substr( $this->_params[ 'salt' ], 0, $this->_params[ 'saltlength' ] );
+
+            foreach ( $this->_setup[ 'users' ] as $k => $user )
+            {
+                $id   = mt_rand( 100, 1000000000 );
+                $pass = $salt . md5( $salt . $user[ 'password' ] );
+                $su   = 0;
+
+                if ( isset( $user[ 'superuser' ] ) &&
+                    $user[ 'superuser' ] )
+                {
+                    $su = 1;
+                }
+
+                // set first user als "root" user (just for safety, may be deprecated)
+                if ( $k === 0 )
+                {
+                    $this->_username = $user[ 'name' ];
+                    $this->_password = $user[ 'password' ];
+                    $this->_params[ 'rootuser' ] = $id;
+                }
+
+                $DB->insert(
+                    $user_table,
+                    array(
+                        'username'  => $user[ 'name' ],
+                        'password'  => $pass,
+                        'id'        => $id,
+                        'usergroup' => $this->_params['root'],
+                        'su'        => $su,
+                        'active'    => 1
+                    )
+                );
+            }
+
+            $permissions = array(
+                "quiqqer.admin.users.edit"   => true,
+                "quiqqer.admin.groups.edit"  => true,
+                "quiqqer.admin.users.view"   => true,
+                "quiqqer.admin.groups.view"  => true,
+                "quiqqer.system.cache"       => true,
+                "quiqqer.system.permissions" => true,
+                "quiqqer.system.update"      => true,
+                "quiqqer.su"                 => true,
+                "quiqqer.admin"              => true,
+                "quiqqer.projects.create"    => true
+            );
+
+            // create permissions
+            $DB->insert(
+                $perm2group,
+                array(
+                    'group_id'    => $this->_params['root'],
+                    'permissions' => json_encode( $permissions )
+                )
+            );
+            
+        } catch ( Exception $Exception )
+        {
+            $this->_exitError(
+                $this->Locale->get(
+                    'quiqqer/installer',
+                    'users.error',
+                    array( 'error', $Exception->getMessage() )
                 )
             );
         }
 
-        $permissions = array(
-            "quiqqer.admin.users.edit"   => true,
-            "quiqqer.admin.groups.edit"  => true,
-            "quiqqer.admin.users.view"   => true,
-            "quiqqer.admin.groups.view"  => true,
-            "quiqqer.system.cache"       => true,
-            "quiqqer.system.permissions" => true,
-            "quiqqer.system.update"      => true,
-            "quiqqer.su"                 => true,
-            "quiqqer.admin"              => true,
-            "quiqqer.projects.create"    => true
+        $this->writeLn( '' );
+        $this->writeLn(
+            $this->Locale->get( 'quiqqer/installer', 'users.success' )
         );
 
-        // create permissions
-        $DB->insert(
-            $perm2group,
-            array(
-                'group_id'    => $this->_params['root'],
-                'permissions' => json_encode( $permissions )
-            )
-        );
+        $this->_setupProcess[ 'tables' ] = true;
     }
 
     /**
@@ -724,11 +771,31 @@ class Installer
         $etc_dir = $cms_dir .'etc/';
         $tmp_dir = $var_dir .'temp/';
 
-        Utils\System\File::mkdir( $cms_dir );
-        Utils\System\File::mkdir( $etc_dir );
-        Utils\System\File::mkdir( $tmp_dir );
-        Utils\System\File::mkdir( $opt_dir );
-        Utils\System\File::mkdir( $usr_dir );
+        if ( !Utils\System\File::mkdir( $cms_dir ) ||
+             !Utils\System\File::mkdir( $etc_dir ) ||
+             !Utils\System\File::mkdir( $tmp_dir ) ||
+             !Utils\System\File::mkdir( $opt_dir ) ||
+             !Utils\System\File::mkdir( $lib_dir ) ||
+             !Utils\System\File::mkdir( $usr_dir ) ||
+             !Utils\System\File::mkdir( $bin_dir ) ||
+             !Utils\System\File::mkdir( $var_dir ) ||
+             !Utils\System\File::mkdir( $var_dir . 'composer/' ) )
+        {
+            $this->_exitError(
+                $this->Locale->get(
+                    'quiqqer/installer',
+                    'paths.error'
+                )
+            );
+        }
+
+        $this->writeLn( '' );
+        $this->writeLn(
+            $this->Locale->get(
+                'quiqqer/installer',
+                'paths.success'
+            )
+        );
 
         if ( !isset( $this->_params['httpshost'] ) ) {
             $this->_params['httpshost'] = '';
@@ -785,40 +852,77 @@ class Installer
         );
 
         // needle inis
-        mkdir( $etc_dir .'wysiwyg/' );
-        mkdir( $etc_dir .'wysiwyg/toolbars/' );
+        if ( !mkdir( $etc_dir .'wysiwyg/' ) )
+        {
+            $this->_exitError(
+                $this->Locale->get(
+                    'quiqqer/installer',
+                    'paths.error'
+                )
+            );
+        };
 
-        file_put_contents( $etc_dir .'conf.ini.php', '' );
-        file_put_contents( $etc_dir .'plugins.ini.php', '' );
-        file_put_contents( $etc_dir .'projects.ini.php', '' );
-        file_put_contents( $etc_dir .'source.list.ini.php', '' );
-        file_put_contents( $etc_dir .'wysiwyg/editors.ini.php', '' );
-        file_put_contents( $etc_dir .'wysiwyg/conf.ini.php', '' );
+        if ( !mkdir( $etc_dir .'wysiwyg/toolbars/' ) )
+        {
+            $this->_exitError(
+                $this->Locale->get(
+                    'quiqqer/installer',
+                    'paths.error'
+                )
+            );
+        };
 
-        $this->_writeIni( $etc_dir .'conf.ini.php', $config );
+        if ( !file_put_contents( $etc_dir .'conf.ini.php', '' )            ||
+             !file_put_contents( $etc_dir .'plugins.ini.php', '' )         ||
+             !file_put_contents( $etc_dir .'projects.ini.php', '' )        ||
+             !file_put_contents( $etc_dir .'source.list.ini.php', '' )     ||
+             !file_put_contents( $etc_dir .'wysiwyg/editors.ini.php', '' ) ||
+             !file_put_contents( $etc_dir .'wysiwyg/conf.ini.php', '' ) )
+        {
+            $this->_exitError(
+                $this->Locale->get(
+                    'quiqqer/installer',
+                    'inifiles.error'
+                )
+            );
+        }
 
-        $this->_writeIni( $etc_dir .'source.list.ini.php', array(
-            'packagist' => array(
-                'active' => 1
-            ),
+        try
+        {
+            $this->_writeIni( $etc_dir .'conf.ini.php', $config );
 
-            'http://update.quiqqer.com/' => array(
-                'active' => 1,
-                'type'   => "composer"
-            ),
+            $this->_writeIni( $etc_dir .'source.list.ini.php', array(
+                'packagist' => array(
+                    'active' => 1
+                ),
 
-            'http://composer.quiqqer.com/' => array(
-                'active' => 1,
-                'type'   => "composer"
-            )
-        ));
+                'http://update.quiqqer.com/' => array(
+                    'active' => 1,
+                    'type'   => "composer"
+                ),
 
-        // wyiswyg editor
-        $this->_writeIni( $etc_dir .'wysiwyg/conf.ini.php', array(
-            'settings' => array(
-                'standard' => 'ckeditor4'
-            )
-        ));
+                'http://composer.quiqqer.com/' => array(
+                    'active' => 1,
+                    'type'   => "composer"
+                )
+            ));
+
+            // wyiswyg editor
+            $this->_writeIni( $etc_dir .'wysiwyg/conf.ini.php', array(
+                'settings' => array(
+                    'standard' => 'ckeditor4'
+                )
+            ));
+
+        } catch ( Exception $Exception )
+        {
+            $this->_exitError(
+                $this->Locale->get(
+                    'quiqqer/installer',
+                    'inifiles.error'
+                )
+            );
+        }
 
         // standard toolbar
         copy(
@@ -847,13 +951,31 @@ class Installer
 
         $composer[ 'require' ] = $this->_setup[ 'packages' ];
 
-        file_put_contents( $cms_dir .'composer.json', json_encode( $composer ) );
+        if ( !file_put_contents( $cms_dir .'composer.json', json_encode( $composer ) ) )
+        {
+            $this->_exitError(
+                $this->Locale->get(
+                    'quiqqer/installer',
+                    'composer.json.error'
+                )
+            );
+        };
 
         // download composer file
         file_put_contents(
             $cms_dir ."composer.phar",
             fopen( "https://getcomposer.org/composer.phar", 'r' )
         );
+
+        if ( !file_exists( $cms_dir . "composer.phar" ) )
+        {
+            $this->_exitError(
+                $this->Locale->get(
+                    'quiqqer/installer',
+                    'composer.phar.error'
+                )
+            );
+        }
 
         //
         // create the htaccess
@@ -887,15 +1009,21 @@ class Installer
             file_put_contents( $cms_dir . '.htaccess', $htaccess );
         }
 
-        if ( !is_dir( $var_dir .'composer/' ) ) {
-            mkdir( $var_dir .'composer/' );
-        }
-
         // move composer.phar to composer var
         rename(
             $cms_dir .'composer.phar',
             $var_dir .'composer/composer.phar'
         );
+
+        if ( !file_exists( $var_dir . 'composer/composer.phar' ) )
+        {
+            $this->_exitError(
+                $this->Locale->get(
+                    'quiqqer/installer',
+                    'composer.phar.error'
+                )
+            );
+        }
 
         $this->writeLn( '' );
         $this->writeLn( $this->Locale->get( 'quiqqer/installer', 'step.5.install.message' ) );
@@ -906,10 +1034,6 @@ class Installer
             'php '. $var_dir .'composer/composer.phar --working-dir="'. $cms_dir .'" install 2>&1';
 
         system( $exec, $retval );
-
-        if ( strpos( $retval, 'RuntimeException' ) !== false ) {
-            exit;
-        }
 
         if ( strpos( $retval, 'RuntimeException' ) !== false ) {
             exit;
@@ -934,11 +1058,9 @@ class Installer
 
         system( $exec, $retval );
 
-
         // some composer versions have a bug, and dont install packages with require
         $exec = 'php '. $var_dir .'composer/composer.phar --working-dir="'. $cms_dir .'" update 2>&1';
         system( $exec, $retval );
-
 
         $this->writeLn( $this->Locale->get( 'quiqqer/installer', 'step.5.download.successful' ) );
 
@@ -1236,5 +1358,28 @@ class Installer
         }
 
         return $result;
+    }
+
+    protected function _exitError($msg)
+    {
+        $this->writeLn( '' );
+        $this->writeLn( '' );
+        $this->write(
+            $this->Locale->get(
+                'quiqqer/installer',
+                'critical.error'
+            )
+        );
+        $this->writeLn( '' );
+        $this->write( $msg );
+        $this->writeLn( '' );
+
+        // @todo cleanup?
+        exit( 1 );
+    }
+
+    protected function _rollback()
+    {
+        // @todo
     }
 }

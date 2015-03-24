@@ -35,6 +35,7 @@ document.addEvent('domready', function()
         'Locale',
 
         'lang/de',
+        'lang/en',
 
         'css!extend/buttons.css'
 
@@ -60,7 +61,23 @@ document.addEvent('domready', function()
             text    : Locale.get( 'quiqqer/websetup', 'setup.btn.check.database' ),
             events :
             {
-                onClick : function() {
+                onClick : function()
+                {
+                    if ( document.id( 'db_driver' ).value.trim() === ''     ||
+                         document.id( 'db_host' ).value.trim() === ''       ||
+                         document.id( 'db_database' ).value.trim() === ''   ||
+                         document.id( 'db_user' ).value.trim() === ''       ||
+                         document.id( 'db_password' ).value.trim() === '' )
+                    {
+                        QUI.getMessageHandler(function(MH) {
+                            MH.addAttention(
+                                Locale.get( 'quiqqer/websetup', 'database.missing.credentials' )
+                            );
+                        });
+
+                        return;
+                    }
+
                     Installer.checkDatabase();
                 }
             },

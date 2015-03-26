@@ -144,9 +144,12 @@ foreach ( $helpClasses as $class )
 echo "\n\nPacke alles in quiqqer.zip zusammen...";
 
 chdir( __DIR__ .'/setup' );
-shell_exec( 'zip -q -9 -r ../quiqqer.zip ./*' );
+shell_exec( 'zip -q -9 -r ../quiqqer.zip ./* -x *.git*' );
 
-if ( !file_exists( '../quiqqer.zip' ) ) {
+chdir( __DIR__ );
+shell_exec( 'zip quiqqer.zip README.md' );
+
+if ( !file_exists( 'quiqqer.zip' ) ) {
     exitError( "Konnte zip-Datei nicht erstellen." );
 }
 

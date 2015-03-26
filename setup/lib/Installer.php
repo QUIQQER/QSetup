@@ -872,12 +872,12 @@ class Installer
             );
         };
 
-        if ( !file_put_contents( $etc_dir .'conf.ini.php', '' )            ||
-             !file_put_contents( $etc_dir .'plugins.ini.php', '' )         ||
-             !file_put_contents( $etc_dir .'projects.ini.php', '' )        ||
-             !file_put_contents( $etc_dir .'source.list.ini.php', '' )     ||
-             !file_put_contents( $etc_dir .'wysiwyg/editors.ini.php', '' ) ||
-             !file_put_contents( $etc_dir .'wysiwyg/conf.ini.php', '' ) )
+        if ( file_put_contents( $etc_dir .'conf.ini.php', '' ) === false            ||
+             file_put_contents( $etc_dir .'plugins.ini.php', '' ) === false         ||
+             file_put_contents( $etc_dir .'projects.ini.php', '' ) === false        ||
+             file_put_contents( $etc_dir .'source.list.ini.php', '' ) === false     ||
+             file_put_contents( $etc_dir .'wysiwyg/editors.ini.php', '' ) === false ||
+             file_put_contents( $etc_dir .'wysiwyg/conf.ini.php', '' ) === false )
         {
             $this->_exitError(
                 $this->Locale->get(
@@ -951,7 +951,7 @@ class Installer
 
         $composer[ 'require' ] = $this->_setup[ 'packages' ];
 
-        if ( !file_put_contents( $cms_dir .'composer.json', json_encode( $composer ) ) )
+        if ( file_put_contents( $cms_dir .'composer.json', json_encode( $composer ) ) === false )
         {
             $this->_exitError(
                 $this->Locale->get(

@@ -238,7 +238,7 @@ class Installer
 
         $this->writeLn( "Which language do you want to use? (de=German,en=English) [en]: " );
 
-        if ( !isset( $this->_setup[ 'lang' ] ) || empty( $lang ) )
+        if ( !isset( $this->_setup[ 'lang' ] ) || empty( $this->_setup[ 'lang' ] ) )
         {
             $lang = trim( fgets( STDIN ) );
         } else

@@ -22,7 +22,7 @@ class Installer
     // setup file template with essential packages and repositories
     static public $setupData = array(
         'lang'         => '',
-        'langs'        => '',
+        'langs'        => array(),
         'database'     => array(
             'driver'   => '',
             'database' => '',
@@ -238,16 +238,12 @@ class Installer
 
         $this->writeLn( "Which language do you want to use? (de=German,en=English) [en]: " );
 
-        if ( !isset( $this->_setup[ 'lang' ] ) )
+        if ( !isset( $this->_setup[ 'lang' ] ) || empty( $lang ) )
         {
             $lang = trim( fgets( STDIN ) );
         } else
         {
             $lang = $this->_setup[ 'lang' ];
-        }
-
-        if ( empty( $lang ) ) {
-            $lang = 'en';
         }
 
         switch ( $lang )
@@ -265,7 +261,7 @@ class Installer
                 break;
         }
 
-        $this->_params[ 'lang' ] = $lang;
+        $this->_setup[ 'lang' ]  = $lang;
     }
 
     /**

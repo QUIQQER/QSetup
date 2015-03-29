@@ -10,7 +10,7 @@ With the QUIQQER Setup you can install QUIQQER fast and easily.
 
 ### The installation via Browser:
 
-Open the index.php in your browser and follow the installation instructions.
+Open the quiqqer.php in your browser and follow the installation instructions.
 
 
 ### The installation via bash is quite simpler

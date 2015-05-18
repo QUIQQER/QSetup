@@ -1105,8 +1105,7 @@ class Installer
             $exec = 'COMPOSER_HOME="'.$var_dir.'composer/" '.
                 'php '.$var_dir.'composer/composer.phar --working-dir="'
                 .$cms_dir
-                .'" --prefer-dist'.
-                'require "quiqqer/quiqqer:'.$v.'" 2>&1';
+                .'" require "quiqqer/quiqqer:'.$v.'" --prefer-dist 2>&1';
 
             system($exec, $retval);
 

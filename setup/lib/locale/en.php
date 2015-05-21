@@ -103,7 +103,7 @@ $this->Locale->set('en', 'quiqqer/installer', array(
     'step.2.db.prefix'     => 'Want you a prefix for your database tables? if no, leave it empty: ',
     'step.2.db.driver'     => 'Database driver (mysql,sqlite) [mysql]: ',
     'step.2.db.new'        => 'Name of new database [quiqqer]: ',
-    'step.2.db.old'        => 'Name of existing database: ',
+    'step.2.db.old'        => 'Name of existing database [quiqqer]: ',
     'step.2.db.create.new' => 'Would you like to use an existing database? [NO/yes] :',
 
     // user
@@ -152,6 +152,8 @@ $this->Locale->set('en', 'quiqqer/installer', array(
     'inifiles.error'      => 'The necessary configuration files could not be written.',
     'composer.json.error' => 'Could not write composer.json.',
     'composer.phar.error' => 'Could not download and/or write composer.phar.',
+
+    'database.error.missing.params' => 'Database fields are incorrect. Please fill in all database fields correctly.',
 
     'create.projects' => 'Creating projects...',
     'start.tests'     => 'Executing QUIQQER Health Check and Unit Tests',

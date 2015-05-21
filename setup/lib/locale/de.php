@@ -101,8 +101,8 @@ $this->Locale->set('de', 'quiqqer/installer', array(
     'step.2.title'         => 'Schritt 2 : Datenbank-Verbindung',
     'step.2.db.driver'     => 'Datenbanktreiber (mysql,sqlite) [mysql]: ',
     'step.2.db.new'        => 'Name der zu erstellenden Datenbank [quiqqer]: ',
-    'step.2.db.old'        => 'Name der bestehenden Datenbank: ',
-    'step.2.db.create.new' => 'Möchten Sie QUIQQER in eine bereits bestehende Datenbank installieren? [NEIN/ja] :',
+    'step.2.db.old'        => 'Name der bestehenden Datenbank [quiqqer]: ',
+    'step.2.db.create.new' => 'Möchten Sie QUIQQER in eine bereits bestehende Datenbank installieren? [nein/JA] :',
     'step.2.db.prefix'     => 'Möchten Sie einen Prefix für Ihre Datenbanktabellen? Keine Eingabe heißt kein Prefix: ',
 
     // user
@@ -145,10 +145,13 @@ $this->Locale->set('de', 'quiqqer/installer', array(
     // exceptions
     'critical.error'      => 'Ein kritischer Fehler ist aufgetreten. Die Installation kann leider nicht fortgeführt werden...',
     'config.not.writable' => 'Config ist nicht schreibbar',
-    'database.error'      => 'Bei der Überprüfung der Datenbank-Verbindung ist ein Fehler aufgetreten: [error]',
-    'users.error'         => 'Beim Erstellen der QUIQQER System-Tabellen in der Datenbank ist ein Fehler aufgetreten: [error]',
+    'database.error'      => "Bei der Überprüfung der Datenbank-Verbindung ist ein Fehler aufgetreten:\n[error]",
+    'users.error'         => "Beim Erstellen der QUIQQER System-Tabellen in der Datenbank ist ein Fehler aufgetreten:\n[error]",
     'paths.error'         => 'Die benötigten QUIQQER-Verzeichnisse konnten nicht erstellt werden.',
     'inifiles.error'      => 'Die nötigen Konfigurations-Dateien konnten nicht geschrieben werden.',
+
+    'database.error.missing.params' => 'Es wurden nicht alle Datenbankfelder angegeben. bitte füllen Sie alle Datenbankfelder korrekt aus.',
+    'database.error.not.exist' => 'Die Datenbank existiert nicht.',
 
     'create.projects' => 'Erstelle Projekte...',
     'start.tests'     => 'Führe QUIQQER System-Gesundheits-Check und Unit Tests aus...',

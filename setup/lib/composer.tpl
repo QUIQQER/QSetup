@@ -26,7 +26,7 @@
     "require": {},
 
     "minimum-stability"  : "dev",
-    "preferred-install:" : "dist",
+    "preferred-install" : "dist",
 
     "config": {
         "vendor-dir"    : "{$packages_dir}",

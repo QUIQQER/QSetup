@@ -38,8 +38,6 @@ class Installer
             'paths'        => array(
                 'url'      => '',
                 'cms'      => '',
-                'bin'      => '',
-                'lib'      => '',
                 'packages' => '',
                 'usr'      => '',
                 'var'      => ''
@@ -528,8 +526,10 @@ class Installer
         if (!file_exists($dbXML)) {
 
             $this->writeLn(
-                $this->Locale->get('quiqqer/installer',
-                    'step.3.error.dbxml.not.found')
+                $this->Locale->get(
+                    'quiqqer/installer',
+                    'step.3.error.dbxml.not.found'
+                )
             );
 
             // Switch to master if version-specific database.xml not found
@@ -538,8 +538,10 @@ class Installer
             if (!file_exists($dbXML)) {
 
                 $this->writeLn(
-                    $this->Locale->get('quiqqer/installer',
-                        'step.3.error.dbxml.not.exist')
+                    $this->Locale->get(
+                        'quiqqer/installer',
+                        'step.3.error.dbxml.not.exist'
+                    )
                 );
 
                 exit;
@@ -674,10 +676,6 @@ class Installer
                 && !empty($p['cms'])
                 && isset($p['var'])
                 && !empty($p['var'])
-                && isset($p['lib'])
-                && !empty($p['lib'])
-                && isset($p['bin'])
-                && !empty($p['bin'])
                 && isset($p['usr'])
                 && !empty($p['usr'])
                 && isset($p['packages'])
@@ -726,16 +724,6 @@ class Installer
                 'default'  => $cms_dir,
                 'question' => $this->Locale->get('quiqqer/installer',
                     'step.4.paths.q1')
-            ),
-            'lib'      => array(
-                'default'  => $cms_dir."lib",
-                'question' => $this->Locale->get('quiqqer/installer',
-                    'step.4.paths.q2')
-            ),
-            'bin'      => array(
-                'default'  => $cms_dir."bin",
-                'question' => $this->Locale->get('quiqqer/installer',
-                    'step.4.paths.q3')
             ),
             'usr'      => array(
                 'default'  => $cms_dir."usr",
@@ -786,8 +774,6 @@ class Installer
 
         $cms_dir = $this->_cleanPath($p['cms']);
         $var_dir = $this->_cleanPath($p['var']);
-        $lib_dir = $this->_cleanPath($p['lib']);
-        $bin_dir = $this->_cleanPath($p['bin']);
         $opt_dir = $this->_cleanPath($p['packages']);
         $usr_dir = $this->_cleanPath($p['usr']);
         $url_dir = $this->_cleanPath($p['url']);
@@ -799,9 +785,7 @@ class Installer
             || !Utils\System\File::mkdir($etc_dir)
             || !Utils\System\File::mkdir($tmp_dir)
             || !Utils\System\File::mkdir($opt_dir)
-            || !Utils\System\File::mkdir($lib_dir)
             || !Utils\System\File::mkdir($usr_dir)
-            || !Utils\System\File::mkdir($bin_dir)
             || !Utils\System\File::mkdir($var_dir)
             || !Utils\System\File::mkdir($var_dir.'composer/')
         ) {
@@ -827,13 +811,13 @@ class Installer
         $config = array(
             "globals"  => array(
                 "cms_dir"        => $cms_dir,
-                "lib_dir"        => $lib_dir,
-                "bin_dir"        => $bin_dir,
                 "var_dir"        => $var_dir,
                 "usr_dir"        => $usr_dir,
-                "sys_dir"        => $cms_dir."admin/",
                 "opt_dir"        => $opt_dir,
                 "url_dir"        => $url_dir,
+                "url_lib_dir"    => '/lib/',
+                "url_bin_dir"    => '/bin/',
+                "url_sys_dir"    => '/admin/',
                 "salt"           => $this->_params['salt'],
                 "saltlength"     => $this->_params['saltlength'],
                 "rootuser"       => $this->_params['rootuser'],
@@ -939,6 +923,7 @@ class Installer
         $composer['config']['vendor-dir'] = $opt_dir;
         $composer['config']['cache-dir'] = $var_dir.'composer/';
         $composer['config']['component-dir'] = $opt_dir.'bin/';
+        $composer['config']['quiqqer-dir'] = $cms_dir;
 
         // set composer repositories
         $composer['repositories'] = $this->_setup['repositories'];
@@ -972,36 +957,36 @@ class Installer
         //
         // create the htaccess
         //
-        $packageDir = str_replace($cms_dir, '', $opt_dir);
+//        $packageDir = str_replace($cms_dir, '', $opt_dir);
 
-        $htaccess = ''.
-            '# QUIQQER htaccess rules'."\n".
-            '<IfModule mod_rewrite.c>'."\n".
-            'SetEnv HTTP_MOD_REWRITE On'."\n".
-            "\n".
-            'RewriteEngine On'."\n".
-            'RewriteBase '.$url_dir."\n".
-            'RewriteCond  %{REQUEST_FILENAME} !^.*bin/'."\n".
-            'RewriteRule ^.*lib/|^.*etc/|^.*var/|^.*'.$packageDir
-            .'|^.*media/sites/ / [L]'."\n".
-            'RewriteRule  ^/(.*)     /$'."\n".
-            'RewriteCond %{REQUEST_FILENAME} !-f'."\n".
-            'RewriteCond %{REQUEST_FILENAME} !-d'."\n".
-            "\n".
-            'RewriteRule ^(.*)$ index.php?_url=$1&%{QUERY_STRING}'.
-            '</IfModule>';
-
-        if (file_exists('.htaccess')) {
-            $this->writeLn(
-                $this->Locale->get('quiqqer/installer',
-                    'step.5.htaccess.exists')
-            );
-            $this->writeLn('');
-            $this->writeLn($htaccess);
-
-        } else {
-            file_put_contents($cms_dir.'.htaccess', $htaccess);
-        }
+//        $htaccess = ''.
+//            '# QUIQQER htaccess rules'."\n".
+//            '<IfModule mod_rewrite.c>'."\n".
+//            'SetEnv HTTP_MOD_REWRITE On'."\n".
+//            "\n".
+//            'RewriteEngine On'."\n".
+//            'RewriteBase '.$url_dir."\n".
+//            'RewriteCond  %{REQUEST_FILENAME} !^.*bin/'."\n".
+//            'RewriteRule ^.*lib/|^.*etc/|^.*var/|^.*'.$packageDir
+//            .'|^.*media/sites/ / [L]'."\n".
+//            'RewriteRule  ^/(.*)     /$'."\n".
+//            'RewriteCond %{REQUEST_FILENAME} !-f'."\n".
+//            'RewriteCond %{REQUEST_FILENAME} !-d'."\n".
+//            "\n".
+//            'RewriteRule ^(.*)$ index.php?_url=$1&%{QUERY_STRING}'.
+//            '</IfModule>';
+//
+//        if (file_exists('.htaccess')) {
+//            $this->writeLn(
+//                $this->Locale->get('quiqqer/installer',
+//                    'step.5.htaccess.exists')
+//            );
+//            $this->writeLn('');
+//            $this->writeLn($htaccess);
+//
+//        } else {
+//            file_put_contents($cms_dir.'.htaccess', $htaccess);
+//        }
 
         // move composer.phar to composer var
         rename(
@@ -1125,6 +1110,60 @@ class Installer
         // execute QUIQQER setup to create all necessary package tables
         chdir($cms_dir);
 
+
+        // create file links
+        file_put_contents(
+            $cms_dir.'index.php',
+            "<?php
+            require 'bootstrap.php';
+            require '{$opt_dir}quiqqer/quiqqer/index.php';"
+        );
+
+        file_put_contents(
+            $cms_dir.'image.php',
+            "<?php
+            require 'bootstrap.php';
+            require '{$opt_dir}quiqqer/quiqqer/image.php';"
+        );
+
+        file_put_contents(
+            $cms_dir.'quiqqer.php',
+            "<?php
+            require 'bootstrap.php';
+            require '{$opt_dir}quiqqer/quiqqer/quiqqer.php';"
+        );
+
+        file_put_contents(
+            $cms_dir.'bootstrap.php',
+
+            '<?php
+            $etc_dir = dirname(__FILE__).\'/etc/\';
+
+            if (!file_exists($etc_dir.\'conf.ini.php\')) {
+                require_once \'quiqqer.php\';
+                exit;
+            }
+
+            if (!defined(\'ETC_DIR\')) {
+                define(\'ETC_DIR\', $etc_dir);
+            }
+
+            $boot = \''.$opt_dir.'quiqqer/quiqqer/bootstrap.php\';
+
+            if (file_exists($boot)) {
+                require $boot;
+            }'
+        );
+
+
+        // create htaccess
+        system(
+            'php '.$cms_dir.'quiqqer.php '.
+            '--username="'.$this->_username.'" '.
+            '--password="'.$this->_password.'" '.
+            '--tool="quiqqer:htaccess" --noLogo'
+        );
+
         // translator setup
         system(
             'php '.$cms_dir.'quiqqer.php '.
@@ -1205,7 +1244,7 @@ class Installer
         }
 
         // move dirs to temp
-        $dirs = array('css', 'locale', 'js', 'versions', 'setup_packages');
+        $dirs = array('css', 'locale', 'js', 'versions', 'setup_packages', 'bin', 'lib');
 
         foreach ($dirs as $dir) {
             if (is_dir($cms_dir.$dir)) {

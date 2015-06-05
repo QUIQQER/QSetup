@@ -594,7 +594,8 @@ class Installer
                         'id'        => $id,
                         'usergroup' => $this->_params['root'],
                         'su'        => $su,
-                        'active'    => 1
+                        'active'    => 1,
+                        'lang'      => $this->Locale->getCurrent() == 'de' ? 'de' : 'en'
                     )
                 );
             }

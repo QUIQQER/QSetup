@@ -44,13 +44,12 @@ class Installer
             ),
             'packages'     => array(
                 'php'                          => '>=5.3.2',
-                'composer/composer'            => '1.0.0-alpha9',
+                'composer/composer'            => '1.0.0-alpha10',
                 'robloach/component-installer' => '0.0.12',
                 'quiqqer/utils'                => 'dev-dev',
                 'tedivm/stash'                 => '0.11.6',
-                'phpmailer/phpmailer'          => 'v5.2.9',
                 'symfony/http-foundation'      => '2.6.4',
-                'symfony/console'              => '2.4.10'
+                'symfony/console'              => '2.5'
             ),
             'repositories' => array(
                 array(
@@ -1002,8 +1001,10 @@ class Installer
 
         $this->writeLn('');
         $this->writeLn(
-            $this->Locale->get('quiqqer/installer',
-                'step.5.install.message')
+            $this->Locale->get(
+                'quiqqer/installer',
+                'step.5.install.message'
+            )
         );
         $this->writeLn('');
 

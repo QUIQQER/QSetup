@@ -42,6 +42,11 @@ if ( file_exists( $file ) )
         
         foreach ( $quiqqerPackages as $ver => $info )
         {
+            // version 1.0.0 is not installable
+            if ($ver === '1.0.0') {
+                continue;
+            }
+
             if ( mb_substr( $ver, -2 ) !== '.0' &&
                  $ver !== 'dev-dev' &&
                  $ver !== 'dev-master' )

@@ -85,6 +85,8 @@ if ( file_exists( $file ) )
             unlink( $xmlFile );
         }
 
+        echo "\n-".$url;
+
         $ch = curl_init( $url );
 
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );

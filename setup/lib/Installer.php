@@ -778,6 +778,10 @@ class Installer
         $usr_dir = $this->_cleanPath($p['usr']);
         $url_dir = $this->_cleanPath($p['url']);
 
+        if (empty($url_dir)) {
+            $url_dir = '/';
+        }
+
         $etc_dir = $cms_dir.'etc/';
         $tmp_dir = $var_dir.'temp/';
 
@@ -815,9 +819,9 @@ class Installer
                 "usr_dir"        => $usr_dir,
                 "opt_dir"        => $opt_dir,
                 "url_dir"        => $url_dir,
-                "url_lib_dir"    => '/lib/',
-                "url_bin_dir"    => '/bin/',
-                "url_sys_dir"    => '/admin/',
+                "url_lib_dir"    => $url_dir .'lib/',
+                "url_bin_dir"    => $url_dir .'bin/',
+                "url_sys_dir"    => $url_dir .'admin/',
                 "salt"           => $this->_params['salt'],
                 "saltlength"     => $this->_params['saltlength'],
                 "rootuser"       => $this->_params['rootuser'],

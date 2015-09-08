@@ -480,7 +480,7 @@ class Installer
         $this->writeLn('');
 
         $this->_params['salt'] = md5(uniqid(rand(), true));
-        $this->_params['saltlength'] = mt_rand(0, 10);
+        $this->_params['saltlength'] = mt_rand(10, 20);
 
         $this->_params['root'] = mt_rand(1, 1000000000);
 

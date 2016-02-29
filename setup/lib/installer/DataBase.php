@@ -19,10 +19,10 @@ class DataBase
     /**
      * Database step for all standard DBs
      *
-     * @param Array         $db_params - current params
+     * @param array $db_params - current params
      * @param QUI\Installer $Installer - Params from the user
      *
-     * @return Array
+     * @return array
      *
      * @throws QUI\Exception
      */
@@ -59,7 +59,7 @@ class DataBase
      * @throws \PDOException
      * @throws \QUI\Exception
      *
-     * @param Array         $db_params
+     * @param array $db_params
      * @param QUI\Installer $Installer
      *
      * @return \PDO
@@ -83,9 +83,9 @@ class DataBase
 
         // check if the database exists
         // if not, ask if create
-        $dsn = $db_params['driver'].
-            ':dbname='.$db_params['database'].
-            ';host='.$db_params['host'].';dbname=INFORMATION_SCHEMA;';
+        $dsn = $db_params['driver'] .
+               ':dbname=' . $db_params['database'] .
+               ';host=' . $db_params['host'] . ';dbname=INFORMATION_SCHEMA;';
 
         $PDO = new \PDO($dsn, $db_params['username'], $db_params['password']);
 
@@ -102,9 +102,9 @@ class DataBase
 
 
         // db connection
-        $dsn = $db_params['driver'].
-            ':dbname='.$db_params['database'].
-            ';host='.$db_params['host'];
+        $dsn = $db_params['driver'] .
+               ':dbname=' . $db_params['database'] .
+               ';host=' . $db_params['host'];
 
 
         $PDO = new \PDO(
@@ -127,7 +127,7 @@ class DataBase
      * @throws \PDOException
      * @throws \QUI\Exception
      *
-     * @param Array         $db_params
+     * @param array $db_params
      * @param QUI\Installer $Installer
      *
      * @return Bool
@@ -150,7 +150,7 @@ class DataBase
 
         // create the database
         $PDO = new \PDO(
-            $db_params['driver'].":host=".$db_params['host'],
+            $db_params['driver'] . ":host=" . $db_params['host'],
             $db_params['username'],
             $db_params['password'],
             array(
@@ -169,21 +169,21 @@ class DataBase
     /**
      * DB Table import
      *
-     * @param Array $dbparams
-     * @param Array $dbfields
+     * @param array $dbparams
+     * @param array $dbfields
      *
      * @throws QUI\Exception
      */
     static function importTables($dbparams, $dbfields)
     {
-        $DB = self::getDatabase($dbparams);
+        $DB    = self::getDatabase($dbparams);
         $Table = $DB->Table();
 
         // globale tabellen erweitern / anlegen
         if (isset($dbfields['globals'])) {
 
             foreach ($dbfields['globals'] as $table) {
-                $tbl = $dbparams['prefix'].$table['suffix'];
+                $tbl = $dbparams['prefix'] . $table['suffix'];
 
                 $Table->appendFields($tbl, $table['fields']);
 
@@ -207,7 +207,7 @@ class DataBase
     }
 
     /**
-     * @param Array $dbparams
+     * @param array $dbparams
      *
      * @return QUI\Database\DB
      */

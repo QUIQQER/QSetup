@@ -6,6 +6,8 @@
 
 namespace QUI;
 
+use QUI;
+
 /**
  * Installs QUIQQER,
  * checks the database
@@ -16,7 +18,6 @@ namespace QUI;
  * @author  www.pcsg.de (Patrick Müller)
  * @package com.pcsg.qui
  */
-
 class Installer
 {
     // setup file template with essential packages and repositories
@@ -57,11 +58,11 @@ class Installer
                 ),
                 array(
                     'type' => 'composer',
-                    'url'  => 'http://update.quiqqer.com'
+                    'url'  => 'https://update.quiqqer.com'
                 ),
                 array(
                     'type' => 'composer',
-                    'url'  => 'http://composer.quiqqer.com'
+                    'url'  => 'https://composer.quiqqer.com'
                 )
             )
         );
@@ -137,7 +138,7 @@ class Installer
      */
     public function __construct($setupFile = null)
     {
-        require_once dirname(__FILE__).'/classes/Locale.php';
+        require_once dirname(__FILE__) . '/classes/Locale.php';
 
         $this->Locale = new Locale();
 
@@ -196,7 +197,7 @@ class Installer
             return;
         }
 
-        echo $str."\n";
+        echo $str . "\n";
     }
 
     /**
@@ -257,7 +258,7 @@ class Installer
         switch ($lang) {
             case 'en':
             case 'de':
-                include 'locale/'.$lang.'.php';
+                include 'locale/' . $lang . '.php';
 
                 $this->Locale->setCurrent($lang);
                 break;
@@ -277,7 +278,7 @@ class Installer
     public function version()
     {
         $versions = Utils\System\File::readDir(
-            dirname(dirname(__FILE__)).'/versions/'
+            dirname(dirname(__FILE__)) . '/versions/'
         );
 
         sort($versions);
@@ -295,8 +296,8 @@ class Installer
         $this->writeLn(implode(', ', $versions));
         $this->writeLn('');
         $this->writeLn(
-            $this->Locale->get('quiqqer/installer', 'step.version.choice').
-            " [".current($versions)."] :"
+            $this->Locale->get('quiqqer/installer', 'step.version.choice') .
+            " [" . current($versions) . "] :"
         );
 
         if (!isset($this->_setup['packages']['quiqqer/quiqqer'])) {
@@ -319,7 +320,7 @@ class Installer
      */
     public function database()
     {
-        $db = $this->_setup['database'];
+        $db           = $this->_setup['database'];
         $db['driver'] = 'mysql';
 
         $this->_step = 'database';
@@ -383,7 +384,7 @@ class Installer
             $this->write($param['question']);
 
             if (!empty($param['default'])) {
-                $this->write(' ['.$param['default'].']');
+                $this->write(' [' . $param['default'] . ']');
             }
 
             $this->write(' ');
@@ -447,7 +448,7 @@ class Installer
         $this->writeLn('');
 
 
-        $this->_PDO = $this->_db_result['PDO'];
+        $this->_PDO     = $this->_db_result['PDO'];
         $databaseParams = $this->_db_result['params'];
 
         // database prefix
@@ -479,15 +480,15 @@ class Installer
 
         $this->writeLn('');
 
-        $this->_params['salt'] = md5(uniqid(rand(), true));
+        $this->_params['salt']       = md5(uniqid(rand(), true));
         $this->_params['saltlength'] = mt_rand(10, 20);
 
         $this->_params['root'] = mt_rand(10, 1000000000);
 
         // check if a user exist
-        $user_table = $this->_setup['database']['prefix'].'users';
-        $group_table = $this->_setup['database']['prefix'].'groups';
-        $perm2group = $this->_setup['database']['prefix'].'permissions2groups';
+        $user_table  = $this->_setup['database']['prefix'] . 'users';
+        $group_table = $this->_setup['database']['prefix'] . 'groups';
+        $perm2group  = $this->_setup['database']['prefix'] . 'permissions2groups';
 
         $username = '';
         $password = '';
@@ -518,9 +519,9 @@ class Installer
             );
         }
 
-        $DB = installer\DataBase::getDatabase($this->_setup['database']);
-        $ver = $this->_params['version'];
-        $dbXML = dirname(dirname(__FILE__)).'/versions/'.$ver.'/database.xml';
+        $DB    = installer\DataBase::getDatabase($this->_setup['database']);
+        $ver   = $this->_params['version'];
+        $dbXML = dirname(dirname(__FILE__)) . '/versions/' . $ver . '/database.xml';
 
         if (!file_exists($dbXML)) {
 
@@ -532,7 +533,7 @@ class Installer
             );
 
             // Switch to master if version-specific database.xml not found
-            $dbXML = dirname(dirname(__FILE__)).'/versions/master/database.xml';
+            $dbXML = dirname(dirname(__FILE__)) . '/versions/master/database.xml';
 
             if (!file_exists($dbXML)) {
 
@@ -571,9 +572,9 @@ class Installer
                 $this->_params['saltlength']);
 
             foreach ($this->_setup['users'] as $k => $user) {
-                $id = mt_rand(100, 1000000000);
-                $pass = $salt.md5($salt.$user['password']);
-                $su = 0;
+                $id   = mt_rand(100, 1000000000);
+                $pass = $salt . md5($salt . $user['password']);
+                $su   = 0;
 
                 if (isset($user['superuser']) && $user['superuser']) {
                     $su = 1;
@@ -581,8 +582,8 @@ class Installer
 
                 // set first user als "root" user (just for safety, may be deprecated)
                 if ($k === 0) {
-                    $this->_username = $user['name'];
-                    $this->_password = $user['password'];
+                    $this->_username           = $user['name'];
+                    $this->_password           = $user['password'];
                     $this->_params['rootuser'] = $id;
                 }
 
@@ -686,7 +687,7 @@ class Installer
         }
 
         $this->_step = 'paths';
-        $cms_dir = getcwd().'/';
+        $cms_dir     = getcwd() . '/';
 
         $this->writeLn('');
         $this->writeLn(
@@ -726,17 +727,17 @@ class Installer
                     'step.4.paths.q1')
             ),
             'usr'      => array(
-                'default'  => $cms_dir."usr",
+                'default'  => $cms_dir . "usr",
                 'question' => $this->Locale->get('quiqqer/installer',
                     'step.4.paths.q4')
             ),
             'packages' => array(
-                'default'  => $cms_dir."packages",
+                'default'  => $cms_dir . "packages",
                 'question' => $this->Locale->get('quiqqer/installer',
                     'step.4.paths.q5')
             ),
             'var'      => array(
-                'default'  => $cms_dir."var",
+                'default'  => $cms_dir . "var",
                 'question' => $this->Locale->get('quiqqer/installer',
                     'step.4.paths.q6')
             )
@@ -745,7 +746,7 @@ class Installer
         foreach ($needles as $needle => $param) {
             $this->writeLn('');
             $this->writeLn($param['question']);
-            $this->write('Value ['.$param['default'].'] : ');
+            $this->write('Value [' . $param['default'] . '] : ');
 
             if ($edit_paths) {
                 $this->_setup['paths'][$needle] = trim(fgets(STDIN));
@@ -782,8 +783,8 @@ class Installer
             $url_dir = '/';
         }
 
-        $etc_dir = $cms_dir.'etc/';
-        $tmp_dir = $var_dir.'temp/';
+        $etc_dir = $cms_dir . 'etc/';
+        $tmp_dir = $var_dir . 'temp/';
 
         if (!Utils\System\File::mkdir($cms_dir)
             || !Utils\System\File::mkdir($etc_dir)
@@ -791,7 +792,7 @@ class Installer
             || !Utils\System\File::mkdir($opt_dir)
             || !Utils\System\File::mkdir($usr_dir)
             || !Utils\System\File::mkdir($var_dir)
-            || !Utils\System\File::mkdir($var_dir.'composer/')
+            || !Utils\System\File::mkdir($var_dir . 'composer/')
         ) {
             $this->_exitError(
                 $this->Locale->get('quiqqer/installer', 'paths.error')
@@ -819,9 +820,9 @@ class Installer
                 "usr_dir"        => $usr_dir,
                 "opt_dir"        => $opt_dir,
                 "url_dir"        => $url_dir,
-                "url_lib_dir"    => $url_dir .'lib/',
-                "url_bin_dir"    => $url_dir .'bin/',
-                "url_sys_dir"    => $url_dir .'admin/',
+                "url_lib_dir"    => $url_dir . 'lib/',
+                "url_bin_dir"    => $url_dir . 'bin/',
+                "url_sys_dir"    => $url_dir . 'admin/',
                 "salt"           => $this->_params['salt'],
                 "saltlength"     => $this->_params['saltlength'],
                 "rootuser"       => $this->_params['rootuser'],
@@ -852,25 +853,25 @@ class Installer
         );
 
         // needle inis
-        if (!mkdir($etc_dir.'wysiwyg/')) {
+        if (!mkdir($etc_dir . 'wysiwyg/')) {
             $this->_exitError(
                 $this->Locale->get('quiqqer/installer', 'paths.error')
             );
         };
 
-        if (!mkdir($etc_dir.'wysiwyg/toolbars/')) {
+        if (!mkdir($etc_dir . 'wysiwyg/toolbars/')) {
             $this->_exitError(
                 $this->Locale->get('quiqqer/installer', 'paths.error')
             );
         };
 
-        if (file_put_contents($etc_dir.'conf.ini.php', '') === false
-            || file_put_contents($etc_dir.'plugins.ini.php', '') === false
-            || file_put_contents($etc_dir.'projects.ini.php', '') === false
-            || file_put_contents($etc_dir.'source.list.ini.php', '') === false
+        if (file_put_contents($etc_dir . 'conf.ini.php', '') === false
+            || file_put_contents($etc_dir . 'plugins.ini.php', '') === false
+            || file_put_contents($etc_dir . 'projects.ini.php', '') === false
+            || file_put_contents($etc_dir . 'source.list.ini.php', '') === false
             ||
-            file_put_contents($etc_dir.'wysiwyg/editors.ini.php', '') === false
-            || file_put_contents($etc_dir.'wysiwyg/conf.ini.php', '') === false
+            file_put_contents($etc_dir . 'wysiwyg/editors.ini.php', '') === false
+            || file_put_contents($etc_dir . 'wysiwyg/conf.ini.php', '') === false
         ) {
             $this->_exitError(
                 $this->Locale->get(
@@ -880,10 +881,10 @@ class Installer
         }
 
         try {
-            $this->_writeIni($etc_dir.'conf.ini.php', $config);
+            $this->_writeIni($etc_dir . 'conf.ini.php', $config);
 
-            $this->_writeIni($etc_dir.'source.list.ini.php', array(
-                'packagist'                    => array(
+            $this->_writeIni($etc_dir . 'source.list.ini.php', array(
+                'packagist'                     => array(
                     'active' => 1
                 ),
                 'https://update.quiqqer.com/'   => array(
@@ -897,7 +898,7 @@ class Installer
             ));
 
             // wyiswyg editor
-            $this->_writeIni($etc_dir.'wysiwyg/conf.ini.php', array(
+            $this->_writeIni($etc_dir . 'wysiwyg/conf.ini.php', array(
                 'settings' => array(
                     'standard' => 'ckeditor4'
                 )
@@ -912,22 +913,22 @@ class Installer
 
         // standard toolbar
         copy(
-            dirname(__FILE__).'/standardToolbar.xml',
-            $etc_dir.'wysiwyg/toolbars/standard.xml'
+            dirname(__FILE__) . '/standardToolbar.xml',
+            $etc_dir . 'wysiwyg/toolbars/standard.xml'
         );
 
         //
         // create composer file
         //
-        $composer_json = file_get_contents(dirname(__FILE__).'/composer.tpl');
+        $composer_json = file_get_contents(dirname(__FILE__) . '/composer.tpl');
 
         $composer = json_decode($composer_json, true);
 
         // set composer paths
-        $composer['config']['vendor-dir'] = $opt_dir;
-        $composer['config']['cache-dir'] = $var_dir.'composer/';
-        $composer['config']['component-dir'] = $opt_dir.'bin/';
-        $composer['config']['quiqqer-dir'] = $cms_dir;
+        $composer['config']['vendor-dir']    = $opt_dir;
+        $composer['config']['cache-dir']     = $var_dir . 'composer/';
+        $composer['config']['component-dir'] = $opt_dir . 'bin/';
+        $composer['config']['quiqqer-dir']   = $cms_dir;
 
         // set composer repositories
         $composer['repositories'] = $this->_setup['repositories'];
@@ -938,7 +939,7 @@ class Installer
 
         $composer['require'] = $this->_setup['packages'];
 
-        if (file_put_contents($cms_dir.'composer.json', json_encode($composer))
+        if (file_put_contents($cms_dir . 'composer.json', json_encode($composer))
             === false
         ) {
             $this->_exitError(
@@ -948,11 +949,11 @@ class Installer
 
         // download composer file
         file_put_contents(
-            $cms_dir."composer.phar",
+            $cms_dir . "composer.phar",
             fopen("https://getcomposer.org/composer.phar", 'r')
         );
 
-        if (!file_exists($cms_dir."composer.phar")) {
+        if (!file_exists($cms_dir . "composer.phar")) {
             $this->_exitError(
                 $this->Locale->get('quiqqer/installer', 'composer.phar.error')
             );
@@ -994,11 +995,11 @@ class Installer
 
         // move composer.phar to composer var
         rename(
-            $cms_dir.'composer.phar',
-            $var_dir.'composer/composer.phar'
+            $cms_dir . 'composer.phar',
+            $var_dir . 'composer/composer.phar'
         );
 
-        if (!file_exists($var_dir.'composer/composer.phar')) {
+        if (!file_exists($var_dir . 'composer/composer.phar')) {
             $this->_exitError(
                 $this->Locale->get('quiqqer/installer', 'composer.phar.error')
             );
@@ -1015,14 +1016,14 @@ class Installer
 
         // lock server
         $Lockserver = new LOCKClient(array(
-            'composerJsonFile' => $cms_dir.'composer.json'
+            'composerJsonFile' => $cms_dir . 'composer.json'
         ));
 
         try {
             // generate composer.lock via lock server
             // faster installation
             file_put_contents(
-                $cms_dir.'composer.lock',
+                $cms_dir . 'composer.lock',
                 $Lockserver->getComposerLock()
             );
 
@@ -1036,9 +1037,9 @@ class Installer
 
 
         // installation
-        $exec = 'COMPOSER_HOME="'.$var_dir.'composer/" '.
-            'php '.$var_dir.'composer/composer.phar --working-dir="'.$cms_dir
-            .'" --prefer-dist install 2>&1';
+        $exec = 'COMPOSER_HOME="' . $var_dir . 'composer/" ' .
+                'php ' . $var_dir . 'composer/composer.phar --working-dir="' . $cms_dir
+                . '" --prefer-dist install 2>&1';
 
         system($exec, $retval);
 
@@ -1054,7 +1055,7 @@ class Installer
         switch ($v) {
             case 'dev':
             case 'master':
-                $v = 'dev-'.$v;
+                $v = 'dev-' . $v;
                 break;
         }
 
@@ -1062,25 +1063,25 @@ class Installer
             // add quiqqer to the composer.json
             $composer['require']['quiqqer/quiqqer'] = $v;
 
-            file_put_contents($cms_dir.'composer.json', json_encode($composer));
+            file_put_contents($cms_dir . 'composer.json', json_encode($composer));
 
             $Lockserver->setAttribute(
                 'composerJsonFile',
-                $cms_dir.'composer.json'
+                $cms_dir . 'composer.json'
             );
 
             // generate new lock
             file_put_contents(
-                $cms_dir.'composer.lock',
+                $cms_dir . 'composer.lock',
                 $Lockserver->getComposerLock()
             );
 
 
             // install
-            $exec = 'COMPOSER_HOME="'.$var_dir.'composer/" '.
-                'php '.$var_dir.'composer/composer.phar --working-dir="'
-                .$cms_dir
-                .'" --prefer-dist install 2>&1';
+            $exec = 'COMPOSER_HOME="' . $var_dir . 'composer/" ' .
+                    'php ' . $var_dir . 'composer/composer.phar --working-dir="'
+                    . $cms_dir
+                    . '" --prefer-dist install 2>&1';
 
             system($exec, $retval);
 
@@ -1091,18 +1092,18 @@ class Installer
             $this->writeLn($Exception->getMessage());
             $this->writeLn('=============================');
 
-            $exec = 'COMPOSER_HOME="'.$var_dir.'composer/" '.
-                'php '.$var_dir.'composer/composer.phar --working-dir="'
-                .$cms_dir
-                .'" require "quiqqer/quiqqer:'.$v.'" --prefer-dist 2>&1';
+            $exec = 'COMPOSER_HOME="' . $var_dir . 'composer/" ' .
+                    'php ' . $var_dir . 'composer/composer.phar --working-dir="'
+                    . $cms_dir
+                    . '" require "quiqqer/quiqqer:' . $v . '" --prefer-dist 2>&1';
 
             system($exec, $retval);
 
             // some composer versions have a bug, and dont install packages with require
             $exec
-                = 'php '.$var_dir.'composer/composer.phar --working-dir="'
-                .$cms_dir
-                .'" --prefer-dist update 2>&1';
+                = 'php ' . $var_dir . 'composer/composer.phar --working-dir="'
+                  . $cms_dir
+                  . '" --prefer-dist update 2>&1';
 
             system($exec, $retval);
         }
@@ -1119,28 +1120,28 @@ class Installer
 
         // create file links
         file_put_contents(
-            $cms_dir.'index.php',
+            $cms_dir . 'index.php',
             "<?php
             require 'bootstrap.php';
             require '{$opt_dir}quiqqer/quiqqer/index.php';"
         );
 
         file_put_contents(
-            $cms_dir.'image.php',
+            $cms_dir . 'image.php',
             "<?php
             require 'bootstrap.php';
             require '{$opt_dir}quiqqer/quiqqer/image.php';"
         );
 
         file_put_contents(
-            $cms_dir.'quiqqer.php',
+            $cms_dir . 'quiqqer.php',
             "<?php
             require 'bootstrap.php';
             require '{$opt_dir}quiqqer/quiqqer/quiqqer.php';"
         );
 
         file_put_contents(
-            $cms_dir.'bootstrap.php',
+            $cms_dir . 'bootstrap.php',
 
             '<?php
             $etc_dir = dirname(__FILE__).\'/etc/\';
@@ -1154,7 +1155,7 @@ class Installer
                 define(\'ETC_DIR\', $etc_dir);
             }
 
-            $boot = \''.$opt_dir.'quiqqer/quiqqer/bootstrap.php\';
+            $boot = \'' . $opt_dir . 'quiqqer/quiqqer/bootstrap.php\';
 
             if (file_exists($boot)) {
                 require $boot;
@@ -1164,24 +1165,24 @@ class Installer
 
         // create htaccess
         system(
-            'php '.$cms_dir.'quiqqer.php '.
-            '--username="'.$this->_username.'" '.
-            '--password="'.$this->_password.'" '.
+            'php ' . $cms_dir . 'quiqqer.php ' .
+            '--username="' . $this->_username . '" ' .
+            '--password="' . $this->_password . '" ' .
             '--tool="quiqqer:htaccess" --noLogo'
         );
 
         // translator setup
         system(
-            'php '.$cms_dir.'quiqqer.php '.
-            '--username="'.$this->_username.'" '.
-            '--password="'.$this->_password.'" '.
+            'php ' . $cms_dir . 'quiqqer.php ' .
+            '--username="' . $this->_username . '" ' .
+            '--password="' . $this->_password . '" ' .
             '--tool="package:translator" --setup --noLogo'
         );
 
         // complete quiqqer setup
-        system('php '.$cms_dir.'quiqqer.php --username="'.$this->_username
-            .'" --password="'.$this->_password
-            .'" --tool="quiqqer:setup" --noLogo');
+        system('php ' . $cms_dir . 'quiqqer.php --username="' . $this->_username
+               . '" --password="' . $this->_password
+               . '" --tool="quiqqer:setup" --noLogo');
 
         // add translator languages
         $this->writeLn('');
@@ -1192,35 +1193,35 @@ class Installer
 
         foreach ($this->_setup['langs'] as $lang) {
             system(
-                'php '.$cms_dir.'quiqqer.php '.
-                '--username="'.$this->_username.'" '.
-                '--password="'.$this->_password.'" '.
-                '--tool="package:translator" '.
-                '--newLanguage="'.$lang.'" '.
+                'php ' . $cms_dir . 'quiqqer.php ' .
+                '--username="' . $this->_username . '" ' .
+                '--password="' . $this->_password . '" ' .
+                '--tool="package:translator" ' .
+                '--newLanguage="' . $lang . '" ' .
                 '--noLogo'
             );
         }
 
         if (!in_array($this->_setup['lang'], $this->_setup['langs'])) {
             system(
-                'php '.$cms_dir.'quiqqer.php '.
-                '--username="'.$this->_username.'" '.
-                '--password="'.$this->_password.'" '.
-                '--tool="package:translator" '.
-                '--newLanguage="'.$this->_setup['lang'].'" '.
+                'php ' . $cms_dir . 'quiqqer.php ' .
+                '--username="' . $this->_username . '" ' .
+                '--password="' . $this->_password . '" ' .
+                '--tool="package:translator" ' .
+                '--newLanguage="' . $this->_setup['lang'] . '" ' .
                 '--noLogo'
             );
         }
 
         // execute setup again to import translation variables
-        system('php '.$cms_dir.'quiqqer.php --username="'.$this->_username
-            .'" --password="'.$this->_password
-            .'" --tool="quiqqer:setup" --noLogo');
+        system('php ' . $cms_dir . 'quiqqer.php --username="' . $this->_username
+               . '" --password="' . $this->_password
+               . '" --tool="quiqqer:setup" --noLogo');
 
         // create translations
-        system('php '.$cms_dir.'quiqqer.php --username="'.$this->_username
-            .'" --password="'.$this->_password
-            .'" --tool="package:translator" --noLogo');
+        system('php ' . $cms_dir . 'quiqqer.php --username="' . $this->_username
+               . '" --password="' . $this->_password
+               . '" --tool="package:translator" --noLogo');
 
         $this->writeLn('');
         $this->writeLn($this->Locale->get('quiqqer/installer',
@@ -1237,15 +1238,15 @@ class Installer
 
         if (file_exists('composer.json')) {
             rename(
-                $cms_dir.'composer.json',
-                $var_dir.'composer/composer.json'
+                $cms_dir . 'composer.json',
+                $var_dir . 'composer/composer.json'
             );
         }
 
         if (file_exists('composer.lock')) {
             rename(
-                $cms_dir.'composer.lock',
-                $var_dir.'composer/composer.lock'
+                $cms_dir . 'composer.lock',
+                $var_dir . 'composer/composer.lock'
             );
         }
 
@@ -1253,10 +1254,10 @@ class Installer
         $dirs = array('css', 'locale', 'js', 'versions', 'setup_packages', 'bin', 'lib');
 
         foreach ($dirs as $dir) {
-            if (is_dir($cms_dir.$dir)) {
+            if (is_dir($cms_dir . $dir)) {
                 rename(
-                    $cms_dir.$dir,
-                    $var_dir.'temp/'.$dir
+                    $cms_dir . $dir,
+                    $var_dir . 'temp/' . $dir
                 );
             }
         }
@@ -1271,14 +1272,14 @@ class Installer
             // create projects
             foreach ($this->_setup['projects'] as $project) {
                 system(
-                    'php '.$cms_dir.'quiqqer.php '.
-                    '--username="'.$this->_username.'" '.
-                    '--password="'.$this->_password.'" '.
-                    '--tool="quiqqer:create-project"'.
-                    '--projectname="'.$project['project'].'" '.
-                    '--projectlangs="'.$project['langs'].'" '.
-                    '--projectlang="'.$project['lang'].'" '.
-                    '--template="'.$project['template'].'" --noLogo'
+                    'php ' . $cms_dir . 'quiqqer.php ' .
+                    '--username="' . $this->_username . '" ' .
+                    '--password="' . $this->_password . '" ' .
+                    '--tool="quiqqer:create-project"' .
+                    '--projectname="' . $project['project'] . '" ' .
+                    '--projectlangs="' . $project['langs'] . '" ' .
+                    '--projectlang="' . $project['lang'] . '" ' .
+                    '--template="' . $project['template'] . '" --noLogo'
                 );
             }
         }
@@ -1290,14 +1291,14 @@ class Installer
         );
 
         // start quiqqer health
-        system('php '.$cms_dir.'quiqqer.php --username="'.$this->_username
-            .'" --password="'.$this->_password
-            .'" --tool="quiqqer:health" --noLogo');
+        system('php ' . $cms_dir . 'quiqqer.php --username="' . $this->_username
+               . '" --password="' . $this->_password
+               . '" --tool="quiqqer:health" --noLogo');
 
         // start quiqqer tests
-        system('php '.$cms_dir.'quiqqer.php --username="'.$this->_username
-            .'" --password="'.$this->_password
-            .'" --tool="quiqqer:tests" --noLogo');
+        system('php ' . $cms_dir . 'quiqqer.php --username="' . $this->_username
+               . '" --password="' . $this->_password
+               . '" --tool="quiqqer:tests" --noLogo');
 
 
         $this->writeLn('');
@@ -1345,14 +1346,14 @@ class Installer
      */
     protected function _cleanPath($path)
     {
-        return rtrim($path, '/').'/';
+        return rtrim($path, '/') . '/';
     }
 
     /**
      * Write an ini file
      *
-     * @param String $filename - path to file
-     * @param Array  $options  - ini options
+     * @param string $filename - path to file
+     * @param array $options - ini options
      *
      * @throws \Exception
      */
@@ -1394,7 +1395,7 @@ class Installer
      */
     protected function _checkSetupFile($check)
     {
-        $valid = $this::$setupData;
+        $valid  = $this::$setupData;
         $result = array();
 
         // langs

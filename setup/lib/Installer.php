@@ -7,6 +7,7 @@
 namespace QUI;
 
 use QUI;
+use QUI\Utils\System\File;
 
 /**
  * Installs QUIQQER,
@@ -21,51 +22,50 @@ use QUI;
 class Installer
 {
     // setup file template with essential packages and repositories
-    static public $setupData
-        = array(
-            'lang'         => '',
-            'langs'        => array(),
-            'database'     => array(
-                'driver'   => '',
-                'database' => '',
-                'host'     => '',
-                'username' => '',
-                'password' => '',
-                'prefix'   => ''
+    static public $setupData = array(
+        'lang'         => '',
+        'langs'        => array(),
+        'database'     => array(
+            'driver'   => '',
+            'database' => '',
+            'host'     => '',
+            'username' => '',
+            'password' => '',
+            'prefix'   => ''
+        ),
+        'users'        => array(),
+        'projects'     => array(),
+        'host'         => '',
+        'paths'        => array(
+            'url'      => '',
+            'cms'      => '',
+            'packages' => '',
+            'usr'      => '',
+            'var'      => ''
+        ),
+        'packages'     => array(
+            'php'                          => '>=5.3.2',
+            'composer/composer'            => '1.0.0-alpha10',
+            'robloach/component-installer' => '0.0.12',
+            'quiqqer/utils'                => 'dev-dev',
+            'tedivm/stash'                 => '0.11.6',
+            'symfony/http-foundation'      => '2.6.4',
+            'symfony/console'              => '2.5'
+        ),
+        'repositories' => array(
+            array(
+                'packagist' => false
             ),
-            'users'        => array(),
-            'projects'     => array(),
-            'host'         => '',
-            'paths'        => array(
-                'url'      => '',
-                'cms'      => '',
-                'packages' => '',
-                'usr'      => '',
-                'var'      => ''
+            array(
+                'type' => 'composer',
+                'url'  => 'https://update.quiqqer.com'
             ),
-            'packages'     => array(
-                'php'                          => '>=5.3.2',
-                'composer/composer'            => '1.0.0-alpha10',
-                'robloach/component-installer' => '0.0.12',
-                'quiqqer/utils'                => 'dev-dev',
-                'tedivm/stash'                 => '0.11.6',
-                'symfony/http-foundation'      => '2.6.4',
-                'symfony/console'              => '2.5'
-            ),
-            'repositories' => array(
-                array(
-                    'packagist' => false
-                ),
-                array(
-                    'type' => 'composer',
-                    'url'  => 'https://update.quiqqer.com'
-                ),
-                array(
-                    'type' => 'composer',
-                    'url'  => 'https://composer.quiqqer.com'
-                )
+            array(
+                'type' => 'composer',
+                'url'  => 'https://composer.quiqqer.com'
             )
-        );
+        )
+    );
 
     /**
      * config params from the user
@@ -123,11 +123,10 @@ class Installer
      */
     protected $_setup = array();
 
-    protected $_setupProcess
-        = array(
-            'tables'  => false,
-            'folders' => false,
-        );
+    protected $_setupProcess = array(
+        'tables'  => false,
+        'folders' => false,
+    );
 
     public $Locale;
 
@@ -277,9 +276,7 @@ class Installer
      */
     public function version()
     {
-        $versions = Utils\System\File::readDir(
-            dirname(dirname(__FILE__)) . '/versions/'
-        );
+        $versions = File::readDir(dirname(dirname(__FILE__)) . '/versions/');
 
         sort($versions);
 
@@ -786,13 +783,13 @@ class Installer
         $etc_dir = $cms_dir . 'etc/';
         $tmp_dir = $var_dir . 'temp/';
 
-        if (!Utils\System\File::mkdir($cms_dir)
-            || !Utils\System\File::mkdir($etc_dir)
-            || !Utils\System\File::mkdir($tmp_dir)
-            || !Utils\System\File::mkdir($opt_dir)
-            || !Utils\System\File::mkdir($usr_dir)
-            || !Utils\System\File::mkdir($var_dir)
-            || !Utils\System\File::mkdir($var_dir . 'composer/')
+        if (!File::mkdir($cms_dir)
+            || !File::mkdir($etc_dir)
+            || !File::mkdir($tmp_dir)
+            || !File::mkdir($opt_dir)
+            || !File::mkdir($usr_dir)
+            || !File::mkdir($var_dir)
+            || !File::mkdir($var_dir . 'composer/')
         ) {
             $this->_exitError(
                 $this->Locale->get('quiqqer/installer', 'paths.error')

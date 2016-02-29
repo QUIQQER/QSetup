@@ -482,7 +482,7 @@ class Installer
         $this->_params['salt'] = md5(uniqid(rand(), true));
         $this->_params['saltlength'] = mt_rand(0, 10);
 
-        $this->_params['root'] = mt_rand(1, 1000000000);
+        $this->_params['root'] = mt_rand(10, 1000000000);
 
         // check if a user exist
         $user_table = $this->_setup['database']['prefix'].'users';
@@ -559,7 +559,7 @@ class Installer
                 $group_table,
                 array(
                     'id'      => $this->_params['root'],
-                    'name'    => 'root',
+                    'name'    => 'Administrator',
                     'admin'   => 1,
                     'active'  => 1,
                     'toolbar' => 'standard.xml'
@@ -886,11 +886,11 @@ class Installer
                 'packagist'                    => array(
                     'active' => 1
                 ),
-                'http://update.quiqqer.com/'   => array(
+                'https://update.quiqqer.com/'   => array(
                     'active' => 1,
                     'type'   => "composer"
                 ),
-                'http://composer.quiqqer.com/' => array(
+                'https://composer.quiqqer.com/' => array(
                     'active' => 1,
                     'type'   => "composer"
                 )

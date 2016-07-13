@@ -45,7 +45,7 @@ class Installer
         ),
         'packages'     => array(
             'php'                          => '>=5.3.2',
-            'composer/composer'            => '1.0.0-alpha10',
+            'composer/composer'            => '^1.1.3',
             'robloach/component-installer' => '0.0.12',
             'quiqqer/utils'                => 'dev-dev',
             'tedivm/stash'                 => '0.11.6',
@@ -53,9 +53,6 @@ class Installer
             'symfony/console'              => '2.5'
         ),
         'repositories' => array(
-            array(
-                'packagist' => false
-            ),
             array(
                 'type' => 'composer',
                 'url'  => 'https://update.quiqqer.com'

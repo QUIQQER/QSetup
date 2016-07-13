@@ -54,6 +54,9 @@ class Installer
         ),
         'repositories' => array(
             array(
+              'packagist' => false
+            ),
+            array(
                 'type' => 'composer',
                 'url'  => 'https://update.quiqqer.com'
             ),

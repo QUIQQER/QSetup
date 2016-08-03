@@ -3,19 +3,39 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/setup/lib" isTestSource="false" packagePrefix="QUI" />
+      <excludeFolder url="file://$MODULE_DIR$/setup/setup_packages/composer" />
+      <excludeFolder url="file://$MODULE_DIR$/setup/setup_packages/quiqqer/qui-php" />
+      <excludeFolder url="file://$MODULE_DIR$/setup/setup_packages/quiqqer/utils" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library">
-      <library name="PHARS">
+      <library name="PHP">
         <CLASSES>
-          <root url="phar://$MODULE_DIR$/composer.phar" />
+          <root url="file://$USER_HOME$/includepatch" />
+          <root url="file://$MODULE_DIR$/setup/setup_packages/composer" />
+          <root url="file://$MODULE_DIR$/setup/setup_packages/quiqqer/qui-php" />
+          <root url="file://$MODULE_DIR$/setup/setup_packages/quiqqer/utils" />
         </CLASSES>
         <SOURCES>
-          <root url="phar://$MODULE_DIR$/composer.phar" />
+          <root url="file://$USER_HOME$/includepatch" />
+          <root url="file://$MODULE_DIR$/setup/setup_packages/composer" />
+          <root url="file://$MODULE_DIR$/setup/setup_packages/quiqqer/qui-php" />
+          <root url="file://$MODULE_DIR$/setup/setup_packages/quiqqer/utils" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="PHARS">
+        <CLASSES>
+          <root url="phar://$USER_HOME$/includepatch/phpunit-5.4.8.phar/" />
+          <root url="phar://$USER_HOME$/includepatch/composer.phar/" />
+        </CLASSES>
+        <SOURCES>
+          <root url="phar://$USER_HOME$/includepatch/phpunit-5.4.8.phar/" />
+          <root url="phar://$USER_HOME$/includepatch/composer.phar/" />
         </SOURCES>
       </library>
     </orderEntry>
   </component>
 </module>
-

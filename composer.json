@@ -1,0 +1,34 @@
+{
+  "name" : "quiqqer\/qsetup",
+  "type" : "quiqqer-library",
+  "description" : "Load essential packages for quiqqer setup",
+  "version" : "2.0.0",
+  "license" : "",
+  "minimum-stability": "dev",
+  "authors" : [{
+    "name": "PCSG OHG",
+    "email": "support@pcsg.de",
+    "homepage": "http://www.pcsg.de",
+    "role": "Developer"
+  }],
+  "support" : {
+    "email" : "support@pcsg.de"
+  },
+  "repositories" : [{
+    "type" : "composer",
+    "url"  : "https://update.quiqqer.com/"
+  }],
+  "require": {
+    "quiqqer\/utils"   : "dev-dev",
+    "quiqqer\/qui-php" : "dev-dev"
+  },
+  "autoload": {
+    "psr-4" : {
+      "QUI\\Setup\\" : "src/QUI/Setup"
+    }
+  },
+  "config": {
+    "vendor-dir" : "setup\/setup_packages\/"
+  }
+
+}

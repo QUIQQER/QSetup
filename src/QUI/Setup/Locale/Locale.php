@@ -22,8 +22,6 @@ class Locale{
         putenv("LANG=".$this->current);
         putenv('LC_ALL='.$this->current);
 
-        echo "Lang : ". $this->current.".utf8". PHP_EOL;
-
         $res = setlocale(LC_ALL, array($this->current,$this->current.".utf8",$this->current.".UTF8"));
         if($res === false){
             throw new Exception("locale.localeset.failed");

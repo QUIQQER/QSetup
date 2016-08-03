@@ -24,11 +24,10 @@
   },
   "autoload": {
     "psr-4" : {
-      "QUI\\Setup\\" : "src/QUI/Setup"
+      "QUI\\Setup\\" : "src/QUI/Setup",
+      "QUI\\ConsoleSetup\\" : "src/QUI/ConsoleSetup",
+      "QUI\\Setup\\Locale\\" : "src/QUI/Setup/Locale"
     }
-  },
-  "config": {
-    "vendor-dir" : "setup\/setup_packages\/"
   }
 
 }

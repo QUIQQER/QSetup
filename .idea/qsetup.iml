@@ -13,15 +13,9 @@
       <library name="PHP">
         <CLASSES>
           <root url="file://$USER_HOME$/includepatch" />
-          <root url="file://$MODULE_DIR$/setup/setup_packages/composer" />
-          <root url="file://$MODULE_DIR$/setup/setup_packages/quiqqer/qui-php" />
-          <root url="file://$MODULE_DIR$/setup/setup_packages/quiqqer/utils" />
         </CLASSES>
         <SOURCES>
           <root url="file://$USER_HOME$/includepatch" />
-          <root url="file://$MODULE_DIR$/setup/setup_packages/composer" />
-          <root url="file://$MODULE_DIR$/setup/setup_packages/quiqqer/qui-php" />
-          <root url="file://$MODULE_DIR$/setup/setup_packages/quiqqer/utils" />
         </SOURCES>
       </library>
     </orderEntry>

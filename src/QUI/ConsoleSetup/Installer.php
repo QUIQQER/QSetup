@@ -2,6 +2,8 @@
 
 namespace QUI\ConsoleSetup;
 
+require_once '../../../vendor/autoload.php';
+
 use QUI\Exception;
 use QUI\Setup\Setup;
 
@@ -12,7 +14,8 @@ define('COLOR_YELLOW', '1;33');
 define('COLOR_PURPLE', '1;35');
 
 
-class Installer{
+class Installer
+{
 
     private $Setup;
 
@@ -29,63 +32,67 @@ class Installer{
 
     }
 
-    public function execute(){
+    public function execute()
+    {
         $this->writeLn("Executing Setup.");
-
+        $this->stepSetupLanguage();
     }
 
-
     #region STEPS
-    private function stepSetupLanguage(){
-        $lang = $this->prompt("Please select a Language for the Setupprocess (de/en) :","de",COLOR_PURPLE);
-        try{
+    private function stepSetupLanguage()
+    {
+        $lang = $this->prompt("Please select a Language for the Setupprocess (de/en) :", "de", COLOR_PURPLE);
+        try {
             $res = $this->Setup->setSetupLanguage($lang);
             $this->writeLn($res);
-        }catch(Exception $e){
-            $this->writeLn($e->getMessage(),self::LEVEL_CRITICAL);
+        } catch (Exception $e) {
+            $this->writeLn($e->getMessage(), self::LEVEL_CRITICAL);
             exit;
         }
     }
+
     #endregion
 
-    private function writeLn($msg,$level=null,$color = null){
+    private function writeLn($msg, $level = null, $color = null)
+    {
 
-        switch($level){
+        switch ($level) {
             case self::LEVEL_DEBUG:
-                $msg = "[DEBUG] - ". $msg;
-                $msg = $this->getColoredString($msg,COLOR_CYAN);
+                $msg = "[DEBUG] - " . $msg;
+                $msg = $this->getColoredString($msg, COLOR_CYAN);
                 break;
 
             case self::LEVEL_INFO:
-                $msg = "[INFO] - ". $msg;
-                $msg = $this->getColoredString($msg,COLOR_CYAN);
+                $msg = "[INFO] - " . $msg;
+                $msg = $this->getColoredString($msg, COLOR_CYAN);
                 break;
 
             case self::LEVEL_WARNING:
-                $msg = "[WARNING] - ". $msg;
-                $msg = $this->getColoredString($msg,COLOR_YELLOW);
+                $msg = "[WARNING] - " . $msg;
+                $msg = $this->getColoredString($msg, COLOR_YELLOW);
                 break;
 
             case self::LEVEL_ERROR:
-                $msg = "[ERROR] - ". $msg;
-                $msg = $this->getColoredString($msg,COLOR_RED);
+                $msg = "[ERROR] - " . $msg;
+                $msg = $this->getColoredString($msg, COLOR_RED);
                 break;
 
             case self::LEVEL_CRITICAL:
-                $msg = "[!CRITICAL!] - ". $msg;
-                $msg = $this->getColoredString($msg,COLOR_RED);
+                $msg = "[!CRITICAL!] - " . $msg;
+                $msg = $this->getColoredString($msg, COLOR_RED);
                 break;
         }
 
-        if($color != null){
-            $msg = $this->getColoredString($msg,$color);
+        if ($color != null) {
+            $msg = $this->getColoredString($msg, $color);
         }
 
-        echo $msg. PHP_EOL;
+        echo $msg . PHP_EOL;
+
         return;
     }
 
-    private function prompt($text, $default = false, $color = null,$hidden = false, $toLower = false)
+    private function prompt($text, $default = false, $color = null, $hidden = false, $toLower = false)
     {
         if ($color != null) {
             $text = $this->getColoredString($text, $color);
@@ -112,7 +119,7 @@ class Installer{
                 if ($default !== false) {
                     $result = $default;
                 } else {
-                    $this->writeLn("Darf nicht leer sein. Bitte erneut versuchen",self::LEVEL_WARNING);
+                    $this->writeLn("Darf nicht leer sein. Bitte erneut versuchen", self::LEVEL_WARNING);
                 }
 
             }

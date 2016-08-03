@@ -1,7 +1,7 @@
 <?php
 namespace QUI\Setup;
 
-require_once '../setup/setup_packages/autoload.php';
+require_once '../vendor/autoload.php';
 
 use PHPUnit\Framework\TestCase;
 use QUI\Setup\Locale\Locale;

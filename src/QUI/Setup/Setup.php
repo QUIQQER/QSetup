@@ -1,6 +1,8 @@
 <?php
 namespace QUI\Setup;
 
+
+
 use QUI\Setup\Locale\Locale;
 
 class Setup
@@ -23,7 +25,7 @@ class Setup
 
     function __construct()
     {
-        $this->Locale = new Locale\Locale("de_DE");
+        $this->Locale = new Locale("de_DE");
     }
 
     // ************************************************** //

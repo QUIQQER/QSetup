@@ -7,8 +7,51 @@ use QUI\ConsoleSetup\Locale\LocaleException;
 use QUI\Setup\Setup;
 use QUI\Setup\SetupException;
 
+/**
+ * Class Validator
+ * @package QUI\Setup\Utils
+ */
 class Validator
 {
+
+    /**
+     * Validates the given Version.
+     *
+     * @param string $version
+     * @return bool
+     * @throws SetupException
+     */
+    public static function validateVersion($version)
+    {
+        $validVersions = array(
+            'dev-dev',
+            'dev-master'
+        );
+        $url           = Setup::getConfig()['general']['url_updateserver'] . "/packages.json";
+        $json          = file_get_contents($url);
+        if (!empty($json)) {
+            $packages = json_decode($json, true);
+            $packages = $packages['packages'];
+
+            $quiqqer = $packages['quiqqer/quiqqer'];
+            foreach ($quiqqer as $v => $branch) {
+                $v = explode('.', $v);
+                if (isset($v[0]) && isset($v[1])) {
+                    $v = $v[0] . "." . $v[1];
+                    if (!in_array($v, $validVersions)) {
+                        $validVersions[] = $v;
+                    }
+                }
+            }
+
+            return in_array($version, $validVersions);
+        }
+
+        throw new SetupException(
+            "exception.validation.",
+            SetupException::ERROR_MISSING_RESSOURCE
+        );
+    }
 
 
     public static function validateName($string)
@@ -25,52 +68,29 @@ class Validator
         $conf = Setup::getConfig();
         if (empty($string)) {
             throw new SetupException(
-                Installer::getLocale()->getStringLang(
-                    "validation.password.empty",
-                    "The given password can not be empty!"
-                )
+                "validation.password.empty",
+                SetupException::ERROR_INVALID_ARGUMENT
             );
         }
 
         if (strlen($string) < $conf['requirements']['pw_min_length']) {
-            $msg = Installer::getLocale()->getStringLang(
+            throw new SetupException(
                 "validation.password.minlength",
-                "The password must have be atleast %s characters long"
+                SetupException::ERROR_INVALID_ARGUMENT
             );
-
-            $msg = sprintf($msg, $conf['requirements']['pw_min_length']);
-
-            throw new SetupException($msg);
         }
 
         if (self::getUppercaseCount($string) < $conf['requirements']['pw_must_have_uppercase']) {
-            $msg = Installer::getLocale()->getStringLang(
-                "validation.password.uppercasecount",
-                "The password must contain  atleast %s uppercase characters"
-            );
-            $msg = sprintf($msg, $conf['requirements']['pw_must_have_uppercase']);
-
-            throw new SetupException($msg);
+            throw new SetupException("validation.password.uppercasecount", SetupException::ERROR_INVALID_ARGUMENT);
         }
 
-        if (self::getSpecialcharCount($string) < $conf['requirements']['pw_must_have_special']) {
-            $msg = Installer::getLocale()->getStringLang(
-                "validation.password.specialcount",
-                "The password must contain  atleast %s special characters"
-            );
-            $msg = sprintf($msg, $conf['requirements']['pw_must_have_uppercase']);
 
-            throw new SetupException($msg);
+        if (self::getSpecialcharCount($string) < $conf['requirements']['pw_must_have_special']) {
+            throw new SetupException("validation.password.specialcount", SetupException::ERROR_INVALID_ARGUMENT);
         }
 
         if (self::getNumberCount($string) < $conf['requirements']['pw_must_have_numbers']) {
-            $msg = Installer::getLocale()->getStringLang(
-                "validation.password.numbercount",
-                "The password must contain  atleast %s numeric characters"
-            );
-            $msg = sprintf($msg, $conf['requirements']['pw_must_have_numbers']);
-
-            throw new SetupException($msg);
+            throw new SetupException("validation.password.numbercount", SetupException::ERROR_INVALID_ARGUMENT);
         }
 
         return true;
@@ -84,7 +104,7 @@ class Validator
 
     private static function getSpecialcharCount($string)
     {
-        return strlen(preg_replace('/[a-zA-Z0-9]+/', '', $string));
+        return strlen(preg_replace('/[a-zA-Z0-9ßäüö]+/', '', $string));
     }
 
     private static function getNumberCount($string)

@@ -2,6 +2,7 @@
 namespace QUI\Setup;
 
 use QUI\Setup\Locale\Locale;
+use QUI\Setup\Locale\LocaleException;
 use QUI\Setup\Utils\Validator;
 
 class Setup
@@ -14,8 +15,6 @@ class Setup
     const STEP_DATABASE = 4;
     const STEP_USER = 5;
     const STEP_PATHS = 6;
-
-    const ERROR_UNKNOWN = 404;
 
     # Statics
     private static $Config;
@@ -30,9 +29,13 @@ class Setup
     private $step = Setup::STEP_INIT;
 
 
+    /**
+     * Setup constructor.
+     * @throws LocaleException
+     */
     public function __construct()
     {
-        $this->Locale = new Locale("de_DE");
+        $this->Locale = new Locale("en_GB");
     }
     // ************************************************** //
     // Public Functions
@@ -40,6 +43,12 @@ class Setup
 
     #region Getter/Setter
 
+    /**
+     * Sets the Language, that the setup should use.
+     * @param string $lang - Culture Code. E.G : de_DE
+     * @return string - Message
+     * @throws LocaleException
+     */
     public function setSetupLanguage($lang)
     {
         $this->Locale    = new Locale($lang);
@@ -51,21 +60,51 @@ class Setup
         );
     }
 
+    /**
+     * Sets the Language to install for Quiqqer
+     * @param string $lang - The language to use
+     */
     public function setLanguage($lang)
     {
         $this->data['language'] = $lang;
     }
 
+    /**
+     * Sets the version to install
+     * @param string $version - The version
+     * @throws SetupException
+     */
     public function setVersion($version)
     {
-        $this->data['version'] = $version;
+        try {
+            if (Validator::validateVersion($version)) {
+                $this->data['version'] = $version;
+            }
+        } catch (SetupException $Exception) {
+            throw $Exception;
+        }
     }
 
+    /**
+     * Sets the preset that should be installed.
+     * E.g. : Shopsystem
+     * @param string $preset
+     */
     public function setPreset($preset)
     {
         $this->data['preset'] = $preset;
     }
 
+    /**
+     * Sets the database driver details
+     * @param string $dbDriver
+     * @param string $dbHost
+     * @param string $dbName
+     * @param string $dbUser
+     * @param string $dbPw
+     * @param string $dbPort
+     * @param string $dbPrefix
+     */
     public function setDatabase($dbDriver, $dbHost, $dbName, $dbUser, $dbPw, $dbPort, $dbPrefix)
     {
         $this->data['database']['driver'] = $dbDriver;
@@ -77,13 +116,23 @@ class Setup
         $this->data['database']['prefix'] = $dbPrefix;
     }
 
+    /**
+     * Sets the userdetails
+     * @param string $user - Username
+     * @param string $pw - Password
+     * @return bool - true on success, false on failure
+     */
     public function setUser($user, $pw)
     {
-        if (!Validator::validateName($user)) {
+        try {
+            Validator::validateName($user);
+        } catch (SetupException $Exception) {
             return false;
         }
 
-        if (!Validator::validatePassword($pw)) {
+        try {
+            Validator::validatePassword($pw);
+        } catch (SetupException $Exception) {
             return false;
         }
 
@@ -93,12 +142,15 @@ class Setup
         return true;
     }
 
-    public function setPaths($user, $pw)
+
+    public function setPaths()
     {
-        $this->data['user']['name'] = $user;
-        $this->data['user']['pw']   = $pw;
     }
 
+    /**
+     * Returns the collected Data
+     * @return array - Array with all parameters
+     */
     public function getData()
     {
         return $this->data;
@@ -107,6 +159,9 @@ class Setup
     #endregion
 
 
+    /**
+     *  Starts the Setup-process
+     */
     public function runSetup()
     {
     }
@@ -114,6 +169,11 @@ class Setup
     // ************************************************** //
     // Private Functions
     // ************************************************** //
+    /**
+     * Returns the parsed configfile in an assoc. array.
+     * Usage : $config[<section>][<setting]
+     * @return array
+     */
     public static function getConfig()
     {
         if (!isset(self::$Config) || self::$Config == null) {

@@ -1,8 +1,6 @@
 <?php
 namespace QUI\Setup;
 
-require_once './vendor/autoload.php';
-
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -19,8 +17,11 @@ class SetupTest extends TestCase
 
         $Setup = new Setup();
 
-        $result = $Setup->setUser("admin", "admin");
+        $result = $Setup->setUser("admin", "Test123;;");
         $this->assertEquals($result, true);
+
+        $result = $Setup->setUser("admin", "admin");
+        $this->assertEquals($result, false);
 
         $result = $Setup->setUser("", "admin");
         $this->assertEquals($result, false);

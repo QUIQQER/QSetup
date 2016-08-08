@@ -2,9 +2,6 @@
 
 namespace QUI\ConsoleSetup;
 
-require_once '../../../vendor/autoload.php';
-
-use Psr\Log\LogLevel;
 use QUI\ConsoleSetup\Locale\Locale;
 use QUI\Exception;
 use QUI\Setup\Setup;

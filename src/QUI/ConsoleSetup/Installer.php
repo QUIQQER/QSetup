@@ -116,6 +116,20 @@ class Installer
 
     private function stepPaths()
     {
+        $host = $this->prompt(
+            self::getLocale()->getStringLang("prompt.host", "Hostname : ")
+        );
+
+        $cmsDir = $this->prompt(
+            self::getLocale()->getStringLang("prompt.host", "CMS Directory : ")
+        );
+
+        $urlDir = $this->prompt(
+            self::getLocale()->getStringLang("prompt.host", "Url Directory : "),
+            "/"
+        );
+
+        $this->Setup->setPaths($host, $cmsDir, $urlDir);
     }
 
     private function setup()

@@ -2,8 +2,6 @@
 
 namespace QUI\Setup\Utils;
 
-use QUI\ConsoleSetup\Installer;
-use QUI\ConsoleSetup\Locale\LocaleException;
 use QUI\Setup\Setup;
 use QUI\Setup\SetupException;
 
@@ -23,12 +21,20 @@ class Validator
      */
     public static function validateVersion($version)
     {
+        if (empty($version)) {
+            throw new SetupException(
+                "exception.validation.version.empty",
+                SetupException::ERROR_MISSING_RESSOURCE
+            );
+        }
+
         $validVersions = array(
             'dev-dev',
             'dev-master'
         );
-        $url           = Setup::getConfig()['general']['url_updateserver'] . "/packages.json";
-        $json          = file_get_contents($url);
+
+        $url  = Setup::getConfig()['general']['url_updateserver'] . "/packages.json";
+        $json = file_get_contents($url);
         if (!empty($json)) {
             $packages = json_decode($json, true);
             $packages = $packages['packages'];
@@ -48,7 +54,7 @@ class Validator
         }
 
         throw new SetupException(
-            "exception.validation.",
+            "exception.validation.missing.packagesjson",
             SetupException::ERROR_MISSING_RESSOURCE
         );
     }
@@ -74,34 +80,132 @@ class Validator
         $conf = Setup::getConfig();
         if (empty($string)) {
             throw new SetupException(
-                "validation.password.empty",
+                "exception.validation.password.empty",
                 SetupException::ERROR_INVALID_ARGUMENT
             );
         }
 
         if (strlen($string) < $conf['requirements']['pw_min_length']) {
             throw new SetupException(
-                "validation.password.minlength",
+                "exception.validation.password.minlength",
                 SetupException::ERROR_INVALID_ARGUMENT
             );
         }
 
         if (self::getUppercaseCount($string) < $conf['requirements']['pw_must_have_uppercase']) {
-            throw new SetupException("validation.password.uppercasecount", SetupException::ERROR_INVALID_ARGUMENT);
+            throw new SetupException(
+                "exception.validation.password.uppercasecount",
+                SetupException::ERROR_INVALID_ARGUMENT
+            );
         }
 
 
         if (self::getSpecialcharCount($string) < $conf['requirements']['pw_must_have_special']) {
-            throw new SetupException("validation.password.specialcount", SetupException::ERROR_INVALID_ARGUMENT);
+            throw new SetupException(
+                "exception.validation.password.specialcount",
+                SetupException::ERROR_INVALID_ARGUMENT
+            );
         }
 
         if (self::getNumberCount($string) < $conf['requirements']['pw_must_have_numbers']) {
-            throw new SetupException("validation.password.numbercount", SetupException::ERROR_INVALID_ARGUMENT);
+            throw new SetupException(
+                "exception.validation.password.numbercount",
+                SetupException::ERROR_INVALID_ARGUMENT
+            );
         }
 
         return true;
     }
 
+
+    public static function isValidLanguage($string)
+    {
+    }
+
+
+    public static function validatePath($path)
+    {
+        if (is_dir($path)) {
+            return true;
+        } else {
+            throw new SetupException("exception.validation.path.not.exist");
+        }
+    }
+
+    public static function validatePaths(array $paths)
+    {
+        if (empty($paths['cms_dir'])) {
+            throw new SetupException("exception.validation.cmsdir.empty");
+        }
+
+        if (empty($paths['host'])) {
+            throw new SetupException("exception.validation.cmsdir.empty");
+        }
+
+        if (empty($paths['url_dir'])) {
+            throw new SetupException("exception.validation.cmsdir.empty");
+        }
+
+        # Check for trailing slashes
+        if (substr($paths['cms_dir'], -1) != "/") {
+            throw new SetupException("exception.validation.trailingslash.missing");
+        }
+
+        if (substr($paths['var_dir'], -1) != "/") {
+            throw new SetupException("exception.validation.trailingslash.missing");
+        }
+
+        if (substr($paths['usr_dir'], -1) != "/") {
+            throw new SetupException("exception.validation.trailingslash.missing");
+        }
+
+        if (substr($paths['opt_dir'], -1) != "/") {
+            throw new SetupException("exception.validation.trailingslash.missing");
+        }
+
+        if (substr($paths['url_lib_dir'], -1) != "/") {
+            throw new SetupException("exception.validation.trailingslash.missing");
+        }
+
+        if (substr($paths['url_bin_dir'], -1) != "/") {
+            throw new SetupException("exception.validation.trailingslash.missing");
+        }
+
+        if (substr($paths['url_dir'], -1) != "/") {
+            throw new SetupException("exception.validation.trailingslash.missing");
+        }
+
+
+
+        # Check for leading slashes
+        if (substr($paths['cms_dir'], 0, 1) != "/") {
+            throw new SetupException("exception.validation.leadingslash.missing");
+        }
+
+        if (substr($paths['var_dir'], 0, 1) != "/") {
+            throw new SetupException("exception.validation.leadingslash.missing");
+        }
+
+        if (substr($paths['usr_dir'], 0, 1) != "/") {
+            throw new SetupException("exception.validation.leadingslash.missing");
+        }
+
+        if (substr($paths['opt_dir'], 0, 1) != "/") {
+            throw new SetupException("exception.validation.leadingslash.missing");
+        }
+
+        if (substr($paths['url_lib_dir'], 0, 1) != "/") {
+            throw new SetupException("exception.validation.leadingslash.missing");
+        }
+
+        if (substr($paths['url_bin_dir'], 0, 1) != "/") {
+            throw new SetupException("exception.validation.leadingslash.missing");
+        }
+
+        if (substr($paths['url_dir'], 0, 1) != "/") {
+            throw new SetupException("exception.validation.leadingslash.missing");
+        }
+    }
 
     /**
      * Counts the number of uppercase letters in the given string

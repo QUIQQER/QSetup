@@ -143,8 +143,69 @@ class Setup
     }
 
 
-    public function setPaths()
-    {
+    /**
+     * Sets the paths to use. Optional params will be generated.
+     * @param $host
+     * @param $cmsDir
+     * @param $urlDir
+     * @param string $libDir
+     * @param string $usrDir
+     * @param string $binDir
+     * @param string $optDir
+     * @param string $varDir
+     * @throws SetupException
+     */
+    public function setPaths(
+        $host,
+        $cmsDir,
+        $urlDir,
+        $libDir = "",
+        $usrDir = "",
+        $binDir = "",
+        $optDir = "",
+        $varDir = ""
+    ) {
+        $paths = array();
+        if (Validator::validatePath($cmsDir) && !empty($urlDir)) {
+            # Filesystem paths
+            if (empty($varDir)) {
+                $varDir = $cmsDir . "lib/";
+            }
+
+            if (empty($optDir)) {
+                $optDir = $cmsDir . "packages/";
+            }
+
+            if (empty($usrDir)) {
+                $usrDir = $cmsDir . "usr/";
+            }
+
+            # URL Paths
+            if (empty($binDir)) {
+                $binDir = $urlDir . "/bin/";
+            }
+
+            if (empty($libDir)) {
+                $libDir = $urlDir . "/lib/";
+            }
+        }
+
+        $paths['host']        = $host;
+        $paths['cms_dir']     = $cmsDir;
+        $paths['var_dir']     = $varDir;
+        $paths['usr_dir']     = $usrDir;
+        $paths['opt_dir']     = $optDir;
+        $paths['url_dir']     = $urlDir;
+        $paths['url_lib_dir'] = $libDir;
+        $paths['url_bin_dir'] = $binDir;
+
+        try {
+            Validator::validatePaths($paths);
+        } catch (SetupException $Exception) {
+            throw $Exception;
+        }
+
+        $this->data['paths'] = $paths;
     }
 
     /**
@@ -154,6 +215,15 @@ class Setup
     public function getData()
     {
         return $this->data;
+    }
+
+    /**
+     * Setzt die Daten, die vom Setup verwendet werden sollen
+     * @param $data
+     */
+    public function setData($data)
+    {
+        $this->data = $data;
     }
 
     #endregion

@@ -38,7 +38,6 @@ class Installer
     {
         $this->Setup = new Setup();
         $this->Setup->setSetupLanguage("en_GB");
-
     }
 
     public function execute()
@@ -82,28 +81,22 @@ class Installer
 
     private function stepCheckRequirements()
     {
-
-
     }
 
     private function stepLanguage()
     {
-
     }
 
     private function stepVersion()
     {
-
     }
 
     private function stepTemplate()
     {
-
     }
 
     private function stepDatabase()
     {
-
     }
 
     private function stepUser()
@@ -114,21 +107,18 @@ class Installer
 
         try {
             $this->Setup->setUser($user, $pw);
-        } catch (SetupException $E) {
-            $this->writeLn($E->getMessage(), self::LEVEL_WARNING);
+        } catch (SetupException $Exception) {
+            $this->writeLn($Exception->getMessage(), self::LEVEL_WARNING);
             $this->stepUser();
         }
-
     }
 
     private function stepPaths()
     {
-
     }
 
     private function setup()
     {
-
     }
 
     #endregion

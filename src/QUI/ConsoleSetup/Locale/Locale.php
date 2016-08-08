@@ -2,7 +2,6 @@
 
 namespace QUI\ConsoleSetup\Locale;
 
-
 class Locale
 {
 
@@ -12,7 +11,7 @@ class Locale
 
     private $localeDir = "";
 
-    function __construct($lang)
+    public function __construct($lang)
     {
         $this->current = $lang;
 
@@ -35,13 +34,13 @@ class Locale
         textdomain('messages');
     }
 
-    function getStringLang($string, $fallback = "")
+    public function getStringLang($string, $fallback = "")
     {
         $res = gettext($string);
 
-        if($res == $string){
+        if ($res == $string) {
             $res = $fallback;
-            echo "Missing Translation : ". $string . PHP_EOL;
+            echo "Missing Translation : " . $string . PHP_EOL;
         }
 
         return $res;

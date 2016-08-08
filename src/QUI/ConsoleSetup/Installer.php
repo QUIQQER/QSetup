@@ -101,9 +101,13 @@ class Installer
 
     private function stepUser()
     {
-        $user = $this->prompt(self::getLocale()->getStringLang("prompt.user", "Please enter an username :"),
-            Setup::getConfig()['defaults']['username']);
-        $pw   = $this->prompt(self::getLocale()->getStringLang("prompt.password", "Please enter a password :"));
+        $user = $this->prompt(
+            self::getLocale()->getStringLang("prompt.user", "Please enter an username :"),
+            Setup::getConfig()['defaults']['username']
+        );
+        $pw   = $this->prompt(
+            self::getLocale()->getStringLang("prompt.password", "Please enter a password :")
+        );
 
         try {
             $this->Setup->setUser($user, $pw);
@@ -196,7 +200,6 @@ class Installer
                 } else {
                     $this->writeLn("Darf nicht leer sein. Bitte erneut versuchen", self::LEVEL_WARNING);
                 }
-
             }
         }
 
@@ -213,6 +216,4 @@ class Installer
     {
         return "\033[" . $color . "m " . $text . "\033[0m";
     }
-
-
 }

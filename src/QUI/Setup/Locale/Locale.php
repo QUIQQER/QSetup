@@ -14,7 +14,7 @@ class Locale
 
     private $localeDir = "";
 
-    function __construct($lang)
+    public function __construct($lang)
     {
         $this->current = $lang;
 
@@ -38,20 +38,21 @@ class Locale
     }
 
 
-    function getStringLang($string, $fallback = "")
+    public function getStringLang($string, $fallback = "")
     {
         $res = gettext($string);
 
         return $res == $string ? $fallback : $res;
     }
 
-    function setLanguage($lang){
+    public function setLanguage($lang)
+    {
         $this->current = $lang;
-        putenv("LANGUAGE=".$this->current);
-        putenv("LANG=".$this->current);
-        putenv('LC_ALL='.$this->current);
-        $res = setlocale(LC_ALL, array($this->current,$this->current.".utf8",$this->current.".UTF8"));
-        if($res === false){
+        putenv("LANGUAGE=" . $this->current);
+        putenv("LANG=" . $this->current);
+        putenv('LC_ALL=' . $this->current);
+        $res = setlocale(LC_ALL, array($this->current, $this->current . ".utf8", $this->current . ".UTF8"));
+        if ($res === false) {
             throw new LocaleException("locale.localeset.failed");
         }
         textdomain('messages');

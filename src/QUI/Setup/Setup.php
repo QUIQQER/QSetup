@@ -1,7 +1,6 @@
 <?php
 namespace QUI\Setup;
 
-
 use QUI\Setup\Locale\Locale;
 use QUI\Setup\Utils\Validator;
 
@@ -31,13 +30,10 @@ class Setup
     private $step = Setup::STEP_INIT;
 
 
-    function __construct()
+    public function __construct()
     {
         $this->Locale = new Locale("de_DE");
-
-
     }
-
     // ************************************************** //
     // Public Functions
     // ************************************************** //
@@ -49,8 +45,10 @@ class Setup
         $this->Locale    = new Locale($lang);
         $this->setupLang = $lang;
 
-        return $this->Locale->getStringLang("setup.language.set.success" . $lang,
-            "Setup will use the following culture : " . $lang);
+        return $this->Locale->getStringLang(
+            "setup.language.set.success" . $lang,
+            "Setup will use the following culture : " . $lang
+        );
     }
 
     public function setLanguage($lang)

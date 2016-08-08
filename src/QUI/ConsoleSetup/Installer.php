@@ -4,8 +4,11 @@ namespace QUI\ConsoleSetup;
 
 require_once '../../../vendor/autoload.php';
 
+use Psr\Log\LogLevel;
+use QUI\ConsoleSetup\Locale\Locale;
 use QUI\Exception;
 use QUI\Setup\Setup;
+use QUI\Setup\SetupException;
 
 define('COLOR_GREEN', '1;32');
 define('COLOR_CYAN', '1;36');
@@ -17,7 +20,13 @@ define('COLOR_PURPLE', '1;35');
 class Installer
 {
 
+    private $lang;
+
+    /** @var Setup $Setup */
     private $Setup;
+    private static $Config;
+    /** @var  Locale $Locale */
+    private static $Locale;
 
     const LEVEL_DEBUG = 0;
     const LEVEL_INFO = 1;
@@ -28,7 +37,7 @@ class Installer
     public function __construct()
     {
         $this->Setup = new Setup();
-        $this->Setup->setSetupLanguage("de_DE");
+        $this->Setup->setSetupLanguage("en_GB");
 
     }
 
@@ -36,14 +45,34 @@ class Installer
     {
         $this->writeLn("Executing Setup.");
         $this->stepSetupLanguage();
+        $this->stepCheckRequirements();
+        $this->stepLanguage();
+        $this->stepVersion();
+        $this->stepTemplate();
+        $this->stepDatabase();
+        $this->stepUser();
+        $this->stepPaths();
+
+        $this->setup();
+    }
+
+
+    public static function getLocale()
+    {
+        if (!isset(self::$Locale) || self::$Locale == null) {
+            self::$Locale = new Locale('en_GB');
+        }
+
+        return self::$Locale;
     }
 
     #region STEPS
     private function stepSetupLanguage()
     {
-        $lang = $this->prompt("Please select a Language for the Setupprocess (de/en) :", "de", COLOR_PURPLE);
+        $lang = $this->prompt("Please select a Language for the Setupprocess (de_DE/en_GB) :", "de_DE", COLOR_PURPLE);
         try {
             $res = $this->Setup->setSetupLanguage($lang);
+            self::getLocale()->setLanguage($lang);
             $this->writeLn($res);
         } catch (Exception $e) {
             $this->writeLn($e->getMessage(), self::LEVEL_CRITICAL);
@@ -51,8 +80,64 @@ class Installer
         }
     }
 
+    private function stepCheckRequirements()
+    {
+
+
+    }
+
+    private function stepLanguage()
+    {
+
+    }
+
+    private function stepVersion()
+    {
+
+    }
+
+    private function stepTemplate()
+    {
+
+    }
+
+    private function stepDatabase()
+    {
+
+    }
+
+    private function stepUser()
+    {
+        $user = $this->prompt(self::getLocale()->getStringLang("prompt.user", "Please enter an username :"),
+            Setup::getConfig()['defaults']['username']);
+        $pw   = $this->prompt(self::getLocale()->getStringLang("prompt.password", "Please enter a password :"));
+
+        try {
+            $this->Setup->setUser($user, $pw);
+        } catch (SetupException $E) {
+            $this->writeLn($E->getMessage(), self::LEVEL_WARNING);
+            $this->stepUser();
+        }
+
+    }
+
+    private function stepPaths()
+    {
+
+    }
+
+    private function setup()
+    {
+
+    }
+
     #endregion
 
+    /**
+     * @param string $msg
+     * @param int $level - Loglevel, constants found in QUI\ConsoleSetup\Installer
+     * @param string $color - Constants are defined in QUI/ConsoleSetup/Installer.php
+     */
     private function writeLn($msg, $level = null, $color = null)
     {
 

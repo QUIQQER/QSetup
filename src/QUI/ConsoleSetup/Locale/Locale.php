@@ -1,9 +1,7 @@
 <?php
 
-namespace QUI\Setup\Locale;
+namespace QUI\ConsoleSetup\Locale;
 
-use QUI\ConsoleSetup\Locale\LocaleException;
-use QUI\Exception;
 
 class Locale
 {
@@ -24,34 +22,39 @@ class Locale
         putenv("LANG=" . $this->current);
         putenv('LC_ALL=' . $this->current);
 
-        $res = setlocale(LC_ALL, array(
-            $this->current,
-            $this->current . ".utf8",
-            $this->current . ".UTF8"
-        ));
-
+        $res = setlocale(LC_ALL,
+            array(
+                $this->current,
+                $this->current . ".utf8",
+                $this->current . ".UTF8"
+            )
+        );
         if ($res === false) {
             throw new LocaleException("locale.localeset.failed");
         }
-
         textdomain('messages');
     }
-
 
     function getStringLang($string, $fallback = "")
     {
         $res = gettext($string);
 
-        return $res == $string ? $fallback : $res;
+        if($res == $string){
+            $res = $fallback;
+            echo "Missing Translation : ". $string . PHP_EOL;
+        }
+
+        return $res;
     }
 
-    function setLanguage($lang){
+    function setLanguage($lang)
+    {
         $this->current = $lang;
-        putenv("LANGUAGE=".$this->current);
-        putenv("LANG=".$this->current);
-        putenv('LC_ALL='.$this->current);
-        $res = setlocale(LC_ALL, array($this->current,$this->current.".utf8",$this->current.".UTF8"));
-        if($res === false){
+        putenv("LANGUAGE=" . $this->current);
+        putenv("LANG=" . $this->current);
+        putenv('LC_ALL=' . $this->current);
+        $res = setlocale(LC_ALL, array($this->current, $this->current . ".utf8", $this->current . ".UTF8"));
+        if ($res === false) {
             throw new LocaleException("locale.localeset.failed");
         }
         textdomain('messages');

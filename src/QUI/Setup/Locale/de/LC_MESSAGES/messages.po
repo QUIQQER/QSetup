@@ -1,2 +1,5 @@
 msgid "hello"
 msgstr "Hallo"
+
+msgid "setup.language.set.success"
+msgstr "Setupsprache erfolgreich gesetzt :"

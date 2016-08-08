@@ -2,11 +2,12 @@
 namespace QUI\Setup;
 
 
-
 use QUI\Setup\Locale\Locale;
+use QUI\Setup\Utils\Validator;
 
 class Setup
 {
+    # Constants
     const STEP_INIT = 0;
     const STEP_LANGUAGE = 1;
     const STEP_VERSION = 2;
@@ -15,17 +16,26 @@ class Setup
     const STEP_USER = 5;
     const STEP_PATHS = 6;
 
+    const ERROR_UNKNOWN = 404;
 
+    # Statics
+    private static $Config;
 
+    # Objects
+    private $Locale;
+    private $conf;
+
+    # Init
     private $setupLang = "de";
     private $data = array();
     private $step = Setup::STEP_INIT;
 
-    private $Locale;
 
     function __construct()
     {
         $this->Locale = new Locale("de_DE");
+
+
     }
 
     // ************************************************** //
@@ -39,7 +49,8 @@ class Setup
         $this->Locale    = new Locale($lang);
         $this->setupLang = $lang;
 
-        return $this->Locale->getStringLang("setup.language.set.success".$lang,"Setup will use the following culture : ". $lang);
+        return $this->Locale->getStringLang("setup.language.set.success" . $lang,
+            "Setup will use the following culture : " . $lang);
     }
 
     public function setLanguage($lang)
@@ -70,11 +81,11 @@ class Setup
 
     public function setUser($user, $pw)
     {
-        if(!$this->isValidname($user)){
+        if (!Validator::validateName($user)) {
             return false;
         }
 
-        if(!$this->isValidPassword($pw)){
+        if (!Validator::validatePassword($pw)) {
             return false;
         }
 
@@ -90,9 +101,11 @@ class Setup
         $this->data['user']['pw']   = $pw;
     }
 
-    public function getData(){
+    public function getData()
+    {
         return $this->data;
     }
+
     #endregion
 
 
@@ -102,27 +115,17 @@ class Setup
     }
 
 
-
     // ************************************************** //
     // Private Functions
     // ************************************************** //
-
-    private function isValidname($string)
+    public static function getConfig()
     {
-        if (empty($string)) {
-            return false;
+        if (!isset(self::$Config) || self::$Config == null) {
+            self::$Config = parse_ini_file('config.ini.php', true);
         }
 
-        return true;
+        return self::$Config;
     }
 
-    private function isValidPassword($string)
-    {
-        if (empty($string)) {
-            return false;
-        }
 
-
-        return true;
-    }
 }

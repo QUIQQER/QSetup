@@ -14,20 +14,21 @@ use PHPUnit\Framework\TestCase;
 class SetupTest extends TestCase
 {
 
-    public function testSetUser(){
+    public function testSetUser()
+    {
 
         $Setup = new Setup();
 
-        $result = $Setup->setUser("admin","admin");
-        $this->assertEquals($result,true);
+        $result = $Setup->setUser("admin", "admin");
+        $this->assertEquals($result, true);
 
-        $result = $Setup->setUser("","admin");
-        $this->assertEquals($result,false);
+        $result = $Setup->setUser("", "admin");
+        $this->assertEquals($result, false);
 
-        $result = $Setup->setUser("admin","");
-        $this->assertEquals($result,false);
+        $result = $Setup->setUser("admin", "");
+        $this->assertEquals($result, false);
 
-        $result = $Setup->setUser("","");
-        $this->assertEquals($result,false);
+        $result = $Setup->setUser("", "");
+        $this->assertEquals($result, false);
     }
 }

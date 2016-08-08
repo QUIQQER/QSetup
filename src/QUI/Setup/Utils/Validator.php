@@ -25,13 +25,14 @@ class Validator
         $conf = Setup::getConfig();
         if (empty($string)) {
             throw new SetupException(
-                Installer::getLocale()->getStringLang("validation.password.empty",
-                    "The given password can not be empty!")
+                Installer::getLocale()->getStringLang(
+                    "validation.password.empty",
+                    "The given password can not be empty!"
+                )
             );
         }
 
         if (strlen($string) < $conf['requirements']['pw_min_length']) {
-
             $msg = Installer::getLocale()->getStringLang(
                 "validation.password.minlength",
                 "The password must have be atleast %s characters long"

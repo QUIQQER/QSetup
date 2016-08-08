@@ -78,26 +78,64 @@ class Installer
 
     private function stepCheckRequirements()
     {
+        $this->writeLn(
+            self::getLocale()->getStringLang("message.step.requirements", "Running Requirementscheck"),
+            self::LEVEL_INFO
+        );
     }
 
     private function stepLanguage()
     {
+        $this->writeLn(
+            self::getLocale()->getStringLang("message.step.language", "Language"),
+            self::LEVEL_INFO
+        );
+        $this->prompt(
+            self::getLocale()->getStringLang("prompt.language", "Please enter your desired language :"),
+            "en_GB"
+        );
     }
 
     private function stepVersion()
     {
+        $this->writeLn(
+            self::getLocale()->getStringLang("message.step.version", "Version"),
+            self::LEVEL_INFO
+        );
+        $version = $this->prompt(
+            self::getLocale()->getStringLang("prompt.version", "Please enter a version"),
+            "dev-master"
+        );
     }
 
     private function stepTemplate()
     {
+        $this->writeLn(
+            self::getLocale()->getStringLang("message.step.template", "Template"),
+            self::LEVEL_INFO
+        );
+        $template = $this->prompt(
+            self::getLocale()->getStringLang("prompt.template", "Please enter a template"),
+            "default",
+            null,
+            true
+        );
     }
 
     private function stepDatabase()
     {
+        $this->writeLn(
+            self::getLocale()->getStringLang("message.step.database", "Database settings"),
+            self::LEVEL_INFO
+        );
     }
 
     private function stepUser()
     {
+        $this->writeLn(
+            self::getLocale()->getStringLang("message.step.superuser", "Superuser settings"),
+            self::LEVEL_INFO
+        );
         $user = $this->prompt(
             self::getLocale()->getStringLang("prompt.user", "Please enter an username :"),
             Setup::getConfig()['defaults']['username']
@@ -116,6 +154,10 @@ class Installer
 
     private function stepPaths()
     {
+        $this->writeLn(
+            self::getLocale()->getStringLang("message.step.paths", "Pathsettings"),
+            self::LEVEL_INFO
+        );
         $host = $this->prompt(
             self::getLocale()->getStringLang("prompt.host", "Hostname : ")
         );
@@ -134,6 +176,7 @@ class Installer
 
     private function setup()
     {
+        $this->writeLn(self::getLocale()->getStringLang("message.step.setup", "Executing Setup : "));
     }
 
     #endregion

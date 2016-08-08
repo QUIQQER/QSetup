@@ -63,6 +63,12 @@ class Validator
         return true;
     }
 
+    /**
+     * Validates a passwordstring
+     * @param $string
+     * @return bool - true when valid
+     * @throws SetupException
+     */
     public static function validatePassword($string)
     {
         $conf = Setup::getConfig();
@@ -97,16 +103,31 @@ class Validator
     }
 
 
+    /**
+     * Counts the number of uppercase letters in the given string
+     * @param $string
+     * @return int - Number of uppercase letters
+     */
     private static function getUppercaseCount($string)
     {
         return strlen(preg_replace('/[^A-Z]+/', '', $string));
     }
 
+    /**
+     * Counts the number of special characters in the given string
+     * @param $string
+     * @return int - Number of special charcaters
+     */
     private static function getSpecialcharCount($string)
     {
         return strlen(preg_replace('/[a-zA-Z0-9ßäüö]+/', '', $string));
     }
 
+    /**
+     * Counts the numeric characters in the given string
+     * @param $string
+     * @return int - Number of numeric characters
+     */
     private static function getNumberCount($string)
     {
         return strlen(preg_replace('/[^0-9]+/', '', $string));

@@ -21,7 +21,8 @@ class Locale
         putenv("LANG=" . $this->current);
         putenv('LC_ALL=' . $this->current);
 
-        $res = setlocale(LC_ALL,
+        $res = setlocale(
+            LC_ALL,
             array(
                 $this->current,
                 $this->current . ".utf8",
@@ -46,7 +47,7 @@ class Locale
         return $res;
     }
 
-    function setLanguage($lang)
+    public function setLanguage($lang)
     {
         $this->current = $lang;
         putenv("LANGUAGE=" . $this->current);

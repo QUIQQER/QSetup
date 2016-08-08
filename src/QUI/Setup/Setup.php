@@ -109,9 +109,7 @@ class Setup
 
     public function runSetup()
     {
-
     }
-
 
     // ************************************************** //
     // Private Functions
@@ -124,6 +122,4 @@ class Setup
 
         return self::$Config;
     }
-
-
 }

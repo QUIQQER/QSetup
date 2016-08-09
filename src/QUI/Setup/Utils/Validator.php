@@ -2,11 +2,14 @@
 
 namespace QUI\Setup\Utils;
 
+use QUI\Setup\Database\Database;
 use QUI\Setup\Setup;
 use QUI\Setup\SetupException;
 
 /**
  * Class Validator
+ * Bietet Validierungsmöglichkeiten begleitend zum Setup
+ *
  * @package QUI\Setup\Utils
  */
 class Validator
@@ -121,6 +124,24 @@ class Validator
         return true;
     }
 
+    public static function validateDatabase($dbDriver, $dbHost, $dbName, $dbUser, $dbPw, $dbPort = "")
+    {
+
+        if (!in_array($dbDriver, Database::getAvailableDrivers())) {
+            throw new SetupException(
+                "validation.database-driver.notfound",
+                SetupException::ERROR_MISSING_RESSOURCE
+            );
+        }
+
+        try {
+            Database::checkCredentials($dbDriver, $dbHost, $dbUser, $dbPw, $dbName);
+        } catch (SetupException $Exception) {
+            throw $Exception;
+        }
+
+        return true;
+    }
 
     public static function isValidLanguage($string)
     {

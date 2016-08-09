@@ -5,6 +5,13 @@ use QUI\Setup\Locale\Locale;
 use QUI\Setup\Locale\LocaleException;
 use QUI\Setup\Utils\Validator;
 
+/**
+ * Class Setup
+ *
+ * Main interface for Quiqqer Setup-applications
+ *
+ * @package QUI\Setup
+ */
 class Setup
 {
     # Constants
@@ -25,9 +32,35 @@ class Setup
 
     # Init
     private $setupLang = "de";
-    private $data = array();
     private $step = Setup::STEP_INIT;
 
+    private $data = array(
+        'lang'     => "",
+        'version'  => "",
+        'template' => "",
+        'database' => array(
+            'driver' => "",
+            'host'   => "",
+            'user'   => "",
+            'pw'     => "",
+            'db'     => "",
+            'prefix' => "",
+        ),
+        'user'     => array(
+            'name' => '',
+            'pw'   => ''
+        ),
+        'paths'    => array(
+            'host'    => '',
+            'cms_dir' => '',
+            'lib_dir' => '',
+            'usr_dir' => '',
+            'url_dir' => '',
+            'bin_dir' => '',
+            'opt_dir' => '',
+            'var_dir' => ''
+        )
+    );
 
     /**
      * Setup constructor.

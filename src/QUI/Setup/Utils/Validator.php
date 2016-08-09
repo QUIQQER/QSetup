@@ -121,8 +121,7 @@ class Validator
     public static function isValidLanguage($string)
     {
     }
-
-
+    
     public static function validatePath($path)
     {
         if (is_dir($path)) {
@@ -235,5 +234,111 @@ class Validator
     private static function getNumberCount($string)
     {
         return strlen(preg_replace('/[^0-9]+/', '', $string));
+    }
+
+    /**
+     * Checks the integrity of the data array.
+     * @return bool - true, if all required fields are set
+     * @throws SetupException
+     */
+    public static function checkData($data)
+    {
+        #
+        # General settings
+        #
+        #region General
+        if (!isset($data['lang']) || empty($data['lang'])) {
+            throw new SetupException("data.missing.lang", SetupException::ERROR_INVALID_ARGUMENT);
+        }
+
+        if (!isset($data['version']) || empty($data['version'])) {
+            throw new SetupException("data.missing.version", SetupException::ERROR_INVALID_ARGUMENT);
+        }
+
+        if (!isset($data['template']) || empty($data['template'])) {
+            throw new SetupException("data.missing.template", SetupException::ERROR_INVALID_ARGUMENT);
+        }
+        #endregion
+
+        #
+        # Database
+        #
+        #region Database
+        if (!isset($data['database']['driver']) || empty($data['database']['driver'])) {
+            throw new SetupException("data.missing.database.driver", SetupException::ERROR_INVALID_ARGUMENT);
+        }
+
+        if (!isset($data['database']['host']) || empty($data['database']['host'])) {
+            throw new SetupException("data.missing.database.host", SetupException::ERROR_INVALID_ARGUMENT);
+        }
+
+        if (!isset($data['database']['user']) || empty($data['database']['user'])) {
+            throw new SetupException("data.missing.database.user", SetupException::ERROR_INVALID_ARGUMENT);
+        }
+
+        if (!isset($data['database']['pw']) || empty($data['database']['pw'])) {
+            throw new SetupException("data.missing.database.pw", SetupException::ERROR_INVALID_ARGUMENT);
+        }
+
+        if (!isset($data['database']['db']) || empty($data['database']['db'])) {
+            throw new SetupException("data.missing.database.db", SetupException::ERROR_INVALID_ARGUMENT);
+        }
+
+        if (!isset($data['database']['prefix'])) {
+            throw new SetupException("data.missing.database.prefix", SetupException::ERROR_INVALID_ARGUMENT);
+        }
+        #endregion
+
+        #
+        # User
+        #
+        #region User
+        if (!isset($data['user']['name']) || empty($data['user']['name'])) {
+            throw new SetupException("data.missing.user.name", SetupException::ERROR_INVALID_ARGUMENT);
+        }
+
+        if (!isset($data['user']['pw']) || empty($data['user']['pw'])) {
+            throw new SetupException("data.missing.user.pw", SetupException::ERROR_INVALID_ARGUMENT);
+        }
+        #endregion
+
+        #
+        # Paths
+        #
+        #region Paths
+        if (!isset($data['paths']['host']) || empty($data['paths']['host'])) {
+            throw new SetupException("data.missing.paths.host", SetupException::ERROR_INVALID_ARGUMENT);
+        }
+
+        if (!isset($data['paths']['cms_dir']) || empty($data['paths']['cms_dir'])) {
+            throw new SetupException("data.missing.paths.cms_dir", SetupException::ERROR_INVALID_ARGUMENT);
+        }
+
+        if (!isset($data['paths']['lib_dir']) || empty($data['paths']['lib_dir'])) {
+            throw new SetupException("data.missing.paths.lib_dir", SetupException::ERROR_INVALID_ARGUMENT);
+        }
+
+        if (!isset($data['paths']['usr_dir']) || empty($data['paths']['usr_dir'])) {
+            throw new SetupException("data.missing.paths.usr_dir", SetupException::ERROR_INVALID_ARGUMENT);
+        }
+
+        if (!isset($data['paths']['url_dir']) || empty($data['paths']['url_dir'])) {
+            throw new SetupException("data.missing.paths.url_dir", SetupException::ERROR_INVALID_ARGUMENT);
+        }
+
+        if (!isset($data['paths']['bin_dir']) || empty($data['paths']['bin_dir'])) {
+            throw new SetupException("data.missing.paths.bin_dir", SetupException::ERROR_INVALID_ARGUMENT);
+        }
+
+        if (!isset($data['paths']['opt_dir']) || empty($data['paths']['opt_dir'])) {
+            throw new SetupException("data.missing.paths.opt_dir", SetupException::ERROR_INVALID_ARGUMENT);
+        }
+
+        if (!isset($data['paths']['var_dir']) || empty($data['paths']['var_dir'])) {
+            throw new SetupException("data.missing.paths.var_dir", SetupException::ERROR_INVALID_ARGUMENT);
+        }
+        #endregion
+
+        return true;
     }
 }

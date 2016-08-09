@@ -26,7 +26,8 @@
     "psr-4" : {
       "QUI\\Setup\\" : "src/QUI/Setup",
       "QUI\\ConsoleSetup\\" : "src/QUI/ConsoleSetup",
-      "QUI\\Setup\\Locale\\" : "src/QUI/Setup/Locale"
+      "QUI\\Setup\\Locale\\" : "src/QUI/Setup/Locale",
+      "QUI\\Setup\\Database" : "src/QUI/Setup/Database"
     }
   }
 

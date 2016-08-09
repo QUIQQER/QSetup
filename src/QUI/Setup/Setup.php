@@ -1,6 +1,7 @@
 <?php
 namespace QUI\Setup;
 
+use QUI\Setup\Database\Database;
 use QUI\Setup\Locale\Locale;
 use QUI\Setup\Locale\LocaleException;
 use QUI\Setup\Utils\Validator;
@@ -28,11 +29,12 @@ class Setup
 
     # Objects
     private $Locale;
-    private $conf;
+    private $Database;
 
     # Init
+    private $conf;
     private $setupLang = "de";
-    private $step = Setup::STEP_INIT;
+    private $Step = Setup::STEP_INIT;
 
     private $data = array(
         'lang'     => "",
@@ -84,6 +86,7 @@ class Setup
      */
     public function setSetupLanguage($lang)
     {
+
         $this->Locale    = new Locale($lang);
         $this->setupLang = $lang;
 
@@ -140,6 +143,10 @@ class Setup
      */
     public function setDatabase($dbDriver, $dbHost, $dbName, $dbUser, $dbPw, $dbPort, $dbPrefix)
     {
+        try {
+            Validator::validateDatabase($dbDriver, $dbHost, $dbName, $dbUser, $dbPw, $dbPort);
+        } catch (SetupException $Exception) {
+        }
         $this->data['database']['driver'] = $dbDriver;
         $this->data['database']['host']   = $dbHost;
         $this->data['database']['name']   = $dbName;
@@ -267,8 +274,28 @@ class Setup
      */
     public function runSetup()
     {
+        # Check if all neccessary data is set
+        try {
+            Validator::checkData($this->data);
+        } catch (SetupException $Exception) {
+            throw $Exception;
+        }
+
+        # Database
+        $this->Database = new Database(
+            $this->data['database']['driver'],
+            $this->data['database']['host'],
+            $this->data['database']['user'],
+            $this->data['database']['pw'],
+            $this->data['database']['db'],
+            $this->data['database']['prefix']
+        );
     }
 
+
+    public function rollBack()
+    {
+    }
     // ************************************************** //
     // Private Functions
     // ************************************************** //

@@ -59,7 +59,11 @@ class Validator
         );
     }
 
-
+    /**
+     * Validates a given string as name
+     * @param $string - A string
+     * @return bool - true if valid name
+     */
     public static function validateName($string)
     {
         if (empty($string)) {
@@ -121,7 +125,13 @@ class Validator
     public static function isValidLanguage($string)
     {
     }
-    
+
+    /**
+     * Checks if a single filesystem-path to a directory is valid and exists
+     * @param $path - Filesystem path to a directory
+     * @return bool - true if valid directory
+     * @throws SetupException
+     */
     public static function validatePath($path)
     {
         if (is_dir($path)) {
@@ -173,7 +183,6 @@ class Validator
         if (substr($paths['url_dir'], -1) != "/") {
             throw new SetupException("exception.validation.trailingslash.missing");
         }
-
 
 
         # Check for leading slashes
@@ -337,6 +346,7 @@ class Validator
         if (!isset($data['paths']['var_dir']) || empty($data['paths']['var_dir'])) {
             throw new SetupException("data.missing.paths.var_dir", SetupException::ERROR_INVALID_ARGUMENT);
         }
+
         #endregion
 
         return true;

@@ -1,8 +1,9 @@
-/.idea/*
-/setup/*
+/.idea/
+/setup/
 /vendor/
-/cache/*
-/composer/*
-.idea/*
-composer.lock
-.htaccess
+/cache/
+/composer/
+/composer.lock
+/.htaccess
+/xml/
+/lib/

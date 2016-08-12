@@ -1,10 +1,16 @@
 <?php
 namespace QUI\Setup;
 
+require_once dirname(dirname(dirname(dirname(__FILE__)))) . "/lib/classes/DOM.php";
+require_once dirname(dirname(dirname(dirname(__FILE__)))) . "/lib/classes/XML.php";
+
+use QUI;
 use QUI\Setup\Database\Database;
 use QUI\Setup\Locale\Locale;
 use QUI\Setup\Locale\LocaleException;
 use QUI\Setup\Utils\Validator;
+use QUI\Utils\XML;
+use QUI\Database as QUIDB;
 
 /**
  * Class Setup
@@ -41,12 +47,13 @@ class Setup
         'version'  => "",
         'template' => "",
         'database' => array(
-            'driver' => "",
-            'host'   => "",
-            'user'   => "",
-            'pw'     => "",
-            'db'     => "",
-            'prefix' => "",
+            'create_new' => false,
+            'driver'     => "",
+            'host'       => "",
+            'user'       => "",
+            'pw'         => "",
+            'db'         => "",
+            'prefix'     => "",
         ),
         'user'     => array(
             'name' => '',
@@ -301,13 +308,43 @@ class Setup
                 $this->data['database']['host'],
                 $this->data['database']['user'],
                 $this->data['database']['pw'],
-                $this->data['database']['db'],
+                # Do not use a database to connect, if a new database should be created
+                $this->data['database']['create_new'] ? "" : $this->data['database']['db'],
                 $this->data['database']['prefix']
             );
         } catch (SetupException $Exception) {
             throw $Exception;
         }
+
+        # Create Database if wanted
+        if ($this->data['database']['create_new']) {
+            $success = $this->Database->createDatabase($this->data['database']['db']);
+            if (!$success) {
+                throw new SetupException(
+                    "setup.database.creation.failed",
+                    500
+                );
+            }
+        }
+
+
         # Create Tables
+
+        $xmlDir  = dirname(dirname(dirname(dirname(__FILE__)))) . "/xml";
+        $xmlFile = $xmlDir . "/" . $this->data['version'] . "/database.xml";
+        # Check if xml file exists
+        if (!file_exists($xmlFile)) {
+            # Try master databasefile as backup-plan
+            $xmlFile = $xmlDir . "/master/database.xml";
+            if (!file_exists($xmlFile)) {
+                throw new SetupException(
+                    $this->Locale->getStringLang("setup.missing.database.xml", "No valid database.xml found."),
+                    SetupException::ERROR_MISSING_RESSOURCE
+                );
+            }
+        }
+
+        $this->Database->importTables(XML::getDataBaseFromXml($xmlFile));
     }
 
     private function setupUser()

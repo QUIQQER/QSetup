@@ -177,6 +177,8 @@ class Installer
     private function setup()
     {
         $this->writeLn(self::getLocale()->getStringLang("message.step.setup", "Executing Setup : "));
+        $Setup = new Setup();
+        $Setup->runSetup();
     }
 
     #endregion

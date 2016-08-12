@@ -4,3 +4,5 @@
 /cache/*
 /composer/*
 .idea/*
+composer.lock
+.htaccess

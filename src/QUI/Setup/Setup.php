@@ -239,12 +239,15 @@ class Setup
         $paths['url_lib_dir'] = $libDir;
         $paths['url_bin_dir'] = $binDir;
 
+
         try {
             Validator::validatePaths($paths);
         } catch (SetupException $Exception) {
             throw $Exception;
         }
 
+        define('CMS_DIR', $cmsDir);
+        define('VAR_DIR', $varDir);
         $this->data['paths'] = $paths;
     }
 
@@ -268,7 +271,6 @@ class Setup
 
     #endregion
 
-
     /**
      *  Starts the Setup-process
      */
@@ -281,21 +283,121 @@ class Setup
             throw $Exception;
         }
 
-        # Database
-        $this->Database = new Database(
-            $this->data['database']['driver'],
-            $this->data['database']['host'],
-            $this->data['database']['user'],
-            $this->data['database']['pw'],
-            $this->data['database']['db'],
-            $this->data['database']['prefix']
-        );
+        $this->setupDatabase();
+        $this->setupUser();
+        $this->setupPaths();
+        $this->setupComposer();
+        $this->setupBootstrapFiles();
+        $this->executeQuiqqerSetups();
+        $this->deleteSetupFiles();
+        $this->executeQuiqqerChecks();
+    }
+
+    private function setupDatabase()
+    {
+        try {
+            $this->Database = new Database(
+                $this->data['database']['driver'],
+                $this->data['database']['host'],
+                $this->data['database']['user'],
+                $this->data['database']['pw'],
+                $this->data['database']['db'],
+                $this->data['database']['prefix']
+            );
+        } catch (SetupException $Exception) {
+            throw $Exception;
+        }
+        # Create Tables
+    }
+
+    private function setupUser()
+    {
+        # Set Salt
+
+        # Set Root
+
+        # Creates admin group
+
+        # Creates admin user
+
+        # Grants permissions
+    }
+
+    private function setupPaths()
+    {
+
+        # Create neccessary paths
+
+        # Creates directories
+
+        # Create config files
+
+        # Setup composer
+    }
+
+    private function setupComposer()
+    {
+
+        # Create Composer.json & move composer.phar into var/composer/
+
+        # Execute Composer
+
+        # Require quiqqer/quiqqer
+
+        # Execute composor again
+    }
+
+    private function setupBootstrapFiles()
+    {
+        # Create index.php
+
+        # Create image.php
+
+        # Create quiqqer.php
+
+        # Create bootstrap.php
+    }
+
+    private function executeQuiqqerSetups()
+    {
+        # Execute Htaccess
+
+        # Execute Translator
+
+        # Execute setup
+
+        # Execute Translator --newlanguage (for eache language)
+
+        # Execute translator new lang if setuplanguage is not in languages
+
+        # Execute Setup again
+
+        # Execute Translator again
+    }
+
+    private function deleteSetupFiles()
+    {
+        # Remove quiqqer.zip
+
+        # Remove quiqqer.setup
+
+        # Remove composer.json & composer.lock in doc-root
+
+        # Move directories to cmsdir/temp/ : 'css' 'locale' 'js' 'versions' 'setup_packages' 'bin' 'lib'
+    }
+
+    private function executeQuiqqerChecks()
+    {
+        # Execute quiqqer health
+
+        # Execute quiqqer tests
     }
 
 
     public function rollBack()
     {
     }
+
     // ************************************************** //
     // Private Functions
     // ************************************************** //

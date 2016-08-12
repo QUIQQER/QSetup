@@ -41,6 +41,7 @@ class ValidatorTest extends TestCase
         $this->assertFalse(Validator::validateVersion('dev'));
     }
 
+
     public function testPasswordValidation()
     {
 

@@ -124,6 +124,18 @@ class Validator
         return true;
     }
 
+    /**
+     * Checks the given database credentials for correctness
+     * If an PDO Error happens it will throw a setupException with the PODException message and code.
+     * @param $dbDriver
+     * @param $dbHost
+     * @param $dbName
+     * @param $dbUser
+     * @param $dbPw
+     * @param string $dbPort
+     * @return bool
+     * @throws SetupException
+     */
     public static function validateDatabase($dbDriver, $dbHost, $dbName, $dbUser, $dbPw, $dbPort = "")
     {
 
@@ -143,9 +155,10 @@ class Validator
         return true;
     }
 
-    public static function isValidLanguage($string)
-    {
-    }
+
+//    public static function isValidLanguage($string)
+//    {
+//    }
 
     /**
      * Checks if a single filesystem-path to a directory is valid and exists
@@ -162,6 +175,11 @@ class Validator
         }
     }
 
+    /**
+     * Validates the given paths.
+     * @param array $paths
+     * @throws SetupException
+     */
     public static function validatePaths(array $paths)
     {
         if (empty($paths['cms_dir'])) {

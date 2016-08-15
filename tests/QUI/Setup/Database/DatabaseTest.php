@@ -3,6 +3,7 @@ namespace QUI\Setup;
 
 use PHPUnit\Framework\TestCase;
 use QUI\Setup\Database\Database;
+use QUI\Utils\XML;
 
 /**
  * Created by PhpStorm.
@@ -51,10 +52,21 @@ class DatabaseTest extends TestCase
             $this->dbParams['pw']
         );
 
-
+        # Create database
         $result = $Database->createDatabase("quiqqer_setup");
-
-
         $this->assertTrue($result);
+
+        # Create Tables
+        $tablesXML = dirname(dirname(dirname(dirname(dirname(__FILE__))))) . "/xml/dev/database.xml";
+        $this->assertFileExists($tablesXML);
+
+        $tables = XML::getDataBaseFromXml($tablesXML);
+        $Database->importTables($tables);
+
+        # Verify Completeness
+        $tables = $Database->getTables();
+        $this->assertContains('groups', $tables);
+        $this->assertContains('users', $tables);
+        $this->assertContains('permissions', $tables);
     }
 }

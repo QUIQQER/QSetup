@@ -14,6 +14,8 @@ class Database
 {
     private $dbName = "";
 
+    private $dbDriver = "";
+    private $dbHost = "";
     private $dbUser = "";
     private $dbPw = "";
     private $prefix = "";
@@ -35,9 +37,12 @@ class Database
     public function __construct($driver, $host, $user, $pw, $db = "", $prefix = "", $port = "")
     {
         $this->prefix = $prefix;
-        $this->dbName = $db;
-        $this->dbUser = $user;
-        $this->dbPw   = $pw;
+
+        $this->dbDriver = $driver;
+        $this->dbHost   = $host;
+        $this->dbName   = $db;
+        $this->dbUser   = $user;
+        $this->dbPw     = $pw;
 
         $this->DB = new DB(array(
             'host'     => $host,
@@ -61,14 +66,6 @@ class Database
         return \PDO::getAvailableDrivers();
     }
 
-    /**
-     * Creates a valid connection string for PDO
-     * @param string $driver
-     * @param string $host
-     * @param string string $db
-     * @param string $port
-     * @return string - Connectionstring for use with PDO
-     */
     private static function getConnectionString($driver, $host, $db = "", $port = "")
     {
         $connectionString = $driver . ":host=" . $host;
@@ -126,6 +123,40 @@ class Database
     # Public
     # =====================================
 
+
+    /**
+     * Returns the current PDO object, that is used
+     * @return \PDO
+     */
+    public function getPDO()
+    {
+        return $this->DB->getPDO();
+    }
+
+    /**
+     * Gets all tables in the current database
+     * @return array - Array of tablenames
+     */
+    public function getTables()
+    {
+        $tablesRes = $this->DB->getPDO()->query("SHOW TABLES;");
+        $tables    = array();
+        while ($row = $tablesRes->fetch(\PDO::FETCH_ASSOC)) {
+            $tables[] = $row['Tables_in_' . $this->dbName];
+        }
+
+        return $tables;
+    }
+
+    /**
+     * Creates a valid connection string for PDO
+     * @param string $driver
+     * @param string $host
+     * @param string string $db
+     * @param string $port
+     * @return string - Connectionstring for use with PDO
+     */
+
     /**
      * Selects a database that should be used for all operations
      * @param $dbname - The db that should be used for future queries
@@ -133,7 +164,13 @@ class Database
     public function useDatabase($dbname)
     {
         $this->dbName = $dbname;
-        $this->DB->getNewPDO();
+        $this->DB     = new DB(array(
+            'host'     => $this->dbHost,
+            'driver'   => $this->dbDriver,
+            'user'     => $this->dbUser,
+            'password' => $this->dbPw,
+            'dbname'   => $dbname
+        ));
     }
 
     /**
@@ -160,9 +197,15 @@ class Database
         }
 
         $this->useDatabase($dbName);
+
         return true;
     }
 
+    /**
+     * Imports the Tables into the current database
+     * @param $tables
+     * @throws SetupException
+     */
     public function importTables($tables)
     {
         if (empty($this->dbName)) {
@@ -198,29 +241,36 @@ class Database
     }
 
 
+    /**
+     * Executes a select query.
+     * @param $table - The queried table
+     * @param array $columns - The columns that should be used. Empty array results in "SELECT *"
+     * @param int $fetchStyle - The used fetch style
+     * @throws SetupException
+     */
     public function select($table, $columns = array(), $fetchStyle = \PDO::FETCH_ASSOC)
     {
         if (empty($this->dbName)) {
             throw new SetupException("database.no.database.selected", SetupException::ERROR_MISSING_RESSOURCE);
         }
 
-        // TODO Vervollständigen
-        $columnString = "";
-        if (empty($columns)) {
-            $columnString = "*";
-        } else {
-            foreach ($columns as $clmn) {
-                $columnString .= $clmn . ",";
-            }
-            $columnString = rtrim($columnString, ',');
+        $params = array();
+        if (!empty($columns)) {
+            $params['select'] = $columns;
         }
 
-        $sql = "SELECT " . $columnString;
-        $sql .= "FROM " . $table;
+        $params['from'] = $table;
 
-        return $this->DB->fetchSQL("SELECT * FROM quiqqer.users", \PDO::FETCH_OBJ);
+
+        $this->DB->fetch($params, $fetchStyle);
     }
 
+    /**
+     * Inserts data into the current database
+     * @param $table - The table that will be modified
+     * @param $data - The data that should be inserted : array('column'=>'value','column2'=>'value2')
+     * @throws SetupException
+     */
     public function insert($table, $data)
     {
         if (empty($this->dbName)) {
@@ -228,44 +278,4 @@ class Database
         }
         $this->DB->insert($table, $data);
     }
-
-    # =====================================
-    # Private
-    # =====================================
-
-    //    /**
-//     * Creates a PDO object with the given credentials
-//     * @param string $driver
-//     * @param string $host
-//     * @param string $user
-//     * @param string $pw
-//     * @param string $db
-//     * @param string $prefix
-//     * @param string $port
-//     * @throws SetupException
-//     */
-//    public function createPDO($driver, $host, $user, $pw, $db, $prefix, $port = "")
-//    {
-//        $dsn = $this->getConnectionString($driver, $host, $db, $port);
-//        try {
-//            $this->pdo = new \PDO(
-//                $dsn,
-//                $user,
-//                $pw,
-//                array(
-//                    \PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"
-//                )
-//            );
-//
-//            $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-//        } catch (\PDOException $Exception) {
-//            throw new SetupException(
-//                $Exception->getMessage(),
-//                $Exception->getCode()
-//            );
-//        }
-//
-//
-//        $this->prefix = $prefix;
-//    }
 }

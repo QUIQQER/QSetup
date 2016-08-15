@@ -77,4 +77,9 @@ class Locale
         }
         textdomain('messages');
     }
+
+    public function getCurrent()
+    {
+        return $this->current;
+    }
 }

@@ -90,10 +90,12 @@ class Installer
             self::getLocale()->getStringLang("message.step.language", "Language"),
             self::LEVEL_INFO
         );
-        $this->prompt(
+        $lang = $this->prompt(
             self::getLocale()->getStringLang("prompt.language", "Please enter your desired language :"),
             "en_GB"
         );
+
+        $this->Setup->setLanguage($lang);
     }
 
     private function stepVersion()
@@ -106,6 +108,8 @@ class Installer
             self::getLocale()->getStringLang("prompt.version", "Please enter a version"),
             "dev-master"
         );
+
+        $this->Setup->setVersion($version);
     }
 
     private function stepTemplate()
@@ -120,6 +124,8 @@ class Installer
             null,
             true
         );
+
+        $this->Setup->setPreset($template);
     }
 
     private function stepDatabase()
@@ -128,6 +134,53 @@ class Installer
             self::getLocale()->getStringLang("message.step.database", "Database settings"),
             self::LEVEL_INFO
         );
+
+        $driver = $this->prompt(
+            self::getLocale()->getStringLang("prompt.database.host", "Database driver:"),
+            "mysql"
+        );
+
+        $host = $this->prompt(
+            self::getLocale()->getStringLang("prompt.database.host", "Database host:"),
+            "localhost"
+        );
+
+        $port = $this->prompt(
+            self::getLocale()->getStringLang("prompt.database.host", "Database port:"),
+            "3306"
+        );
+
+
+        $user = $this->prompt(
+            self::getLocale()->getStringLang("prompt.database.host", "Database user:")
+        );
+
+        $pw = $this->prompt(
+            self::getLocale()->getStringLang("prompt.database.host", "Database pw:"),
+            false,
+            null,
+            true
+        );
+
+        $createNew = $this->prompt(
+            self::getLocale()->getStringLang(
+                "prompt.database.createnew",
+                "Do you want to create a new databse or use an existing one? (y: Create new | n: use existing) :"
+            )
+        ) == "y" ? true : false;
+
+
+        $db = $this->prompt(
+            self::getLocale()->getStringLang("prompt.database.host", "Database database name:"),
+            "quiqqer"
+        );
+
+        $prefix = $this->prompt(
+            self::getLocale()->getStringLang("prompt.database.host", "Database table prefix:"),
+            ""
+        );
+
+        $this->Setup->setDatabase($driver, $host, $db, $user, $pw, $port, $prefix, $createNew);
     }
 
     private function stepUser()
@@ -141,7 +194,10 @@ class Installer
             Setup::getConfig()['defaults']['username']
         );
         $pw   = $this->prompt(
-            self::getLocale()->getStringLang("prompt.password", "Please enter a password :")
+            self::getLocale()->getStringLang("prompt.password", "Please enter a password :"),
+            false,
+            null,
+            true
         );
 
         try {
@@ -163,11 +219,11 @@ class Installer
         );
 
         $cmsDir = $this->prompt(
-            self::getLocale()->getStringLang("prompt.host", "CMS Directory : ")
+            self::getLocale()->getStringLang("prompt.cms", "CMS Directory : ")
         );
 
         $urlDir = $this->prompt(
-            self::getLocale()->getStringLang("prompt.host", "Url Directory : "),
+            self::getLocale()->getStringLang("prompt.url", "Url Directory : "),
             "/"
         );
 
@@ -177,8 +233,7 @@ class Installer
     private function setup()
     {
         $this->writeLn(self::getLocale()->getStringLang("message.step.setup", "Executing Setup : "));
-        $Setup = new Setup();
-        $Setup->runSetup();
+        $this->Setup->runSetup();
     }
 
     #endregion
@@ -227,8 +282,14 @@ class Installer
         return;
     }
 
-    private function prompt($text, $default = false, $color = null, $hidden = false, $toLower = false)
-    {
+    private function prompt(
+        $text,
+        $default = false,
+        $color = null,
+        $hidden = false,
+        $toLower = false,
+        $allowEmpty = false
+    ) {
         if ($color != null) {
             $text = $this->getColoredString($text, $color);
         } else {
@@ -239,8 +300,11 @@ class Installer
             $text .= " [" . $default . "] ";
         }
 
-        $result = "";
-        while (empty($result)) {
+        # Continue to prompt userinput, until user input is not empty,
+        # unless allowempty is true or default can be used
+        $result   = "";
+        $continue = true;
+        while ($continue) {
             echo $text . " ";
             if ($hidden) {
                 system('stty -echo');
@@ -252,10 +316,17 @@ class Installer
 
             if (empty($result)) {
                 if ($default !== false) {
-                    $result = $default;
+                    $result   = $default;
+                    $continue = false;
                 } else {
-                    $this->writeLn("Darf nicht leer sein. Bitte erneut versuchen", self::LEVEL_WARNING);
+                    if (!$allowEmpty) {
+                        $this->writeLn("Darf nicht leer sein. Bitte erneut versuchen", self::LEVEL_WARNING);
+                    } else {
+                        $continue = false;
+                    }
                 }
+            } else {
+                $continue = false;
             }
         }
 

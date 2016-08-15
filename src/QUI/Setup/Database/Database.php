@@ -106,14 +106,16 @@ class Database
         }
 
         # Check if DB Exists
-        $dsn = self::getConnectionString($driver, $host, $db);
-        try {
-            $pdo = new \PDO($dsn, $user, $pw);
-        } catch (\PDOException $Exception) {
-            throw new SetupException(
-                $Exception->getMessage(),
-                $Exception->getCode()
-            );
+        if (!empty($db)) {
+            $dsn = self::getConnectionString($driver, $host, $db);
+            try {
+                $pdo = new \PDO($dsn, $user, $pw);
+            } catch (\PDOException $Exception) {
+                throw new SetupException(
+                    $Exception->getMessage(),
+                    $Exception->getCode()
+                );
+            }
         }
 
         return true;

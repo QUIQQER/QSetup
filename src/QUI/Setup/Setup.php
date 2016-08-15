@@ -5,12 +5,14 @@ require_once dirname(dirname(dirname(dirname(__FILE__)))) . "/lib/classes/DOM.ph
 require_once dirname(dirname(dirname(dirname(__FILE__)))) . "/lib/classes/XML.php";
 
 use QUI;
+use QUI\Composer\Composer;
 use QUI\Setup\Database\Database;
 use QUI\Setup\Locale\Locale;
 use QUI\Setup\Locale\LocaleException;
 use QUI\Setup\Utils\Validator;
 use QUI\Utils\XML;
 use QUI\Database as QUIDB;
+use SebastianBergmann\CodeCoverage\Report\PHP;
 
 /**
  * Class Setup
@@ -119,7 +121,7 @@ class Setup
      */
     public function setLanguage($lang)
     {
-        $this->data['language'] = $lang;
+        $this->data['lang'] = $lang;
     }
 
     /**
@@ -129,12 +131,8 @@ class Setup
      */
     public function setVersion($version)
     {
-        try {
-            if (Validator::validateVersion($version)) {
-                $this->data['version'] = $version;
-            }
-        } catch (SetupException $Exception) {
-            throw $Exception;
+        if (Validator::validateVersion($version)) {
+            $this->data['version'] = $version;
         }
     }
 
@@ -158,19 +156,23 @@ class Setup
      * @param string $dbPort
      * @param string $dbPrefix
      */
-    public function setDatabase($dbDriver, $dbHost, $dbName, $dbUser, $dbPw, $dbPort, $dbPrefix)
+    public function setDatabase($dbDriver, $dbHost, $dbName, $dbUser, $dbPw, $dbPort, $dbPrefix, $createNew)
     {
-        try {
-            Validator::validateDatabase($dbDriver, $dbHost, $dbName, $dbUser, $dbPw, $dbPort);
-        } catch (SetupException $Exception) {
+        if ($createNew) {
+            Validator::validateDatabase($dbDriver, $dbHost, $dbUser, $dbPw, $dbPort);
+        } else {
+            Validator::validateDatabase($dbDriver, $dbHost, $dbUser, $dbPw, $dbPort, $dbName);
         }
-        $this->data['database']['driver'] = $dbDriver;
-        $this->data['database']['host']   = $dbHost;
-        $this->data['database']['name']   = $dbName;
-        $this->data['database']['user']   = $dbUser;
-        $this->data['database']['pw']     = $dbPw;
-        $this->data['database']['port']   = $dbPort;
-        $this->data['database']['prefix'] = $dbPrefix;
+
+
+        $this->data['database']['driver']     = $dbDriver;
+        $this->data['database']['host']       = $dbHost;
+        $this->data['database']['name']       = $dbName;
+        $this->data['database']['user']       = $dbUser;
+        $this->data['database']['pw']         = $dbPw;
+        $this->data['database']['port']       = $dbPort;
+        $this->data['database']['prefix']     = $dbPrefix;
+        $this->data['database']['create_new'] = $createNew;
     }
 
     /**
@@ -181,17 +183,10 @@ class Setup
      */
     public function setUser($user, $pw)
     {
-        try {
-            Validator::validateName($user);
-        } catch (SetupException $Exception) {
-            return false;
-        }
+        Validator::validateName($user);
 
-        try {
-            Validator::validatePassword($pw);
-        } catch (SetupException $Exception) {
-            return false;
-        }
+        Validator::validatePassword($pw);
+
 
         $this->data['user']['name'] = $user;
         $this->data['user']['pw']   = $pw;
@@ -223,10 +218,11 @@ class Setup
         $varDir = ""
     ) {
         $paths = array();
+        // Generate missing paths
         if (Validator::validatePath($cmsDir) && !empty($urlDir)) {
             # Filesystem paths
             if (empty($varDir)) {
-                $varDir = $cmsDir . "lib/";
+                $varDir = $cmsDir . "var/";
             }
 
             if (empty($optDir)) {
@@ -239,15 +235,16 @@ class Setup
 
             # URL Paths
             if (empty($binDir)) {
-                $binDir = $urlDir . "/bin/";
+                $binDir = $urlDir . "bin/";
             }
 
             if (empty($libDir)) {
-                $libDir = $urlDir . "/lib/";
+                $libDir = $urlDir . "lib/";
             }
         }
 
         $paths['host']        = $host;
+        $paths['httpshost']   = '';
         $paths['cms_dir']     = $cmsDir;
         $paths['var_dir']     = $varDir;
         $paths['usr_dir']     = $usrDir;
@@ -257,11 +254,9 @@ class Setup
         $paths['url_bin_dir'] = $binDir;
 
 
-        try {
-            Validator::validatePaths($paths);
-        } catch (SetupException $Exception) {
-            throw $Exception;
-        }
+        # Validate paths, throw exception if fails
+        Validator::validatePaths($paths);
+
 
         define('CMS_DIR', $cmsDir);
         define('VAR_DIR', $varDir);
@@ -284,21 +279,23 @@ class Setup
     public function setData($data)
     {
         $this->data = $data;
+
+        if (!isset($this->data['paths']['httpshost'])) {
+            $this->data['paths']['httpshost'] = "";
+        }
     }
 
     #endregion
 
     /**
      *  Starts the Setup-process
+     * @throws SetupException
      */
     public function runSetup()
     {
-        # Check if all neccessary data is set
-        try {
-            Validator::checkData($this->data);
-        } catch (SetupException $Exception) {
-            throw $Exception;
-        }
+        # Check if all neccessary data is set; throws exception if fails
+        Validator::checkData($this->data);
+
 
         # Set Tablenames
         $this->tableUser               = $this->data['database']['prefix'] . "users";
@@ -306,39 +303,35 @@ class Setup
         $this->tablePermissions        = $this->data['database']['prefix'] . "permissions";
         $this->tablePermissions2Groups = $this->data['database']['prefix'] . "permissions2groups";
 
-        try {
-            $this->setupDatabase();
-            $this->setupUser();
-            $this->setupPaths();
-            $this->setupComposer();
-            $this->setupBootstrapFiles();
-            $this->executeQuiqqerSetups();
-            $this->deleteSetupFiles();
-            $this->executeQuiqqerChecks();
-        } catch (SetupException $Exception) {
-            throw $Exception;
-        }
+
+        $this->setupDatabase();
+        $this->setupUser();
+        $this->setupPaths();
+        $this->setupComposer();
+        $this->setupBootstrapFiles();
+        $this->executeQuiqqerSetups();
+        $this->deleteSetupFiles();
+        $this->executeQuiqqerChecks();
     }
+
 
     private function setupDatabase()
     {
-        try {
-            $this->Database = new Database(
-                $this->data['database']['driver'],
-                $this->data['database']['host'],
-                $this->data['database']['user'],
-                $this->data['database']['pw'],
-                # Do not use a database to connect, if a new database should be created
-                $this->data['database']['create_new'] ? "" : $this->data['database']['db'],
-                $this->data['database']['prefix']
-            );
-        } catch (SetupException $Exception) {
-            throw $Exception;
-        }
+
+        $this->Database = new Database(
+            $this->data['database']['driver'],
+            $this->data['database']['host'],
+            $this->data['database']['user'],
+            $this->data['database']['pw'],
+            # Do not use a database to connect, if a new database should be created
+            $this->data['database']['create_new'] ? "" : $this->data['database']['name'],
+            $this->data['database']['prefix']
+        );
+
 
         # Create Database if wanted
         if ($this->data['database']['create_new']) {
-            $success = $this->Database->createDatabase($this->data['database']['db']);
+            $success = $this->Database->createDatabase($this->data['database']['name']);
             if (!$success) {
                 throw new SetupException(
                     "setup.database.creation.failed",
@@ -348,8 +341,14 @@ class Setup
         }
 
         # Create Tables
+        $version = $this->data['version'];
+        # Strip the dev- tag, if the version is a 'dev-*' version
+        if ($version == "dev-dev" || $version == "dev-master") {
+            $version = str_replace("dev-", "", $version);
+        }
+        # Load the database tables from xml file
         $xmlDir  = dirname(dirname(dirname(dirname(__FILE__)))) . "/xml";
-        $xmlFile = $xmlDir . "/" . $this->data['version'] . "/database.xml";
+        $xmlFile = $xmlDir . "/" . $version . "/database.xml";
         # Check if xml file exists
         if (!file_exists($xmlFile)) {
             # Try master databasefile as backup-plan
@@ -440,16 +439,14 @@ class Setup
         $etcDir = $cmsDir . "etc/";
         $tmpDir = $varDir . "temp/";
 
+
         # -------------------
         # Validation
         # -------------------
 
         #region Validation
-        try {
-            Validator::validatePaths($paths);
-        } catch (SetupException $Exception) {
-            throw $Exception;
-        }
+        Validator::validatePaths($paths);
+
         #endregion
 
         # -------------------
@@ -457,6 +454,7 @@ class Setup
         # -------------------
 
         #region Directories
+
         if (!QUI\Utils\System\File::mkdir($cmsDir) ||
             !QUI\Utils\System\File::mkdir($tmpDir) ||
             !QUI\Utils\System\File::mkdir($etcDir) ||
@@ -469,7 +467,7 @@ class Setup
         ) {
             throw new SetupException(
                 "setup.filesystem.directory.creation.failed",
-                503
+                SetupException::ERROR_PERMISSION_DENIED
             );
         }
         #endregion
@@ -488,62 +486,136 @@ class Setup
         ) {
             throw new SetupException(
                 "setup.filesystem.config.creation.failed",
-                503
+                SetupException::ERROR_PERMISSION_DENIED
             );
         }
 
         #Mainconfig etc/conf.ini.php
-        try {
-            $this->writeIni($etcDir . 'conf.ini.php', $this->createConfigArray());
+        $this->writeIni($etcDir . 'conf.ini.php', $this->createConfigArray());
 
-            #Sourcesconfig etc/sources.list.ini.php
-            $this->writeIni($etcDir . 'source.list.ini.php', array(
-                'packagist'                     => array(
-                    'active' => 1
-                ),
-                'https://update.quiqqer.com/'   => array(
-                    'active' => 1,
-                    'type'   => "composer"
-                ),
-                'https://composer.quiqqer.com/' => array(
-                    'active' => 1,
-                    'type'   => "composer"
-                )
-            ));
+        #Sourcesconfig etc/sources.list.ini.php
+        $this->writeIni($etcDir . 'source.list.ini.php', array(
+            'packagist'                     => array(
+                'active' => 1
+            ),
+            'https://update.quiqqer.com/'   => array(
+                'active' => 1,
+                'type'   => "composer"
+            ),
+            'https://composer.quiqqer.com/' => array(
+                'active' => 1,
+                'type'   => "composer"
+            )
+        ));
 
-            #Wysiqygeditor config etc/wysiwyg/conf.ini.php
-            $this->writeIni($etcDir . 'wysiwyg/conf.ini.php', array(
-                'settings' => array(
-                    'standard' => 'ckeditor4'
-                )
-            ));
-        } catch (SetupException $Exception) {
-            throw $Exception;
-        }
+        #Wysiqygeditor config etc/wysiwyg/conf.ini.php
+        $this->writeIni($etcDir . 'wysiwyg/conf.ini.php', array(
+            'settings' => array(
+                'standard' => 'ckeditor4'
+            )
+        ));
+
+        # Copy default toolbar.xml
+        copy(
+            dirname(dirname(dirname(dirname(__FILE__)))) . "/xml/wysiwyg/toolbars/standard.xml",
+            $etcDir . 'wysiwyg/toolbars/standard.xml'
+        );
+
         #endregion
     }
 
     private function setupComposer()
     {
 
-        # Create Composer.json & move composer.phar into var/composer/
+        # Put composer.phar into varDir/composer
+        $cmsDir = $this->data['paths']['cms_dir'];
+        $varDir = $this->data['paths']['var_dir'];
+
+        $this->createComposerJson();
+        if (!file_exists($cmsDir . "composer.json")) {
+            throw new SetupException(
+                "setup.missing.composerjson",
+                SetupException::ERROR_MISSING_RESSOURCE
+            );
+        }
+
+        copy(
+            dirname(dirname(dirname(dirname(__FILE__)))) . "/lib/composer.phar",
+            $varDir . "composer/composer.phar"
+        );
+
+        if (file_exists($cmsDir . "lib/composer.phar")) {
+            rename(
+                $cmsDir . "lib/composer.phar",
+                $varDir . "composer/composer.phar"
+            );
+        }
 
         # Execute Composer
-
+        $Composer = new Composer($cmsDir, $varDir . "composer/");
+        $res = $Composer->install();
+        print_r($res);
         # Require quiqqer/quiqqer
-
+        $res = $Composer->requirePackage("quiqqer/quiqqer", $this->data['version']);
+        print_r($res);
         # Execute composor again
+        $res = $Composer->update();
+        print_r($res);
     }
 
     private function setupBootstrapFiles()
     {
+        $cmsDir = $this->data['paths']['cms_dir'];
+        $optDir = $this->data['paths']['opt_dir'];
+
         # Create index.php
+        file_put_contents(
+            $cmsDir . 'index.php',
+            "<?php
+            require 'bootstrap.php';
+            require '{$optDir}quiqqer/quiqqer/index.php';"
+        );
 
         # Create image.php
+        file_put_contents(
+            $cmsDir . 'image.php',
+            "<?php
+            require 'bootstrap.php';
+            require '{$optDir}quiqqer/quiqqer/image.php';"
+        );
+
 
         # Create quiqqer.php
 
+        file_put_contents(
+            $cmsDir . 'quiqqer.php',
+            "<?php
+            #require 'bootstrap.php';
+            require '{$optDir}quiqqer/quiqqer/quiqqer.php';"
+        );
+
+
         # Create bootstrap.php
+        file_put_contents(
+            $cmsDir . 'bootstrap.php',
+            '<?php
+            $etc_dir = dirname(__FILE__).\'/etc/\';
+
+            if (!file_exists($etc_dir.\'conf.ini.php\')) {
+                require_once \'quiqqer.php\';
+                exit;
+            }
+
+            if (!defined(\'ETC_DIR\')) {
+                define(\'ETC_DIR\', $etc_dir);
+            }
+
+            $boot = \'' . $optDir . 'quiqqer/quiqqer/bootstrap.php\';
+
+            if (file_exists($boot)) {
+                require $boot;
+            }'
+        );
     }
 
     private function executeQuiqqerSetups()
@@ -636,8 +708,8 @@ class Setup
                 "rootuser"       => $this->data['rootUID'],
                 "root"           => $this->data['rootGID'],
                 "cache"          => 0,
-                "host"           => $this->data['host'],
-                "httpshost"      => $this->data['httpshost'],
+                "host"           => $this->data['paths']['host'],
+                "httpshost"      => $this->data['paths']['httpshost'],
                 "development"    => 1,
                 "debug_mode"     => 0,
                 "emaillogin"     => 0,
@@ -647,7 +719,7 @@ class Setup
             "db"       => array(
                 "driver"   => $this->data['database']['driver'],
                 "host"     => $this->data['database']['host'],
-                "database" => $this->data['database']['db'],
+                "database" => $this->data['database']['name'],
                 "user"     => $this->data['database']['user'],
                 "password" => $this->data['database']['pw'],
                 "prfx"     => $this->data['database']['prefix']
@@ -663,13 +735,34 @@ class Setup
         return $config;
     }
 
+    private function createComposerJson()
+    {
+        $json = file_get_contents(dirname(__FILE__) . "/composer.json.tpl");
+        $data = json_decode($json, true);
+
+        #Set Composer paths
+        $data['config']['vendor-dir']    = $this->data['paths']['opt_dir'];
+        $data['config']['cache-dir']     = $this->data['paths']['var_dir'] . "composer/";
+        $data['config']['component-dir'] = $this->data['paths']['opt_dir'] . "bin/";
+        $data['config']['quiqqer-dir']   = $this->data['paths']['cms_dir'];
+
+        # Add custom repositories
+        $created = file_put_contents(
+            $this->data['paths']['cms_dir'] . "composer.json",
+            json_encode($data, JSON_PRETTY_PRINT)
+        );
+
+        if ($created === false) {
+            throw new SetupException("setup.filesystem.composerjson.notcreated", SetupException::ERROR_PERMISSION_DENIED);
+        }
+    }
 
     private function writeIni($file, $directives)
     {
         if (!is_writeable($file)) {
             throw new SetupException(
                 "setup.filesystem.file.notwriteable",
-                503
+                SetupException::ERROR_PERMISSION_DENIED
             );
         }
 

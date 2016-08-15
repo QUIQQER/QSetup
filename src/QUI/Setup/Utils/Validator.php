@@ -136,7 +136,7 @@ class Validator
      * @return bool
      * @throws SetupException
      */
-    public static function validateDatabase($dbDriver, $dbHost, $dbName, $dbUser, $dbPw, $dbPort = "")
+    public static function validateDatabase($dbDriver, $dbHost, $dbUser, $dbPw, $dbPort = "", $dbName = "")
     {
 
         if (!in_array($dbDriver, Database::getAvailableDrivers())) {
@@ -187,11 +187,11 @@ class Validator
         }
 
         if (empty($paths['host'])) {
-            throw new SetupException("exception.validation.cmsdir.empty");
+            throw new SetupException("exception.validation.host.empty");
         }
 
         if (empty($paths['url_dir'])) {
-            throw new SetupException("exception.validation.cmsdir.empty");
+            throw new SetupException("exception.validation.urldir.empty");
         }
 
         # Check for trailing slashes
@@ -303,8 +303,8 @@ class Validator
             throw new SetupException("data.missing.version", SetupException::ERROR_INVALID_ARGUMENT);
         }
 
-        if (!isset($data['template']) || empty($data['template'])) {
-            throw new SetupException("data.missing.template", SetupException::ERROR_INVALID_ARGUMENT);
+        if (!isset($data['preset']) || empty($data['preset'])) {
+            throw new SetupException("data.missing.preset", SetupException::ERROR_INVALID_ARGUMENT);
         }
         #endregion
 
@@ -328,7 +328,7 @@ class Validator
             throw new SetupException("data.missing.database.pw", SetupException::ERROR_INVALID_ARGUMENT);
         }
 
-        if (!isset($data['database']['db']) || empty($data['database']['db'])) {
+        if (!isset($data['database']['name']) || empty($data['database']['name'])) {
             throw new SetupException("data.missing.database.db", SetupException::ERROR_INVALID_ARGUMENT);
         }
 
@@ -362,7 +362,7 @@ class Validator
             throw new SetupException("data.missing.paths.cms_dir", SetupException::ERROR_INVALID_ARGUMENT);
         }
 
-        if (!isset($data['paths']['lib_dir']) || empty($data['paths']['lib_dir'])) {
+        if (!isset($data['paths']['url_lib_dir']) || empty($data['paths']['url_lib_dir'])) {
             throw new SetupException("data.missing.paths.lib_dir", SetupException::ERROR_INVALID_ARGUMENT);
         }
 
@@ -374,7 +374,7 @@ class Validator
             throw new SetupException("data.missing.paths.url_dir", SetupException::ERROR_INVALID_ARGUMENT);
         }
 
-        if (!isset($data['paths']['bin_dir']) || empty($data['paths']['bin_dir'])) {
+        if (!isset($data['paths']['url_bin_dir']) || empty($data['paths']['url_bin_dir'])) {
             throw new SetupException("data.missing.paths.bin_dir", SetupException::ERROR_INVALID_ARGUMENT);
         }
 

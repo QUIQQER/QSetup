@@ -33,7 +33,7 @@ class Installer
 
     public function __construct()
     {
-        $this->Setup = new Setup();
+        $this->Setup = new Setup(Setup::MODE_CLI);
         $this->Setup->setSetupLanguage("en_GB");
     }
 
@@ -44,7 +44,7 @@ class Installer
         $this->stepCheckRequirements();
         $this->stepLanguage();
         $this->stepVersion();
-        $this->stepTemplate();
+        $this->stepPreset();
         $this->stepDatabase();
         $this->stepUser();
         $this->stepPaths();
@@ -92,7 +92,7 @@ class Installer
         );
         $lang = $this->prompt(
             self::getLocale()->getStringLang("prompt.language", "Please enter your desired language :"),
-            "en_GB"
+            "de"
         );
 
         $this->Setup->setLanguage($lang);
@@ -112,14 +112,25 @@ class Installer
         $this->Setup->setVersion($version);
     }
 
-    private function stepTemplate()
+    private function stepPreset()
     {
+        $presets = Setup::getPresets();
+        $presetString = "";
+        foreach ($presets as $name => $preset) {
+            $presetString .= $name.", ";
+        }
+        $presetString = trim($presetString, " ,");
+
         $this->writeLn(
-            self::getLocale()->getStringLang("message.step.template", "Template"),
+            self::getLocale()->getStringLang("message.step.template", "Preset"),
+            self::LEVEL_INFO
+        );
+        $this->writeLn(
+            self::getLocale()->getStringLang("message.preset.available", "Available presets: ") .$presetString,
             self::LEVEL_INFO
         );
         $template = $this->prompt(
-            self::getLocale()->getStringLang("prompt.template", "Please enter a template"),
+            self::getLocale()->getStringLang("prompt.template", "Select one"),
             "default",
             null,
             true
@@ -219,7 +230,8 @@ class Installer
         );
 
         $cmsDir = $this->prompt(
-            self::getLocale()->getStringLang("prompt.cms", "CMS Directory : ")
+            self::getLocale()->getStringLang("prompt.cms", "CMS Directory : "),
+            dirname(dirname(dirname(dirname(__FILE__))))
         );
 
         $urlDir = $this->prompt(

@@ -1,1 +1,42 @@
-{"name":"quiqqer\/qsetup","type":"quiqqer-library","description":"Load essential packages for quiqqer setup","version":"2.0.0-dev","license":"","minimum-stability":"dev","authors":[{"name":"PCSG OHG","email":"support@pcsg.de","homepage":"http:\/\/www.pcsg.de","role":"Developer"}],"support":{"email":"support@pcsg.de"},"repositories":[{"type":"composer","url":"https:\/\/update.quiqqer.com\/"},{"type":"vcs","url":"git@dev.quiqqer.com:quiqqer\/composer.git"}],"require":{"quiqqer\/composer":"dev-dev","quiqqer\/utils":"dev-dev","quiqqer\/qui-php":"dev-dev"},"autoload":{"psr-4":{"QUI\\Setup\\":"src\/QUI\/Setup","QUI\\ConsoleSetup\\":"src\/QUI\/ConsoleSetup","QUI\\Setup\\Locale\\":"src\/QUI\/Setup\/Locale","QUI\\Setup\\Database\\":"src\/QUI\/Setup\/Database"}}}
+{
+  "name": "quiqqer\/qsetup",
+  "type": "quiqqer-library",
+  "description": "Load essential packages for quiqqer setup",
+  "version": "2.0.0-dev",
+  "license": "",
+  "minimum-stability": "dev",
+  "authors": [
+    {
+      "name": "PCSG OHG",
+      "email": "support@pcsg.de",
+      "homepage": "http:\/\/www.pcsg.de",
+      "role": "Developer"
+    }
+  ],
+  "support": {
+    "email": "support@pcsg.de"
+  },
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https:\/\/update.quiqqer.com\/"
+    },
+    {
+      "type": "vcs",
+      "url": "git@dev.quiqqer.com:quiqqer\/composer.git"
+    }
+  ],
+  "require": {
+    "quiqqer\/composer": "dev-dev",
+    "quiqqer\/utils": "dev-dev",
+    "quiqqer\/qui-php": "dev-dev"
+  },
+  "autoload": {
+    "psr-4": {
+      "QUI\\Setup\\": "src\/QUI\/Setup",
+      "QUI\\ConsoleSetup\\": "src\/QUI\/ConsoleSetup",
+      "QUI\\Setup\\Locale\\": "src\/QUI\/Setup\/Locale",
+      "QUI\\Setup\\Database\\": "src\/QUI\/Setup\/Database"
+    }
+  }
+}

@@ -9,10 +9,12 @@ use QUI\Composer\Composer;
 use QUI\Setup\Database\Database;
 use QUI\Setup\Locale\Locale;
 use QUI\Setup\Locale\LocaleException;
+use QUI\Setup\Output\ConsoleOutput;
+use QUI\Setup\Output\WebOutput;
 use QUI\Setup\Utils\Validator;
 use QUI\Utils\XML;
+use QUI\Setup\Output\Interfaces\Output;
 use QUI\Database as QUIDB;
-use SebastianBergmann\CodeCoverage\Report\PHP;
 
 /**
  * Class Setup
@@ -23,7 +25,9 @@ use SebastianBergmann\CodeCoverage\Report\PHP;
  */
 class Setup
 {
+    # ----------------
     # Constants
+    # ----------------
     const STEP_INIT = 0;
     const STEP_LANGUAGE = 1;
     const STEP_VERSION = 2;
@@ -32,25 +36,39 @@ class Setup
     const STEP_USER = 5;
     const STEP_PATHS = 6;
 
+    const MODE_WEB = 0;
+    const MODE_CLI = 1;
+
+    # ----------------
+    # Definitions
+    # ----------------
+
     # Statics
     /** @var  array $Config - Config-array ceated by parse_ini_file */
     private static $Config;
-
     # Objects
     /** @var Locale $Locale */
     private $Locale;
     /** @var  Database $Database */
     private $Database;
+    /** @var Output $Output */
+    private $Output;
 
-    # Init
-    private $setupLang = "de";
-    private $Step = Setup::STEP_INIT;
-
-    # Tablenames (for easier access) Will be set in runSetup()
+    # Tablenames (for easier access). Will be set in runSetup()
     private $tableUser;
     private $tableGroups;
     private $tablePermissions;
     private $tablePermissions2Groups;
+
+    private $baseDir;
+
+    # ----------------
+    # Init
+    # ----------------
+
+    # Init
+    private $setupLang = "de";
+    private $Step = Setup::STEP_INIT;
 
 
     # Data-array
@@ -83,18 +101,55 @@ class Setup
         )
     );
 
+    #Rollback-data
+    private $rollback = array();
+    #======================================================================================================#
+    #====================================         Functions            ====================================#
+    #======================================================================================================#
 
     /**
      * Setup constructor.
+     * @param int $mode - The Setup mode; Will decide the way output is handled
      * @throws LocaleException
      */
-    public function __construct()
+    public function __construct($mode)
     {
         $this->Locale = new Locale("en_GB");
+
+        $this->baseDir = dirname(dirname(dirname(dirname(__FILE__))));
+
+        switch ($mode) {
+            case self::MODE_CLI:
+                $this->Output = new ConsoleOutput("en_GB");
+                break;
+            case self::MODE_WEB:
+                $this->Output = new WebOutput("en_GB");
+                break;
+            default:
+                $this->Output = new ConsoleOutput("en_GB");
+        }
     }
+
     // ************************************************** //
     // Public Functions
     // ************************************************** //
+
+    public static function getPresets()
+    {
+        $presets = array();
+
+        if (file_exists(dirname(__FILE__) . '/presets.json')) {
+            $json = file_get_contents(dirname(__FILE__) . '/presets.json');
+            $data = json_decode($json, true);
+            if (json_last_error() == JSON_ERROR_NONE && is_array($data)) {
+                foreach ($data as $name => $preset) {
+                    $presets[$name] = $preset;
+                }
+            }
+        }
+
+        return $presets;
+    }
 
     #region Getter/Setter
 
@@ -106,8 +161,20 @@ class Setup
      */
     public function setSetupLanguage($lang)
     {
-        $this->Locale    = new Locale($lang);
-        $this->setupLang = $lang;
+        try {
+            $Locale = new Locale($lang);
+
+            $this->Locale    = $Locale;
+            $this->setupLang = $lang;
+            $this->Output->changeLang($lang);
+        } catch (LocaleException $Exception) {
+            $this->Output->writeLn(
+                $this->Locale->getStringLang($Exception->getMessage()),
+                Output::LEVEL_ERROR,
+                Output::COLOR_RED
+            );
+        }
+
 
         return $this->Locale->getStringLang(
             "setup.language.set.success" . $lang,
@@ -143,8 +210,9 @@ class Setup
      */
     public function setPreset($preset)
     {
-        $this->data['preset'] = $preset;
+        $this->data['template'] = $preset;
     }
+
 
     /**
      * Sets the database driver details
@@ -217,7 +285,9 @@ class Setup
         $optDir = "",
         $varDir = ""
     ) {
-        $paths = array();
+        $paths  = array();
+        $cmsDir = QUI\Setup\Utils\Utils::normalizePath($cmsDir);
+
         // Generate missing paths
         if (Validator::validatePath($cmsDir) && !empty($urlDir)) {
             # Filesystem paths
@@ -293,6 +363,7 @@ class Setup
      */
     public function runSetup()
     {
+        $this->Output->writeLnLang("setup.message.step.start", Output::LEVEL_INFO);
         # Check if all neccessary data is set; throws exception if fails
         Validator::checkData($this->data);
 
@@ -312,12 +383,20 @@ class Setup
         $this->executeQuiqqerSetups();
         $this->deleteSetupFiles();
         $this->executeQuiqqerChecks();
+        $this->applyPreset();
     }
 
+    public function rollBack()
+    {
+    }
+
+    // ************************************************** //
+    // Private - Setup Functions
+    // ************************************************** //
 
     private function setupDatabase()
     {
-
+        $this->Output->writeLnLang("setup.message.step.database", Output::LEVEL_INFO);
         $this->Database = new Database(
             $this->data['database']['driver'],
             $this->data['database']['host'],
@@ -365,6 +444,7 @@ class Setup
 
     private function setupUser()
     {
+        $this->Output->writeLnLang("setup.message.step.user", Output::LEVEL_INFO);
         # Generate random values (security precautions)
         $this->data['salt']       = md5(uniqid(rand(), true));
         $this->data['saltlength'] = mt_rand(10, 20);
@@ -429,6 +509,7 @@ class Setup
 
     private function setupPaths()
     {
+        $this->Output->writeLnLang("setup.message.step.paths", Output::LEVEL_INFO);
         $paths = $this->data['paths'];
 
         $cmsDir = $this->cleanPath($paths['cms_dir']);
@@ -439,20 +520,62 @@ class Setup
         $etcDir = $cmsDir . "etc/";
         $tmpDir = $varDir . "temp/";
 
+        $urlLibDir = $this->cleanPath($paths['url_lib_dir']);
+
+        # Create Constants
+        if (!defined('CMS_DIR')) {
+            define('CMS_DIR', $cmsDir);
+        }
+
+        if (!defined('VAR_DIR')) {
+            define('VAR_DIR', $varDir);
+        }
+
+        if (!defined('OPT_DIR')) {
+            define('OPT_DIR', $optDir);
+        }
+
+        if (!defined('ETC_DIR')) {
+            define('ETC_DIR', $etcDir);
+        }
+
+        if (!defined('URL_DIR')) {
+            define('URL_DIR', $urlDir);
+        }
+
+        if (!defined('URL_LIB_DIR')) {
+            define('URL_LIB_DIR', $urlLibDir);
+        }
+
+        if (!defined('URL_USR_DIR')) {
+            define('URL_USR_DIR', $urlDir . str_replace($cmsDir, '', $usrDir));
+        }
+
+        if (!defined('URL_OPT_DIR')) {
+            define('URL_OPT_DIR', $urlDir . str_replace($cmsDir, '', $optDir));
+        }
+
+        if (!defined('URL_VAR_DIR')) {
+            define('URL_VAR_DIR', $urlDir . str_replace($cmsDir, '', $varDir));
+        }
+
+        if (!defined('URL_BIN_DIR')) {
+            define('URL_BIN_DIR', $this->cleanPath($this->data['paths']['url_bin_dir']));
+        }
+
+        if (!defined('URL_SYS_DIR')) {
+            define('URL_SYS_DIR', $this->cleanPath(URL_DIR . "admin/"));
+        }
 
         # -------------------
         # Validation
         # -------------------
-
         #region Validation
         Validator::validatePaths($paths);
-
         #endregion
-
         # -------------------
         # Create directories
         # -------------------
-
         #region Directories
 
         if (!QUI\Utils\System\File::mkdir($cmsDir) ||
@@ -471,11 +594,9 @@ class Setup
             );
         }
         #endregion
-
         # -------------------
         # Create config files
         # -------------------
-
         #region Configs
         if (file_put_contents($etcDir . 'conf.ini.php', '') === false
             || file_put_contents($etcDir . 'plugins.ini.php', '') === false
@@ -489,7 +610,6 @@ class Setup
                 SetupException::ERROR_PERMISSION_DENIED
             );
         }
-
         #Mainconfig etc/conf.ini.php
         $this->writeIni($etcDir . 'conf.ini.php', $this->createConfigArray());
 
@@ -507,32 +627,28 @@ class Setup
                 'type'   => "composer"
             )
         ));
-
         #Wysiqygeditor config etc/wysiwyg/conf.ini.php
         $this->writeIni($etcDir . 'wysiwyg/conf.ini.php', array(
             'settings' => array(
                 'standard' => 'ckeditor4'
             )
         ));
-
         # Copy default toolbar.xml
         copy(
             dirname(dirname(dirname(dirname(__FILE__)))) . "/xml/wysiwyg/toolbars/standard.xml",
             $etcDir . 'wysiwyg/toolbars/standard.xml'
         );
-
         #endregion
     }
 
     private function setupComposer()
     {
-
+        $this->Output->writeLnLang("setup.message.step.composer", Output::LEVEL_INFO);
         # Put composer.phar into varDir/composer
-        $cmsDir = $this->data['paths']['cms_dir'];
-        $varDir = $this->data['paths']['var_dir'];
+
 
         $this->createComposerJson();
-        if (!file_exists($cmsDir . "composer.json")) {
+        if (!file_exists(CMS_DIR . "composer.json")) {
             throw new SetupException(
                 "setup.missing.composerjson",
                 SetupException::ERROR_MISSING_RESSOURCE
@@ -541,63 +657,69 @@ class Setup
 
         copy(
             dirname(dirname(dirname(dirname(__FILE__)))) . "/lib/composer.phar",
-            $varDir . "composer/composer.phar"
+            VAR_DIR . "composer/composer.phar"
         );
 
-        if (file_exists($cmsDir . "lib/composer.phar")) {
+        if (file_exists(CMS_DIR . "lib/composer.phar")) {
             rename(
-                $cmsDir . "lib/composer.phar",
-                $varDir . "composer/composer.phar"
+                CMS_DIR . "lib/composer.phar",
+                VAR_DIR . "composer/composer.phar"
             );
         }
 
         # Execute Composer
-        $Composer = new Composer($cmsDir, $varDir . "composer/");
-        $res = $Composer->install();
-        print_r($res);
+        $Composer = new Composer(CMS_DIR, VAR_DIR . "composer/");
+        $res      = $Composer->update();
+        foreach ($res as $line) {
+            $this->Output->writeLn($line, Output::LEVEL_INFO);
+        }
+
         # Require quiqqer/quiqqer
         $res = $Composer->requirePackage("quiqqer/quiqqer", $this->data['version']);
-        print_r($res);
+        foreach ($res as $line) {
+            $this->Output->writeLn($line, Output::LEVEL_INFO);
+        }
         # Execute composor again
         $res = $Composer->update();
-        print_r($res);
+        foreach ($res as $line) {
+            $this->Output->writeLn($line, Output::LEVEL_INFO);
+        }
     }
 
     private function setupBootstrapFiles()
     {
-        $cmsDir = $this->data['paths']['cms_dir'];
-        $optDir = $this->data['paths']['opt_dir'];
+        $this->Output->writeLnLang("setup.message.step.files", Output::LEVEL_INFO);
 
         # Create index.php
         file_put_contents(
-            $cmsDir . 'index.php',
+            CMS_DIR . 'index.php',
             "<?php
             require 'bootstrap.php';
-            require '{$optDir}quiqqer/quiqqer/index.php';"
+            require '" . OPT_DIR . "quiqqer/quiqqer/index.php';"
         );
 
         # Create image.php
         file_put_contents(
-            $cmsDir . 'image.php',
+            CMS_DIR . 'image.php',
             "<?php
             require 'bootstrap.php';
-            require '{$optDir}quiqqer/quiqqer/image.php';"
+            require '" . OPT_DIR . "quiqqer/quiqqer/image.php';"
         );
 
 
         # Create quiqqer.php
 
         file_put_contents(
-            $cmsDir . 'quiqqer.php',
+            CMS_DIR . 'quiqqer.php',
             "<?php
             #require 'bootstrap.php';
-            require '{$optDir}quiqqer/quiqqer/quiqqer.php';"
+            require '" . OPT_DIR . "quiqqer/quiqqer/quiqqer.php';"
         );
 
 
         # Create bootstrap.php
         file_put_contents(
-            $cmsDir . 'bootstrap.php',
+            CMS_DIR . 'bootstrap.php',
             '<?php
             $etc_dir = dirname(__FILE__).\'/etc/\';
 
@@ -610,7 +732,7 @@ class Setup
                 define(\'ETC_DIR\', $etc_dir);
             }
 
-            $boot = \'' . $optDir . 'quiqqer/quiqqer/bootstrap.php\';
+            $boot = \'' . OPT_DIR . 'quiqqer/quiqqer/bootstrap.php\';
 
             if (file_exists($boot)) {
                 require $boot;
@@ -620,47 +742,150 @@ class Setup
 
     private function executeQuiqqerSetups()
     {
+        $this->Output->writeLnLang("setup.message.step.setup", Output::LEVEL_INFO);
+
+        # Execute Setup
+        if (!defined('QUIQQER_SYSTEM')) {
+            define('QUIQQER_SYSTEM', true);
+        }
+
+        require OPT_DIR . 'quiqqer/quiqqer/lib/autoload.php';
+
+        if (!defined('ETC_DIR')) {
+            define('ETC_DIR', CMS_DIR . '/etc/');
+        }
+
+
+        QUI::load();
+        QUI\Update::importDatabase(OPT_DIR . '/quiqqer/translator/database.xml');
+
+        $User = QUI::getUsers()->get($this->data['rootUID']);
+        QUI::getSession()->set('uid', $this->data['rootUID']);
+
+        QUI\Permissions\Permission::setUser($User);
+
+        QUI\Setup::all();
+
         # Execute Htaccess
+        $Htaccess = new QUI\System\Console\Tools\Htaccess();
+        $Htaccess->execute();
 
-        # Execute Translator
 
-        # Execute setup
+        # Add Setup languages
+        QUI\Translator::addLang($this->data['lang']);
+        QUI\Translator::setup();
 
-        # Execute Translator --newlanguage (for eache language)
-
-        # Execute translator new lang if setuplanguage is not in languages
-
-        # Execute Setup again
-
-        # Execute Translator again
+        QUI\Setup::all();
     }
 
     private function deleteSetupFiles()
     {
+
+        $this->Output->writeLnLang("setup.message.step.delete", Output::LEVEL_INFO);
         # Remove quiqqer.zip
+        if (file_exists($this->baseDir . "/quiqqer.zip")) {
+            unlink($this->baseDir . "/quiqqer.zip");
+        }
 
         # Remove quiqqer.setup
+        if (file_exists($this->baseDir . "/quiqqer.setup")) {
+            unlink($this->baseDir . "/quiqqer.setup");
+        }
 
         # Remove composer.json & composer.lock in doc-root
+        if (file_exists(CMS_DIR . "composer.json")) {
+            rename(
+                CMS_DIR . "composer.json",
+                VAR_DIR . "composer/composer.json"
+            );
+        }
+
+        if (file_exists(CMS_DIR . "composer.lock")) {
+            rename(
+                CMS_DIR . "composer.lock",
+                VAR_DIR . "composer/composer.lock"
+            );
+        }
 
         # Move directories to cmsdir/temp/ : 'css' 'locale' 'js' 'versions' 'setup_packages' 'bin' 'lib'
+        // TODO Check directories again
+        $dirs = array('lib', 'vendor', 'xml', 'tests');
+        foreach ($dirs as $dir) {
+            if (is_dir(CMS_DIR . $dir)) {
+                rename(
+                    CMS_DIR . $dir,
+                    VAR_DIR . 'tmp/' . $dir
+                );
+            }
+        }
     }
 
     private function executeQuiqqerChecks()
     {
+        $this->Output->writeLnLang("setup.message.step.checks", Output::LEVEL_INFO);
         # Execute quiqqer health
 
         # Execute quiqqer tests
     }
 
-
-    public function rollBack()
+    private function applyPreset()
     {
+        # Get the template info
+        $presets  = self::getPresets();
+        $preset   = null;
+        $packages = array();
+
+        if (Validator::validatePreset($this->data['template'])) {
+            print_r($presets);
+
+            $preset = $presets[$this->data['template']];
+
+            $projectname = $preset['project']['name'];
+            $languages   = $preset['project']['languages'];
+
+            $templateName    = $preset['template']['name'];
+            $templateVersion = $preset['template']['version'];
+
+            $packages = $preset['packages'];
+
+
+            try {
+                QUI::getProjectManager()->createProject(
+                    $projectname,
+                    $this->data['lang']
+                );
+            } catch (QUI\Exception $Exception) {
+                $this->Output->writeLn(
+                    $this->Locale->getStringLang(
+                        "setup.error.project.creation.failed",
+                        "Could not create project: "
+                    ) . ' ' . $Exception->getMessage()
+                );
+
+                return;
+            }
+
+            # Require Template and packages
+            $Composer = new Composer(VAR_DIR . "composer/", VAR_DIR . "composer/");
+            $Composer->requirePackage($templateName, $templateVersion);
+
+            foreach ($packages as $name => $version) {
+                $Composer->requirePackage($name, $version);
+            }
+
+
+            # Config main project to use new template
+            QUI::getProjectManager()->setConfigForProject($projectname, array(
+                'template' => $templateName,
+                'langs'    => implode(',', $languages)
+            ));
+        }
     }
 
     // ************************************************** //
-    // Private Helper Functions
+    // Private - Helper Functions
     // ************************************************** //
+
     /**
      * Returns the parsed configfile in an assoc. array.
      * Usage : $config[<section>][<setting]
@@ -675,11 +900,20 @@ class Setup
         return self::$Config;
     }
 
+    /**
+     * This will make sure that a path will end with a trailing slash.
+     * @param $path - The path that should be modified
+     * @return string - the path with a trailing slash
+     */
     private function cleanPath($path)
     {
         return rtrim($path, '/') . '/';
     }
 
+    /**
+     * This will generate an array with config directives for quiqqer using the current setup variables
+     * @return array - Config array for quiqqer
+     */
     private function createConfigArray()
     {
 
@@ -735,6 +969,10 @@ class Setup
         return $config;
     }
 
+    /**
+     * Generates a composer.json file and fills its contents with the modified composer.json.tpl
+     * @throws SetupException
+     */
     private function createComposerJson()
     {
         $json = file_get_contents(dirname(__FILE__) . "/composer.json.tpl");
@@ -753,10 +991,19 @@ class Setup
         );
 
         if ($created === false) {
-            throw new SetupException("setup.filesystem.composerjson.notcreated", SetupException::ERROR_PERMISSION_DENIED);
+            throw new SetupException(
+                "setup.filesystem.composerjson.notcreated",
+                SetupException::ERROR_PERMISSION_DENIED
+            );
         }
     }
 
+    /**
+     * Translates an array into a string in .ini format and wites the string into the given file
+     * @param $file - The ini file that should be written
+     * @param $directives - The array with the .ini directives
+     * @throws SetupException
+     */
     private function writeIni($file, $directives)
     {
         if (!is_writeable($file)) {

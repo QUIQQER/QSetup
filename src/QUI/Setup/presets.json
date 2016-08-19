@@ -1,0 +1,15 @@
+{
+  "default": {
+    "project": {
+      "name" : "Mainproject",
+      "languages" : ["de","en"]
+    },
+    "template": {
+      "name" :"quiqqer/template-businesspro",
+      "version": "dev-dev"
+    },
+    "packages": {
+      "quiqqer/gitlab": "dev-dev"
+    }
+  }
+}

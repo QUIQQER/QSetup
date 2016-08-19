@@ -1,2 +1,50 @@
 msgid "hello"
 msgstr "Hello"
+
+msgid "setup.message.step.database"
+msgstr "Preparing Database"
+
+msgid "setup.language.set.success"
+msgstr "Language has been changed successfully"
+
+msgid "setup.message.step.start"
+msgstr "Setup executing"
+
+msgid "setup.database.creation.failed"
+msgstr "Failed to create the database..."
+
+msgid "setup.missing.database.xml"
+msgstr "Could not find the database.xml file."
+
+msgid "setup.message.step.user"
+msgstr "Creating the admin user and group"
+
+msgid "setup.message.step.paths"
+msgstr "Preparing filesystem paths"
+
+msgid "setup.filesystem.directory.creation.failed"
+msgstr "Could not create the directory"
+
+msgid "setup.message.step.composer"
+msgstr "Starting composer. This will take a while. Please be patient."
+
+msgid "setup.missing.composerjson"
+msgstr "Could not find the composer.json file."
+
+msgid "setup.message.step.files"
+msgstr "Creating the bootstrap files."
+
+msgid "setup.message.step.setup"
+msgstr "Running quiqqer setup routines"
+
+msgid "setup.message.step.delete"
+msgstr "Deleting setupfiles"
+
+msgid "setup.message.step.checks"
+msgstr "Running quiqqer health checks"
+
+msgid "setup.filesystem.composerjson.notcreated"
+msgstr "Could not create the composer.json file"
+
+msgid "setup.filesystem.file.notwriteable"
+msgstr "Could not write file"

@@ -156,9 +156,53 @@ class Validator
     }
 
 
-//    public static function isValidLanguage($string)
-//    {
-//    }
+    /**
+     * Validates a given preset.
+     * Checks for existence and for syntax errors
+     * @param $name - The preset name
+     * @return bool - return true on success
+     * @throws SetupException
+     */
+    public static function validatePreset($name)
+    {
+        //        $projectname = "";
+//        $template = array();
+//        $languages = "";
+//
+//        $packages = array();
+//
+//        if(key_exists($this->data['template'],$presets)){
+//            $preset = $presets[$this->data['template']];
+//        }
+//
+//        #Project neccessary
+//        if(key_exists("project",$preset) && isset($preset['project']['name'])){
+//            $projectname = $preset['project']['name'];
+//            if(isset($preset['project']['languages'])){
+//                if(is_array($languages)){
+//                    $languages = implode(",",$preset['project']['languages']);
+//                }
+//            }
+//        }
+//
+//        # Template
+//        if(key_exists("template",$preset)){
+//            if(is_array($preset['project']['template'])){
+//                $template = $preset['project']['template'];
+//            }
+//
+//            if(!key_exists("name",$template) || !key_exists("version",$template)){
+//
+//            }
+//        }
+//
+//        # Packages
+//        if(key_exists("packages",$preset)){
+//
+//        }
+        return true;
+    }
+
 
     /**
      * Checks if a single filesystem-path to a directory is valid and exists
@@ -284,6 +328,7 @@ class Validator
         return strlen(preg_replace('/[^0-9]+/', '', $string));
     }
 
+
     /**
      * Checks the integrity of the data array.
      * @return bool - true, if all required fields are set
@@ -303,8 +348,8 @@ class Validator
             throw new SetupException("data.missing.version", SetupException::ERROR_INVALID_ARGUMENT);
         }
 
-        if (!isset($data['preset']) || empty($data['preset'])) {
-            throw new SetupException("data.missing.preset", SetupException::ERROR_INVALID_ARGUMENT);
+        if (!isset($data['template']) || empty($data['template'])) {
+            throw new SetupException("data.missing.template", SetupException::ERROR_INVALID_ARGUMENT);
         }
         #endregion
 

@@ -5,7 +5,6 @@ namespace QUI\Setup\Locale;
 use QUI\ConsoleSetup\Locale\LocaleException;
 use QUI\Exception;
 
-
 /** Localization class */
 class Locale
 {
@@ -48,7 +47,6 @@ class Locale
         }
 
         bindtextdomain($this->domain, dirname(__FILE__));
-
     }
 
 
@@ -91,7 +89,6 @@ class Locale
             throw new LocaleException("locale.localeset.failed");
         }
         bindtextdomain($this->domain, dirname(__FILE__));
-
     }
 
     public function getCurrent()

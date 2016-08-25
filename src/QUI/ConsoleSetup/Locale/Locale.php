@@ -35,7 +35,6 @@ class Locale
             throw new LocaleException("locale.localeset.failed");
         }
         bindtextdomain($this->domain, dirname(__FILE__));
-
     }
 
     public function getStringLang($string, $fallback = "")

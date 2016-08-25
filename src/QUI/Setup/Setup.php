@@ -206,7 +206,6 @@ class Setup
         );
 
         $this->Step = Setup::STEP_DATA_LANGUAGE;
-
     }
 
     /**
@@ -383,7 +382,6 @@ class Setup
 
         $this->Step = Setup::STEP_DATA_PATHS;
         $this->stepSum += Setup::STEP_DATA_PATHS;
-
     }
 
     /**
@@ -409,7 +407,6 @@ class Setup
 
         $this->Step    = Setup::STEP_DATA_COMPLETE;
         $this->stepSum = Setup::STEP_DATA_COMPLETE;
-
     }
 
     #endregion
@@ -1080,7 +1077,6 @@ class Setup
 
                 return;
             }
-
         }
 
         # Require Template and packages
@@ -1114,7 +1110,6 @@ class Setup
         QUI\Setup::all();
 
         $this->Step = Setup::STEP_SETUP_PRESET;
-
     }
 
 // ************************************************** //
@@ -1302,6 +1297,4 @@ class Setup
 
         return null;
     }
-
-
 }

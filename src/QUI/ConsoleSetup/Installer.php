@@ -84,7 +84,6 @@ class Installer
         try {
             $this->Setup->setSetupLanguage($lang);
             self::getLocale()->setLanguage($lang);
-
         } catch (Exception $e) {
             $this->writeLn($e->getMessage(), self::LEVEL_CRITICAL);
             exit;
@@ -119,7 +118,6 @@ class Installer
         try {
             $this->Setup->setLanguage($lang);
         } catch (SetupException $Exception) {
-
         }
     }
 
@@ -297,7 +295,6 @@ class Installer
             );
             $this->stepPaths();
         }
-
     }
 
     /**
@@ -312,9 +309,14 @@ class Installer
 
     private function stepFinish()
     {
-        $this->writeLn(" --- " . self::getLocale()->getStringLang("setup.message.finished.header",
-                "Setup finished") . " --- ", self::LEVEL_INFO,
-            COLOR_GREEN);
+        $this->writeLn(
+            " --- " . self::getLocale()->getStringLang(
+                "setup.message.finished.header",
+                "Setup finished"
+            ) . " --- ",
+            self::LEVEL_INFO,
+            COLOR_GREEN
+        );
 
         $emoticon = <<<SMILEY
 
@@ -516,8 +518,10 @@ SMILEY;
     private function echoDecorationCoffe()
     {
         $this->writeLn(
-            self::getLocale()->getStringLang("messages.decorative.coffeetime",
-                "Almost done. Perfect time for a new : "),
+            self::getLocale()->getStringLang(
+                "messages.decorative.coffeetime",
+                "Almost done. Perfect time for a new : "
+            ),
             null,
             COLOR_GREEN
         );
@@ -576,7 +580,6 @@ CUP;
 HEADER;
 
         $this->writeLn($header, null, COLOR_GREEN);
-
     }
     #endregion
 }

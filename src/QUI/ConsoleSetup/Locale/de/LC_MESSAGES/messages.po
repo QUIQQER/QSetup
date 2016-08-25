@@ -1,0 +1,83 @@
+msgid "message.step.language"
+msgstr "Spracheinstellung"
+
+msgid "prompt.language"
+msgstr "Bitte geben Sie die Sprache ein, die Quiqqer verwenden soll: "
+
+msgid "message.step.requirements"
+msgstr "Systemvorraussetzungen"
+
+msgid "message.step.version"
+msgstr "Versionswahl"
+
+msgid "prompt.version"
+msgstr "Bitte geben Sie die Version an, die installiert werden soll."
+
+msgid "message.preset.available"
+msgstr "Folgende Vorlagen stehen zur Auswahl: "
+
+msgid "message.step.template"
+msgstr "Vorlagenauswahl"
+
+msgid "prompt.template"
+msgstr "Bitte geben Sie den Namen der Vorlage ein, die Sie verwenden möchten :"
+
+msgid "message.step.database"
+msgstr "Datenbank Einstellungen"
+
+msgid "prompt.database.driver"
+msgstr "Datenbank Treiber :"
+
+msgid "prompt.database.host"
+msgstr "Datenbank Host :"
+
+msgid "prompt.database.port"
+msgstr "Datenbank Port: "
+
+msgid "prompt.database.user"
+msgstr "Datenbank Benutzer: "
+
+msgid "prompt.database.pw"
+msgstr "Datenbank Passwort: "
+
+msgid "prompt.database.db"
+msgstr "Datenbank Name : "
+
+msgid "prompt.database.createnew"
+msgstr "Quiqqer kann versuchen die gewünschte Datenbank zu erstellen. \nFalls Sie dies wünschen geben Sie bitte 'y' ein. \nFalls nicht, geben sie bitte 'n' ein : "
+
+msgid "prompt.database.prefix"
+msgstr "Datenbank Tabellen-prefix: "
+
+msgid "message.step.superuser"
+msgstr "Adminbenutzer"
+
+msgid "prompt.user"
+msgstr "Benutzername: "
+
+msgid "prompt.password"
+msgstr "Passwort: "
+
+msgid "message.step.paths"
+msgstr "Pfadeinstellungen"
+
+msgid "prompt.host"
+msgstr "Der Host unter der, Quiqqer erreichbar sein soll: "
+
+msgid "prompt.cms"
+msgstr "Das Verzeichnis, indem Quiqqer installiert wird: "
+
+msgid "prompt.url"
+msgstr "Das Unterverzeichnis (nach dem Host), indem Quiqqer installiert wird: "
+
+msgid "exception.validation.version.invalid"
+msgstr "Die von ihnen eingegeben Version ist nicht gültig."
+
+msgid "message.step.setup"
+msgstr "Ausführung"
+
+msgid "setup.message.finished.header"
+msgstr "Setup beendet"
+
+msgid "setup.message.finished.text"
+msgstr "Setup erfolgreich beendet. Sie können ihre Webseite nun aufrufen."

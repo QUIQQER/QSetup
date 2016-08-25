@@ -1,11 +1,8 @@
-msgid "hello"
-msgstr "Hello"
-
 msgid "setup.message.step.database"
 msgstr "Bereite Datenbank vor"
 
 msgid "setup.language.set.success"
-msgstr "Die Sprache wurde erfolgreich geändert"
+msgstr "Die Sprache wurde erfolgreich geändert: "
 
 msgid "setup.message.step.start"
 msgstr "Setup startet"
@@ -48,3 +45,6 @@ msgstr "Konnte die composer.json Datei nicht erstellen"
 
 msgid "setup.filesystem.file.notwriteable"
 msgstr "Die Datei konnte nicht geschrieben werden"
+
+msgid "setup.language.set.success"
+msgstr "Setup verwendet nun folgende Sprache : "

@@ -12,13 +12,11 @@ define('COLOR_CYAN', '1;36');
 define('COLOR_RED', '1;31');
 define('COLOR_YELLOW', '1;33');
 define('COLOR_PURPLE', '1;35');
+define('COLOR_WHITE', '1;37');
 
 
 class Installer
 {
-
-    private $lang;
-
     /** @var Setup $Setup */
     private $Setup;
     private static $Config;
@@ -37,9 +35,16 @@ class Installer
         $this->Setup->setSetupLanguage("en_GB");
     }
 
+    /**
+     * Initiates a setup process.
+     * Will promt the user for all neccessary data,
+     * validate inputs and starts the setuproutine afterwards.
+     *
+     */
     public function execute()
     {
-        $this->writeLn("Executing Setup.");
+        $this->echoSetupHeader();
+
         $this->stepSetupLanguage();
         $this->stepCheckRequirements();
         $this->stepLanguage();
@@ -49,10 +54,16 @@ class Installer
         $this->stepUser();
         $this->stepPaths();
 
+        $this->echoDecorationCoffe();
         $this->setup();
+        $this->stepFinish();
     }
 
 
+    /**
+     * Returns the current locale object
+     * @return Locale - The current Locale object
+     */
     public static function getLocale()
     {
         if (!isset(self::$Locale) || self::$Locale == null) {
@@ -63,91 +74,122 @@ class Installer
     }
 
     #region STEPS
+    /**
+     * Prompts the user for the desired setup language and
+     * sets the language for the currently used Locale
+     */
     private function stepSetupLanguage()
     {
         $lang = $this->prompt("Please select a Language for the Setupprocess (de_DE/en_GB) :", "de_DE", COLOR_PURPLE);
         try {
-            $res = $this->Setup->setSetupLanguage($lang);
+            $this->Setup->setSetupLanguage($lang);
             self::getLocale()->setLanguage($lang);
-            $this->writeLn($res);
+
         } catch (Exception $e) {
             $this->writeLn($e->getMessage(), self::LEVEL_CRITICAL);
             exit;
         }
     }
 
+    /**
+     * Executes a system requirement check
+     */
     private function stepCheckRequirements()
     {
-        $this->writeLn(
-            self::getLocale()->getStringLang("message.step.requirements", "Running Requirementscheck"),
-            self::LEVEL_INFO
+        $this->echoSectionHeader(
+            self::getLocale()->getStringLang("message.step.requirements", "Requirements")
         );
+
+        // TODO System requirements
     }
 
+    /**
+     * Prompts the user for the language quiqqer should use
+     */
     private function stepLanguage()
     {
-        $this->writeLn(
-            self::getLocale()->getStringLang("message.step.language", "Language"),
-            self::LEVEL_INFO
+        $this->echoSectionHeader(
+            self::getLocale()->getStringLang("message.step.language", "Language")
         );
         $lang = $this->prompt(
             self::getLocale()->getStringLang("prompt.language", "Please enter your desired language :"),
             "de"
         );
 
-        $this->Setup->setLanguage($lang);
+        try {
+            $this->Setup->setLanguage($lang);
+        } catch (SetupException $Exception) {
+
+        }
     }
 
+    /**
+     * Prompts the user for the quiqqer version to be installed.
+     */
     private function stepVersion()
     {
-        $this->writeLn(
-            self::getLocale()->getStringLang("message.step.version", "Version"),
-            self::LEVEL_INFO
+        $this->echoSectionHeader(
+            self::getLocale()->getStringLang("message.step.version", "Version")
         );
         $version = $this->prompt(
             self::getLocale()->getStringLang("prompt.version", "Please enter a version"),
             "dev-master"
         );
 
-        $this->Setup->setVersion($version);
+
+        try {
+            $this->Setup->setVersion($version);
+        } catch (SetupException $Exception) {
+            $this->writeLn(
+                self::getLocale()->getStringLang($Exception->getMessage()),
+                self::LEVEL_WARNING
+            );
+            $this->stepVersion();
+        }
     }
 
+    /**
+     * Prompts the user for the preset to be applied to the fresh installation.
+     * A Preset can contain custom repositories, desired packages, a default template and default projectname
+     */
     private function stepPreset()
     {
-        $presets = Setup::getPresets();
+        $presets      = Setup::getPresets();
         $presetString = "";
         foreach ($presets as $name => $preset) {
-            $presetString .= $name.", ";
+            $presetString .= $name . ", ";
         }
         $presetString = trim($presetString, " ,");
 
-        $this->writeLn(
-            self::getLocale()->getStringLang("message.step.template", "Preset"),
-            self::LEVEL_INFO
+        $this->echoSectionHeader(
+            self::getLocale()->getStringLang("message.step.template", "Preset")
         );
         $this->writeLn(
-            self::getLocale()->getStringLang("message.preset.available", "Available presets: ") .$presetString,
+            self::getLocale()->getStringLang("message.preset.available", "Available presets: ") . $presetString,
             self::LEVEL_INFO
         );
         $template = $this->prompt(
             self::getLocale()->getStringLang("prompt.template", "Select one"),
             "default",
             null,
+            false,
             true
         );
 
         $this->Setup->setPreset($template);
     }
 
+    /**
+     * Prompts the user for the database credentials
+     */
     private function stepDatabase()
     {
-        $this->writeLn(
-            self::getLocale()->getStringLang("message.step.database", "Database settings"),
-            self::LEVEL_INFO
+        $this->echoSectionHeader(
+            self::getLocale()->getStringLang("message.step.database", "Database settings")
         );
 
         $driver = $this->prompt(
-            self::getLocale()->getStringLang("prompt.database.host", "Database driver:"),
+            self::getLocale()->getStringLang("prompt.database.driver", "Database driver:"),
             "mysql"
         );
 
@@ -157,17 +199,17 @@ class Installer
         );
 
         $port = $this->prompt(
-            self::getLocale()->getStringLang("prompt.database.host", "Database port:"),
+            self::getLocale()->getStringLang("prompt.database.port", "Database port:"),
             "3306"
         );
 
 
         $user = $this->prompt(
-            self::getLocale()->getStringLang("prompt.database.host", "Database user:")
+            self::getLocale()->getStringLang("prompt.database.user", "Database user:")
         );
 
         $pw = $this->prompt(
-            self::getLocale()->getStringLang("prompt.database.host", "Database pw:"),
+            self::getLocale()->getStringLang("prompt.database.pw", "Database pw:"),
             false,
             null,
             true
@@ -182,24 +224,25 @@ class Installer
 
 
         $db = $this->prompt(
-            self::getLocale()->getStringLang("prompt.database.host", "Database database name:"),
+            self::getLocale()->getStringLang("prompt.database.db", "Database database name:"),
             "quiqqer"
         );
 
         $prefix = $this->prompt(
-            self::getLocale()->getStringLang("prompt.database.host", "Database table prefix:"),
+            self::getLocale()->getStringLang("prompt.database.prefix", "Database table prefix:"),
             ""
         );
 
         $this->Setup->setDatabase($driver, $host, $db, $user, $pw, $port, $prefix, $createNew);
     }
 
+    /**
+     * Prompts the user for the credentials of the newly created super user
+     */
     private function stepUser()
     {
-        $this->writeLn(
-            self::getLocale()->getStringLang("message.step.superuser", "Superuser settings"),
-            self::LEVEL_INFO
-        );
+        $this->echoSectionHeader(self::getLocale()->getStringLang("message.step.superuser", "Superuser settings"));
+
         $user = $this->prompt(
             self::getLocale()->getStringLang("prompt.user", "Please enter an username :"),
             Setup::getConfig()['defaults']['username']
@@ -214,17 +257,23 @@ class Installer
         try {
             $this->Setup->setUser($user, $pw);
         } catch (SetupException $Exception) {
-            $this->writeLn($Exception->getMessage(), self::LEVEL_WARNING);
+            $this->writeLn(
+                self::getLocale()->getStringLang($Exception->getMessage()),
+                self::LEVEL_WARNING
+            );
             $this->stepUser();
         }
     }
 
+    /**
+     * Prompts the user for the setup path
+     */
     private function stepPaths()
     {
-        $this->writeLn(
-            self::getLocale()->getStringLang("message.step.paths", "Pathsettings"),
-            self::LEVEL_INFO
+        $this->echoSectionHeader(
+            self::getLocale()->getStringLang("message.step.paths", "Pathsettings")
         );
+
         $host = $this->prompt(
             self::getLocale()->getStringLang("prompt.host", "Hostname : ")
         );
@@ -234,66 +283,83 @@ class Installer
             dirname(dirname(dirname(dirname(__FILE__))))
         );
 
+
         $urlDir = $this->prompt(
             self::getLocale()->getStringLang("prompt.url", "Url Directory : "),
             "/"
         );
 
-        $this->Setup->setPaths($host, $cmsDir, $urlDir);
+        try {
+            $this->Setup->setPaths($host, $cmsDir, $urlDir);
+        } catch (SetupException $Exception) {
+            $this->writeLn(
+                self::getLocale()->getStringLang($Exception->getMessage())
+            );
+            $this->stepPaths();
+        }
+
     }
 
+    /**
+     * Will start the setup process with the given data
+     */
     private function setup()
     {
-        $this->writeLn(self::getLocale()->getStringLang("message.step.setup", "Executing Setup : "));
+        $this->echoSectionHeader(self::getLocale()->getStringLang("message.step.setup", "Executing Setup : "));
         $this->Setup->runSetup();
     }
 
+
+    private function stepFinish()
+    {
+        $this->writeLn(" --- " . self::getLocale()->getStringLang("setup.message.finished.header",
+                "Setup finished") . " --- ", self::LEVEL_INFO,
+            COLOR_GREEN);
+
+        $emoticon = <<<SMILEY
+
+
+´´´´´´´´´´´´´´´´´´´´´´¶¶¶¶¶¶¶¶¶
+´´´´´´´´´´´´´´´´´´´´¶¶´´´´´´´´´´¶¶
+´´´´´´¶¶¶¶¶´´´´´´´¶¶´´´´´´´´´´´´´´¶¶
+´´´´´¶´´´´´¶´´´´¶¶´´´´´¶¶´´´´¶¶´´´´´¶¶
+´´´´´¶´´´´´¶´´´¶¶´´´´´´¶¶´´´´¶¶´´´´´´´¶¶
+´´´´´¶´´´´¶´´¶¶´´´´´´´´¶¶´´´´¶¶´´´´´´´´¶¶
+´´´´´´¶´´´¶´´´¶´´´´´´´´´´´´´´´´´´´´´´´´´¶¶
+´´´´¶¶¶¶¶¶¶¶¶¶¶¶´´´´´´´´´´´´´´´´´´´´´´´´¶¶
+´´´¶´´´´´´´´´´´´¶´¶¶´´´´´´´´´´´´´¶¶´´´´´¶¶
+´´¶¶´´´´´´´´´´´´¶´´¶¶´´´´´´´´´´´´¶¶´´´´´¶¶
+´¶¶´´´¶¶¶¶¶¶¶¶¶¶¶´´´´¶¶´´´´´´´´¶¶´´´´´´´¶¶
+´¶´´´´´´´´´´´´´´´¶´´´´´¶¶¶¶¶¶¶´´´´´´´´´¶¶
+´¶¶´´´´´´´´´´´´´´¶´´´´´´´´´´´´´´´´´´´´¶¶
+´´¶´´´¶¶¶¶¶¶¶¶¶¶¶¶´´´´´´´´´´´´´´´´´´´¶¶
+´´¶¶´´´´´´´´´´´¶´´¶¶´´´´´´´´´´´´´´´´¶¶
+´´´¶¶¶¶¶¶¶¶¶¶¶¶´´´´´¶¶´´´´´´´´´´´´¶¶
+´´´´´´´´´´´´´´´´´´´´´´´¶¶¶¶¶¶¶¶¶¶¶
+
+SMILEY;
+
+        $this->writeLn($emoticon, null, COLOR_GREEN);
+
+        $this->writeLn(
+            self::getLocale()->getStringLang("setup.message.finished.text", "Setup finished"),
+            self::LEVEL_INFO,
+            COLOR_GREEN
+        );
+    }
     #endregion
 
-    /**
-     * @param string $msg
-     * @param int $level - Loglevel, constants found in QUI\ConsoleSetup\Installer
-     * @param string $color - Constants are defined in QUI/ConsoleSetup/Installer.php
+
+    #region I/O
+    /** Prompts the user for data.
+     * @param $text - The prompt Text
+     * @param bool $default - The defaultvalue
+     * @param null $color - The Color to use. Constats defined in QUI\ConsoleSetup\Installer
+     * @param bool $hidden - Hides the user input. Very usefull for passwords.
+     * @param bool $toLower - Will conert the input to all lowercases
+     * @param bool $allowEmpty - If this is true it will allow empty strings.
+     * @return string - The (modified) input by the user.
      */
-    private function writeLn($msg, $level = null, $color = null)
-    {
-
-        switch ($level) {
-            case self::LEVEL_DEBUG:
-                $msg = "[DEBUG] - " . $msg;
-                $msg = $this->getColoredString($msg, COLOR_CYAN);
-                break;
-
-            case self::LEVEL_INFO:
-                $msg = "[INFO] - " . $msg;
-                $msg = $this->getColoredString($msg, COLOR_CYAN);
-                break;
-
-            case self::LEVEL_WARNING:
-                $msg = "[WARNING] - " . $msg;
-                $msg = $this->getColoredString($msg, COLOR_YELLOW);
-                break;
-
-            case self::LEVEL_ERROR:
-                $msg = "[ERROR] - " . $msg;
-                $msg = $this->getColoredString($msg, COLOR_RED);
-                break;
-
-            case self::LEVEL_CRITICAL:
-                $msg = "[!CRITICAL!] - " . $msg;
-                $msg = $this->getColoredString($msg, COLOR_RED);
-                break;
-        }
-
-        if ($color != null) {
-            $msg = $this->getColoredString($msg, $color);
-        }
-
-        echo $msg . PHP_EOL;
-
-        return;
-    }
-
     private function prompt(
         $text,
         $default = false,
@@ -305,7 +371,7 @@ class Installer
         if ($color != null) {
             $text = $this->getColoredString($text, $color);
         } else {
-            $text = $this->getColoredString($text, COLOR_PURPLE);
+            $text = $this->getColoredString($text, COLOR_WHITE);
         }
 
         if ($default !== false) {
@@ -324,6 +390,7 @@ class Installer
             $result = trim(fgets(STDIN));
             if ($hidden) {
                 system('stty echo');
+                echo PHP_EOL;
             }
 
             if (empty($result)) {
@@ -351,8 +418,165 @@ class Installer
         return $result;
     }
 
+    /**
+     * @param string $msg
+     * @param int|null $level - Loglevel, constants found in QUI\ConsoleSetup\Installer
+     * @param string $color - Constants are defined in QUI/ConsoleSetup/Installer.php
+     */
+    private function writeLn($msg, $level = null, $color = null)
+    {
+
+        if ($level != null) {
+            switch ($level) {
+                case self::LEVEL_DEBUG:
+                    $msg = "[DEBUG] - " . $msg;
+                    $msg = $this->getColoredString($msg, COLOR_CYAN);
+                    break;
+
+                case self::LEVEL_INFO:
+                    $msg = "[INFO] - " . $msg;
+                    $msg = $this->getColoredString($msg, COLOR_CYAN);
+                    break;
+
+                case self::LEVEL_WARNING:
+                    $msg = "[WARNING] - " . $msg;
+                    $msg = $this->getColoredString($msg, COLOR_YELLOW);
+                    break;
+
+                case self::LEVEL_ERROR:
+                    $msg = "[ERROR] - " . $msg;
+                    $msg = $this->getColoredString($msg, COLOR_RED);
+                    break;
+
+                case self::LEVEL_CRITICAL:
+                    $msg = "[!CRITICAL!] - " . $msg;
+                    $msg = $this->getColoredString($msg, COLOR_RED);
+                    break;
+            }
+        }
+
+
+        if ($color != null) {
+            $msg = $this->getColoredString($msg, $color);
+        }
+
+        echo $msg . PHP_EOL;
+
+        return;
+    }
+
+
+    /**
+     * This will sourround the given text with ANSI colortags
+     * @param $text - The Input string
+     * @param $color - The Color to be used. Colors are defined in QUI\ConsoleSetup\Installer
+     * @return string - The String with surrounding color tags
+     */
     private function getColoredString($text, $color)
     {
-        return "\033[" . $color . "m " . $text . "\033[0m";
+        return "\033[" . $color . "m" . $text . "\033[0m";
     }
+    #endregion
+
+
+    #region Decoration
+
+    /**
+     * Echoes a fancy Header for each section.
+     * Purely decorative.
+     * @param $sectionName
+     */
+    private function echoSectionHeader($sectionName)
+    {
+        # Create top bar
+        $header = PHP_EOL . "##########";
+        for ($i = 0; $i < strlen($sectionName); $i++) {
+            $header .= "#";
+        }
+        $header .= "##########";
+
+        # Create middle bar
+        $header .= PHP_EOL;
+        $header .= "#         " . $sectionName . "         #";
+        $header .= PHP_EOL;
+
+        # Create bottom bar
+        $header .= "##########";
+        for ($i = 0; $i < strlen($sectionName); $i++) {
+            $header .= "#";
+        }
+        $header .= "##########" . PHP_EOL;
+
+        $this->writeLn($header, null, COLOR_GREEN);
+    }
+
+    /**
+     * This will echo a coffeecup and a line of text.
+     */
+    private function echoDecorationCoffe()
+    {
+        $this->writeLn(
+            self::getLocale()->getStringLang("messages.decorative.coffeetime",
+                "Almost done. Perfect time for a new : "),
+            null,
+            COLOR_GREEN
+        );
+        $coffee = <<<CUP
+        
+
+                        (
+                          )     (
+                   ___...(-------)-....___
+               .-""       )    (          ""-.
+         .-'``'|-._             )         _.-|
+        /  .--.|   `""---...........---""`   |
+       /  /    |                             |
+       |  |    |                             |
+        \  \   |                             |
+         `\ `\ |                             |
+           `\ `|                             |
+           _/ /\                             /
+          (__/  \                           /
+       _..---""` \                         /`""---.._
+    .-'           \                       /          '-.
+   :               `-.__             __.-'              :
+   :                  ) ""---...---"" (                 :
+    '._               `"--...___...--"`              _.'
+      \""--..__                              __..--""/
+       '._     """----.....______.....----"""     _.'
+          `""--..,,_____            _____,,..--""`
+                        `"""----"""`
+
+CUP;
+
+        $this->writeLn($coffee, null, COLOR_GREEN);
+    }
+
+    /**
+     * Echoes a fancy header for the setup.
+     * Purely decorative
+     */
+    private function echoSetupHeader()
+    {
+        $header = <<<HEADER
+      
+        
+        
+  ____        _                          _____      _               
+ / __ \      (_)                        / ____|    | |              
+| |  | |_   _ _  __ _  __ _  ___ _ __  | (___   ___| |_ _   _ _ __  
+| |  | | | | | |/ _` |/ _` |/ _ \ '__|  \___ \ / _ \ __| | | | '_ \ 
+| |__| | |_| | | (_| | (_| |  __/ |     ____) |  __/ |_| |_| | |_) |
+ \___\_\__,__|_|\__, |\__, |\___|_|    |_____/ \___|\__|\__,_| .__/ 
+                   | |   | |                                 | |    
+                   |_|   |_|                                 |_|
+
+
+
+HEADER;
+
+        $this->writeLn($header, null, COLOR_GREEN);
+
+    }
+    #endregion
 }

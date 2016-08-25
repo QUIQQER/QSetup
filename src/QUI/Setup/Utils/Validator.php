@@ -53,7 +53,11 @@ class Validator
                 }
             }
 
-            return in_array($version, $validVersions);
+            if (!in_array($version, $validVersions)) {
+                throw new SetupException("exception.validation.version.invalid");
+            }
+
+            return true;
         }
 
         throw new SetupException(
@@ -165,42 +169,14 @@ class Validator
      */
     public static function validatePreset($name)
     {
-        //        $projectname = "";
-//        $template = array();
-//        $languages = "";
-//
-//        $packages = array();
-//
-//        if(key_exists($this->data['template'],$presets)){
-//            $preset = $presets[$this->data['template']];
-//        }
-//
-//        #Project neccessary
-//        if(key_exists("project",$preset) && isset($preset['project']['name'])){
-//            $projectname = $preset['project']['name'];
-//            if(isset($preset['project']['languages'])){
-//                if(is_array($languages)){
-//                    $languages = implode(",",$preset['project']['languages']);
-//                }
-//            }
-//        }
-//
-//        # Template
-//        if(key_exists("template",$preset)){
-//            if(is_array($preset['project']['template'])){
-//                $template = $preset['project']['template'];
-//            }
-//
-//            if(!key_exists("name",$template) || !key_exists("version",$template)){
-//
-//            }
-//        }
-//
-//        # Packages
-//        if(key_exists("packages",$preset)){
-//
-//        }
-        return true;
+        $presets = Setup::getPresets();
+
+
+        if (empty($name) || key_exists($name, $presets)) {
+            return true;
+        }
+
+        throw new SetupException("setup.exception.validation.preset.not.exist");
     }
 
 

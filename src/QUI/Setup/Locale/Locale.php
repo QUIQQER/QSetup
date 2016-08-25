@@ -5,12 +5,11 @@ namespace QUI\Setup\Locale;
 use QUI\ConsoleSetup\Locale\LocaleException;
 use QUI\Exception;
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 
 /** Localization class */
 class Locale
 {
+
 
     /** @var string $current - The current localization culture. */
     private $current = "de_DE";
@@ -20,6 +19,8 @@ class Locale
 
     /** @var string $localeDir - The Directory which contains the translations. Will be set in the constructor */
     private $localeDir = "";
+
+    private $domain = "setupmessages";
 
     /**
      * Locale constructor.
@@ -42,13 +43,12 @@ class Locale
             $this->current . ".UTF8"
         ));
 
-
         if ($res === false) {
             throw new LocaleException("locale.localeset.failed");
         }
-        bindtextdomain('messages', dirname(__FILE__));
 
-        textdomain('messages');
+        bindtextdomain($this->domain, dirname(__FILE__));
+
     }
 
 
@@ -60,13 +60,19 @@ class Locale
      */
     public function getStringLang($string, $fallback = "")
     {
+        textdomain($this->domain);
         $res = gettext($string);
 
         if (empty($fallback)) {
             $fallback = $string;
         }
 
-        return $res == $string ? $fallback : $res;
+        if ($res == $string) {
+            $res = $fallback;
+            echo "Missing Translation (Setup): " . $string . PHP_EOL;
+        }
+
+        return $res;
     }
 
     /**
@@ -84,7 +90,8 @@ class Locale
         if ($res === false) {
             throw new LocaleException("locale.localeset.failed");
         }
-        textdomain('messages');
+        bindtextdomain($this->domain, dirname(__FILE__));
+
     }
 
     public function getCurrent()

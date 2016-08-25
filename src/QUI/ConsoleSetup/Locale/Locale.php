@@ -11,6 +11,8 @@ class Locale
 
     private $localeDir = "";
 
+    private $domain = "messages";
+
     public function __construct($lang)
     {
         $this->current = $lang;
@@ -32,16 +34,22 @@ class Locale
         if ($res === false) {
             throw new LocaleException("locale.localeset.failed");
         }
-        textdomain('messages');
+        bindtextdomain($this->domain, dirname(__FILE__));
+
     }
 
     public function getStringLang($string, $fallback = "")
     {
+        textdomain($this->domain);
         $res = gettext($string);
+
+        if (empty($fallback)) {
+            $fallback = $string;
+        }
 
         if ($res == $string) {
             $res = $fallback;
-            echo "Missing Translation : " . $string . PHP_EOL;
+            echo "Missing Translation (ConsoleSetup): " . $string . PHP_EOL;
         }
 
         return $res;
@@ -57,6 +65,6 @@ class Locale
         if ($res === false) {
             throw new LocaleException("locale.localeset.failed");
         }
-        textdomain('messages');
+        bindtextdomain($this->domain, dirname(__FILE__));
     }
 }

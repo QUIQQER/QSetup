@@ -5,9 +5,15 @@
       "languages" : ["de","en"]
     },
     "template": {
-      "name" :"quiqqer/template-businesspro",
-      "version": "dev-dev"
+      "name" :"quiqqer/template-helios",
+      "version": "dev-master"
     },
+    "repositories":[
+      {
+        "type":"vcs",
+        "url":"git@dev.quiqqer.com:quiqqer/gitlab.git"
+      }
+    ],
     "packages": {
       "quiqqer/gitlab": "dev-dev"
     }

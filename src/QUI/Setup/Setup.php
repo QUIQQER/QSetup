@@ -11,6 +11,7 @@ use QUI\Setup\Locale\Locale;
 use QUI\Setup\Locale\LocaleException;
 use QUI\Setup\Output\ConsoleOutput;
 use QUI\Setup\Output\WebOutput;
+use QUI\Setup\Utils\Utils;
 use QUI\Setup\Utils\Validator;
 use QUI\Utils\XML;
 use QUI\Setup\Output\Interfaces\Output;
@@ -29,12 +30,22 @@ class Setup
     # Constants
     # ----------------
     const STEP_INIT = 0;
-    const STEP_LANGUAGE = 1;
-    const STEP_VERSION = 2;
-    const STEP_PRESET = 3;
-    const STEP_DATABASE = 4;
-    const STEP_USER = 5;
-    const STEP_PATHS = 6;
+    const STEP_DATA_LANGUAGE = 1;
+    const STEP_DATA_VERSION = 2;
+    const STEP_DATA_PRESET = 4;
+    const STEP_DATA_DATABASE = 8;
+    const STEP_DATA_USER = 16;
+    const STEP_DATA_PATHS = 32;
+    const STEP_DATA_COMPLETE = 64;
+    const STEP_SETUP_DATABASE = 128;
+    const STEP_SETUP_USER = 256;
+    const STEP_SETUP_PATHS = 512;
+    const STEP_SETUP_COMPOSER = 1024;
+    const STEP_SETUP_BOOTSTRAP = 2048;
+    const STEP_SETUP_QUIQQERSETUP = 4096;
+    const STEP_SETUP_DELETE = 8192;
+    const STEP_SETUP_CHECKS = 16384;
+    const STEP_SETUP_PRESET = 32768;
 
     const MODE_WEB = 0;
     const MODE_CLI = 1;
@@ -61,7 +72,6 @@ class Setup
     private $tablePermissions2Groups;
 
     private $baseDir;
-
     # ----------------
     # Init
     # ----------------
@@ -70,6 +80,12 @@ class Setup
     private $setupLang = "de";
     private $Step = Setup::STEP_INIT;
 
+    /**
+     * @var int - Will be used to add all steps taken,
+     * this will enable to setup to run checks which combination of steps have been taken.
+     * This can be usefull to determine, if all data steps have been taken
+     */
+    private $stepSum = 0;
 
     # Data-array
     private $data = array(
@@ -134,6 +150,10 @@ class Setup
     // Public Functions
     // ************************************************** //
 
+    /**
+     * Gets the availalbe presets.
+     * @return array - array Key : Presetname ; value = array(option:string=>value:string|array)
+     */
     public static function getPresets()
     {
         $presets = array();
@@ -173,13 +193,20 @@ class Setup
                 Output::LEVEL_ERROR,
                 Output::COLOR_RED
             );
+            exit;
         }
 
 
-        return $this->Locale->getStringLang(
-            "setup.language.set.success" . $lang,
-            "Setup will use the following culture : " . $lang
+        $this->Output->writeLn(
+            $this->Locale->getStringLang(
+                "setup.language.set.success",
+                "Setup will use the following culture : "
+            ) . $lang,
+            Output::LEVEL_INFO
         );
+
+        $this->Step = Setup::STEP_DATA_LANGUAGE;
+
     }
 
     /**
@@ -189,6 +216,9 @@ class Setup
     public function setLanguage($lang)
     {
         $this->data['lang'] = $lang;
+
+        $this->Step = Setup::STEP_DATA_LANGUAGE;
+        $this->stepSum += Setup::STEP_DATA_LANGUAGE;
     }
 
     /**
@@ -201,6 +231,9 @@ class Setup
         if (Validator::validateVersion($version)) {
             $this->data['version'] = $version;
         }
+
+        $this->Step = Setup::STEP_DATA_VERSION;
+        $this->stepSum += Setup::STEP_DATA_VERSION;
     }
 
     /**
@@ -210,7 +243,17 @@ class Setup
      */
     public function setPreset($preset)
     {
-        $this->data['template'] = $preset;
+        try {
+            Validator::validatePreset($preset);
+            $this->data['template'] = $preset;
+
+            $this->Step = Setup::STEP_DATA_PRESET;
+            $this->stepSum += Setup::STEP_DATA_PRESET;
+        } catch (SetupException $Exception) {
+            $this->Output->writeLn(
+                $this->Locale->getStringLang("setup.exception.validation.preset", "Invalid Preset entered")
+            );
+        }
     }
 
 
@@ -241,6 +284,9 @@ class Setup
         $this->data['database']['port']       = $dbPort;
         $this->data['database']['prefix']     = $dbPrefix;
         $this->data['database']['create_new'] = $createNew;
+
+        $this->Step = Setup::STEP_DATA_DATABASE;
+        $this->stepSum += Setup::STEP_DATA_DATABASE;
     }
 
     /**
@@ -258,6 +304,9 @@ class Setup
 
         $this->data['user']['name'] = $user;
         $this->data['user']['pw']   = $pw;
+
+        $this->Step = Setup::STEP_DATA_USER;
+        $this->stepSum += Setup::STEP_DATA_USER;
 
         return true;
     }
@@ -286,7 +335,7 @@ class Setup
         $varDir = ""
     ) {
         $paths  = array();
-        $cmsDir = QUI\Setup\Utils\Utils::normalizePath($cmsDir);
+        $cmsDir = Utils::normalizePath($cmsDir);
 
         // Generate missing paths
         if (Validator::validatePath($cmsDir) && !empty($urlDir)) {
@@ -331,6 +380,10 @@ class Setup
         define('CMS_DIR', $cmsDir);
         define('VAR_DIR', $varDir);
         $this->data['paths'] = $paths;
+
+        $this->Step = Setup::STEP_DATA_PATHS;
+        $this->stepSum += Setup::STEP_DATA_PATHS;
+
     }
 
     /**
@@ -353,6 +406,10 @@ class Setup
         if (!isset($this->data['paths']['httpshost'])) {
             $this->data['paths']['httpshost'] = "";
         }
+
+        $this->Step    = Setup::STEP_DATA_COMPLETE;
+        $this->stepSum = Setup::STEP_DATA_COMPLETE;
+
     }
 
     #endregion
@@ -363,10 +420,21 @@ class Setup
      */
     public function runSetup()
     {
+        # Constraint to ensure that all Datasteps have been taken or that the Set Data method has been called
+        if ($this->stepSum != Setup::STEP_DATA_COMPLETE &&
+            $this->stepSum != Setup::STEP_DATA_LANGUAGE + Setup::STEP_DATA_VERSION + Setup::STEP_DATA_PRESET +
+            Setup::STEP_DATA_DATABASE + Setup::STEP_DATA_USER + Setup::STEP_DATA_PATHS
+        ) {
+            $this->Output->writeLn("StepSum " . $this->stepSum, Output::LEVEL_DEBUG);
+            $this->Output->writeLnLang("setup.exception.runsetup.missing.data.step", Output::LEVEL_CRITICAL);
+            exit;
+        }
+
+        $this->Step = Setup::STEP_DATA_COMPLETE;
+
         $this->Output->writeLnLang("setup.message.step.start", Output::LEVEL_INFO);
         # Check if all neccessary data is set; throws exception if fails
         Validator::checkData($this->data);
-
 
         # Set Tablenames
         $this->tableUser               = $this->data['database']['prefix'] . "users";
@@ -388,6 +456,7 @@ class Setup
 
     public function rollBack()
     {
+        // TODO ROLLBACK
     }
 
     // ************************************************** //
@@ -396,6 +465,11 @@ class Setup
 
     private function setupDatabase()
     {
+        if ($this->Step != Setup::STEP_DATA_COMPLETE) {
+            $this->Output->writeLnLang("setup.exception.step.order", Output::LEVEL_CRITICAL);
+            exit;
+        }
+
         $this->Output->writeLnLang("setup.message.step.database", Output::LEVEL_INFO);
         $this->Database = new Database(
             $this->data['database']['driver'],
@@ -440,10 +514,18 @@ class Setup
             }
         }
         $this->Database->importTables(XML::getDataBaseFromXml($xmlFile));
+
+        $this->Step = Setup::STEP_SETUP_DATABASE;
     }
 
     private function setupUser()
     {
+        # Contraint to ensure correct setup order.
+        if ($this->Step != Setup::STEP_SETUP_DATABASE) {
+            $this->Output->writeLnLang("setup.exception.step.order", Output::LEVEL_CRITICAL);
+            exit;
+        }
+
         $this->Output->writeLnLang("setup.message.step.user", Output::LEVEL_INFO);
         # Generate random values (security precautions)
         $this->data['salt']       = md5(uniqid(rand(), true));
@@ -505,10 +587,18 @@ class Setup
                 'permissions' => json_encode($permissions)
             )
         );
+
+        $this->Step = Setup::STEP_SETUP_USER;
     }
 
     private function setupPaths()
     {
+        # Contraint to ensure correct setup order.
+        if ($this->Step != Setup::STEP_SETUP_USER) {
+            $this->Output->writeLnLang("setup.exception.step.order", Output::LEVEL_CRITICAL);
+            exit;
+        }
+
         $this->Output->writeLnLang("setup.message.step.paths", Output::LEVEL_INFO);
         $paths = $this->data['paths'];
 
@@ -627,22 +717,40 @@ class Setup
                 'type'   => "composer"
             )
         ));
+
         #Wysiqygeditor config etc/wysiwyg/conf.ini.php
         $this->writeIni($etcDir . 'wysiwyg/conf.ini.php', array(
             'settings' => array(
                 'standard' => 'ckeditor4'
             )
         ));
+
         # Copy default toolbar.xml
         copy(
             dirname(dirname(dirname(dirname(__FILE__)))) . "/xml/wysiwyg/toolbars/standard.xml",
             $etcDir . 'wysiwyg/toolbars/standard.xml'
         );
+
+        # Create /etc/plugins/quiqqer/log.ini.php
+        $contentLog = $this->getTemplateContent('log.ini.php');
+        if ($contentLog != null) {
+            file_put_contents($etcDir . 'plugins/quiqqer/log.conf.ini', $contentLog);
+        }
+
+
         #endregion
+
+        $this->Step = Setup::STEP_SETUP_PATHS;
     }
 
     private function setupComposer()
     {
+        # Contraint to ensure correct setup order.
+        if ($this->Step != Setup::STEP_SETUP_PATHS) {
+            $this->Output->writeLnLang("setup.exception.step.order", Output::LEVEL_CRITICAL);
+            exit;
+        }
+
         $this->Output->writeLnLang("setup.message.step.composer", Output::LEVEL_INFO);
         # Put composer.phar into varDir/composer
 
@@ -684,10 +792,19 @@ class Setup
         foreach ($res as $line) {
             $this->Output->writeLn($line, Output::LEVEL_INFO);
         }
+
+
+        $this->Step = Setup::STEP_SETUP_COMPOSER;
     }
 
     private function setupBootstrapFiles()
     {
+        # Contraint to ensure correct setup order.
+        if ($this->Step != Setup::STEP_SETUP_COMPOSER) {
+            $this->Output->writeLnLang("setup.exception.step.order", Output::LEVEL_CRITICAL);
+            exit;
+        }
+
         $this->Output->writeLnLang("setup.message.step.files", Output::LEVEL_INFO);
 
         # Create index.php
@@ -738,10 +855,19 @@ class Setup
                 require $boot;
             }'
         );
+
+
+        $this->Step = Setup::STEP_SETUP_BOOTSTRAP;
     }
 
     private function executeQuiqqerSetups()
     {
+        # Contraint to ensure correct setup order.
+        if ($this->Step != Setup::STEP_SETUP_BOOTSTRAP) {
+            $this->Output->writeLnLang("setup.exception.step.order", Output::LEVEL_CRITICAL);
+            exit;
+        }
+
         $this->Output->writeLnLang("setup.message.step.setup", Output::LEVEL_INFO);
 
         # Execute Setup
@@ -776,10 +902,17 @@ class Setup
         QUI\Translator::setup();
 
         QUI\Setup::all();
+
+        $this->Step = Setup::STEP_SETUP_QUIQQERSETUP;
     }
 
     private function deleteSetupFiles()
     {
+        # Contraint to ensure correct setup order.
+        if ($this->Step != Setup::STEP_SETUP_QUIQQERSETUP) {
+            $this->Output->writeLnLang("setup.exception.step.order", Output::LEVEL_CRITICAL);
+            exit;
+        }
 
         $this->Output->writeLnLang("setup.message.step.delete", Output::LEVEL_INFO);
         # Remove quiqqer.zip
@@ -818,73 +951,175 @@ class Setup
                 );
             }
         }
+
+        $this->Step = Setup::STEP_SETUP_DELETE;
     }
 
     private function executeQuiqqerChecks()
     {
+        # Contraint to ensure correct setup order.
+        if ($this->Step != Setup::STEP_SETUP_DELETE) {
+            $this->Output->writeLnLang("setup.exception.step.order", Output::LEVEL_CRITICAL);
+            exit;
+        }
+
         $this->Output->writeLnLang("setup.message.step.checks", Output::LEVEL_INFO);
         # Execute quiqqer health
+        // TODO Quiqqer Healthchecks
 
         # Execute quiqqer tests
+        // TODO Quiqqer tests
+
+        $this->Step = Setup::STEP_SETUP_CHECKS;
     }
 
     private function applyPreset()
     {
+        # Contraint to ensure correct setup order.
+        if ($this->Step != Setup::STEP_SETUP_CHECKS) {
+            $this->Output->writeLnLang("setup.exception.step.order", Output::LEVEL_CRITICAL);
+            exit;
+        }
+
         # Get the template info
         $presets  = self::getPresets();
         $preset   = null;
         $packages = array();
+        $repos    = array();
 
-        if (Validator::validatePreset($this->data['template'])) {
-            print_r($presets);
+        echo "Hurra";
 
-            $preset = $presets[$this->data['template']];
+        try {
+            Validator::validatePreset($this->data['template']);
+        } catch (SetupException $Exception) {
+            $this->Output->writeLnLang($Exception->getMessage());
 
-            $projectname = $preset['project']['name'];
-            $languages   = $preset['project']['languages'];
+            return;
+        }
 
-            $templateName    = $preset['template']['name'];
-            $templateVersion = $preset['template']['version'];
-
-            $packages = $preset['packages'];
+        $preset = $presets[$this->data['template']];
 
 
+        if ($preset == null || empty($preset)) {
+            $this->Output->writeLn("Skipping preset : No preset set.");
+
+            return;
+        }
+
+        $this->Output->writeLnLang("setup.setup.message.apply.preset");
+
+
+        $projectname = isset($preset['project']['name']) ? $preset['project']['name'] : null;
+
+        $languages = isset($preset['project']['languages']) ? $preset['project']['languages'] : null;
+
+        $templateName    = isset($preset['template']['name']) ? $preset['template']['name'] : null;
+        $templateVersion = isset($preset['template']['version']) ? $preset['template']['version'] : null;
+
+        $packages = isset($preset['packages']) ? $preset['packages'] : null;
+
+        $repos = isset($preset['repositories']) ? $preset['repositories'] : null;
+
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        print_r($preset);
+
+        echo " Projectname " . var_dump($projectname);
+        echo " Languages " . var_dump($languages);
+        echo " Templatename " . var_dump($templateName);
+        echo " Packages " . var_dump($packages);
+        echo " Repos " . var_dump($repos);
+
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+
+        # Add Repositories to composer.json
+        if ($repos != null && is_array($repos)) {
+            # Add Repositories to composer dir
+            if (file_exists(VAR_DIR . '/composer/composer.json')) {
+                $json = file_get_contents(VAR_DIR . '/composer/composer.json');
+                $data = json_decode($json, true);
+                if (json_last_error() == JSON_ERROR_NONE) {
+                    foreach ($repos as $repo) {
+                        $data['repositories'][] = $repo;
+                    }
+
+                    $json = json_encode($data, JSON_PRETTY_PRINT);
+                    if (file_put_contents(VAR_DIR . '/composer/composer.json', $json) === false) {
+                        # Writeprocess failed
+                        throw new SetupException("setup.filesystem.composerjson.not.writeable");
+                    }
+                } else {
+                    throw new SetupException("setup.json.error" . " " . json_last_error_msg());
+                }
+            } else {
+                throw new SetupException("setup.filesystem.composerjson.not.found");
+            }
+        }
+
+        # Create project
+        if ($projectname != null) {
             try {
                 QUI::getProjectManager()->createProject(
                     $projectname,
                     $this->data['lang']
                 );
             } catch (QUI\Exception $Exception) {
-                $this->Output->writeLn(
-                    $this->Locale->getStringLang(
-                        "setup.error.project.creation.failed",
-                        "Could not create project: "
-                    ) . ' ' . $Exception->getMessage()
+                $exceptionMsg = $this->Locale->getStringLang(
+                    "setup.error.project.creation.failed",
+                    "Could not create project: "
                 );
+
+                $this->Output->writeLn($exceptionMsg . ' ' . $Exception->getMessage());
 
                 return;
             }
 
-            # Require Template and packages
-            $Composer = new Composer(VAR_DIR . "composer/", VAR_DIR . "composer/");
-            $Composer->requirePackage($templateName, $templateVersion);
+        }
 
+        # Require Template and packages
+        $Composer = new Composer(VAR_DIR . "composer/", VAR_DIR . "composer/");
+        if ($templateName != null) {
+            $Composer->requirePackage($templateName, $templateVersion);
+        }
+
+        if ($packages != null && is_array($packages) && !empty($packages)) {
             foreach ($packages as $name => $version) {
                 $Composer->requirePackage($name, $version);
             }
+        }
 
-
-            # Config main project to use new template
+        # Config main project to use new template
+        if ($templateName != null && $projectname != null) {
             QUI::getProjectManager()->setConfigForProject($projectname, array(
-                'template' => $templateName,
-                'langs'    => implode(',', $languages)
+                'template' => $templateName
             ));
         }
+
+        # Add new languages if neccessary
+        if ($languages != null && is_array($languages) && !empty($languages) && $projectname != null) {
+            QUI::getProjectManager()->setConfigForProject($projectname, array(
+                'langs' => implode(',', $languages)
+            ));
+        }
+
+
+        # Execute Quiqqersetup to activate new Plugins/translations etc.
+        QUI\Setup::all();
+
+        $this->Step = Setup::STEP_SETUP_PRESET;
+
     }
 
-    // ************************************************** //
-    // Private - Helper Functions
-    // ************************************************** //
+// ************************************************** //
+// Private - Helper Functions
+// ************************************************** //
 
     /**
      * Returns the parsed configfile in an assoc. array.
@@ -975,8 +1210,14 @@ class Setup
      */
     private function createComposerJson()
     {
-        $json = file_get_contents(dirname(__FILE__) . "/composer.json.tpl");
+        $json = $this->getTemplateContent('composer.json');
         $data = json_decode($json, true);
+
+        if (json_last_error() != JSON_ERROR_NONE) {
+            $this->Output->writeLnLang("setup.exception.composer.error");
+            $this->Output->writeLn(json_last_error_msg());
+            exit;
+        }
 
         #Set Composer paths
         $data['config']['vendor-dir']    = $this->data['paths']['opt_dir'];
@@ -1033,4 +1274,34 @@ class Setup
 
         file_put_contents($file, $tmp);
     }
+
+
+    /**
+     * Returns the content of a given template file.
+     * Templatefiles should be located in the templates directory of the package root.
+     * @param $name - The filename of the template
+     * @return null|string - The content or null if template does not exist.
+     */
+    private function getTemplateContent($name)
+    {
+        $templateDir = dirname(dirname(dirname(dirname(__FILE__)))) . '/templates/';
+        
+        if (file_exists($templateDir . $name . '.tpl')) {
+            $content = file_get_contents($templateDir . $name . '.tpl');
+
+            return $content;
+        }
+
+        if (file_exists($templateDir . $name)) {
+            $content = file_get_contents($templateDir . $name);
+
+            return $content;
+        }
+
+        $this->Output->writeLn("Missing template file : " . $name);
+
+        return null;
+    }
+
+
 }

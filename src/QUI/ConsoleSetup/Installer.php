@@ -107,19 +107,19 @@ class Installer
         $this->echoSectionHeader(
             self::getLocale()->getStringLang("message.step.requirements", "Requirements")
         );
-
         $results = Requirements::runAll();
 
-        /**
-         * @var TestResult $test
-         */
         foreach ($results as $test) {
-            $name        = $test['name'];
-            $statusHuman = $test->getStatusHumanReadable();
-            $status      = $test->getStatus();
+            $name = $test['name'];
+            /** @var TestResult $result */
+            $result      = $test['result'];
+            $statusHuman = $result->getStatusHumanReadable();
+            $status      = $result->getStatus();
 
+            $errors = false;
             switch ($status) {
                 case TestResult::STATUS_FAILED:
+                    $errors = true;
                     $this->writeLn("[{$statusHuman}] {$name}", null, COLOR_RED);
                     break;
 
@@ -128,8 +128,26 @@ class Installer
                     break;
 
                 case TestResult::STATUS_UNKNOWN:
+                    $errors = true;
                     $this->writeLn("[{$statusHuman}] {$name}", null, COLOR_YELLOW);
                     break;
+            }
+
+            if ($errors) {
+                $continue = $this->prompt(
+                    self::getLocale()->getStringLang(
+                        "prompt.requirements.continue",
+                        "Not all Requirements could be met. If you still want to continue, we can not guaruantee the functionality of QUIQQER. Continue anyway? (y/n)"
+                    ),
+                    "n",
+                    COLOR_YELLOW,
+                    false,
+                    true
+                );
+
+                if ($continue != "y") {
+                    exit;
+                }
             }
         }
     }

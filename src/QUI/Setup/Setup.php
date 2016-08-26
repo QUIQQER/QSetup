@@ -928,8 +928,20 @@ class Setup
             define('ETC_DIR', CMS_DIR . '/etc/');
         }
 
+        ini_set("error_log", VAR_DIR . 'log/error' . date('-Y-m-d') . '.log');
 
         QUI::load();
+
+        QUI\Log\Logger::$logLevels = array(
+            'debug'     => false,
+            'info'      => false,
+            'notice'    => false,
+            'warning'   => false,
+            'error'     => true,
+            'critical'  => true,
+            'alert'     => true,
+            'emergency' => true
+        );
 
         QUI\Update::importDatabase(OPT_DIR . '/quiqqer/translator/database.xml');
 
@@ -1102,7 +1114,6 @@ class Setup
             throw new SetupException("setup.filesystem.composerjson.not.found");
         }
 
-
         # Create project
         if (!empty($projectname)) {
             try {
@@ -1162,13 +1173,15 @@ class Setup
             QUI::getProjectManager()->setConfigForProject($projectname, array(
                 'layout' => $defaultLayout
             ));
-//
-//            foreach ($languages as $lang) {
-//                $Project = new QUI\Projects\Project($projectname, $lang);
-//                $Edit    = $Project->firstChild()->getEdit();
-//                $Edit->setAttribute('layout', $startLayout);
-//                #$Edit->save();
-//            }
+
+            QUI::getProjectManager()->getConfig()->reload();
+
+            foreach ($languages as $lang) {
+                $Project = new QUI\Projects\Project($projectname, $lang);
+                $Edit    = $Project->firstChild()->getEdit();
+                $Edit->setAttribute('layout', $startLayout);
+                $Edit->save();
+            }
         }
 
         $this->Step = Setup::STEP_SETUP_PRESET;

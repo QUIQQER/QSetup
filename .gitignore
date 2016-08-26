@@ -5,6 +5,4 @@
 /composer/
 /composer.lock
 /.htaccess
-/xml/
-/lib/
 /src/QUI/ConsoleSetup/test.php

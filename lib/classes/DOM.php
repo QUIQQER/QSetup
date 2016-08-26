@@ -424,7 +424,6 @@ class DOM
             if (file_exists($Object)) {
                 $tabs = XML::getTabsFromXml($Object);
             }
-
         } else {
             if (get_class($Object) === 'QUI\\Projects\\Project') {
                 /* @var $Object QUI\Projects\Project */
@@ -432,7 +431,6 @@ class DOM
                 $tabs = XML::getTabsFromXml(
                     USR_DIR . 'lib/' . $Object->getAttribute('name') . '/user.xml'
                 );
-
             } else {
                 if (get_class($Object) === 'QUI\\Projects\\Site'
                     || get_class($Object) === 'QUI\\Projects\\Site\\Edit'
@@ -1175,7 +1173,6 @@ class DOM
             } else {
                 $string .= $input;
             }
-
         } else {
             if ($text->length) {
                 $string .= '<label for="' . $id . '">' .

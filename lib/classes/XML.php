@@ -132,7 +132,6 @@ class XML
                 QUI::getPackageManager()->getInstalledPackage($package);
 
                 $name = 'plugins/' . $package;
-
             } catch (QUI\Exception $Exception) {
                 return false;
             }
@@ -1078,7 +1077,6 @@ class XML
                 $Package = QUI::getPackage($_file[0] . '/' . $_file[1]);
 
                 QUI::getEvents()->fireEvent('packageConfigSave', array($Package));
-
             } catch (QUI\Exception $Exception) {
             }
         }
@@ -1232,7 +1230,6 @@ class XML
 
         try {
             self::importDataBase($dbfields);
-
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::addError(
                 "Error on XML database import ($xmlfile): "

@@ -4,8 +4,11 @@ namespace QUI\ConsoleSetup;
 
 use QUI\ConsoleSetup\Locale\Locale;
 use QUI\Exception;
+use QUI\Requirements\Requirements;
+use QUI\Requirements\TestResult;
 use QUI\Setup\Setup;
 use QUI\Setup\SetupException;
+use QUI\Setup\Utils\Utils;
 
 define('COLOR_GREEN', '1;32');
 define('COLOR_CYAN', '1;36');
@@ -14,7 +17,10 @@ define('COLOR_YELLOW', '1;33');
 define('COLOR_PURPLE', '1;35');
 define('COLOR_WHITE', '1;37');
 
-
+/**
+ * Class Installer
+ * @package QUI\ConsoleSetup
+ */
 class Installer
 {
     /** @var Setup $Setup */
@@ -29,6 +35,9 @@ class Installer
     const LEVEL_ERROR = 3;
     const LEVEL_CRITICAL = 4;
 
+    /**
+     * Installer constructor.
+     */
     public function __construct()
     {
         $this->Setup = new Setup(Setup::MODE_CLI);
@@ -99,7 +108,30 @@ class Installer
             self::getLocale()->getStringLang("message.step.requirements", "Requirements")
         );
 
-        // TODO System requirements
+        $results = Requirements::runAll();
+
+        /**
+         * @var TestResult $test
+         */
+        foreach ($results as $test) {
+            $name        = $test['name'];
+            $statusHuman = $test->getStatusHumanReadable();
+            $status      = $test->getStatus();
+
+            switch ($status) {
+                case TestResult::STATUS_FAILED:
+                    $this->writeLn("[{$statusHuman}] {$name}", null, COLOR_RED);
+                    break;
+
+                case TestResult::STATUS_OK:
+                    $this->writeLn("[{$statusHuman}] {$name}", null, COLOR_GREEN);
+                    break;
+
+                case TestResult::STATUS_UNKNOWN:
+                    $this->writeLn("[{$statusHuman}] {$name}", null, COLOR_YELLOW);
+                    break;
+            }
+        }
     }
 
     /**
@@ -245,12 +277,37 @@ class Installer
             self::getLocale()->getStringLang("prompt.user", "Please enter an username :"),
             Setup::getConfig()['defaults']['username']
         );
-        $pw   = $this->prompt(
-            self::getLocale()->getStringLang("prompt.password", "Please enter a password :"),
-            false,
-            null,
-            true
-        );
+
+        # Make sure both password entries match
+        $pwMatch = false;
+        while ($pwMatch == false) {
+            $pw = $this->prompt(
+                self::getLocale()->getStringLang("prompt.password", "Please enter a password :"),
+                false,
+                null,
+                true
+            );
+
+            $pw2 = $this->prompt(
+                self::getLocale()->getStringLang("prompt.password.again", "Please enter your password again :"),
+                false,
+                null,
+                true
+            );
+
+            if ($pw == $pw2) {
+                $pwMatch = true;
+            } else {
+                $this->writeLn(
+                    self::getLocale()->getStringLang(
+                        "setup.warning.password.missmatch",
+                        "Passwords do not match. Please try again."
+                    ),
+                    self::LEVEL_WARNING
+                );
+            }
+        }
+
 
         try {
             $this->Setup->setUser($user, $pw);
@@ -276,10 +333,48 @@ class Installer
             self::getLocale()->getStringLang("prompt.host", "Hostname : ")
         );
 
-        $cmsDir = $this->prompt(
-            self::getLocale()->getStringLang("prompt.cms", "CMS Directory : "),
-            dirname(dirname(dirname(dirname(__FILE__))))
-        );
+
+        # Cms dir
+        $continue = true;
+
+        // Will ask the user for a cms directory and check if it is empty.
+        // Will continue asking until dir is empty or the user chose to ignore the warning
+
+        while ($continue) {
+            $cmsDir = $this->prompt(
+                self::getLocale()->getStringLang("prompt.cms", "CMS Directory : "),
+                dirname(dirname(dirname(dirname(__FILE__))))
+            );
+
+            # Check if Directory is empty
+            if (!Utils::isDirEmpty($cmsDir)) {
+                $this->writeLn(
+                    self::getLocale()->getStringLang(
+                        "setup.warning.dir.not.empty",
+                        "The chosen directory is not empty. Existing Files may be overwritten during the setup process!"
+                    ),
+                    self::LEVEL_WARNING
+                );
+
+                $answer = $this->prompt(
+                    self::getLocale()->getStringLang(
+                        "setup.prompt.dir.not.empty",
+                        "Enter 'y' to continue anyways?"
+                    ),
+                    "y",
+                    null,
+                    false,
+                    true,
+                    false
+                );
+
+                if ($answer == "y") {
+                    $continue = false;
+                }
+            } else {
+                $continue = false;
+            }
+        }
 
 
         $urlDir = $this->prompt(

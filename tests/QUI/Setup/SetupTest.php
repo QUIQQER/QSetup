@@ -15,7 +15,7 @@ class SetupTest extends TestCase
     public function testSetUser()
     {
 
-        $Setup = new Setup();
+        $Setup = new Setup(SETUP::MODE_CLI);
 
         $result = $Setup->setUser("admin", "Test123;;");
         $this->assertEquals($result, true);
@@ -31,5 +31,13 @@ class SetupTest extends TestCase
 
         $result = $Setup->setUser("", "");
         $this->assertEquals($result, false);
+    }
+
+
+    public function testGetPresets()
+    {
+        $presets = Setup::getPresets();
+
+        print_r($presets);
     }
 }

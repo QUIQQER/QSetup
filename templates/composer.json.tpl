@@ -33,6 +33,7 @@
   ],
   "require": {
     "php": ">=5.3.2",
+    "hirak/prestissimo":"^0.3",
     "composer/composer": "^1.1.3",
     "robloach/component-installer": "0.0.12",
     "quiqqer/utils": "dev-dev",

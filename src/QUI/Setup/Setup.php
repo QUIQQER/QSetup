@@ -168,6 +168,27 @@ class Setup
             }
         }
 
+        # Read all userdefined presets from templates/presets
+        $presetDir = dirname(dirname(dirname(dirname(__FILE__)))) . '/templates/presets';
+        if (is_dir($presetDir)) {
+            $content = scandir($presetDir);
+
+            if (is_array($content) && !empty($content)) {
+                foreach ($content as $file) {
+                    $name   = explode('.', $file, 2)[0];
+                    $ending = explode('.', $file, 2)[1];
+
+                    if ($file != '.' && $file != '..' && $ending == 'json') {
+                        $json = file_get_contents($presetDir . "/" . $file);
+                        $data = json_decode($json, true);
+
+                        $presets[$name] = $data;
+                    }
+                }
+            }
+        }
+
+
         return $presets;
     }
 
@@ -227,8 +248,12 @@ class Setup
      */
     public function setVersion($version)
     {
-        if (Validator::validateVersion($version)) {
-            $this->data['version'] = $version;
+        try {
+            if (Validator::validateVersion($version)) {
+                $this->data['version'] = $version;
+            }
+        } catch (SetupException $Exception) {
+            $this->Output->writeLnLang($Exception->getMessage(), Output::LEVEL_ERROR);
         }
 
         $this->Step = Setup::STEP_DATA_VERSION;
@@ -268,12 +293,16 @@ class Setup
      */
     public function setDatabase($dbDriver, $dbHost, $dbName, $dbUser, $dbPw, $dbPort, $dbPrefix, $createNew)
     {
-        if ($createNew) {
-            Validator::validateDatabase($dbDriver, $dbHost, $dbUser, $dbPw, $dbPort);
-        } else {
-            Validator::validateDatabase($dbDriver, $dbHost, $dbUser, $dbPw, $dbPort, $dbName);
+        try {
+            if ($createNew) {
+                Validator::validateDatabase($dbDriver, $dbHost, $dbUser, $dbPw, $dbPort);
+            } else {
+                Validator::validateDatabase($dbDriver, $dbHost, $dbUser, $dbPw, $dbPort, $dbName);
+            }
+        } catch (SetupException $Exception) {
+            $this->Output->writeLnLang($Exception->getMessage(), Output::LEVEL_ERROR);
+            exit;
         }
-
 
         $this->data['database']['driver']     = $dbDriver;
         $this->data['database']['host']       = $dbHost;
@@ -296,10 +325,14 @@ class Setup
      */
     public function setUser($user, $pw)
     {
-        Validator::validateName($user);
+        try {
+            Validator::validateName($user);
 
-        Validator::validatePassword($pw);
-
+            Validator::validatePassword($pw);
+        } catch (SetupException $Exception) {
+            $this->Output->writeLnLang($Exception->getMessage(), Output::LEVEL_ERROR);
+            exit;
+        }
 
         $this->data['user']['name'] = $user;
         $this->data['user']['pw']   = $pw;
@@ -337,28 +370,32 @@ class Setup
         $cmsDir = Utils::normalizePath($cmsDir);
 
         // Generate missing paths
-        if (Validator::validatePath($cmsDir) && !empty($urlDir)) {
-            # Filesystem paths
-            if (empty($varDir)) {
-                $varDir = $cmsDir . "var/";
-            }
+        try {
+            if (Validator::validatePath($cmsDir) && !empty($urlDir)) {
+                # Filesystem paths
+                if (empty($varDir)) {
+                    $varDir = $cmsDir . "var/";
+                }
 
-            if (empty($optDir)) {
-                $optDir = $cmsDir . "packages/";
-            }
+                if (empty($optDir)) {
+                    $optDir = $cmsDir . "packages/";
+                }
 
-            if (empty($usrDir)) {
-                $usrDir = $cmsDir . "usr/";
-            }
+                if (empty($usrDir)) {
+                    $usrDir = $cmsDir . "usr/";
+                }
 
-            # URL Paths
-            if (empty($binDir)) {
-                $binDir = $urlDir . "bin/";
-            }
+                # URL Paths
+                if (empty($binDir)) {
+                    $binDir = $urlDir . "bin/";
+                }
 
-            if (empty($libDir)) {
-                $libDir = $urlDir . "lib/";
+                if (empty($libDir)) {
+                    $libDir = $urlDir . "lib/";
+                }
             }
+        } catch (SetupException $Exception) {
+            $this->Output->writeLnLang($Exception->getMessage(), Output::LEVEL_WARNING);
         }
 
         $paths['host']        = $host;
@@ -373,8 +410,12 @@ class Setup
 
 
         # Validate paths, throw exception if fails
-        Validator::validatePaths($paths);
-
+        try {
+            Validator::validatePaths($paths);
+        } catch (SetupException $Exception) {
+            $this->Output->writeLnLang($Exception->getMessage(), Output::LEVEL_ERROR);
+            exit;
+        }
 
         define('CMS_DIR', $cmsDir);
         define('VAR_DIR', $varDir);
@@ -431,7 +472,12 @@ class Setup
 
         $this->Output->writeLnLang("setup.message.step.start", Output::LEVEL_INFO);
         # Check if all neccessary data is set; throws exception if fails
-        Validator::checkData($this->data);
+        try {
+            Validator::checkData($this->data);
+        } catch (SetupException $Exception) {
+            $this->Output->writeLnLang($Exception->getMessage(), Output::LEVEL_ERROR);
+            exit;
+        }
 
         # Set Tablenames
         $this->tableUser               = $this->data['database']['prefix'] . "users";
@@ -731,6 +777,10 @@ class Setup
         # Create /etc/plugins/quiqqer/log.ini.php
         $contentLog = $this->getTemplateContent('log.ini.php');
         if ($contentLog != null) {
+            if (!is_dir($etcDir . 'plugins/quiqqer/')) {
+                mkdir($etcDir . 'plugins/quiqqer/', 0744, true);
+            }
+
             file_put_contents($etcDir . 'plugins/quiqqer/log.conf.ini', $contentLog);
         }
 
@@ -880,6 +930,7 @@ class Setup
 
 
         QUI::load();
+
         QUI\Update::importDatabase(OPT_DIR . '/quiqqer/translator/database.xml');
 
         $User = QUI::getUsers()->get($this->data['rootUID']);
@@ -892,7 +943,6 @@ class Setup
         # Execute Htaccess
         $Htaccess = new QUI\System\Console\Tools\Htaccess();
         $Htaccess->execute();
-
 
         # Add Setup languages
         QUI\Translator::addLang($this->data['lang']);
@@ -984,7 +1034,6 @@ class Setup
         $packages = array();
         $repos    = array();
 
-        echo "Hurra";
 
         try {
             Validator::validatePreset($this->data['template']);
@@ -1005,63 +1054,57 @@ class Setup
 
         $this->Output->writeLnLang("setup.setup.message.apply.preset");
 
+        # Verify User input
+        # Project
+        $projectname = isset($preset['project']['name']) ? $preset['project']['name'] : "";
+        $languages   = isset($preset['project']['languages']) ? $preset['project']['languages'] : array();
 
-        $projectname = isset($preset['project']['name']) ? $preset['project']['name'] : null;
+        #Template
+        $templateName    = isset($preset['template']['name']) ? $preset['template']['name'] : "";
+        $templateVersion = isset($preset['template']['version']) ? $preset['template']['version'] : "";
+        $defaultLayout   = isset($preset['template']['default_layout']) ? $preset['template']['default_layout'] : "";
+        $startLayout     = isset($preset['template']['start_layout']) ? $preset['template']['start_layout'] : "";
 
-        $languages = isset($preset['project']['languages']) ? $preset['project']['languages'] : null;
-
-        $templateName    = isset($preset['template']['name']) ? $preset['template']['name'] : null;
-        $templateVersion = isset($preset['template']['version']) ? $preset['template']['version'] : null;
-
-        $packages = isset($preset['packages']) ? $preset['packages'] : null;
-
-        $repos = isset($preset['repositories']) ? $preset['repositories'] : null;
-
-        echo PHP_EOL;
-        echo PHP_EOL;
-        echo PHP_EOL;
-        echo PHP_EOL;
-        echo PHP_EOL;
-        print_r($preset);
-
-        echo " Projectname " . var_dump($projectname);
-        echo " Languages " . var_dump($languages);
-        echo " Templatename " . var_dump($templateName);
-        echo " Packages " . var_dump($packages);
-        echo " Repos " . var_dump($repos);
-
-        echo PHP_EOL;
-        echo PHP_EOL;
-        echo PHP_EOL;
-        echo PHP_EOL;
-        echo PHP_EOL;
-
-        # Add Repositories to composer.json
-        if ($repos != null && is_array($repos)) {
-            # Add Repositories to composer dir
-            if (file_exists(VAR_DIR . '/composer/composer.json')) {
-                $json = file_get_contents(VAR_DIR . '/composer/composer.json');
-                $data = json_decode($json, true);
-                if (json_last_error() == JSON_ERROR_NONE) {
-                    foreach ($repos as $repo) {
-                        $data['repositories'][] = $repo;
-                    }
-
-                    $json = json_encode($data, JSON_PRETTY_PRINT);
-                    if (file_put_contents(VAR_DIR . '/composer/composer.json', $json) === false) {
-                        # Writeprocess failed
-                        throw new SetupException("setup.filesystem.composerjson.not.writeable");
-                    }
-                } else {
-                    throw new SetupException("setup.json.error" . " " . json_last_error_msg());
-                }
-            } else {
-                throw new SetupException("setup.filesystem.composerjson.not.found");
-            }
+        # Packages
+        $packages = isset($preset['packages']) ? $preset['packages'] : array();
+        if (!is_array($packages)) {
+            $packages = array();
         }
 
+        # Repositories
+        $repos = isset($preset['repositories']) ? $preset['repositories'] : array();
+        if (!is_array($repos)) {
+            $repos = array();
+        }
+
+        # =========================================================================================== #
+
+        # Apply preset configuration
+
+        # Add Repositories to composer.json
+        if (file_exists(VAR_DIR . '/composer/composer.json')) {
+            $json = file_get_contents(VAR_DIR . '/composer/composer.json');
+            $data = json_decode($json, true);
+            if (json_last_error() == JSON_ERROR_NONE) {
+                foreach ($repos as $repo) {
+                    $data['repositories'][] = $repo;
+                }
+
+                $json = json_encode($data, JSON_PRETTY_PRINT);
+                if (file_put_contents(VAR_DIR . '/composer/composer.json', $json) === false) {
+                    # Writeprocess failed
+                    throw new SetupException("setup.filesystem.composerjson.not.writeable");
+                }
+            } else {
+                throw new SetupException("setup.json.error" . " " . json_last_error_msg());
+            }
+        } else {
+            throw new SetupException("setup.filesystem.composerjson.not.found");
+        }
+
+
         # Create project
-        if ($projectname != null) {
+        if (!empty($projectname)) {
             try {
                 QUI::getProjectManager()->createProject(
                     $projectname,
@@ -1072,7 +1115,6 @@ class Setup
                     "setup.error.project.creation.failed",
                     "Could not create project: "
                 );
-
                 $this->Output->writeLn($exceptionMsg . ' ' . $Exception->getMessage());
 
                 return;
@@ -1081,33 +1123,53 @@ class Setup
 
         # Require Template and packages
         $Composer = new Composer(VAR_DIR . "composer/", VAR_DIR . "composer/");
-        if ($templateName != null) {
+        if (!empty($templateName)) {
             $Composer->requirePackage($templateName, $templateVersion);
         }
 
-        if ($packages != null && is_array($packages) && !empty($packages)) {
-            foreach ($packages as $name => $version) {
-                $Composer->requirePackage($name, $version);
-            }
-        }
 
-        # Config main project to use new template
-        if ($templateName != null && $projectname != null) {
-            QUI::getProjectManager()->setConfigForProject($projectname, array(
-                'template' => $templateName
-            ));
+        # Require additional packages
+        foreach ($packages as $name => $version) {
+            $Composer->requirePackage($name, $version);
         }
 
         # Add new languages if neccessary
-        if ($languages != null && is_array($languages) && !empty($languages) && $projectname != null) {
+        if ($projectname != null) {
             QUI::getProjectManager()->setConfigForProject($projectname, array(
                 'langs' => implode(',', $languages)
             ));
         }
 
-
         # Execute Quiqqersetup to activate new Plugins/translations etc.
         QUI\Setup::all();
+
+        # Config main project to use new template
+        if (!empty($templateName) && !empty($projectname)) {
+            QUI::getProjectManager()->setConfigForProject($projectname, array(
+                'template' => $templateName
+            ));
+        }
+
+        # Set the default Layout
+        if (!empty($templateName) && !empty($projectname) && !empty($defaultLayout)) {
+            QUI::getProjectManager()->setConfigForProject($projectname, array(
+                'layout' => $defaultLayout
+            ));
+        }
+
+        # Set the Mainpage Layout
+        if (!empty($templateName) && !empty($projectname) && !empty($startLayout)) {
+            QUI::getProjectManager()->setConfigForProject($projectname, array(
+                'layout' => $defaultLayout
+            ));
+//
+//            foreach ($languages as $lang) {
+//                $Project = new QUI\Projects\Project($projectname, $lang);
+//                $Edit    = $Project->firstChild()->getEdit();
+//                $Edit->setAttribute('layout', $startLayout);
+//                #$Edit->save();
+//            }
+        }
 
         $this->Step = Setup::STEP_SETUP_PRESET;
     }
@@ -1280,7 +1342,7 @@ class Setup
     private function getTemplateContent($name)
     {
         $templateDir = dirname(dirname(dirname(dirname(__FILE__)))) . '/templates/';
-        
+
         if (file_exists($templateDir . $name . '.tpl')) {
             $content = file_get_contents($templateDir . $name . '.tpl');
 

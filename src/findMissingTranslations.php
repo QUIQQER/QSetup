@@ -18,7 +18,6 @@ echo PHP_EOL;
 echo PHP_EOL;
 
 foreach ($result as $entry) {
-
     if (strpos($localeConsoleSetup, $entry) > 0) {
         #echo "FOUND : " . $entry . PHP_EOL;
         continue;

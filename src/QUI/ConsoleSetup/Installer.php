@@ -269,15 +269,15 @@ class Installer
             # Check if database exists
             if (!Database::databaseExists($driver, $host, $user, $pw, $db)) {
                 if ($this->prompt(
-                        $this->Locale->getStringLang(
-                            "prompt.database.createnew",
-                            "The given database does not exist, do you want to create it?"
-                        ),
-                        "y",
-                        COLOR_YELLOW,
-                        false,
-                        true
-                    ) == "y"
+                    $this->Locale->getStringLang(
+                        "prompt.database.createnew",
+                        "The given database does not exist, do you want to create it?"
+                    ),
+                    "y",
+                    COLOR_YELLOW,
+                    false,
+                    true
+                ) == "y"
                 ) {
                     $createNew     = true;
                     $validDatabase = true;

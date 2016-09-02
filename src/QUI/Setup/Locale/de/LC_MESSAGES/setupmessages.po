@@ -48,3 +48,4 @@ msgstr "Die Datei konnte nicht geschrieben werden"
 
 msgid "setup.language.set.success"
 msgstr "Setup verwendet nun folgende Sprache : "
+

@@ -6,3 +6,4 @@
 /composer.lock
 /.htaccess
 /src/QUI/ConsoleSetup/test.php
+/src/findMissingTranslations.php

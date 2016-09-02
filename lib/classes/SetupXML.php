@@ -17,7 +17,7 @@ use QUI\Utils\Security\Orthos;
  * @author  www.pcsg.de (Henning Leutz)
  * @licence For copyright and license information, please view the /README.md
  */
-class XML
+class SetupXML
 {
     /**
      * Add a menu.xml file to a contextmenu bar item
@@ -41,9 +41,9 @@ class XML
             }
 
             $params = array(
-                'text'    => DOM::getTextFromNode($Item),
+                'text'    => SetupDOM::getTextFromNode($Item),
                 'name'    => $Item->getAttribute('name'),
-                'icon'    => DOM::parseVar($Item->getAttribute('icon')),
+                'icon'    => SetupDOM::parseVar($Item->getAttribute('icon')),
                 'require' => $Item->getAttribute('require'),
                 'exec'    => $Item->getAttribute('exec'),
                 'onClick' => 'QUI.Menu.menuClick'
@@ -182,7 +182,7 @@ class XML
      */
     public static function getConfigParamsFromXml($file)
     {
-        return DOM::getConfigParamsFromDOM(
+        return SetupDOM::getConfigParamsFromDOM(
             self::getDomFromXml($file)
         );
     }
@@ -214,7 +214,7 @@ class XML
             $file = $Tool->getAttribute('file');
 
             if (!empty($file)) {
-                $file = DOM::parseVar($file);
+                $file = SetupDOM::parseVar($file);
                 $file = Orthos::clearPath(realpath($file));
 
                 if (file_exists($file)) {
@@ -282,7 +282,7 @@ class XML
             $tables = $Table->getElementsByTagName('table');
 
             for ($i = 0; $i < $tables->length; $i++) {
-                $dbfields['globals'][] = DOM::dbTableDomToArray(
+                $dbfields['globals'][] = SetupDOM::dbTableDomToArray(
                     $tables->item($i)
                 );
             }
@@ -298,7 +298,7 @@ class XML
             $tables = $Table->getElementsByTagName('table');
 
             for ($i = 0; $i < $tables->length; $i++) {
-                $dbfields['projects'][] = DOM::dbTableDomToArray(
+                $dbfields['projects'][] = SetupDOM::dbTableDomToArray(
                     $tables->item($i)
                 );
             }
@@ -508,7 +508,7 @@ class XML
                         continue;
                     }
 
-                    $params[$Translation->nodeName] = DOM::parseVar($Translation->nodeValue);
+                    $params[$Translation->nodeName] = SetupDOM::parseVar($Translation->nodeValue);
                 }
 
                 $locales['locales'][] = $params;
@@ -580,7 +580,7 @@ class XML
         $result = array();
 
         for ($i = 0, $len = $panels->length; $i < $len; $i++) {
-            $result[] = DOM::parsePanelToArray(
+            $result[] = SetupDOM::parsePanelToArray(
                 $panels->item($i)
             );
         }
@@ -623,7 +623,7 @@ class XML
         $result = array();
 
         for ($i = 0; $i < $permission->length; $i++) {
-            $data = DOM::parsePermissionToArray(
+            $data = SetupDOM::parsePermissionToArray(
                 $permission->item($i)
             );
 
@@ -792,7 +792,7 @@ class XML
             return array();
         }
 
-        return DOM::getTabs($window->item(0));
+        return SetupDOM::getTabs($window->item(0));
     }
 
     /**
@@ -808,7 +808,7 @@ class XML
             return array();
         }
 
-        return DOM::getTabs($window->item(0));
+        return SetupDOM::getTabs($window->item(0));
     }
 
     /**
@@ -928,7 +928,7 @@ class XML
                 // widget on another location
                 if ($Widget->getAttribute('src')) {
                     $file   = $Widget->getAttribute('src');
-                    $file   = DOM::parseVar($file);
+                    $file   = SetupDOM::parseVar($file);
                     $Widget = self::getWidgetFromXml($file);
 
                     if ($Widget) {

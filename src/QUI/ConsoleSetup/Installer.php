@@ -6,6 +6,7 @@ use QUI\ConsoleSetup\Locale\Locale;
 use QUI\Exception;
 use QUI\Requirements\Requirements;
 use QUI\Requirements\TestResult;
+use QUI\Setup\Database\Database;
 use QUI\Setup\Setup;
 use QUI\Setup\SetupException;
 use QUI\Setup\Utils\Utils;
@@ -128,7 +129,6 @@ class Installer
                     break;
 
                 case TestResult::STATUS_UNKNOWN:
-                    $errors = true;
                     $this->writeLn("[{$statusHuman}] {$name}", null, COLOR_YELLOW);
                     break;
             }
@@ -263,23 +263,57 @@ class Installer
             true
         );
 
-        $createNew = $this->prompt(
-            self::getLocale()->getStringLang(
-                "prompt.database.createnew",
-                "Do you want to create a new databse or use an existing one? (y: Create new | n: use existing) :"
-            )
-        ) == "y" ? true : false;
 
+        // This part will prompt the user for a database name.
+        // If the given database does not exist, the user will be prompted if the database should be created.
+        // If he does not want to create the database he will be prompted for a new databasename
+        // That way he does not have to enter all the credentials again if he made a typo.
+        $createNew     = false;
+        $validDatabase = false;
+        while (!$validDatabase) {
+            # Ask for Database name
+            $db = $this->prompt(
+                self::getLocale()->getStringLang("prompt.database.db", "Database database name:"),
+                "quiqqer"
+            );
 
-        $db = $this->prompt(
-            self::getLocale()->getStringLang("prompt.database.db", "Database database name:"),
-            "quiqqer"
-        );
+            # Check if database exists
+            if (!Database::databaseExists($driver, $host, $user, $pw, $db)) {
+                if ($this->prompt(
+                    self::getLocale()->getStringLang(
+                        "prompt.database.createnew",
+                        "The given database does not exist, do you want to create it?"
+                    ),
+                    "y",
+                    COLOR_YELLOW,
+                    false,
+                    true
+                ) == "y"
+                ) {
+                    $createNew     = true;
+                    $validDatabase = true;
+                }
+            } else {
+                $validDatabase = true;
+            }
+        }
 
         $prefix = $this->prompt(
             self::getLocale()->getStringLang("prompt.database.prefix", "Database table prefix:"),
             ""
         );
+
+        # This will check if the database is empty and put out a warning if not
+        if (!Database::databaseIsEmpty($driver, $host, $user, $pw, $db, $prefix)) {
+            $this->writeLn(
+                self::getLocale()->getStringLang(
+                    "warning.database.not.empty",
+                    "The given database is not empty."
+                ),
+                self::LEVEL_WARNING
+            );
+        }
+
 
         $this->Setup->setDatabase($driver, $host, $db, $user, $pw, $port, $prefix, $createNew);
     }

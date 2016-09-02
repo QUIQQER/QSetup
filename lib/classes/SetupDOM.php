@@ -19,7 +19,7 @@ use QUI\Utils\Security\Orthos;
  * @author  www.pcsg.de (Henning Leutz)
  * @licence For copyright and license information, please view the /README.md
  */
-class DOM
+class SetupDOM
 {
     /**
      * Converts an array into an QUI\QDOM object
@@ -422,13 +422,13 @@ class DOM
 
         if (is_string($Object)) {
             if (file_exists($Object)) {
-                $tabs = XML::getTabsFromXml($Object);
+                $tabs = SetupXML::getTabsFromXml($Object);
             }
         } else {
             if (get_class($Object) === 'QUI\\Projects\\Project') {
                 /* @var $Object QUI\Projects\Project */
                 // tabs welche ein projekt zur Verfügung stellt
-                $tabs = XML::getTabsFromXml(
+                $tabs = SetupXML::getTabsFromXml(
                     USR_DIR . 'lib/' . $Object->getAttribute('name') . '/user.xml'
                 );
             } else {

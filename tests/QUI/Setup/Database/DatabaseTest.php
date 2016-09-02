@@ -3,7 +3,7 @@ namespace QUI\Setup;
 
 use PHPUnit\Framework\TestCase;
 use QUI\Setup\Database\Database;
-use QUI\Utils\XML;
+use QUI\Utils\SetupXML;
 
 /**
  * Created by PhpStorm.
@@ -60,7 +60,7 @@ class DatabaseTest extends TestCase
         $tablesXML = dirname(dirname(dirname(dirname(dirname(__FILE__))))) . "/xml/dev/database.xml";
         $this->assertFileExists($tablesXML);
 
-        $tables = XML::getDataBaseFromXml($tablesXML);
+        $tables = SetupXML::getDataBaseFromXml($tablesXML);
         $Database->importTables($tables);
 
         # Verify Completeness

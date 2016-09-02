@@ -66,6 +66,104 @@ class Database
         return \PDO::getAvailableDrivers();
     }
 
+    /**
+     * Checks if the given Database exists in the information_schema.
+     * @param $driver
+     * @param $host
+     * @param $user
+     * @param $pw
+     * @param $db
+     * @return bool - returns true if database exists, retuns false if database could not be found
+     * @throws SetupException
+     */
+    public static function databaseExists($driver, $host, $user, $pw, $db)
+    {
+        # Check for userdata
+        $dsn = self::getConnectionString($driver, $host, "information_schema");
+        try {
+            $pdo = new \PDO($dsn, $user, $pw);
+        } catch (\PDOException $Exception) {
+            throw new SetupException(
+                $Exception->getMessage(),
+                $Exception->getCode()
+            );
+        }
+
+        try {
+            switch (strtolower($driver)) {
+                case 'pgsql':
+                    // TODO TEST POSTGRESSQL DATABASE EXIXTS
+                case 'mysql':
+                    $sql  = "SELECT COUNT(*) FROM SCHEMATA WHERE SCHEMA_NAME=:dbname ;";
+                    $stmt = $pdo->prepare($sql);
+                    $stmt->bindParam(':dbname', $db);
+
+                    $stmt->execute();
+                    $result = $stmt->fetchColumn();
+
+                    if ($result == "1") {
+                        return true;
+                    }
+
+                    return false;
+                    break;
+            }
+        } catch (\PDOException $Exception) {
+            throw new SetupException(
+                $Exception->getMessage(),
+                $Exception->getCode()
+            );
+        }
+
+        return false;
+    }
+
+
+    public static function databaseIsEmpty($driver, $host, $user, $pw, $db, $prefix)
+    {
+        $prefix = $prefix . "%";
+
+        # Check for userdata
+        $dsn = self::getConnectionString($driver, $host, "information_schema");
+        try {
+            $pdo = new \PDO($dsn, $user, $pw);
+        } catch (\PDOException $Exception) {
+            throw new SetupException(
+                $Exception->getMessage(),
+                $Exception->getCode()
+            );
+        }
+
+        try {
+            switch (strtolower($driver)) {
+                case 'pgsql':
+                    // TODO TEST POSTGRESSQL DATABASE EXIXTS
+                case 'mysql':
+                    $sql  = "SELECT COUNT(*) FROM TABLES WHERE TABLE_SCHEMA=:dbname AND TABLE_NAME LIKE :prefix ;";
+                    $stmt = $pdo->prepare($sql);
+                    $stmt->bindParam(':dbname', $db);
+                    $stmt->bindParam(':prefix', $prefix);
+
+                    $stmt->execute();
+                    $result = $stmt->fetchColumn();
+
+                    if ($result == '0') {
+                        return true;
+                    }
+
+                    return false;
+                    break;
+            }
+        } catch (\PDOException $Exception) {
+            throw new SetupException(
+                $Exception->getMessage(),
+                $Exception->getCode()
+            );
+        }
+
+        return false;
+    }
+
     private static function getConnectionString($driver, $host, $db = "", $port = "")
     {
         $connectionString = $driver . ":host=" . $host;

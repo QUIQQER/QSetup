@@ -1,8 +1,8 @@
 <?php
 namespace QUI\Setup;
 
-require_once dirname(dirname(dirname(dirname(__FILE__)))) . "/lib/classes/DOM.php";
-require_once dirname(dirname(dirname(dirname(__FILE__)))) . "/lib/classes/XML.php";
+require_once dirname(dirname(dirname(dirname(__FILE__)))) . "/lib/classes/SetupDOM.php";
+require_once dirname(dirname(dirname(dirname(__FILE__)))) . "/lib/classes/SetupXML.php";
 
 use QUI;
 use QUI\Composer\Composer;
@@ -13,7 +13,7 @@ use QUI\Setup\Output\ConsoleOutput;
 use QUI\Setup\Output\WebOutput;
 use QUI\Setup\Utils\Utils;
 use QUI\Setup\Utils\Validator;
-use QUI\Utils\XML;
+use QUI\Utils\SetupXML;
 use QUI\Setup\Output\Interfaces\Output;
 use QUI\Database as QUIDB;
 
@@ -505,7 +505,6 @@ class Setup
         if ($this->mode == Setup::MODE_CLI && isset($this->data['template']) && !empty($this->data['template'])) {
             $applyPresetFile = dirname(dirname(__FILE__)) . '/ConsoleSetup/applyPresetCLI.php';
             $cmsDir          = CMS_DIR;
-            echo PHP_EOL . "php {$applyPresetFile} {$cmsDir} {$this->data['template']} {$this->setupLang}" . PHP_EOL;
             system("php {$applyPresetFile} {$cmsDir} {$this->data['template']} {$this->setupLang}");
         }
         $this->deleteSetupFiles();
@@ -528,6 +527,15 @@ class Setup
 
     public function applyPreset($presetName)
     {
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo "Starting Presets";
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
         # Get the template info
         $presets = self::getPresets();
 
@@ -540,7 +548,19 @@ class Setup
             return;
         }
 
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo "Validated";
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+
         $preset = $presets[$presetName];
+
+        print_r($preset);
 
         if ($preset == null || empty($preset)) {
             $this->Output->writeLn("Skipping preset : No preset set.");
@@ -554,12 +574,22 @@ class Setup
         # Project
         $projectname = isset($preset['project']['name']) ? $preset['project']['name'] : "";
         $languages   = isset($preset['project']['languages']) ? $preset['project']['languages'] : array();
-        echo "Langs :" . print_r($languages);
         #Template
         $templateName    = isset($preset['template']['name']) ? $preset['template']['name'] : "";
         $templateVersion = isset($preset['template']['version']) ? $preset['template']['version'] : "";
         $defaultLayout   = isset($preset['template']['default_layout']) ? $preset['template']['default_layout'] : "";
         $startLayout     = isset($preset['template']['start_layout']) ? $preset['template']['start_layout'] : "";
+
+
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo "Variables Set";
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
 
 
         # Packages
@@ -599,6 +629,17 @@ class Setup
             throw new SetupException("setup.filesystem.composerjson.not.found");
         }
 
+
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo "Repos added";
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+
         # Create project
         if (!empty($projectname)) {
             try {
@@ -617,6 +658,16 @@ class Setup
             }
         }
 
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo "Project created";
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+
         # Require Template and packages
         $Composer = new Composer(VAR_DIR . "composer/", VAR_DIR . "composer/");
         if (!empty($templateName)) {
@@ -628,35 +679,85 @@ class Setup
             $Composer->requirePackage($name, $version);
         }
 
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo "Packages installed";
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+
+        # Execute Quiqqersetup to activate new Plugins/translations etc.
+        QUI\Setup::all();
+
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo "1# Setup done";
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+
+        #Apply Configs to newly created project
         $config = array();
 
         # Add new languages if neccessary
         if ($projectname != null) {
             $config['langs'] = implode(',', $languages);
+            echo "Setting langs to " . implode(',', $languages) . PHP_EOL;
         }
 
         # Config main project to use new template
         if (!empty($templateName) && !empty($projectname)) {
             $config['template'] = $templateName;
+            echo "Setting template to " . $templateName . PHP_EOL;
         }
 
         # Set the default Layout
         if (!empty($templateName) && !empty($projectname) && !empty($defaultLayout)) {
             $config['layout'] = $defaultLayout;
+            echo "Setting layout to " . $defaultLayout . PHP_EOL;
         }
 
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo "Config";
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+
+        echo PHP_EOL . "========Config========" . PHP_EOL;
+        print_r($config);
+        echo PHP_EOL . "======================" . PHP_EOL;
+
         if (!empty($config)) {
+            echo "Applying Config to project " . $projectname . PHP_EOL;
+            QUI::getProjectManager()->setConfigForProject($projectname, $config);
             QUI::getProjectManager()->setConfigForProject($projectname, $config);
         }
 
-        # Execute Quiqqersetup to activate new Plugins/translations etc.
-        QUI\Setup::all();
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo "Config applied";
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
 
         # Set the Mainpage Layout
         if (!empty($templateName) && !empty($projectname) && !empty($startLayout)) {
             echo "Set Pagelayout : " . $templateName . " : " . $defaultLayout . " : " . $projectname . PHP_EOL;
 
-            QUI::getProjectManager()->getConfig()->reload();
+            #QUI::getProjectManager()->getConfig()->reload();
 
             foreach ($languages as $lang) {
                 echo "Set Pagelayout lang : " . $lang . $templateName . " : " . $defaultLayout . " : " . $projectname . PHP_EOL;
@@ -667,6 +768,29 @@ class Setup
                 $Edit->activate();
             }
         }
+
+
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo "page layout done";
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+
+        QUI\Setup::all();
+
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo "#2 Setup";
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
 
         $this->Step = Setup::STEP_SETUP_PRESET;
     }
@@ -731,7 +855,7 @@ class Setup
                 );
             }
         }
-        $this->Database->importTables(XML::getDataBaseFromXml($xmlFile));
+        $this->Database->importTables(SetupXML::getDataBaseFromXml($xmlFile));
 
         $this->Step = Setup::STEP_SETUP_DATABASE;
     }
@@ -1150,6 +1274,11 @@ class Setup
         QUI\Translator::setup();
 
         QUI\Setup::all();
+
+
+        $Defaults = new QUI\System\Console\Tools\Defaults();
+        $Defaults->execute();
+
 
         $this->Step = Setup::STEP_SETUP_QUIQQERSETUP;
     }

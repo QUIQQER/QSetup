@@ -28,7 +28,7 @@ class Utils
 
         $dirHandle = opendir($dir);
         while (($entry = readdir($dirHandle)) !== false) {
-            if ($entry != '.' && $entry != '.') {
+            if ($entry != '.' && $entry != '..') {
                 return false;
             }
         }

@@ -44,7 +44,7 @@ msgid "prompt.database.db"
 msgstr "Datenbank Name : "
 
 msgid "prompt.database.createnew"
-msgstr "Quiqqer kann versuchen die gewünschte Datenbank zu erstellen. \nFalls Sie dies wünschen geben Sie bitte 'y' ein. \nFalls nicht, geben sie bitte 'n' ein : "
+msgstr "Die angegebene Datenbank existiert nicht. Soll Quiqqer versuchen sie zu erstellen? (Y/n)"
 
 msgid "prompt.database.prefix"
 msgstr "Datenbank Tabellen-prefix: "

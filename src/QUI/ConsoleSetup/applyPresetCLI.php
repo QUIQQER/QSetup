@@ -4,10 +4,6 @@ if (!defined('QUIQQER_SYSTEM')) {
     define('QUIQQER_SYSTEM', true);
 }
 
-if (!defined('SYSTEM_INTERN')) {
-    define('SYSTEM_INTERN', true);
-}
-
 $args = array_slice($argv, 1);
 
 // Parameter
@@ -44,7 +40,6 @@ QUI::getUsers()->login(
     $User->getUsername(),
     "admin"
 );
-
 
 
 $Setup = new QUI\Setup\Setup(QUI\Setup\Setup::MODE_CLI);

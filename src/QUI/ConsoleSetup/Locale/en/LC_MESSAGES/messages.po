@@ -1,0 +1,92 @@
+msgid "message.step.language"
+msgstr "Language settings"
+
+msgid "prompt.language"
+msgstr "Please enter the main language for quiqqer: "
+
+msgid "message.step.requirements"
+msgstr "System requirements"
+
+msgid "message.step.version"
+msgstr "Version selection"
+
+msgid "prompt.version"
+msgstr "Please enter the version of Quieer that should be installed: "
+
+msgid "message.preset.available"
+msgstr "Following presets can be selected: "
+
+msgid "message.step.template"
+msgstr "Preset selection"
+
+msgid "prompt.template"
+msgstr "Please enter the name of the preset you want to use: "
+
+msgid "message.step.database"
+msgstr "Database settings"
+
+msgid "prompt.database.driver"
+msgstr "Database driver :"
+
+msgid "prompt.database.host"
+msgstr "Database host :"
+
+msgid "prompt.database.port"
+msgstr "Database port: "
+
+msgid "prompt.database.user"
+msgstr "Database user: "
+
+msgid "prompt.database.pw"
+msgstr "Database password: "
+
+msgid "prompt.database.db"
+msgstr "Database databasename : "
+
+msgid "prompt.database.createnew"
+msgstr "The given database does not exist. Do you want Quiqqer to try and create it? (y/n)"
+
+msgid "prompt.database.prefix"
+msgstr "Database table prefix: "
+
+msgid "message.step.superuser"
+msgstr "Admin user"
+
+msgid "prompt.user"
+msgstr "Username: "
+
+msgid "prompt.password"
+msgstr "Password: "
+
+msgid "message.step.paths"
+msgstr "Pathsettings"
+
+msgid "prompt.host"
+msgstr "URL : "
+
+msgid "prompt.cms"
+msgstr "Installation directory: "
+
+msgid "prompt.url"
+msgstr "Subdirectory after host "
+
+msgid "exception.validation.version.invalid"
+msgstr "The given version is not valid."
+
+msgid "message.step.setup"
+msgstr "Executing Setup"
+
+msgid "setup.message.finished.header"
+msgstr "Setup finished"
+
+msgid "setup.message.finished.text"
+msgstr "Setup finished successfully. You can now open your website."
+
+msgid "prompt.password.again"
+msgstr "Please enter your password again: "
+
+msgid "setup.warning.dir.not.empty"
+msgstr "The given directory is not empty!"
+
+msgid "setup.prompt.dir.not.empty"
+msgstr "Do you want to continue anyway? (y/n) "

@@ -28,7 +28,7 @@ class Installer
     private $Setup;
     private static $Config;
     /** @var  Locale $Locale */
-    private static $Locale;
+    private $Locale;
 
     const LEVEL_DEBUG = 0;
     const LEVEL_INFO = 1;
@@ -43,6 +43,7 @@ class Installer
     {
         $this->Setup = new Setup(Setup::MODE_CLI);
         $this->Setup->setSetupLanguage("en_GB");
+        $this->Locale = new Locale('en_GB');
     }
 
     /**
@@ -70,18 +71,6 @@ class Installer
     }
 
 
-    /**
-     * Returns the current locale object
-     * @return Locale - The current Locale object
-     */
-    public static function getLocale()
-    {
-        if (!isset(self::$Locale) || self::$Locale == null) {
-            self::$Locale = new Locale('en_GB');
-        }
-
-        return self::$Locale;
-    }
 
     #region STEPS
     /**
@@ -93,7 +82,7 @@ class Installer
         $lang = $this->prompt("Please select a Language for the Setupprocess (de_DE/en_GB) :", "de_DE", COLOR_PURPLE);
         try {
             $this->Setup->setSetupLanguage($lang);
-            self::getLocale()->setLanguage($lang);
+            $this->Locale->setLanguage($lang);
         } catch (Exception $e) {
             $this->writeLn($e->getMessage(), self::LEVEL_CRITICAL);
             exit;
@@ -106,7 +95,7 @@ class Installer
     private function stepCheckRequirements()
     {
         $this->echoSectionHeader(
-            self::getLocale()->getStringLang("message.step.requirements", "Requirements")
+            $this->Locale->getStringLang("message.step.requirements", "Requirements")
         );
         $results = Requirements::runAll();
 
@@ -135,7 +124,7 @@ class Installer
 
             if ($errors) {
                 $continue = $this->prompt(
-                    self::getLocale()->getStringLang(
+                    $this->Locale->getStringLang(
                         "prompt.requirements.continue",
                         "Not all Requirements could be met. If you still want to continue, we can not guaruantee the functionality of QUIQQER. Continue anyway? (y/n)"
                     ),
@@ -158,10 +147,10 @@ class Installer
     private function stepLanguage()
     {
         $this->echoSectionHeader(
-            self::getLocale()->getStringLang("message.step.language", "Language")
+            $this->Locale->getStringLang("message.step.language", "Language")
         );
         $lang = $this->prompt(
-            self::getLocale()->getStringLang("prompt.language", "Please enter your desired language :"),
+            $this->Locale->getStringLang("prompt.language", "Please enter your desired language :"),
             "de"
         );
 
@@ -177,10 +166,10 @@ class Installer
     private function stepVersion()
     {
         $this->echoSectionHeader(
-            self::getLocale()->getStringLang("message.step.version", "Version")
+            $this->Locale->getStringLang("message.step.version", "Version")
         );
         $version = $this->prompt(
-            self::getLocale()->getStringLang("prompt.version", "Please enter a version"),
+            $this->Locale->getStringLang("prompt.version", "Please enter a version"),
             "dev-master"
         );
 
@@ -189,7 +178,7 @@ class Installer
             $this->Setup->setVersion($version);
         } catch (SetupException $Exception) {
             $this->writeLn(
-                self::getLocale()->getStringLang($Exception->getMessage()),
+                $this->Locale->getStringLang($Exception->getMessage()),
                 self::LEVEL_WARNING
             );
             $this->stepVersion();
@@ -210,14 +199,14 @@ class Installer
         $presetString = trim($presetString, " ,");
 
         $this->echoSectionHeader(
-            self::getLocale()->getStringLang("message.step.template", "Preset")
+            $this->Locale->getStringLang("message.step.template", "Preset")
         );
         $this->writeLn(
-            self::getLocale()->getStringLang("message.preset.available", "Available presets: ") . $presetString,
+            $this->Locale->getStringLang("message.preset.available", "Available presets: ") . $presetString,
             self::LEVEL_INFO
         );
         $template = $this->prompt(
-            self::getLocale()->getStringLang("prompt.template", "Select one"),
+            $this->Locale->getStringLang("prompt.template", "Select one"),
             "default",
             null,
             false,
@@ -233,31 +222,31 @@ class Installer
     private function stepDatabase()
     {
         $this->echoSectionHeader(
-            self::getLocale()->getStringLang("message.step.database", "Database settings")
+            $this->Locale->getStringLang("message.step.database", "Database settings")
         );
 
         $driver = $this->prompt(
-            self::getLocale()->getStringLang("prompt.database.driver", "Database driver:"),
+            $this->Locale->getStringLang("prompt.database.driver", "Database driver:"),
             "mysql"
         );
 
         $host = $this->prompt(
-            self::getLocale()->getStringLang("prompt.database.host", "Database host:"),
+            $this->Locale->getStringLang("prompt.database.host", "Database host:"),
             "localhost"
         );
 
         $port = $this->prompt(
-            self::getLocale()->getStringLang("prompt.database.port", "Database port:"),
+            $this->Locale->getStringLang("prompt.database.port", "Database port:"),
             "3306"
         );
 
 
         $user = $this->prompt(
-            self::getLocale()->getStringLang("prompt.database.user", "Database user:")
+            $this->Locale->getStringLang("prompt.database.user", "Database user:")
         );
 
         $pw = $this->prompt(
-            self::getLocale()->getStringLang("prompt.database.pw", "Database pw:"),
+            $this->Locale->getStringLang("prompt.database.pw", "Database pw:"),
             false,
             null,
             true
@@ -273,22 +262,22 @@ class Installer
         while (!$validDatabase) {
             # Ask for Database name
             $db = $this->prompt(
-                self::getLocale()->getStringLang("prompt.database.db", "Database database name:"),
+                $this->Locale->getStringLang("prompt.database.db", "Database database name:"),
                 "quiqqer"
             );
 
             # Check if database exists
             if (!Database::databaseExists($driver, $host, $user, $pw, $db)) {
                 if ($this->prompt(
-                    self::getLocale()->getStringLang(
-                        "prompt.database.createnew",
-                        "The given database does not exist, do you want to create it?"
-                    ),
-                    "y",
-                    COLOR_YELLOW,
-                    false,
-                    true
-                ) == "y"
+                        $this->Locale->getStringLang(
+                            "prompt.database.createnew",
+                            "The given database does not exist, do you want to create it?"
+                        ),
+                        "y",
+                        COLOR_YELLOW,
+                        false,
+                        true
+                    ) == "y"
                 ) {
                     $createNew     = true;
                     $validDatabase = true;
@@ -299,14 +288,14 @@ class Installer
         }
 
         $prefix = $this->prompt(
-            self::getLocale()->getStringLang("prompt.database.prefix", "Database table prefix:"),
+            $this->Locale->getStringLang("prompt.database.prefix", "Database table prefix:"),
             ""
         );
 
         # This will check if the database is empty and put out a warning if not
         if (!Database::databaseIsEmpty($driver, $host, $user, $pw, $db, $prefix)) {
             $this->writeLn(
-                self::getLocale()->getStringLang(
+                $this->Locale->getStringLang(
                     "warning.database.not.empty",
                     "The given database is not empty."
                 ),
@@ -323,10 +312,10 @@ class Installer
      */
     private function stepUser()
     {
-        $this->echoSectionHeader(self::getLocale()->getStringLang("message.step.superuser", "Superuser settings"));
+        $this->echoSectionHeader($this->Locale->getStringLang("message.step.superuser", "Superuser settings"));
 
         $user = $this->prompt(
-            self::getLocale()->getStringLang("prompt.user", "Please enter an username :"),
+            $this->Locale->getStringLang("prompt.user", "Please enter an username :"),
             Setup::getConfig()['defaults']['username']
         );
 
@@ -334,14 +323,14 @@ class Installer
         $pwMatch = false;
         while ($pwMatch == false) {
             $pw = $this->prompt(
-                self::getLocale()->getStringLang("prompt.password", "Please enter a password :"),
+                $this->Locale->getStringLang("prompt.password", "Please enter a password :"),
                 false,
                 null,
                 true
             );
 
             $pw2 = $this->prompt(
-                self::getLocale()->getStringLang("prompt.password.again", "Please enter your password again :"),
+                $this->Locale->getStringLang("prompt.password.again", "Please enter your password again :"),
                 false,
                 null,
                 true
@@ -351,7 +340,7 @@ class Installer
                 $pwMatch = true;
             } else {
                 $this->writeLn(
-                    self::getLocale()->getStringLang(
+                    $this->Locale->getStringLang(
                         "setup.warning.password.missmatch",
                         "Passwords do not match. Please try again."
                     ),
@@ -365,7 +354,7 @@ class Installer
             $this->Setup->setUser($user, $pw);
         } catch (SetupException $Exception) {
             $this->writeLn(
-                self::getLocale()->getStringLang($Exception->getMessage()),
+                $this->Locale->getStringLang($Exception->getMessage()),
                 self::LEVEL_WARNING
             );
             $this->stepUser();
@@ -378,11 +367,11 @@ class Installer
     private function stepPaths()
     {
         $this->echoSectionHeader(
-            self::getLocale()->getStringLang("message.step.paths", "Pathsettings")
+            $this->Locale->getStringLang("message.step.paths", "Pathsettings")
         );
 
         $host = $this->prompt(
-            self::getLocale()->getStringLang("prompt.host", "Hostname : ")
+            $this->Locale->getStringLang("prompt.host", "Hostname : ")
         );
 
 
@@ -394,14 +383,14 @@ class Installer
 
         while ($continue) {
             $cmsDir = $this->prompt(
-                self::getLocale()->getStringLang("prompt.cms", "CMS Directory : "),
+                $this->Locale->getStringLang("prompt.cms", "CMS Directory : "),
                 dirname(dirname(dirname(dirname(__FILE__))))
             );
 
             # Check if Directory is empty
             if (!Utils::isDirEmpty($cmsDir)) {
                 $this->writeLn(
-                    self::getLocale()->getStringLang(
+                    $this->Locale->getStringLang(
                         "setup.warning.dir.not.empty",
                         "The chosen directory is not empty. Existing Files may be overwritten during the setup process!"
                     ),
@@ -409,7 +398,7 @@ class Installer
                 );
 
                 $answer = $this->prompt(
-                    self::getLocale()->getStringLang(
+                    $this->Locale->getStringLang(
                         "setup.prompt.dir.not.empty",
                         "Enter 'y' to continue anyways?"
                     ),
@@ -430,7 +419,7 @@ class Installer
 
 
         $urlDir = $this->prompt(
-            self::getLocale()->getStringLang("prompt.url", "Url Directory : "),
+            $this->Locale->getStringLang("prompt.url", "Url Directory : "),
             "/"
         );
 
@@ -438,7 +427,7 @@ class Installer
             $this->Setup->setPaths($host, $cmsDir, $urlDir);
         } catch (SetupException $Exception) {
             $this->writeLn(
-                self::getLocale()->getStringLang($Exception->getMessage())
+                $this->Locale->getStringLang($Exception->getMessage())
             );
             $this->stepPaths();
         }
@@ -449,7 +438,7 @@ class Installer
      */
     private function setup()
     {
-        $this->echoSectionHeader(self::getLocale()->getStringLang("message.step.setup", "Executing Setup : "));
+        $this->echoSectionHeader($this->Locale->getStringLang("message.step.setup", "Executing Setup : "));
         $this->Setup->runSetup();
     }
 
@@ -457,7 +446,7 @@ class Installer
     private function stepFinish()
     {
         $this->writeLn(
-            " --- " . self::getLocale()->getStringLang(
+            " --- " . $this->Locale->getStringLang(
                 "setup.message.finished.header",
                 "Setup finished"
             ) . " --- ",
@@ -491,7 +480,7 @@ SMILEY;
         $this->writeLn($emoticon, null, COLOR_GREEN);
 
         $this->writeLn(
-            self::getLocale()->getStringLang("setup.message.finished.text", "Setup finished"),
+            $this->Locale->getStringLang("setup.message.finished.text", "Setup finished"),
             self::LEVEL_INFO,
             COLOR_GREEN
         );
@@ -665,7 +654,7 @@ SMILEY;
     private function echoDecorationCoffe()
     {
         $this->writeLn(
-            self::getLocale()->getStringLang(
+            $this->Locale->getStringLang(
                 "messages.decorative.coffeetime",
                 "Almost done. Perfect time for a new : "
             ),

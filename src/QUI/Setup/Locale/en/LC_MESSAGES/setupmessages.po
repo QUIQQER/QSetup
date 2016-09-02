@@ -1,11 +1,6 @@
-msgid "hello"
-msgstr "Hello"
-
 msgid "setup.message.step.database"
 msgstr "Preparing Database"
 
-msgid "setup.language.set.success"
-msgstr "Language has been changed successfully"
 
 msgid "setup.message.step.start"
 msgstr "Setup executing"
@@ -48,3 +43,69 @@ msgstr "Could not create the composer.json file"
 
 msgid "setup.filesystem.file.notwriteable"
 msgstr "Could not write file"
+
+msgid "setup.language.set.success"
+msgstr "Setup is now using the language : "
+
+msgid "data.missing.lang"
+msgstr "Missing data: language"
+
+msgid "data.missing.version"
+msgstr "Missing data : version"
+
+msgid "data.missing.template"
+msgstr "Missing Data : template"
+
+msgid "data.missing.database.driver"
+msgstr "Missing Data : database driver"
+
+msgid "data.missing.database.host"
+msgstr "Missing Data : database host"
+
+msgid "data.missing.database.user"
+msgstr "Missing Data : database user name"
+
+msgid "data.missing.database.pw"
+msgstr "Missing Data : database user password"
+
+msgid "data.missing.database.db"
+msgstr "Missing Data : database databasename"
+
+msgid "data.missing.database.prefix"
+msgstr "Missing Data : database prefix"
+
+msgid "data.missing.user.name"
+msgstr "Missing Data : adminuser name"
+
+msgid "data.missing.user.pw"
+msgstr "Missing Data : adminuser password"
+
+msgid "data.missing.paths.host"
+msgstr "Missing Data : host"
+
+msgid "data.missing.paths.cms_dir"
+msgstr "Missing Data : path CMS_DIR"
+
+msgid "data.missing.paths.lib_dir"
+msgstr "Missing Data : path LIB_DIR"
+
+msgid "data.missing.paths.usr_dir"
+msgstr "Missing Data : path USR_DIR"
+
+msgid "data.missing.paths.url_dir"
+msgstr "Missing Data : path URL_DIR"
+
+msgid "data.missing.paths.bin_dir"
+msgstr "Missing Data : path BIN_DIR"
+
+msgid "data.missing.paths.opt_dir"
+msgstr "Missing Data : path OPT_DIR"
+
+msgid "data.missing.paths.var_dir"
+msgstr "Missing Data : path VAR_DIR"
+
+msgid "database.no.database.selected"
+msgstr "Can not start database operations because no database was selected"
+
+msgid "setup.exception.validation.preset"
+msgstr "The given preset is not valid"

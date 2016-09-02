@@ -62,7 +62,7 @@ msgid "message.step.paths"
 msgstr "Pfadeinstellungen"
 
 msgid "prompt.host"
-msgstr "Der Host unter der, Quiqqer erreichbar sein soll: "
+msgstr "Der Host, unter dem Quiqqer erreichbar sein soll: "
 
 msgid "prompt.cms"
 msgstr "Das Verzeichnis, indem Quiqqer installiert wird: "
@@ -81,3 +81,12 @@ msgstr "Setup beendet"
 
 msgid "setup.message.finished.text"
 msgstr "Setup erfolgreich beendet. Sie können ihre Webseite nun aufrufen."
+
+msgid "prompt.password.again"
+msgstr "Bitte geben Sie ihr Passwort erneut ein: "
+
+msgid "setup.warning.dir.not.empty"
+msgstr "Das angegebe Verzeichnis ist nicht leer! Möglicherweise werden Dateien überschrieben!"
+
+msgid "setup.prompt.dir.not.empty"
+msgstr "Möchten Sie trotzdem fortfahren? (y/n) "

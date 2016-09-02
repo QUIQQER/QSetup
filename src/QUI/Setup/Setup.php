@@ -289,6 +289,7 @@ class Setup
 
     /**
      * Sets the database driver details
+     *
      * @param string $dbDriver
      * @param string $dbHost
      * @param string $dbName

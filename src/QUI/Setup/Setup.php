@@ -726,7 +726,7 @@ class Setup
     public function storeSetupState()
     {
         if (!is_dir($this->tmpDir)) {
-            mkdir($this->tmpDir);
+            mkdir($this->tmpDir, 0744, true);
         }
 
         $data = array(

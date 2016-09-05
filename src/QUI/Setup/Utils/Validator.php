@@ -138,7 +138,7 @@ class Validator
         try {
             Database::checkCredentials($dbDriver, $dbHost, $dbUser, $dbPw, $dbName);
 
-            if (!Database::databaseExists($dbDriver, $dbHost, $dbUser, $dbPw, $dbName)) {
+            if (!empty($dbName) && !Database::databaseExists($dbDriver, $dbHost, $dbUser, $dbPw, $dbName)) {
                 throw new SetupException("setup.validation.database.not.exists");
             }
         } catch (SetupException $Exception) {
@@ -266,30 +266,6 @@ class Validator
 
         if (substr($paths['url_dir'], 0, 1) != "/") {
             throw new SetupException("exception.validation.leadingslash.missing");
-        }
-
-
-        # Check if all filesystem paths exist
-
-        # var_dir
-        try {
-            Validator::validatePath($paths['var_dir']);
-        } catch (\Exception $Exception) {
-            throw new SetupException("setup.validation.var_dir.not.exists");
-        }
-
-        # usr_dir
-        try {
-            Validator::validatePath($paths['usr_dir']);
-        } catch (\Exception  $Exception) {
-            throw new SetupException("setup.validation.usr_dir.not.exists");
-        }
-
-        # opt_dir
-        try {
-            Validator::validatePath($paths['opt_dir']);
-        } catch (\Exception  $Exception) {
-            throw new SetupException("setup.validation.opt_dir.not.exists");
         }
     }
 

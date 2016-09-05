@@ -75,6 +75,7 @@ class Setup
     private $tablePermissions2Groups;
 
     private $baseDir;
+    private $tmpDir;
     # ----------------
     # Init
     # ----------------
@@ -101,7 +102,7 @@ class Setup
             'host'       => "",
             'user'       => "",
             'pw'         => "",
-            'db'         => "",
+            'name'         => "",
             'prefix'     => "",
         ),
         'user'     => array(
@@ -133,6 +134,8 @@ class Setup
      */
     public function __construct($mode)
     {
+        $this->tmpDir = dirname(dirname(dirname(dirname(__FILE__)))) . '/var/tmp/';
+
         $this->Locale = new Locale("en_GB");
 
         $this->baseDir = dirname(dirname(dirname(dirname(__FILE__))));
@@ -313,9 +316,9 @@ class Setup
 
         $this->data['database']['driver']     = $dbDriver;
         $this->data['database']['host']       = $dbHost;
-        $this->data['database']['name']       = $dbName;
         $this->data['database']['user']       = $dbUser;
         $this->data['database']['pw']         = $dbPw;
+        $this->data['database']['name']         = $dbName;
         $this->data['database']['port']       = $dbPort;
         $this->data['database']['prefix']     = $dbPrefix;
         $this->data['database']['create_new'] = $createNew;
@@ -510,21 +513,12 @@ class Setup
         $this->deleteSetupFiles();
     }
 
-    public function restoreData()
-    {
-        if (file_exists(VAR_DIR . 'tmp/setup.json')) {
-            $json = file_get_contents(VAR_DIR . 'tmp/setup.json');
-            $data = json_decode($json, true);
-            if (json_last_error() == JSON_ERROR_NONE) {
-                if (key_exists('data', $data)) {
-                    $this->data = $data['data'];
-                }
-            } else {
-                $this->Output->writeLn("Json Error : " . json_last_error_msg());
-            }
-        }
-    }
 
+    /**
+     * Applies a preset to an already setup Quiqqer installation
+     * @param $presetName - The name of the preset
+     * @throws SetupException
+     */
     public function applyPreset($presetName)
     {
         # Get the template info
@@ -669,16 +663,108 @@ class Setup
         $this->Step = Setup::STEP_SETUP_PRESET;
     }
 
+    # region Datarestoration
+
+    /**
+     * Restores Data from a temporary file.
+     * This can be used after the Setup has been cancelled.
+     */
+    public function restoreData()
+    {
+        if (file_exists($this->tmpDir . "setup.json")) {
+            $json = file_get_contents($this->tmpDir . "setup.json");
+            $data = json_decode($json, true);
+            if (json_last_error() == JSON_ERROR_NONE) {
+                if (key_exists('data', $data)) {
+                    $this->data = $data['data'];
+                }
+
+                if (key_exists('step', $data)) {
+                    $this->Step = $data['step'];
+                }
+
+                if (key_exists('stepsum', $data)) {
+                    $this->stepSum = $data['stepsum'];
+                }
+            } else {
+                $this->Output->writeLn("Json Error : " . json_last_error_msg());
+            }
+        }
+    }
+
+    /**
+     * Stores the current setup state into a file on the filesystem.
+     * This allows the continuation after a setup error.
+     */
+    public function storeSetupState()
+    {
+        if (!is_dir($this->tmpDir)) {
+            mkdir($this->tmpDir);
+        }
+
+        $data = array(
+            'step'    => $this->Step,
+            'data'    => $this->data,
+            'stepsum' => $this->stepSum
+        );
+        $json = json_encode($data, JSON_PRETTY_PRINT);
+        file_put_contents($this->tmpDir . "setup.json", $json);
+    }
+
+
+    /**
+     * This will try to retrieve the data stored by the setup.
+     * It is used to continue the setup after an unexpected error.
+     * Returns an array with all neccessary data or null if no data could be restored
+     * @return array|null
+     */
+    public function getRestorableData()
+    {
+        if (file_exists($this->tmpDir . "setup.json")) {
+            $json = file_get_contents($this->tmpDir . "setup.json");
+            $data = json_decode($json, true);
+            if (json_last_error() == JSON_ERROR_NONE) {
+                return $data;
+            }
+
+            return null;
+        }
+
+        return null;
+    }
+
+    /**
+     * Checks if restorable data exists.
+     * @return bool - True if data exists and false if no data has been found
+     */
+    public function checkRestorableData()
+    {
+        if (file_exists($this->tmpDir . "setup.json")) {
+            return true;
+        }
+
+        return false;
+    }
+
     public function rollBack()
     {
         // TODO ROLLBACK
     }
+
+    #endregion
+
 
     // ************************************************** //
     // Private - Setup Functions
     // ************************************************** //
 
     #region Steps
+
+    /**
+     * Creates the neccessary tables
+     *
+     * @throws SetupException
+     */
     private function setupDatabase()
     {
         if ($this->Step != Setup::STEP_DATA_COMPLETE) {
@@ -734,6 +820,10 @@ class Setup
         $this->Step = Setup::STEP_SETUP_DATABASE;
     }
 
+    /**
+     * Creates the Admin user and the admin group.
+     * Will also define the salt used for this installation.
+     */
     private function setupUser()
     {
         # Contraint to ensure correct setup order.
@@ -807,6 +897,11 @@ class Setup
         $this->Step = Setup::STEP_SETUP_USER;
     }
 
+    /**
+     * This will create all neccessary paths and config files.
+     * Will also define PATH constants
+     * @throws SetupException
+     */
     private function setupPaths()
     {
         # Contraint to ensure correct setup order.
@@ -963,6 +1058,10 @@ class Setup
         $this->Step = Setup::STEP_SETUP_PATHS;
     }
 
+    /**
+     * Will spawn Composer and require  quiqqer/quiqqer
+     * @throws SetupException
+     */
     private function setupComposer()
     {
         # Contraint to ensure correct setup order.
@@ -1031,6 +1130,9 @@ class Setup
         $this->Step = Setup::STEP_SETUP_COMPOSER;
     }
 
+    /**
+     * This will create the bootstrap files to launch quiqqer
+     */
     private function setupBootstrapFiles()
     {
         # Contraint to ensure correct setup order.
@@ -1094,6 +1196,9 @@ class Setup
         $this->Step = Setup::STEP_SETUP_BOOTSTRAP;
     }
 
+    /**
+     * Executes the Quiqqer Setups
+     */
     private function executeQuiqqerSetups()
     {
         # Contraint to ensure correct setup order.
@@ -1157,6 +1262,9 @@ class Setup
         $this->Step = Setup::STEP_SETUP_QUIQQERSETUP;
     }
 
+    /**
+     * Deletes all setup files
+     */
     private function deleteSetupFiles()
     {
         # Contraint to ensure correct setup order.
@@ -1192,8 +1300,8 @@ class Setup
         }
 
         # Move directories to
-        // TODO Check directories again
-        $dirs = array();
+
+        $dirs = array('src','lib','xml','templates','vendor');
         foreach ($dirs as $dir) {
             if (is_dir(CMS_DIR . $dir)) {
                 rename(
@@ -1206,6 +1314,9 @@ class Setup
         $this->Step = Setup::STEP_SETUP_DELETE;
     }
 
+    /**
+     * This will execute the Checks provided by the system
+     */
     private function executeQuiqqerChecks()
     {
         # Contraint to ensure correct setup order.
@@ -1230,23 +1341,6 @@ class Setup
     // ************************************************** //
     // Private - Helper Functions
     // ************************************************** //
-
-    /**
-     * Stores the current setup state into a file on the filesystem.
-     * This allows the continuation after a setup error.
-     */
-    private function storeSetupState()
-    {
-        if (!is_dir(VAR_DIR . 'tmp')) {
-            mkdir(VAR_DIR . 'tmp');
-        }
-
-        $data = array(
-            'data' => $this->data
-        );
-        $json = json_encode($data, JSON_PRETTY_PRINT);
-        file_put_contents(VAR_DIR . 'tmp/setup.json', $json);
-    }
 
 
     /**

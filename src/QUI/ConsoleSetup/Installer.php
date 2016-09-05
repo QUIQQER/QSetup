@@ -27,7 +27,7 @@ class Installer
 {
     /** @var Setup $Setup */
     private $Setup;
-    private static $Config;
+
     /** @var  Locale $Locale */
     private $Locale;
 
@@ -56,15 +56,66 @@ class Installer
     public function execute()
     {
         $this->echoSetupHeader();
-
         $this->stepSetupLanguage();
-        $this->stepCheckRequirements();
-        $this->stepLanguage();
-        $this->stepVersion();
-        $this->stepPreset();
-        $this->stepDatabase();
-        $this->stepUser();
-        $this->stepPaths();
+
+        # Check if we can restore any data from a previous setup which might have been cancelled or interrupted
+        if ($this->Setup->checkRestorableData()) {
+            $this->writeLn(
+                $this->Locale->getStringLang("setup.restored.data.found", "The setup found restorable data : "),
+                self::LEVEL_INFO
+            );
+
+
+            $data = $this->Setup->getRestorableData();
+            $this->echoRestorableData($data);
+
+            # Check if the suer wants to continue with the restored data
+            $continuePrompt = $this->prompt(
+                $this->Locale->getStringLang(
+                    "setup.prompt.continue.restored.data",
+                    "Do you want to continue with the restorable data? (y/n)"
+                ),
+                false,
+                null,
+                false,
+                true,
+                false
+            );
+
+            # Exit Setup if user does not want to continue with restored data
+            if ($continuePrompt != "y") {
+                exit;
+            }
+
+            $this->Setup->restoreData();
+
+            switch ($data['step']) {
+                case Setup::STEP_INIT:
+                    $this->stepVersion();
+                // no break
+                case Setup::STEP_DATA_VERSION:
+                    $this->stepPreset();
+                // no break
+                case Setup::STEP_DATA_PRESET:
+                    $this->stepDatabase();
+                // no break
+                case Setup::STEP_DATA_DATABASE:
+                    $this->stepUser();
+                // no break
+                case Setup::STEP_DATA_USER:
+                    $this->stepPaths();
+                // no break
+            }
+        } else {
+            $this->stepCheckRequirements();
+            $this->stepLanguage();
+            $this->stepVersion();
+            $this->stepPreset();
+            $this->stepDatabase();
+            $this->stepUser();
+            $this->stepPaths();
+        }
+
 
         $this->echoDecorationCoffe();
         $this->setup();
@@ -148,6 +199,8 @@ class Installer
                 }
             }
         }
+
+        $this->Setup->storeSetupState();
     }
 
     /**
@@ -167,6 +220,8 @@ class Installer
             $this->Setup->setLanguage($lang);
         } catch (SetupException $Exception) {
         }
+
+        $this->Setup->storeSetupState();
     }
 
     /**
@@ -193,6 +248,8 @@ class Installer
 
             return $this->stepVersion();
         }
+
+        $this->Setup->storeSetupState();
     }
 
     /**
@@ -224,6 +281,7 @@ class Installer
         );
 
         $this->Setup->setPreset($template);
+        $this->Setup->storeSetupState();
     }
 
     /**
@@ -333,6 +391,7 @@ class Installer
 
 
         $this->Setup->setDatabase($driver, $host, $db, $user, $pw, $port, $prefix, $createNew);
+        $this->Setup->storeSetupState();
     }
 
     /**
@@ -387,6 +446,8 @@ class Installer
             );
             $this->stepUser();
         }
+
+        $this->Setup->storeSetupState();
     }
 
     /**
@@ -470,6 +531,8 @@ class Installer
             );
             $this->stepPaths();
         }
+
+        $this->Setup->storeSetupState();
     }
 
     /**
@@ -756,5 +819,134 @@ HEADER;
 
         $this->writeLn($header, null, COLOR_GREEN);
     }
+
     #endregion
+
+
+    private function echoRestorableData($data)
+    {
+        $setupData = $data['data'];
+
+        print_r($data);
+
+        # Saved Quiqqer Language
+        if (key_exists('lang', $setupData)) {
+            $this->writeLn(
+                $this->Locale->getStringLang("setup.restored.data.lang", "Language :") . $setupData['lang'],
+                self::LEVEL_INFO
+            );
+        }
+
+        # Saved Quiqqer Version
+        if (key_exists('version', $setupData) && !empty($setupData['version'])) {
+            $this->writeLn(
+                $this->Locale->getStringLang("setup.restored.data.version", "Version :") . $setupData['version'],
+                self::LEVEL_INFO
+            );
+        }
+
+        # Saved Quiqqer Preset
+        if (key_exists('template', $setupData) && !empty($setupData['template'])) {
+            $this->writeLn(
+                $this->Locale->getStringLang("setup.restored.data.preset", "Preset :") . $setupData['template'],
+                self::LEVEL_INFO
+            );
+        }
+
+        # Saved Quiqqer Database
+        if (key_exists('database', $setupData) && !empty($setupData['database']['driver'])) {
+            $this->writeLn(
+                $this->Locale->getStringLang("setup.restored.data.database", "Database Details :"),
+                self::LEVEL_INFO
+            );
+
+            # Driver
+            $this->writeLn(
+                $this->Locale->getStringLang(
+                    "setup.restored.data.database.driver",
+                    "   Driver: "
+                ) . $setupData['database']['driver'],
+                self::LEVEL_INFO
+            );
+
+            # Host
+            $this->writeLn(
+                $this->Locale->getStringLang(
+                    "setup.restored.data.database.host",
+                    "   Host: "
+                ) . $setupData['database']['host'],
+                self::LEVEL_INFO
+            );
+
+            # User
+            $this->writeLn(
+                $this->Locale->getStringLang(
+                    "setup.restored.data.database.user",
+                    "   User: "
+                ) . $setupData['database']['user'],
+                self::LEVEL_INFO
+            );
+
+            # Database
+            $this->writeLn(
+                $this->Locale->getStringLang(
+                    "setup.restored.data.database.db",
+                    "   Database: "
+                ) . $setupData['database']['name'],
+                self::LEVEL_INFO
+            );
+
+            # Prefix
+            $this->writeLn(
+                $this->Locale->getStringLang(
+                    "setup.restored.data.database.prefix",
+                    "   Prefix: "
+                ) . $setupData['database']['prefix'],
+                self::LEVEL_INFO
+            );
+        }
+
+        # Saved Quiqqer Username
+        if (key_exists('user', $setupData) && !empty($setupData['user']['name'])) {
+            $this->writeLn(
+                $this->Locale->getStringLang("setup.restored.data.adminuser", "User :") . $setupData['user']['name'],
+                self::LEVEL_INFO
+            );
+        }
+
+        # Saved Quiqqer PATHS
+        if (key_exists('paths', $setupData) && !empty($setupData['paths']['cms_dir'])) {
+            $this->writeLn(
+                $this->Locale->getStringLang("setup.restored.data.paths", "Pathsettings"),
+                self::LEVEL_INFO
+            );
+
+            # Host
+            $this->writeLn(
+                $this->Locale->getStringLang(
+                    "setup.restored.data.paths.host",
+                    "   Host :"
+                ) . $setupData['paths']['host'],
+                self::LEVEL_INFO
+            );
+
+            # CMS
+            $this->writeLn(
+                $this->Locale->getStringLang(
+                    "setup.restored.data.paths.cms",
+                    "   CMS Directory :"
+                ) . $setupData['paths']['cms_dir'],
+                self::LEVEL_INFO
+            );
+
+            # URL
+            $this->writeLn(
+                $this->Locale->getStringLang(
+                    "setup.restored.data.paths.url",
+                    "   URL Directory :"
+                ) . $setupData['paths']['url_dir'],
+                self::LEVEL_INFO
+            );
+        }
+    }
 }

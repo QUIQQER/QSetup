@@ -90,3 +90,58 @@ msgstr "Das angegebe Verzeichnis ist nicht leer! Möglicherweise werden Dateien 
 
 msgid "setup.prompt.dir.not.empty"
 msgstr "Möchten Sie trotzdem fortfahren? (y/n) "
+
+msgid "setup.prompt.continue.restored.data"
+msgstr "Möchten Sie die wiederhergestellten Daten verwenden? (y/n) "
+
+msgid "setup.restored.data.lang"
+msgstr "Sprache: "
+
+msgid "setup.restored.data.version"
+msgstr "Version: "
+
+msgid "setup.restored.data.preset"
+msgstr "Vorlage: "
+
+msgid "setup.restored.data.database"
+msgstr "Datenbank Angaben: "
+
+msgid "setup.restored.data.database.driver"
+msgstr "   Treiber: "
+
+msgid "setup.restored.data.database.host"
+msgstr "   Host: "
+
+msgid "setup.restored.data.database.user"
+msgstr "   Benutzer: "
+
+msgid "setup.restored.data.database.db"
+msgstr "   Datenbank: "
+
+msgid "setup.restored.data.database.prefix"
+msgstr "   Prefix: "
+
+msgid "setup.restored.data.adminuser"
+msgstr "Adminbenutzer: "
+
+msgid "setup.restored.data.paths"
+msgstr "Pfadangaben: "
+
+msgid "setup.restored.data.paths.host"
+msgstr "   Host: "
+
+msgid "setup.restored.data.paths.cms"
+msgstr "   CMS Verzeichnis: "
+
+msgid "setup.restored.data.paths.url"
+msgstr "   URL Verzeichnis: "
+
+msgid "setup.restored.data.found"
+msgstr "Das Setup hat wiederherstellbare Daten gefunden :"
+
+msgid "warning.database.not.empty"
+msgstr "Die angegebene Datenbank ist nicht leer!"
+
+
+
+

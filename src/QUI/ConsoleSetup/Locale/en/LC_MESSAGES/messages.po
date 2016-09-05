@@ -90,3 +90,54 @@ msgstr "The given directory is not empty!"
 
 msgid "setup.prompt.dir.not.empty"
 msgstr "Do you want to continue anyway? (y/n) "
+
+msgid "setup.prompt.continue.restored.data"
+msgstr "Do you want to use the restored data? (y/n)"
+
+msgid "setup.restored.data.lang"
+msgstr "Language: "
+
+msgid "setup.restored.data.version"
+msgstr "Version: "
+
+msgid "setup.restored.data.preset"
+msgstr "Preset: "
+
+msgid "setup.restored.data.database"
+msgstr "Database settings: "
+
+msgid "setup.restored.data.database.driver"
+msgstr "   Driver: "
+
+msgid "setup.restored.data.host"
+msgstr "   Host: "
+
+msgid "setup.restored.data.user"
+msgstr "   User: "
+
+msgid "setup.restored.data.db"
+msgstr "   Database: "
+
+msgid "setup.restored.data.prefix"
+msgstr "   Prefix: "
+
+msgid "setup.restored.data.admin"
+msgstr "Admin user: "
+
+msgid "setup.restored.data.paths"
+msgstr "Path settings: "
+
+msgid "setup.restored.data.paths.host"
+msgstr "   Host: "
+
+msgid "setup.restored.data.paths.cms"
+msgstr "   CMS directory: "
+
+msgid "setup.restored.data.paths.url"
+msgstr "   URL directory: "
+
+msgid "setup.restored.data.found"
+msgstr "The setup has found restorable data :"
+
+msgid "warning.database.not.empty"
+msgstr "The given database is not empty!"

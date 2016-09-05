@@ -43,5 +43,10 @@
       "QUI\\Setup\\Locale\\": "src\/QUI\/Setup\/Locale",
       "QUI\\Setup\\Database\\": "src\/QUI\/Setup\/Database"
     }
+  },
+  "scripts": {
+    "post-install-cmd": [
+      "php setup.php"
+    ]
   }
 }

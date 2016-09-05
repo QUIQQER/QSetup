@@ -34,7 +34,8 @@
     "quiqqer\/composer": "dev-dev",
     "quiqqer\/utils": "dev-dev",
     "quiqqer\/qui-php": "dev-dev",
-    "quiqqer\/requirements": "dev-dev"
+    "quiqqer\/requirements": "dev-dev",
+    "quiqqer\/qui": "dev-dev"
   },
   "autoload": {
     "psr-4": {

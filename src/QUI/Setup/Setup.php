@@ -102,7 +102,7 @@ class Setup
             'host'       => "",
             'user'       => "",
             'pw'         => "",
-            'name'         => "",
+            'name'       => "",
             'prefix'     => "",
         ),
         'user'     => array(
@@ -201,6 +201,33 @@ class Setup
         return $presets;
     }
 
+    public static function getVersions()
+    {
+        $validVersions = array(
+            'dev-dev',
+            'dev-master'
+        );
+
+        $url  = Setup::getConfig()['general']['url_updateserver'] . "/packages.json";
+        $json = file_get_contents($url);
+        if (!empty($json)) {
+            $packages = json_decode($json, true);
+            $packages = $packages['packages'];
+
+            $quiqqer = $packages['quiqqer/quiqqer'];
+            foreach ($quiqqer as $v => $branch) {
+                $v = explode('.', $v);
+                if (isset($v[0]) && isset($v[1])) {
+                    $v = $v[0] . "." . $v[1];
+                    if (!in_array($v, $validVersions)) {
+                        $validVersions[] = $v;
+                    }
+                }
+            }
+        }
+
+        return $validVersions;
+    }
     #region Getter/Setter
 
     /**
@@ -318,7 +345,7 @@ class Setup
         $this->data['database']['host']       = $dbHost;
         $this->data['database']['user']       = $dbUser;
         $this->data['database']['pw']         = $dbPw;
-        $this->data['database']['name']         = $dbName;
+        $this->data['database']['name']       = $dbName;
         $this->data['database']['port']       = $dbPort;
         $this->data['database']['prefix']     = $dbPrefix;
         $this->data['database']['create_new'] = $createNew;
@@ -1301,7 +1328,7 @@ class Setup
 
         # Move directories to
 
-        $dirs = array('src','lib','xml','templates','vendor');
+        $dirs = array('src', 'lib', 'xml', 'templates', 'vendor');
         foreach ($dirs as $dir) {
             if (is_dir(CMS_DIR . $dir)) {
                 rename(

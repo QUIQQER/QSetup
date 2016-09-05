@@ -2,6 +2,7 @@
 
 namespace QUI\Setup\Utils;
 
+use QUI\Database\Exception;
 use QUI\Setup\Database\Database;
 use QUI\Setup\Setup;
 use QUI\Setup\SetupException;
@@ -31,27 +32,10 @@ class Validator
             );
         }
 
-        $validVersions = array(
-            'dev-dev',
-            'dev-master'
-        );
-
         $url  = Setup::getConfig()['general']['url_updateserver'] . "/packages.json";
         $json = file_get_contents($url);
         if (!empty($json)) {
-            $packages = json_decode($json, true);
-            $packages = $packages['packages'];
-
-            $quiqqer = $packages['quiqqer/quiqqer'];
-            foreach ($quiqqer as $v => $branch) {
-                $v = explode('.', $v);
-                if (isset($v[0]) && isset($v[1])) {
-                    $v = $v[0] . "." . $v[1];
-                    if (!in_array($v, $validVersions)) {
-                        $validVersions[] = $v;
-                    }
-                }
-            }
+            $validVersions = Setup::getVersions();
 
             if (!in_array($version, $validVersions)) {
                 throw new SetupException("exception.validation.version.invalid");
@@ -150,8 +134,13 @@ class Validator
             );
         }
 
+        # Check Credentials
         try {
             Database::checkCredentials($dbDriver, $dbHost, $dbUser, $dbPw, $dbName);
+
+            if (!Database::databaseExists($dbDriver, $dbHost, $dbUser, $dbPw, $dbName)) {
+                throw new SetupException("setup.validation.database.not.exists");
+            }
         } catch (SetupException $Exception) {
             throw $Exception;
         }
@@ -277,6 +266,30 @@ class Validator
 
         if (substr($paths['url_dir'], 0, 1) != "/") {
             throw new SetupException("exception.validation.leadingslash.missing");
+        }
+
+
+        # Check if all filesystem paths exist
+
+        # var_dir
+        try {
+            Validator::validatePath($paths['var_dir']);
+        } catch (\Exception $Exception) {
+            throw new SetupException("setup.validation.var_dir.not.exists");
+        }
+
+        # usr_dir
+        try {
+            Validator::validatePath($paths['usr_dir']);
+        } catch (\Exception  $Exception) {
+            throw new SetupException("setup.validation.usr_dir.not.exists");
+        }
+
+        # opt_dir
+        try {
+            Validator::validatePath($paths['opt_dir']);
+        } catch (\Exception  $Exception) {
+            throw new SetupException("setup.validation.opt_dir.not.exists");
         }
     }
 

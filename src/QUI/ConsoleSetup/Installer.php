@@ -10,6 +10,7 @@ use QUI\Setup\Database\Database;
 use QUI\Setup\Setup;
 use QUI\Setup\SetupException;
 use QUI\Setup\Utils\Utils;
+use QUI\Setup\Utils\Validator;
 
 define('COLOR_GREEN', '1;32');
 define('COLOR_CYAN', '1;36');
@@ -84,8 +85,16 @@ class Installer
             $this->Setup->setSetupLanguage($lang);
             $this->Locale->setLanguage($lang);
         } catch (Exception $e) {
-            $this->writeLn($e->getMessage(), self::LEVEL_CRITICAL);
-            exit;
+            $this->writeLn(
+                $this->Locale->getStringLang(
+                    "setup.message.localeset.failed",
+                    "Something went wrong while setting the setup language. Setup will now use English as language"
+                ),
+                self::LEVEL_WARNING
+            );
+
+            $this->Setup->setSetupLanguage('en_GB');
+            $this->Locale->setLanguage('en_GB');
         }
     }
 
@@ -181,7 +190,8 @@ class Installer
                 $this->Locale->getStringLang($Exception->getMessage()),
                 self::LEVEL_WARNING
             );
-            $this->stepVersion();
+
+            return $this->stepVersion();
         }
     }
 
@@ -252,6 +262,22 @@ class Installer
             true
         );
 
+        # Verify correctness of givcen credentials
+        try {
+            Validator::validateDatabase($driver, $host, $user, $pw);
+        } catch (SetupException $Exception) {
+            $this->writeLn(
+                $this->Locale->getStringLang(
+                    "database.credentials.not.valid",
+                    "The given database credentials seem to be incorrect. Please try again. Errormessage: "
+                ) . PHP_EOL .
+                $this->Locale->getStringLang($Exception->getMessage()),
+                self::LEVEL_ERROR
+            );
+
+            return $this->stepDatabase();
+        }
+
 
         // This part will prompt the user for a database name.
         // If the given database does not exist, the user will be prompted if the database should be created.
@@ -268,7 +294,7 @@ class Installer
 
             # Check if database exists
             if (!Database::databaseExists($driver, $host, $user, $pw, $db)) {
-                if ($this->prompt(
+                $createPromptResult = $this->prompt(
                     $this->Locale->getStringLang(
                         "prompt.database.createnew",
                         "The given database does not exist, do you want to create it?"
@@ -277,7 +303,9 @@ class Installer
                     COLOR_YELLOW,
                     false,
                     true
-                ) == "y"
+                );
+
+                if ($createPromptResult == "y"
                 ) {
                     $createNew     = true;
                     $validDatabase = true;
@@ -380,12 +408,23 @@ class Installer
 
         // Will ask the user for a cms directory and check if it is empty.
         // Will continue asking until dir is empty or the user chose to ignore the warning
-
         while ($continue) {
             $cmsDir = $this->prompt(
                 $this->Locale->getStringLang("prompt.cms", "CMS Directory : "),
                 dirname(dirname(dirname(dirname(__FILE__))))
             );
+
+            try {
+                Validator::validatePath($cmsDir);
+            } catch (SetupException $Exception) {
+                $this->writeLn(
+                    $this->Locale->getStringLang(
+                        $Exception->getMessage()
+                    ),
+                    self::LEVEL_WARNING
+                );
+                continue;
+            }
 
             # Check if Directory is empty
             if (!Utils::isDirEmpty($cmsDir)) {

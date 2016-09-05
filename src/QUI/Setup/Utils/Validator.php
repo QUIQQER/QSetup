@@ -145,7 +145,7 @@ class Validator
 
         if (!in_array($dbDriver, Database::getAvailableDrivers())) {
             throw new SetupException(
-                "validation.database-driver.notfound",
+                "validation.database.driver.notfound",
                 SetupException::ERROR_MISSING_RESSOURCE
             );
         }
@@ -181,18 +181,24 @@ class Validator
 
 
     /**
-     * Checks if a single filesystem-path to a directory is valid and exists
+     * Checks if a single filesystem-path to a directory is valid
      * @param $path - Filesystem path to a directory
      * @return bool - true if valid directory
      * @throws SetupException
      */
     public static function validatePath($path)
     {
-        if (is_dir($path)) {
-            return true;
-        } else {
+        # Check if path exists
+        if (!is_dir($path)) {
             throw new SetupException("exception.validation.path.not.exist");
         }
+
+        # Check if path is writeable
+        if (!is_writeable($path)) {
+            throw new SetupException("exception.validation.path.not.writeable");
+        }
+
+        return true;
     }
 
     /**

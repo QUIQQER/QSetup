@@ -562,7 +562,6 @@ class Setup
 
         $preset = $presets[$presetName];
 
-        print_r($preset);
 
         if ($preset == null || empty($preset)) {
             $this->Output->writeLn("Skipping preset : No preset set.");

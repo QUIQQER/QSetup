@@ -84,9 +84,11 @@ class Installer
 
             # Exit Setup if user does not want to continue with restored data
             if ($continuePrompt != "y") {
-                exit;
             }
+        }
 
+        # Execute Steps to acquire Data
+        if (isset($continuePrompt) && $continuePrompt == 'y') {
             $this->Setup->restoreData();
 
             switch ($data['step']) {
@@ -104,7 +106,7 @@ class Installer
                 // no break
                 case Setup::STEP_DATA_USER:
                     $this->stepPaths();
-                // no break
+                    break;
             }
         } else {
             $this->stepCheckRequirements();
@@ -116,7 +118,7 @@ class Installer
             $this->stepPaths();
         }
 
-
+        # Execute Setup
         $this->echoDecorationCoffe();
         $this->setup();
         $this->stepFinish();
@@ -826,8 +828,6 @@ HEADER;
     private function echoRestorableData($data)
     {
         $setupData = $data['data'];
-
-        print_r($data);
 
         # Saved Quiqqer Language
         if (key_exists('lang', $setupData)) {

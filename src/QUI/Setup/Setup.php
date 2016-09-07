@@ -1,9 +1,6 @@
 <?php
 namespace QUI\Setup;
 
-require_once dirname(dirname(dirname(dirname(__FILE__)))) . "/lib/classes/SetupDOM.php";
-require_once dirname(dirname(dirname(dirname(__FILE__)))) . "/lib/classes/SetupXML.php";
-
 use QUI;
 use QUI\Composer\Composer;
 use QUI\Setup\Database\Database;
@@ -13,7 +10,6 @@ use QUI\Setup\Output\ConsoleOutput;
 use QUI\Setup\Output\WebOutput;
 use QUI\Setup\Utils\Utils;
 use QUI\Setup\Utils\Validator;
-use QUI\Utils\SetupXML;
 use QUI\Setup\Output\Interfaces\Output;
 use QUI\Database as QUIDB;
 
@@ -841,7 +837,7 @@ class Setup
                 );
             }
         }
-        $this->Database->importTables(SetupXML::getDataBaseFromXml($xmlFile));
+        $this->Database->importTables(QUI\Utils\Text\XML::getDataBaseFromXml($xmlFile));
 
         $this->Step = Setup::STEP_SETUP_DATABASE;
     }

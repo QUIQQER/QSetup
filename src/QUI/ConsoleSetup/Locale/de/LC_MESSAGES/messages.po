@@ -142,6 +142,45 @@ msgstr "Das Setup hat wiederherstellbare Daten gefunden :"
 msgid "warning.database.not.empty"
 msgstr "Die angegebene Datenbank ist nicht leer!"
 
+msgid "setup.message.localeset.failed"
+msgstr "Setup could not set the language!"
 
+msgid "prompt.requirements.continue"
+msgstr "Nicht alle Systemvorraussetzungen sind erfüllt. Dies könnte zu maßgeblichen Einschränkungen der Funktionalität von Quiqqer führen. Möchten Sie trotzdem fortfahren?"
 
+msgid "database.credentials.not.valid"
+msgstr "Die Datenbank Zugangsdaten sind nicht korrekt!"
+
+msgid "setup.warning.password.missmatch"
+msgstr "Die Passwörter stimmen nicht überein. Bitte erneut versuchen"
+
+msgid "messages.decorative.coffeetime"
+msgstr "Fast geschafft! Perfekte Zeit für einen Kaffee."
+
+msgid "locale.localeset.failed"
+msgstr "Die gewünschte Sprache konnte nicht gesetzt werden."
+
+msgid "setup.filesystem.composerjson.not.writeable"
+msgstr "Die Composer.json Datei konnte nicht beschrieben werden"
+
+msgid "setup.filesystem.config.creation.failed"
+msgstr "Die Konfigurationsdateien konnten nicht beschrieben werden!"
+
+msgid "exception.validation.password.empty"
+msgstr "Das Passwort darf nicht leer sein"
+
+msgid "validation.database.driver.notfound"
+msgstr "Der angegebene Datenbank Treiber wurde nicht auf ihrem System gefunden."
+
+msgid "setup.validation.database.not.exists"
+msgstr "Die angegebene Datenbank existiert nicht"
+
+msgid "setup.exception.validation.preset.not.exist"
+msgstr "Die angegebene Vorlage konnte nicht gefunden werden."
+
+msgid "exception.validation.path.not.exist"
+msgstr "Der angegebene Pfad existiert nicht"
+
+msgid "exception.validation.path.not.writeable"
+msgstr "Der angegebene Pfad konnte nicht beschrieben werden"
 

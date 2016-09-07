@@ -6,7 +6,7 @@ $srcDir = dirname(__FILE__);
 
 
 $result = scan($srcDir);
-
+$result = array_unique($result);
 
 $localeConsoleSetup = file_get_contents(dirname(__FILE__) . '/QUI/ConsoleSetup/Locale/de/LC_MESSAGES/messages.po');
 $localeSetup        = file_get_contents(dirname(__FILE__) . '/QUI/Setup/Locale/de/LC_MESSAGES/setupmessages.po');
@@ -61,18 +61,13 @@ function scan($dir)
 
 function scanFile($file)
 {
-    $result = array();
     echo "  -> Scanning file : " . $file . PHP_EOL;
     $content = file_get_contents($file);
 
     $matches = array();
-    preg_match_all('~getStringLang\("(.*\..*)",~i', $content, $matches);
-    $result = array_merge($result, $matches[1]);
-    preg_match_all('~SetupException\("(.*\..*),~i', $content, $matches);
-    $result = array_merge($result, $matches[1]);
-    $matches = array();
-    preg_match_all('~writeLnLang\("(.*\..*)",~i', $content, $matches);
-    return $result;
+    preg_match_all('~"(\w+\.\w+\.[^"]+)"(?:,|\n|\)|,\n)~i', $content, $matches);
+
+    return $matches[1];
 }
 
 function getEnding($file)

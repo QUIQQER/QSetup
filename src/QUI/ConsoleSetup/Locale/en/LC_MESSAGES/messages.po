@@ -141,3 +141,45 @@ msgstr "The setup has found restorable data :"
 
 msgid "warning.database.not.empty"
 msgstr "The given database is not empty!"
+
+msgid "setup.message.localeset.failed"
+msgstr "Setup could not set the language!"
+
+msgid "prompt.requirements.continue"
+msgstr "Not all Systemrequirements are fulfilled. This can severly impact the functionality of Quiqqer. Do you want to continue anyways?"
+
+msgid "database.credentials.not.valid"
+msgstr "The given database credentials are not valid"
+
+msgid "setup.warning.password.missmatch"
+msgstr "The passwords do not match!"
+
+msgid "messages.decorative.coffeetime"
+msgstr "Almost done. Perfect time for a coffee."
+
+msgid "locale.localeset.failed"
+msgstr "The desired language could not be set."
+
+msgid "setup.filesystem.composerjson.not.writeable"
+msgstr "The composer.json file could not be written"
+
+msgid "setup.filesystem.config.creation.failed"
+msgstr "The configuration files could not be written."
+
+msgid "exception.validation.password.empty"
+msgstr "The password can not be empty."
+
+msgid "validation.database.driver.notfound"
+msgstr "The given database driver could not be found."
+
+msgid "setup.validation.database.not.exists"
+msgstr "The given database does not exist."
+
+msgid "setup.exception.validation.preset.not.exist"
+msgstr "The given preset does not exist."
+
+msgid "exception.validation.path.not.exist"
+msgstr "The given path does not exist."
+
+msgid "exception.validation.path.not.writeable"
+msgstr "The given path is not empty."

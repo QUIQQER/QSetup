@@ -477,6 +477,8 @@ class Installer
                 dirname(dirname(dirname(dirname(__FILE__))))
             );
 
+            $cmsDir = Utils::normalizePath($cmsDir);
+
             try {
                 Validator::validatePath($cmsDir);
             } catch (SetupException $Exception) {

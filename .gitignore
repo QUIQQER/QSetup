@@ -7,3 +7,4 @@
 /.htaccess
 /src/QUI/ConsoleSetup/test.php
 /src/findMissingTranslations.php
+/components/

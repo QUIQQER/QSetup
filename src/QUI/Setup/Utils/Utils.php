@@ -15,6 +15,8 @@ class Utils
         return rtrim(trim($path), '/') . '/';
     }
 
+
+
     /**
      * Checks if a directory is empty.
      * @param $dir - Path to the directory.

@@ -367,10 +367,35 @@ class Installer
 
                 if ($createPromptResult == "y"
                 ) {
+                    if (!Database::checkDatabaseCreationAccess($driver, $host, $user, $pw)) {
+                        # User does not have database creation permission
+                        $this->writeLn(
+                            $this->Locale->getStringLang(
+                                "setup.warning.database.not.createable",
+                                "The given user can not create databases."
+                            ),
+                            self::LEVEL_ERROR
+                        );
+
+                        return $this->stepDatabase();
+                    }
+
                     $createNew     = true;
                     $validDatabase = true;
                 }
+            } elseif (!Database::checkDatabaseWriteAccess($driver, $host, $user, $pw, $db)) {
+                # Check if the desired database can be written
+                $this->writeLn(
+                    $this->Locale->getStringLang(
+                        "setup.warning.database.not.writeable",
+                        "The given Database is not writeable ( Tables could not be created)"
+                    ),
+                    self::LEVEL_ERROR
+                );
+
+                return $this->stepDatabase();
             } else {
+                # All Checks succeeded
                 $validDatabase = true;
             }
         }

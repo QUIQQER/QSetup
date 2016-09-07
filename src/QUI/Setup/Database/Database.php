@@ -219,6 +219,58 @@ class Database
         return true;
     }
 
+    /**
+     * Checks if the user can create and drop Tables in the given database
+     * @param $driver
+     * @param $host
+     * @param $user
+     * @param $pw
+     * @param $db
+     * @return bool - Returns true on success and false if permissions are missing
+     */
+    public static function checkDatabaseWriteAccess($driver, $host, $user, $pw, $db)
+    {
+        $dsn = self::getConnectionString($driver, $host, $db);
+        try {
+            $pdo = new \PDO($dsn, $user, $pw);
+
+            $testDbName = "setup" . time();
+
+            if ($pdo->query("CREATE TABLE `" . $testDbName . "`(id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY);") == false) {
+                return false;
+            }
+            if ($pdo->query("DROP TABLE `" . $testDbName . "`;") == false) {
+                return false;
+            }
+
+            return true;
+        } catch (\PDOException $Exception) {
+            return false;
+        }
+    }
+
+
+    public static function checkDatabaseCreationAccess($driver, $host, $user, $pw)
+    {
+        $dsn = self::getConnectionString($driver, $host);
+        try {
+            $pdo = new \PDO($dsn, $user, $pw);
+
+            $testDBName = "setup" . time();
+
+            if ($pdo->query("CREATE DATABASE " . $testDBName) === false) {
+                return false;
+            }
+
+            if ($pdo->query("DROP DATABASE " . $testDBName) === false) {
+                return false;
+            }
+
+            return true;
+        } catch (\PDOException $Exception) {
+            return false;
+        }
+    }
     # =====================================
     # Public
     # =====================================

@@ -130,6 +130,8 @@ class Setup
      */
     public function __construct($mode)
     {
+        $this->autodetectTimezone();
+
         $this->tmpDir = dirname(dirname(dirname(dirname(__FILE__)))) . '/var/tmp/';
 
         $this->Locale = new Locale("en_GB");
@@ -591,6 +593,11 @@ class Setup
 
         # =========================================================================================== #
 
+        # IF no Projectname is set, use the given host
+        if (empty($projectname) && isset($this->data['paths']['preset'])) {
+            $projectname = $this->data['paths']['preset'];
+        }
+
         # Apply preset configuration
 
         # Add Repositories to composer.json
@@ -721,7 +728,7 @@ class Setup
     public function storeSetupState()
     {
         if (!is_dir($this->tmpDir)) {
-            mkdir($this->tmpDir, 0744, true);
+            mkdir($this->tmpDir, 0755, true);
         }
 
         $data = array(
@@ -1001,15 +1008,15 @@ class Setup
         # -------------------
         #region Directories
 
-        if (!QUI\Utils\System\File::mkdir($cmsDir) ||
-            !QUI\Utils\System\File::mkdir($tmpDir) ||
-            !QUI\Utils\System\File::mkdir($etcDir) ||
-            !QUI\Utils\System\File::mkdir($optDir) ||
-            !QUI\Utils\System\File::mkdir($usrDir) ||
-            !QUI\Utils\System\File::mkdir($varDir) ||
-            !QUI\Utils\System\File::mkdir($varDir . 'composer/') ||
-            !QUI\Utils\System\File::mkdir($etcDir . 'wysiwyg/') ||
-            !QUI\Utils\System\File::mkdir($etcDir . 'wysiwyg/toolbars/')
+        if (!QUI\Utils\System\File::mkdir($cmsDir, 0755) ||
+            !QUI\Utils\System\File::mkdir($tmpDir, 0755) ||
+            !QUI\Utils\System\File::mkdir($etcDir, 0755) ||
+            !QUI\Utils\System\File::mkdir($optDir, 0755) ||
+            !QUI\Utils\System\File::mkdir($usrDir, 0755) ||
+            !QUI\Utils\System\File::mkdir($varDir, 0755) ||
+            !QUI\Utils\System\File::mkdir($varDir . 'composer/', 0755) ||
+            !QUI\Utils\System\File::mkdir($etcDir . 'wysiwyg/', 0755) ||
+            !QUI\Utils\System\File::mkdir($etcDir . 'wysiwyg/toolbars/', 0755)
         ) {
             throw new SetupException(
                 "setup.filesystem.directory.creation.failed",
@@ -1068,7 +1075,7 @@ class Setup
         $contentLog = $this->getTemplateContent('log.ini.php');
         if ($contentLog != null) {
             if (!is_dir($etcDir . 'plugins/quiqqer/')) {
-                mkdir($etcDir . 'plugins/quiqqer/', 0744, true);
+                mkdir($etcDir . 'plugins/quiqqer/', 0755, true);
             }
 
             file_put_contents($etcDir . 'plugins/quiqqer/log.conf.ini', $contentLog);
@@ -1545,5 +1552,29 @@ class Setup
         $this->Output->writeLn("Missing template file : " . $name);
 
         return null;
+    }
+
+    private function autodetectTimezone()
+    {
+        $timezone = "UTC";
+
+        if (is_link('/etc/localtime')) {
+            $filename = readlink('/etc/localtime');
+            if (strpos($filename, '/usr/share/zoneinfo/') === 0) {
+                $timezone = str_replace('/usr/share/zoneinfo/', '', $filename);
+            }
+        } elseif (file_exists('etc/timezone')) {
+            $data = file_get_contents('/etc/timezone');
+            if ($data) {
+                $timezone = $data;
+            }
+        } elseif (file_exists('/etc/sysconfig/clock')) {
+            $data = parse_ini_file('/etc/sysconfig/clock');
+            if (!empty($data['ZONE'])) {
+                $timezone = $data['ZONE'];
+            }
+        }
+
+        date_default_timezone_set($timezone);
     }
 }

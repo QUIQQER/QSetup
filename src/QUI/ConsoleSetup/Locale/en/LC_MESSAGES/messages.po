@@ -183,3 +183,9 @@ msgstr "The given path does not exist."
 
 msgid "exception.validation.path.not.writeable"
 msgstr "The given path is not empty."
+
+msgid "setup.warning.database.not.writeable"
+msgstr "The given database could not be edited (Creating Tables)"
+
+msgid "setup.warning.database.not.createable"
+msgstr "The given user could not create the database (No Permission)"

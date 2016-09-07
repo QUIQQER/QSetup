@@ -184,3 +184,8 @@ msgstr "Der angegebene Pfad existiert nicht"
 msgid "exception.validation.path.not.writeable"
 msgstr "Der angegebene Pfad konnte nicht beschrieben werden"
 
+msgid "setup.warning.database.not.writeable"
+msgstr "Die angegebene Datenbank konnte nicht verändert werden. (Tabellen erstellen)"
+
+msgid "setup.warning.database.not.createable"
+msgstr "Die angegebene Datenbank konnte nicht erstellt werden (Fehlende Rechte)"

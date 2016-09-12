@@ -554,7 +554,6 @@ class Setup
             if ($cmdStatus != 0) {
                 $this->exitWithError("setup.unknown.error");
             }
-
         }
         #$this->deleteSetupFiles();
     }
@@ -632,8 +631,10 @@ class Setup
                 foreach ($repos as $repo) {
                     $data['repositories'][] = $repo;
                     $this->Output->writeLn(
-                        $this->Locale->getStringLang("applypreset.adding.repository",
-                            "Adding Repository :") . $repo['url'],
+                        $this->Locale->getStringLang(
+                            "applypreset.adding.repository",
+                            "Adding Repository :"
+                        ) . $repo['url'],
                         Output::LEVEL_INFO
                     );
                 }
@@ -659,11 +660,12 @@ class Setup
                 );
 
                 $this->Output->writeLn(
-                    $this->Locale->getStringLang("applypreset.creating.project",
-                        "Created Project :") . $projectname,
+                    $this->Locale->getStringLang(
+                        "applypreset.creating.project",
+                        "Created Project :"
+                    ) . $projectname,
                     Output::LEVEL_INFO
                 );
-
             } catch (QUI\Exception $Exception) {
                 $exceptionMsg = $this->Locale->getStringLang(
                     "setup.error.project.creation.failed",
@@ -682,11 +684,12 @@ class Setup
             $Composer->requirePackage($templateName, $templateVersion);
 
             $this->Output->writeLn(
-                $this->Locale->getStringLang("applypreset.require.package",
-                    "Require Package :") . $templateName,
+                $this->Locale->getStringLang(
+                    "applypreset.require.package",
+                    "Require Package :"
+                ) . $templateName,
                 Output::LEVEL_INFO
             );
-
         }
 
         # Require additional packages
@@ -694,8 +697,10 @@ class Setup
             $Composer->requirePackage($name, $version);
 
             $this->Output->writeLn(
-                $this->Locale->getStringLang("applypreset.require.package",
-                    "Require Package :") . $name,
+                $this->Locale->getStringLang(
+                    "applypreset.require.package",
+                    "Require Package :"
+                ) . $name,
                 Output::LEVEL_INFO
             );
         }
@@ -732,8 +737,10 @@ class Setup
 
 
             $this->Output->writeLn(
-                $this->Locale->getStringLang("applypreset.set.config",
-                    "Apply projectconfig"),
+                $this->Locale->getStringLang(
+                    "applypreset.set.config",
+                    "Apply projectconfig"
+                ),
                 Output::LEVEL_INFO
             );
         }
@@ -748,8 +755,10 @@ class Setup
                 $Edit->activate();
 
                 $this->Output->writeLn(
-                    $this->Locale->getStringLang("applypreset.set.layout",
-                        "Set layout for language : ") . $lang,
+                    $this->Locale->getStringLang(
+                        "applypreset.set.layout",
+                        "Set layout for language : "
+                    ) . $lang,
                     Output::LEVEL_INFO
                 );
             }
@@ -757,16 +766,20 @@ class Setup
 
 
         $this->Output->writeLn(
-            $this->Locale->getStringLang("applypreset.quiqqer.setup",
-                "Executing Quiqqer Setup. "),
+            $this->Locale->getStringLang(
+                "applypreset.quiqqer.setup",
+                "Executing Quiqqer Setup. "
+            ),
             Output::LEVEL_INFO
         );
         QUI\Setup::all();
 
 
         $this->Output->writeLn(
-            $this->Locale->getStringLang("applypreset.done",
-                "Preset applied. "),
+            $this->Locale->getStringLang(
+                "applypreset.done",
+                "Preset applied. "
+            ),
             Output::LEVEL_INFO
         );
         $this->Step = Setup::STEP_SETUP_PRESET;

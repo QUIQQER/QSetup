@@ -39,3 +39,6 @@ Primarily aimed at __websetups__ , where the setup has to be executed in one req
 - templates - Provides file templates. i.E. the composer.json tpl
 - tests - Contains unit tests
 - xml - Contains xml files needed for the setup
+
+## Setup Guide
+- [Installation](https://dev.quiqqer.com/quiqqer/quiqqer/wikis/setup-guide)

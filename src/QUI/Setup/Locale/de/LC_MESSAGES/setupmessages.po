@@ -108,3 +108,6 @@ msgstr "Es wurde versucht eine Datenbankoperation durchzuführen, obwohl keine D
 
 msgid "setup.exception.validation.preset"
 msgstr "Das angegebene Preset ist nicht gültig."
+
+msgid "setup.unknown.error"
+msgstr "Wähend des Installationsvorganges ist etwas schief gegangen. Bitte überprüfen Sie die Logdateien."

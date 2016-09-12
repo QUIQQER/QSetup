@@ -109,3 +109,6 @@ msgstr "Can not start database operations because no database was selected"
 
 msgid "setup.exception.validation.preset"
 msgstr "The given preset is not valid"
+
+msgid "setup.unknown.error"
+msgstr "Something went wrong during the setup process. Please check the logfiles"

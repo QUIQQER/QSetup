@@ -1,13 +1,26 @@
 {
   "default": {
     "project": {
-      "name": "Projekt"
+      "name": "Mainproject",
+      "languages": [
+        "de",
+        "en"
+      ]
     },
     "template": {
       "name": "quiqqer/template-helios",
       "version": "dev-master",
       "start_layout": "layout/startpage",
       "default_layout": "layout/startpage"
+    },
+    "repositories": [
+      {
+        "type": "vcs",
+        "url": "git@dev.quiqqer.com:quiqqer/gitlab.git"
+      }
+    ],
+    "packages": {
+      "quiqqer/gitlab": "dev-dev"
     }
   }
 }

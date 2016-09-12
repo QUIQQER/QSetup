@@ -7,6 +7,7 @@ use QUI\Exception;
 use QUI\Requirements\Requirements;
 use QUI\Requirements\TestResult;
 use QUI\Setup\Database\Database;
+use QUI\Setup\Log\Log;
 use QUI\Setup\Setup;
 use QUI\Setup\SetupException;
 use QUI\Setup\Utils\Utils;
@@ -37,6 +38,10 @@ class Installer
     const LEVEL_ERROR = 3;
     const LEVEL_CRITICAL = 4;
 
+
+    private $logDir;
+
+
     /**
      * Installer constructor.
      */
@@ -45,6 +50,13 @@ class Installer
         $this->Setup = new Setup(Setup::MODE_CLI);
         $this->Setup->setSetupLanguage("en_GB");
         $this->Locale = new Locale('en_GB');
+
+        $this->logDir = dirname(dirname(dirname(dirname(__FILE__)))) . '/logs/';
+
+        if (!is_dir($this->logDir)) {
+            mkdir($this->logDir, 0744, true);
+        }
+        ini_set('error_log', $this->logDir . 'error.log');
     }
 
     /**
@@ -699,31 +711,37 @@ SMILEY;
             switch ($level) {
                 case self::LEVEL_DEBUG:
                     $msg = "[DEBUG] - " . $msg;
+                    Log::append($msg);
                     $msg = $this->getColoredString($msg, COLOR_CYAN);
                     break;
 
                 case self::LEVEL_INFO:
                     $msg = "[INFO] - " . $msg;
+                    Log::append($msg);
                     $msg = $this->getColoredString($msg, COLOR_CYAN);
                     break;
 
                 case self::LEVEL_WARNING:
                     $msg = "[WARNING] - " . $msg;
+                    Log::append($msg);
                     $msg = $this->getColoredString($msg, COLOR_YELLOW);
                     break;
 
                 case self::LEVEL_ERROR:
                     $msg = "[ERROR] - " . $msg;
+                    Log::append($msg);
+                    Log::appendError($msg);
                     $msg = $this->getColoredString($msg, COLOR_RED);
                     break;
 
                 case self::LEVEL_CRITICAL:
                     $msg = "[!CRITICAL!] - " . $msg;
+                    Log::append($msg);
+                    Log::appendError($msg);
                     $msg = $this->getColoredString($msg, COLOR_RED);
                     break;
             }
         }
-
 
         if ($color != null) {
             $msg = $this->getColoredString($msg, $color);

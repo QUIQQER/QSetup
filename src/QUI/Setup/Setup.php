@@ -72,6 +72,7 @@ class Setup
 
     private $baseDir;
     private $tmpDir;
+    private $logDir;
     # ----------------
     # Init
     # ----------------
@@ -132,11 +133,18 @@ class Setup
     {
         $this->autodetectTimezone();
 
-        $this->tmpDir = dirname(dirname(dirname(dirname(__FILE__)))) . '/var/tmp/';
 
         $this->Locale = new Locale("en_GB");
 
         $this->baseDir = dirname(dirname(dirname(dirname(__FILE__))));
+        $this->tmpDir  = dirname(dirname(dirname(dirname(__FILE__)))) . '/var/tmp/';
+        # Logdir
+        $this->logDir = dirname(dirname(dirname(dirname(__FILE__)))) . '/logs/';
+        if (!is_dir($this->logDir)) {
+            mkdir($this->logDir, 0744, true);
+        }
+        ini_set('error_log', $this->logDir . 'error.log');
+
 
         $this->mode = $mode;
         switch ($mode) {
@@ -231,7 +239,6 @@ class Setup
     /**
      * Sets the Language, that the setup should use.
      * @param string $lang - Culture Code. E.G : de_DE
-     * @return string - Message
      * @throws LocaleException
      */
     public function setSetupLanguage($lang)
@@ -530,12 +537,26 @@ class Setup
         $this->executeQuiqqerChecks();
         $this->storeSetupState();
 
+        # Execute the applyPresetScript in new instance to make sure quiqqer has been initialized correctly.
+        # CLI only, websetup has to make a new ajax call
         if ($this->mode == Setup::MODE_CLI && isset($this->data['template']) && !empty($this->data['template'])) {
             $applyPresetFile = dirname(dirname(__FILE__)) . '/ConsoleSetup/applyPresetCLI.php';
             $cmsDir          = CMS_DIR;
-            system("php {$applyPresetFile} {$cmsDir} {$this->data['template']} {$this->setupLang}");
+
+            exec(
+                "php {$applyPresetFile} {$cmsDir} {$this->data['template']} {$this->setupLang}",
+                $cmdOutput,
+                $cmdStatus
+            );
+
+            QUI\Setup\Log\Log::append(implode(PHP_EOL, $cmdOutput));
+
+            if ($cmdStatus != 0) {
+                $this->exitWithError("setup.unknown.error");
+            }
+
         }
-        $this->deleteSetupFiles();
+        #$this->deleteSetupFiles();
     }
 
 
@@ -546,6 +567,7 @@ class Setup
      */
     public function applyPreset($presetName)
     {
+        QUI\Setup\Log\Log::info("Applying preset: " . $presetName);
         # Get the template info
         $presets = self::getPresets();
 
@@ -573,6 +595,8 @@ class Setup
         # Project
         $projectname = isset($preset['project']['name']) ? $preset['project']['name'] : "";
         $languages   = isset($preset['project']['languages']) ? $preset['project']['languages'] : array();
+        $languages[] = $this->data['lang'];
+        $languages   = array_unique($languages);
         #Template
         $templateName    = isset($preset['template']['name']) ? $preset['template']['name'] : "";
         $templateVersion = isset($preset['template']['version']) ? $preset['template']['version'] : "";
@@ -595,7 +619,7 @@ class Setup
 
         # IF no Projectname is set, use the given host
         if (empty($projectname) && isset($this->data['paths']['preset'])) {
-            $projectname = $this->data['paths']['preset'];
+            $projectname = $this->data['paths']['host'];
         }
 
         # Apply preset configuration
@@ -607,6 +631,11 @@ class Setup
             if (json_last_error() == JSON_ERROR_NONE) {
                 foreach ($repos as $repo) {
                     $data['repositories'][] = $repo;
+                    $this->Output->writeLn(
+                        $this->Locale->getStringLang("applypreset.adding.repository",
+                            "Adding Repository :") . $repo['url'],
+                        Output::LEVEL_INFO
+                    );
                 }
 
                 $json = json_encode($data, JSON_PRETTY_PRINT);
@@ -628,6 +657,13 @@ class Setup
                     $projectname,
                     $this->data['lang']
                 );
+
+                $this->Output->writeLn(
+                    $this->Locale->getStringLang("applypreset.creating.project",
+                        "Created Project :") . $projectname,
+                    Output::LEVEL_INFO
+                );
+
             } catch (QUI\Exception $Exception) {
                 $exceptionMsg = $this->Locale->getStringLang(
                     "setup.error.project.creation.failed",
@@ -641,25 +677,41 @@ class Setup
 
         # Require Template and packages
         $Composer = new Composer(VAR_DIR . "composer/", VAR_DIR . "composer/");
+
         if (!empty($templateName)) {
             $Composer->requirePackage($templateName, $templateVersion);
+
+            $this->Output->writeLn(
+                $this->Locale->getStringLang("applypreset.require.package",
+                    "Require Package :") . $templateName,
+                Output::LEVEL_INFO
+            );
+
         }
 
         # Require additional packages
         foreach ($packages as $name => $version) {
             $Composer->requirePackage($name, $version);
+
+            $this->Output->writeLn(
+                $this->Locale->getStringLang("applypreset.require.package",
+                    "Require Package :") . $name,
+                Output::LEVEL_INFO
+            );
+        }
+
+
+        # Add new languages if neccessary
+        $config = array();
+        if ($projectname != null) {
+            $config['langs'] = implode(',', $languages);
+            QUI::getProjectManager()->setConfigForProject($projectname, $config);
         }
 
         # Execute Quiqqersetup to activate new Plugins/translations etc.
         QUI\Setup::all();
 
         #Apply Configs to newly created project
-        $config = array();
-
-        # Add new languages if neccessary
-        if ($projectname != null) {
-            $config['langs'] = implode(',', $languages);
-        }
 
         # Config main project to use new template
         if (!empty($templateName) && !empty($projectname)) {
@@ -672,8 +724,18 @@ class Setup
         }
 
         if (!empty($config)) {
+            # Execute this line twice to circumvent the check if the layout exists in the current template
             QUI::getProjectManager()->setConfigForProject($projectname, $config);
             QUI::getProjectManager()->setConfigForProject($projectname, $config);
+
+            QUI\Setup\Log\Log::append(print_r($config, true));
+
+
+            $this->Output->writeLn(
+                $this->Locale->getStringLang("applypreset.set.config",
+                    "Apply projectconfig"),
+                Output::LEVEL_INFO
+            );
         }
 
         # Set the Mainpage Layout
@@ -684,11 +746,29 @@ class Setup
                 $Edit->setAttribute('layout', $startLayout);
                 $Edit->save();
                 $Edit->activate();
+
+                $this->Output->writeLn(
+                    $this->Locale->getStringLang("applypreset.set.layout",
+                        "Set layout for language : ") . $lang,
+                    Output::LEVEL_INFO
+                );
             }
         }
 
+
+        $this->Output->writeLn(
+            $this->Locale->getStringLang("applypreset.quiqqer.setup",
+                "Executing Quiqqer Setup. "),
+            Output::LEVEL_INFO
+        );
         QUI\Setup::all();
 
+
+        $this->Output->writeLn(
+            $this->Locale->getStringLang("applypreset.done",
+                "Preset applied. "),
+            Output::LEVEL_INFO
+        );
         $this->Step = Setup::STEP_SETUP_PRESET;
     }
 
@@ -1126,19 +1206,36 @@ class Setup
         # Execute Composer
         $Composer = new Composer(CMS_DIR, VAR_DIR . "composer/");
         $res      = $Composer->update();
-        foreach ($res as $line) {
-            $this->Output->writeLn($line, Output::LEVEL_INFO);
+        if ($res === false) {
+            $this->exitWithError("setup.unknown.error");
+        }
+
+
+        $Composer->requirePackage("bower-asset/mustache", ">2");
+
+        $target = $this->baseDir . '/packages/bin/mustache';
+        if (file_exists($target) && is_link($target)) {
+            unlink($target);
+            mkdir($target);
         }
 
         # Require quiqqer/quiqqer
         $res = $Composer->requirePackage("quiqqer/quiqqer", $this->data['version']);
-        foreach ($res as $line) {
-            $this->Output->writeLn($line, Output::LEVEL_INFO);
+        if ($res === false) {
+            $this->exitWithError("setup.unknown.error");
         }
-        # Execute composor again
+
+        $target = $this->baseDir . '/packages/bin/mustache';
+        if (file_exists($target) && is_link($target)) {
+            unlink($target);
+            mkdir($target);
+        }
+
+
+        # Execute composer again
         $res = $Composer->update();
-        foreach ($res as $line) {
-            $this->Output->writeLn($line, Output::LEVEL_INFO);
+        if ($res === false) {
+            $this->exitWithError("setup.unknown.error");
         }
 
         if (file_exists(CMS_DIR . "composer.json")) {
@@ -1476,6 +1573,9 @@ class Setup
         $data['config']['component-dir'] = $this->data['paths']['opt_dir'] . "bin/";
         $data['config']['quiqqer-dir']   = $this->data['paths']['cms_dir'];
 
+        $data['extra']['asset-installer-paths']['npm-asset-library']   = $this->data['paths']['opt_dir'] . "bin/";
+        $data['extra']['asset-installer-paths']['bower-asset-library'] = $this->data['paths']['opt_dir'] . "bin/";
+
         # Add custom repositories
         $created = file_put_contents(
             $this->data['paths']['cms_dir'] . "composer.json",
@@ -1576,5 +1676,11 @@ class Setup
         }
 
         date_default_timezone_set($timezone);
+    }
+
+    private function exitWithError($msg)
+    {
+        $this->Output->writeLnLang($msg, Output::LEVEL_ERROR);
+        exit(1);
     }
 }

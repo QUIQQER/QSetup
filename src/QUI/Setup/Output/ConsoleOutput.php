@@ -4,6 +4,7 @@ namespace QUI\Setup\Output;
 
 use QUI\Setup\Locale\Locale;
 use QUI\Setup\Locale\LocaleException;
+use QUI\Setup\Log\Log;
 use QUI\Setup\Output\Interfaces\Output;
 use QUI\Setup\SetupException;
 
@@ -14,8 +15,15 @@ class ConsoleOutput implements Output
     /** @var  Locale $Locale */
     private $Locale;
 
+
     public function __construct($lang = "de_DE")
     {
+        $this->logDir = dirname(dirname(dirname(dirname(dirname(__FILE__))))) . '/logs/';
+        if (!is_dir($this->logDir)) {
+            mkdir($this->logDir, 0744, true);
+        }
+        ini_set('error_log', $this->logDir . 'error.log');
+
         $this->lang   = $lang;
         $this->Locale = new Locale($lang);
     }
@@ -58,6 +66,9 @@ class ConsoleOutput implements Output
                     break;
             }
         }
+
+        Log::append($msg);
+
         if ($color != null) {
             $msg = $this->getColoredString($txt, $color);
         }
@@ -82,27 +93,35 @@ class ConsoleOutput implements Output
             switch ($level) {
                 case self::LEVEL_DEBUG:
                     $msg = "[DEBUG] - " . $msg;
+                    Log::append($msg);
                     $msg = $this->getColoredString($msg, Output::COLOR_CYAN);
                     break;
 
                 case self::LEVEL_INFO:
                     $msg = "[INFO] - " . $msg;
+                    Log::append($msg);
                     $msg = $this->getColoredString($msg, Output::COLOR_CYAN);
                     break;
 
                 case self::LEVEL_WARNING:
                     $msg = "[WARNING] - " . $msg;
+                    Log::append($msg);
                     $msg = $this->getColoredString($msg, Output::COLOR_YELLOW);
                     break;
 
                 case self::LEVEL_ERROR:
                     $msg = "[ERROR] - " . $msg;
+                    Log::append($msg);
+                    Log::appendError($msg);
                     $msg = $this->getColoredString($msg, Output::COLOR_RED);
                     break;
 
                 case self::LEVEL_CRITICAL:
                     $msg = "[!CRITICAL!] - " . $msg;
+                    Log::append($msg);
+                    Log::appendError($msg);
                     $msg = $this->getColoredString($msg, Output::COLOR_RED);
+
                     break;
             }
         }

@@ -33,7 +33,7 @@
   ],
   "require": {
     "php": ">=5.3.2",
-    "hirak/prestissimo":"^0.3",
+    "hirak/prestissimo": "^0.3",
     "composer/composer": "^1.1.3",
     "robloach/component-installer": "0.0.12",
     "quiqqer/utils": "dev-dev",
@@ -49,6 +49,16 @@
     "cache-dir": "",
     "component-dir": "",
     "quiqqer-dir": "",
-    "secure-http": false
+    "secure-http": false,
+    "symlink": false
+  },
+  "options": {
+    "symlink": false
+  },
+  "extra": {
+    "asset-installer-paths": {
+      "npm-asset-library": "",
+      "bower-asset-library": ""
+    }
   }
 }

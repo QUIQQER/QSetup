@@ -59,6 +59,13 @@
     "asset-installer-paths": {
       "npm-asset-library": "",
       "bower-asset-library": ""
+    },
+    "asset-private-bower-registries": {
+      "bower.quiqqer.com": "http://192.168.1.16:5678/packages"
+    },
+    "asset-registry-options": {
+      "npm-searchable": false,
+      "bower-searchable": false
     }
   }
 }

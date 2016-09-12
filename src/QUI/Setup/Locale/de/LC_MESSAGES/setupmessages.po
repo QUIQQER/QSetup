@@ -111,3 +111,25 @@ msgstr "Das angegebene Preset ist nicht gültig."
 
 msgid "setup.unknown.error"
 msgstr "Wähend des Installationsvorganges ist etwas schief gegangen. Bitte überprüfen Sie die Logdateien."
+
+msgid "setup.setup.message.apply.preset"
+msgstr "Wende Vorlage auf die Installation an."
+
+msgid "applypreset.adding.repository"
+msgstr "Füge ein Repository hinzu :"
+
+msgid "applypreset.creating.project"
+msgstr "Erstelle Projekt : "
+
+msgid "applypreset.require.package"
+msgstr "Installiere Paket: "
+
+msgid "applypreset.set.config"
+msgstr "Passe Konfiguration an."
+
+msgid "applypreset.set.layout"
+msgstr "Verwende Layout "
+
+msgid "applypreset.quiqqer.setup"
+msgstr "Führe Quiqqer Setup aus."
+

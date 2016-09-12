@@ -543,8 +543,15 @@ class Setup
             $applyPresetFile = dirname(dirname(__FILE__)) . '/ConsoleSetup/applyPresetCLI.php';
             $cmsDir          = CMS_DIR;
 
+
+            if (defined(PHP_BINARY)) {
+                $phpPath = PHP_BINARY . " ";
+            } else {
+                $phpPath = "php ";
+            }
+
             exec(
-                "php {$applyPresetFile} {$cmsDir} {$this->data['template']} {$this->setupLang}",
+                $phpPath . " {$applyPresetFile} {$cmsDir} {$this->data['template']} {$this->setupLang}",
                 $cmdOutput,
                 $cmdStatus
             );
@@ -552,10 +559,22 @@ class Setup
             QUI\Setup\Log\Log::append(implode(PHP_EOL, $cmdOutput));
 
             if ($cmdStatus != 0) {
+                # IF Apply preset script did write its error message into the tmp/applypreset.json file.
+                # Output its error
+                if (file_exists(VAR_DIR . 'tmp/applypreset.json')) {
+                    $json = file_get_contents(VAR_DIR . 'tmp/applypreset.json');
+                    $data = json_decode($json, true);
+                    if (json_last_error() == JSON_ERROR_NONE) {
+                        if (isset($data['message']) && !empty($data['message'])) {
+                            $this->exitWithError($data['message']);
+                        }
+                    }
+                }
+
                 $this->exitWithError("setup.unknown.error");
             }
         }
-        #$this->deleteSetupFiles();
+        $this->deleteSetupFiles();
     }
 
 
@@ -732,8 +751,6 @@ class Setup
             # Execute this line twice to circumvent the check if the layout exists in the current template
             QUI::getProjectManager()->setConfigForProject($projectname, $config);
             QUI::getProjectManager()->setConfigForProject($projectname, $config);
-
-            QUI\Setup\Log\Log::append(print_r($config, true));
 
 
             $this->Output->writeLn(
@@ -1423,6 +1440,10 @@ class Setup
             unlink($this->baseDir . "/quiqqer.setup");
         }
 
+        if (file_exists($this->baseDir . "/README.md")) {
+            unlink($this->baseDir . "/README.md");
+        }
+
         # Remove composer.json & composer.lock in doc-root
         if (file_exists(CMS_DIR . "composer.json")) {
             rename(
@@ -1438,9 +1459,8 @@ class Setup
             );
         }
 
-        # Move directories to
-
-        $dirs = array('src', 'lib', 'xml', 'templates', 'vendor');
+        # Move directories to tmp
+        $dirs = array('src', 'lib', 'xml', 'templates', 'vendor', 'ajax', 'bin', 'tests');
         foreach ($dirs as $dir) {
             if (is_dir(CMS_DIR . $dir)) {
                 rename(
@@ -1448,6 +1468,19 @@ class Setup
                     VAR_DIR . 'tmp/' . $dir
                 );
             }
+        }
+
+        # Move content of logs dir into var/logs
+        if (is_dir(CMS_DIR . 'logs/')) {
+            foreach (scandir(CMS_DIR . 'logs/') as $file) {
+                if ($file == '.' || $file == '..') {
+                    continue;
+                }
+
+                rename(CMS_DIR . 'logs/' . $file, VAR_DIR . 'log/setup.' . $file);
+            }
+
+            rename(CMS_DIR . 'logs/', VAR_DIR . 'tmp/logs/');
         }
 
         $this->Step = Setup::STEP_SETUP_DELETE;
@@ -1540,11 +1573,12 @@ class Setup
                 "cache"          => 0,
                 "host"           => $this->data['paths']['host'],
                 "httpshost"      => $this->data['paths']['httpshost'],
-                "development"    => 1,
+                "development"    => 0,
                 "debug_mode"     => 0,
                 "emaillogin"     => 0,
                 "maintenance"    => 0,
-                "mailprotection" => 1
+                "mailprotection" => 1,
+                "timezone"       => $this->autodetectTimezone()
             ),
             "db"       => array(
                 "driver"   => $this->data['database']['driver'],
@@ -1689,6 +1723,8 @@ class Setup
         }
 
         date_default_timezone_set($timezone);
+
+        return $timezone;
     }
 
     private function exitWithError($msg)

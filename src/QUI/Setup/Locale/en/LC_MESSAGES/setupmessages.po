@@ -112,3 +112,24 @@ msgstr "The given preset is not valid"
 
 msgid "setup.unknown.error"
 msgstr "Something went wrong during the setup process. Please check the logfiles"
+
+msgid "setup.setup.message.apply.preset"
+msgstr "Applying preset to installation."
+
+msgid "applypreset.adding.repository"
+msgstr "Adding repository :"
+
+msgid "applypreset.creating.project"
+msgstr "Creating project : "
+
+msgid "applypreset.require.package"
+msgstr "Installing package: "
+
+msgid "applypreset.set.config"
+msgstr "Applying configuration : "
+
+msgid "applypreset.set.layout"
+msgstr "Set layout: "
+
+msgid "applypreset.quiqqer.setup"
+msgstr "Executing Quiqqer setup."

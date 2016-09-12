@@ -529,7 +529,10 @@ class Installer
             }
 
             # Check if Directory is empty
-            if (!Utils::isDirEmpty($cmsDir)) {
+            // TODO better check for existing files, when cmsDir is setupDir
+            if ($cmsDir != dirname(dirname(dirname(dirname(__FILE__)))) &&
+                !Utils::isDirEmpty($cmsDir)
+            ) {
                 $this->writeLn(
                     $this->Locale->getStringLang(
                         "setup.warning.dir.not.empty",

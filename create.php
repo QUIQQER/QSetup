@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
 /**
  * This script will create a .zip file with all neccessary components for the quiqqer setup.

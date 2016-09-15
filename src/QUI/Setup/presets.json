@@ -12,15 +12,6 @@
       "version": "dev-master",
       "start_layout": "layout/startpage",
       "default_layout": "layout/startpage"
-    },
-    "repositories": [
-      {
-        "type": "vcs",
-        "url": "git@dev.quiqqer.com:quiqqer/gitlab.git"
-      }
-    ],
-    "packages": {
-      "quiqqer/gitlab": "dev-dev"
     }
   }
 }

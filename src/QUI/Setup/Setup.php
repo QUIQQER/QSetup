@@ -1,6 +1,9 @@
 <?php
 namespace QUI\Setup;
 
+error_reporting(E_ALL);
+ini_set("display_errors", 1);
+
 use QUI;
 use QUI\Composer\Composer;
 use QUI\Setup\Database\Database;
@@ -585,6 +588,7 @@ class Setup
      */
     public function applyPreset($presetName)
     {
+
         QUI\Setup\Log\Log::info("Applying preset: " . $presetName);
         # Get the template info
         $presets = self::getPresets();
@@ -1440,6 +1444,12 @@ class Setup
             unlink($this->baseDir . "/quiqqer.setup");
         }
 
+        # Remove setup.php
+        if (file_exists($this->baseDir . "/setup.php")) {
+            unlink($this->baseDir . "/setup.php");
+        }
+
+        # Remove README.md
         if (file_exists($this->baseDir . "/README.md")) {
             unlink($this->baseDir . "/README.md");
         }
@@ -1471,17 +1481,17 @@ class Setup
         }
 
         # Move content of logs dir into var/logs
-        if (is_dir(CMS_DIR . 'logs/')) {
-            foreach (scandir(CMS_DIR . 'logs/') as $file) {
-                if ($file == '.' || $file == '..') {
-                    continue;
-                }
-
-                rename(CMS_DIR . 'logs/' . $file, VAR_DIR . 'log/setup.' . $file);
-            }
-
-            rename(CMS_DIR . 'logs/', VAR_DIR . 'tmp/logs/');
-        }
+//        if (is_dir(CMS_DIR . 'logs/')) {
+//            foreach (scandir(CMS_DIR . 'logs/') as $file) {
+//                if ($file == '.' || $file == '..') {
+//                    continue;
+//                }
+//
+//                rename(CMS_DIR . 'logs/' . $file, VAR_DIR . 'log/setup.' . $file);
+//            }
+//
+//            rename(CMS_DIR . 'logs/', VAR_DIR . 'tmp/logs/');
+//        }
 
         $this->Step = Setup::STEP_SETUP_DELETE;
     }

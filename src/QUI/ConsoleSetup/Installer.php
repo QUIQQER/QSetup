@@ -2,6 +2,9 @@
 
 namespace QUI\ConsoleSetup;
 
+error_reporting(E_ALL);
+ini_set("display_errors", 1);
+
 use QUI\ConsoleSetup\Locale\Locale;
 use QUI\Exception;
 use QUI\Requirements\Requirements;
@@ -134,6 +137,17 @@ class Installer
         $this->echoDecorationCoffe();
         $this->setup();
         $this->stepFinish();
+
+        # Give a warning about setup.error.log if it exists.
+        if (file_exists(Log::getErrorLogFile())) {
+            $this->writeLn(
+                $this->Locale->getStringLang(
+                    "warning.setup.error.log.found",
+                    "It seems like an error happened. Please check : " . Log::getErrorLogFile()
+                ),
+                self::LEVEL_WARNING
+            );
+        }
     }
 
 
@@ -585,6 +599,7 @@ class Installer
     private function setup()
     {
         $this->echoSectionHeader($this->Locale->getStringLang("message.step.setup", "Executing Setup : "));
+
         $this->Setup->runSetup();
     }
 

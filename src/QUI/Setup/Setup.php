@@ -547,7 +547,7 @@ class Setup
             $cmsDir          = CMS_DIR;
 
 
-            if (defined(PHP_BINARY)) {
+            if (defined('PHP_BINARY')) {
                 $phpPath = PHP_BINARY . " ";
             } else {
                 $phpPath = "php ";

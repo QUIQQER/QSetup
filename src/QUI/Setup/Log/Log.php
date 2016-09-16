@@ -16,6 +16,7 @@ class Log
         $msg = "[INFO] " . $msg . PHP_EOL;
         if (!is_writable(self::getLogFile())) {
             echo "\033[1;31m Logfile (" . self::getLogFile() . ") is not writeable! \033[0m" . PHP_EOL;
+
             return;
         }
         file_put_contents(self::getLogFile(), $msg, FILE_APPEND);
@@ -30,6 +31,7 @@ class Log
         $msg = "[WARNING] " . $msg . PHP_EOL;
         if (!is_writable(self::getLogFile())) {
             echo "\033[1;31m Logfile (" . self::getLogFile() . ") is not writeable! \033[0m" . PHP_EOL;
+
             return;
         }
         file_put_contents(self::getLogFile(), $msg, FILE_APPEND);
@@ -45,12 +47,19 @@ class Log
         $msg = "[ERROR] " . $msg . PHP_EOL;
         if (!is_writable(self::getLogFile())) {
             echo "\033[1;31m Logfile (" . self::getLogFile() . ") is not writeable! \033[0m" . PHP_EOL;
+
             return;
         }
         file_put_contents(self::getLogFile(), $msg, FILE_APPEND);
 
+
+        if (!file_exists(self::getErrorLogFile())) {
+            file_put_contents(self::getErrorLogFile(), '');
+        }
+
         if (!is_writable(self::getErrorLogFile())) {
             echo "\033[1;31m Logfile (" . self::getErrorLogFile() . ") is not writeable! \033[0m" . PHP_EOL;
+
             return;
         }
         file_put_contents(self::getErrorLogFile(), $msg, FILE_APPEND);
@@ -65,6 +74,7 @@ class Log
         $msg = $msg . PHP_EOL;
         if (!is_writable(self::getLogFile())) {
             echo "\033[1;31m Logfile (" . self::getLogFile() . ") is not writeable! \033[0m" . PHP_EOL;
+
             return;
         }
         file_put_contents(self::getLogFile(), $msg, FILE_APPEND);
@@ -77,8 +87,14 @@ class Log
     public static function appendError($msg)
     {
         $msg = $msg . PHP_EOL;
+
+        if (!file_exists(self::getErrorLogFile())) {
+            file_put_contents(self::getErrorLogFile(), '');
+        }
+
         if (!is_writable(self::getErrorLogFile())) {
             echo "\033[1;31m Logfile (" . self::getErrorLogFile() . ") is not writeable! \033[0m" . PHP_EOL;
+
             return;
         }
         file_put_contents(self::getErrorLogFile(), $msg, FILE_APPEND);
@@ -128,7 +144,6 @@ class Log
         if (!is_dir($logDir)) {
             mkdir($logDir, 0755, true);
         }
-
 
 
         self::$errorLogFile = $file;

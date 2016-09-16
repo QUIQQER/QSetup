@@ -73,13 +73,14 @@ class Database
      * @param $user
      * @param $pw
      * @param $db
+     * @param $port
      * @return bool - returns true if database exists, retuns false if database could not be found
      * @throws SetupException
      */
-    public static function databaseExists($driver, $host, $user, $pw, $db)
+    public static function databaseExists($driver, $host, $user, $pw, $db, $port = "")
     {
         # Check for userdata
-        $dsn = self::getConnectionString($driver, $host, "information_schema");
+        $dsn = self::getConnectionString($driver, $host, "information_schema", $port);
         try {
             $pdo = new \PDO($dsn, $user, $pw);
         } catch (\PDOException $Exception) {
@@ -118,13 +119,24 @@ class Database
         return false;
     }
 
-
-    public static function databaseIsEmpty($driver, $host, $user, $pw, $db, $prefix)
+    /**
+     * Checks if the given database is empty.
+     * @param $driver
+     * @param $host
+     * @param $user
+     * @param $pw
+     * @param $db
+     * @param $prefix
+     * @param string $port
+     * @return bool
+     * @throws SetupException
+     */
+    public static function databaseIsEmpty($driver, $host, $user, $pw, $db, $prefix, $port = "")
     {
         $prefix = $prefix . "%";
 
         # Check for userdata
-        $dsn = self::getConnectionString($driver, $host, "information_schema");
+        $dsn = self::getConnectionString($driver, $host, "information_schema", $port);
         try {
             $pdo = new \PDO($dsn, $user, $pw);
         } catch (\PDOException $Exception) {
@@ -184,16 +196,17 @@ class Database
      *
      * @param string $driver
      * @param string $host
+     * @param string $port
      * @param string $user
      * @param string $pw
      * @param string $db
      * @return bool - true on success
      * @throws SetupException
      */
-    public static function checkCredentials($driver, $host, $user, $pw, $db)
+    public static function checkCredentials($driver, $host, $user, $pw, $db, $port = "")
     {
         # Check for userdata
-        $dsn = self::getConnectionString($driver, $host);
+        $dsn = self::getConnectionString($driver, $host, "", $port);
         try {
             $pdo = new \PDO($dsn, $user, $pw);
         } catch (\PDOException $Exception) {
@@ -205,7 +218,7 @@ class Database
 
         # Check if DB Exists
         if (!empty($db)) {
-            $dsn = self::getConnectionString($driver, $host, $db);
+            $dsn = self::getConnectionString($driver, $host, $db, $port);
             try {
                 $pdo = new \PDO($dsn, $user, $pw);
             } catch (\PDOException $Exception) {
@@ -223,14 +236,15 @@ class Database
      * Checks if the user can create and drop Tables in the given database
      * @param $driver
      * @param $host
+     * @param $port
      * @param $user
      * @param $pw
      * @param $db
      * @return bool - Returns true on success and false if permissions are missing
      */
-    public static function checkDatabaseWriteAccess($driver, $host, $user, $pw, $db)
+    public static function checkDatabaseWriteAccess($driver, $host, $user, $pw, $db, $port = "")
     {
-        $dsn = self::getConnectionString($driver, $host, $db);
+        $dsn = self::getConnectionString($driver, $host, $db, $port);
         try {
             $pdo = new \PDO($dsn, $user, $pw);
 
@@ -250,9 +264,9 @@ class Database
     }
 
 
-    public static function checkDatabaseCreationAccess($driver, $host, $user, $pw)
+    public static function checkDatabaseCreationAccess($driver, $host, $user, $pw, $port = "")
     {
-        $dsn = self::getConnectionString($driver, $host);
+        $dsn = self::getConnectionString($driver, $host, "", $port);
         try {
             $pdo = new \PDO($dsn, $user, $pw);
 
@@ -271,6 +285,64 @@ class Database
             return false;
         }
     }
+
+    public static function clearDatabase($driver, $host, $user, $pw, $db, $prefix, $port = "")
+    {
+        $prefix = $prefix . "%";
+
+        # Check the userdata
+        $dsn = self::getConnectionString($driver, $host, "information_schema", $port);
+        try {
+            $pdo = new \PDO($dsn, $user, $pw);
+        } catch (\PDOException $Exception) {
+            throw new SetupException(
+                $Exception->getMessage(),
+                $Exception->getCode()
+            );
+        }
+
+        # Get all matching tables and delete them
+        try {
+            switch (strtolower($driver)) {
+                case 'pgsql':
+                    // TODO TEST POSTGRESSQL DATABASE EXIXTS
+                case 'mysql':
+                    $sql  = "SELECT * FROM TABLES WHERE TABLE_SCHEMA=:dbname AND TABLE_NAME LIKE :prefix ;";
+                    $stmt = $pdo->prepare($sql);
+                    $stmt->bindParam(':dbname', $db);
+                    $stmt->bindParam(':prefix', $prefix);
+
+                    $stmt->execute();
+                    $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+                    if (!$result) {
+                        throw new SetupException($stmt->errorInfo()[2]);
+                    }
+
+                    foreach ($result as $row) {
+                        $table = $row['TABLE_NAME'];
+
+                        $sql = "DROP TABLE " . $db . "." . $table;
+                        $result = $pdo->query($sql);
+
+                        if (!$result) {
+                            throw new SetupException($result->errorInfo()[2]);
+                        }
+                    }
+
+                    return true;
+                    break;
+            }
+        } catch (\PDOException $Exception) {
+            throw new SetupException(
+                $Exception->getMessage(),
+                $Exception->getCode()
+            );
+        }
+
+        return false;
+    }
+
     # =====================================
     # Public
     # =====================================
@@ -391,7 +463,6 @@ class Database
             }
         }
     }
-
 
     /**
      * Executes a select query.

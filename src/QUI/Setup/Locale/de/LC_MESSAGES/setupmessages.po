@@ -26,7 +26,7 @@ msgid "setup.missing.composerjson"
 msgstr "Konnte die composer.json Datei nicht finden"
 
 msgid "setup.message.step.files"
-msgstr "Erstelle die bootstrap Dateien"
+msgstr "Erstelle die Bootstrap Dateien"
 
 msgid "setup.message.step.setup"
 msgstr "Starte die Quiqqer Setup routinen"

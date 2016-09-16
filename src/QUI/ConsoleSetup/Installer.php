@@ -22,6 +22,7 @@ define('COLOR_RED', '1;31');
 define('COLOR_YELLOW', '1;33');
 define('COLOR_PURPLE', '1;35');
 define('COLOR_WHITE', '1;37');
+define('COLOR_GREY', '0;37');
 
 /**
  * Class Installer
@@ -194,7 +195,8 @@ class Installer
             $statusHuman = $result->getStatusHumanReadable();
             $status      = $result->getStatus();
 
-            $errors = false;
+            $errors   = false;
+            $warnings = false;
             switch ($status) {
                 case TestResult::STATUS_FAILED:
                     $errors = true;
@@ -207,6 +209,7 @@ class Installer
 
                 case TestResult::STATUS_UNKNOWN:
                     $this->writeLn("[{$statusHuman}] {$name}", null, COLOR_YELLOW);
+                    $warnings = true;
                     break;
             }
 
@@ -225,6 +228,17 @@ class Installer
                 if ($continue != "y") {
                     exit;
                 }
+            }
+
+            # Echo Warning for unknown requirements.
+            if ($warnings) {
+                $this->writeLn(
+                    $this->Locale->getStringLang(
+                        "warning.requirement.unknown",
+                        "Some Requirements could not be detected. You can ignore this warning, if you know those requirements are met by your system."
+                    ),
+                    self::LEVEL_WARNING
+                );
             }
         }
 
@@ -278,6 +292,8 @@ class Installer
         }
 
         $this->Setup->storeSetupState();
+
+        return true;
     }
 
     /**
@@ -371,6 +387,7 @@ class Installer
         // That way he does not have to enter all the credentials again if he made a typo.
         $createNew     = false;
         $validDatabase = false;
+        $db            = "";
         while (!$validDatabase) {
             # Ask for Database name
             $db = $this->prompt(
@@ -379,7 +396,7 @@ class Installer
             );
 
             # Check if database exists
-            if (!Database::databaseExists($driver, $host, $user, $pw, $db)) {
+            if (!Database::databaseExists($driver, $host, $user, $pw, $db, $port)) {
                 $createPromptResult = $this->prompt(
                     $this->Locale->getStringLang(
                         "prompt.database.createnew",
@@ -393,7 +410,7 @@ class Installer
 
                 if ($createPromptResult == "y"
                 ) {
-                    if (!Database::checkDatabaseCreationAccess($driver, $host, $user, $pw)) {
+                    if (!Database::checkDatabaseCreationAccess($driver, $host, $user, $pw, $port)) {
                         # User does not have database creation permission
                         $this->writeLn(
                             $this->Locale->getStringLang(
@@ -409,7 +426,7 @@ class Installer
                     $createNew     = true;
                     $validDatabase = true;
                 }
-            } elseif (!Database::checkDatabaseWriteAccess($driver, $host, $user, $pw, $db)) {
+            } elseif (!Database::checkDatabaseWriteAccess($driver, $host, $user, $pw, $db, $port)) {
                 # Check if the desired database can be written
                 $this->writeLn(
                     $this->Locale->getStringLang(
@@ -432,7 +449,7 @@ class Installer
         );
 
         # This will check if the database is empty and put out a warning if not
-        if (!Database::databaseIsEmpty($driver, $host, $user, $pw, $db, $prefix)) {
+        if (!Database::databaseIsEmpty($driver, $host, $user, $pw, $db, $prefix, $port)) {
             $this->writeLn(
                 $this->Locale->getStringLang(
                     "warning.database.not.empty",
@@ -440,11 +457,42 @@ class Installer
                 ),
                 self::LEVEL_WARNING
             );
+
+            $nonEmptyDbPromptResult = $this->prompt(
+                $this->Locale->getStringLang(
+                    "prompt.database.not.empty.continue",
+                    "How do you want to proceed? (n = Select new; c = clear database (All data will be lost!); q = quit setup) :"
+                ),
+                "n",
+                COLOR_YELLOW,
+                false,
+                true
+            );
+
+            switch ($nonEmptyDbPromptResult) {
+                case 'n':
+                    return $this->stepDatabase();
+                    break;
+
+                case 'c':
+                    Database::clearDatabase($driver, $host, $user, $pw, $db, $prefix, $port);
+                    break;
+
+                case 'q':
+                    exit;
+                    break;
+
+                default:
+                    return $this->stepDatabase();
+                    break;
+            }
         }
 
 
         $this->Setup->setDatabase($driver, $host, $db, $user, $pw, $port, $prefix, $createNew);
         $this->Setup->storeSetupState();
+
+        return true;
     }
 
     /**
@@ -512,13 +560,30 @@ class Installer
             $this->Locale->getStringLang("message.step.paths", "Pathsettings")
         );
 
+        $this->writeHelp($this->Locale->getStringLang(
+            "help.prompt.host",
+            "The Domain. Should start with http:// and must NOT end with a trailing slash." . PHP_EOL .
+            "Example : http://example.com "
+        ));
+
         $host = $this->prompt(
             $this->Locale->getStringLang("prompt.host", "Hostname : ")
         );
 
+        # Make sure the host starts with http:// and does not have a trailing slash
+        if (substr($host, 0, 7) != 'http://' && substr($host, 0, 8) != 'https://') {
+            $host = "http://" . $host;
+        }
+        $host = rtrim($host, '/');
 
-        # Cms dir
+        # CMS dir
         $continue = true;
+
+        $this->writeHelp($this->Locale->getStringLang(
+            "help.prompt.cms",
+            "Absolute path to the location of Quiqqer on the servers filesystem." . PHP_EOL .
+            "Should start with slash and end with slash."
+        ));
 
         // Will ask the user for a cms directory and check if it is empty.
         // Will continue asking until dir is empty or the user chose to ignore the warning
@@ -576,10 +641,19 @@ class Installer
         }
 
 
+        $this->writeHelp($this->Locale->getStringLang(
+            "help.prompt.url",
+            "If you install Quiqqer into a subfolder of your document root." . PHP_EOL .
+            "Example :  /quiqqer/ for http://example.com/quiqqer/" . PHP_EOL .
+            "Should start with slash and end with slash."
+        ));
+
         $urlDir = $this->prompt(
             $this->Locale->getStringLang("prompt.url", "Url Directory : "),
             "/"
         );
+
+        $urlDir = Utils::normalizePath($urlDir);
 
         try {
             $this->Setup->setPaths($host, $cmsDir, $urlDir);
@@ -650,6 +724,7 @@ SMILEY;
 
 
     #region I/O
+
     /** Prompts the user for data.
      * @param $text - The prompt Text
      * @param bool $default - The defaultvalue
@@ -770,6 +845,13 @@ SMILEY;
         return;
     }
 
+    private function writeHelp($msg)
+    {
+        $msg = $this->getColoredString($msg, COLOR_GREY);
+        #$msg = "\e[3m".$msg."\e[0m";
+        # Add another empty line before the help text.
+        echo PHP_EOL . $msg . PHP_EOL;
+    }
 
     /**
      * This will sourround the given text with ANSI colortags

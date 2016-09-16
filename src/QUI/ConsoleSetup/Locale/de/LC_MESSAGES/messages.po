@@ -62,13 +62,13 @@ msgid "message.step.paths"
 msgstr "Pfadeinstellungen"
 
 msgid "prompt.host"
-msgstr "Der Host, unter dem Quiqqer erreichbar sein soll: "
+msgstr "Domain : "
 
 msgid "prompt.cms"
-msgstr "Das Verzeichnis, indem Quiqqer installiert wird: "
+msgstr "Quiqqer Rootverzeichnis: "
 
 msgid "prompt.url"
-msgstr "Das Unterverzeichnis (nach dem Host), indem Quiqqer installiert wird: "
+msgstr "Url Verzeichnis: "
 
 msgid "exception.validation.version.invalid"
 msgstr "Die von ihnen eingegeben Version ist nicht gültig."
@@ -189,3 +189,18 @@ msgstr "Die angegebene Datenbank konnte nicht verändert werden. (Tabellen erste
 
 msgid "setup.warning.database.not.createable"
 msgstr "Die angegebene Datenbank konnte nicht erstellt werden (Fehlende Rechte)"
+
+msgid "warning.requirement.unknown"
+msgstr "Nicht alle systemvorraussetzungen konnten geprüft werden. Diese Warnung ist belanglos, falls Sie wissen, dass alle Vorraussetzungen erfüllt sind."
+
+msgid "prompt.database.not.empty.continue"
+msgstr "Wie möchten Sie fortfahren?\n   - n : Neue Datenbank wählen \n   - c : Datenbank leeren. Warnung! Alle Daten gehen verloren! \n   - q : Setup abbrechen"
+
+msgid "help.prompt.host"
+msgstr "Die Domain unter welcher Quiqqer erreichbar sein wird. \nDie Domain sollte mit 'http://' beginnen und ohne Slash enden!\nBeispiel : http://example.com"
+
+msgid "help.prompt.cms"
+msgstr "Der Absolute Pfad zu dem Verzeichnis, in welches Quiqqer auf dem Filesystem des Servers installiert wird.\nMuss mit Slash beginnen und enden! \nBeispiel : /var/www/vhosts/example.com/httpdocs/"
+
+msgid "help.prompt.url"
+msgstr "Der Pfad nach der Domain, falls Quiqqer in ein Unterverzeichnis des Document Roots installiert wird.\nMuss mit Slash beginnen und enden.\nBeispiel : /quiqqer/ für http://example.com/quiqqer/"

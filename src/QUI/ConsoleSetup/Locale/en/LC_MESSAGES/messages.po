@@ -189,3 +189,18 @@ msgstr "The given database could not be edited (Creating Tables)"
 
 msgid "setup.warning.database.not.createable"
 msgstr "The given user could not create the database (No Permission)"
+
+msgid "warning.requirement.unknown"
+msgstr "Some Requirements could not be detected. Please make sure that those Requirements are installed. This warning is void, if you know they are installed."
+
+msgid "prompt.database.not.empty.continue"
+msgstr "How do you want to proceed?\n   - n : Select new database \n   - c : Clear the selected database. Warnung all data will be lost! \n   - q : Quit setup"
+
+msgid "help.prompt.host"
+msgstr "The domain under which Quiqqer will be reachable. \nShould start with http:// and end with with slash. \nExample : http://example.com"
+
+msgid "help.prompt.cms"
+msgstr "The absolute path of the directory in which Quiqqer will be installed.\nShould end and start with slash.\nExample: /var/www/vhosts/example.com/httpdocs/"
+
+msgid "help.prompt.url"
+msgstr "The path after the domain, if Quiqqer is installed into an subdirectory of the document root.\nShould start and end with slash.\nExample: /quiqqer/ for http://example.com/quiqqer/"

@@ -988,7 +988,6 @@ class Setup
             array(
                 'id'      => $this->data['rootGID'],
                 'name'    => 'Administrator',
-                'admin'   => 1,
                 'active'  => 1,
                 'toolbar' => 'standard.xml'
             )

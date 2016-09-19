@@ -204,3 +204,6 @@ msgstr "The absolute path of the directory in which Quiqqer will be installed.\n
 
 msgid "help.prompt.url"
 msgstr "The path after the domain, if Quiqqer is installed into an subdirectory of the document root.\nShould start and end with slash.\nExample: /quiqqer/ for http://example.com/quiqqer/"
+
+msgid "setup.message.finished.filerights"
+msgstr "Please make sure that the executing PHP-User owns the files and the Webserver has read-access."

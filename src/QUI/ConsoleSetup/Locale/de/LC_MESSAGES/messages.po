@@ -204,3 +204,6 @@ msgstr "Der Absolute Pfad zu dem Verzeichnis, in welches Quiqqer auf dem Filesys
 
 msgid "help.prompt.url"
 msgstr "Der Pfad nach der Domain, falls Quiqqer in ein Unterverzeichnis des Document Roots installiert wird.\nMuss mit Slash beginnen und enden.\nBeispiel : /quiqqer/ für http://example.com/quiqqer/"
+
+msgid "setup.message.finished.filerights"
+msgstr "Bitte stellen Sie sicher, dass der Webserver Leserechte auf die QUIQQER-Installation hat und der ausführende PHP-Benutzer der Besitzer der Dateien ist."

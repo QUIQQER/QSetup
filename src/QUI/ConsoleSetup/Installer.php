@@ -715,6 +715,12 @@ SMILEY;
         $this->writeLn($emoticon, null, COLOR_GREEN);
 
         $this->writeLn(
+            $this->Locale->getStringLang("setup.message.finished.filerights", "Please make sure that the executing PHP-User owns the files and the Webserver has read-access."),
+            self::LEVEL_INFO,
+            COLOR_GREEN
+        );
+
+        $this->writeLn(
             $this->Locale->getStringLang("setup.message.finished.text", "Setup finished"),
             self::LEVEL_INFO,
             COLOR_GREEN

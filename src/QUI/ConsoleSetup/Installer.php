@@ -57,9 +57,17 @@ class Installer
             $this->Setup->setSetupLanguage("en_GB");
         } catch (Exception $Exception) {
             if ($Exception->getMessage() == 'locale.localeset.failed') {
-                $this->writeLn("Setup could not be initialized. The Setup process requires the locale 'en' to be installed on your system! A possible fix is to execute 'sudo localge-gen en-GB'");
+                $this->writeLn(
+                    "Setup could not be initialized. The Setup process requires the locale 'en' to be installed on your system! A possible fix is to execute 'sudo localge-gen en-GB'",
+                    self::LEVEL_CRITICAL
+                );
+                exit;
             } else {
-                $this->writeLn("An unknown error appeared while initializing setup : " . $Exception->getMessage());
+                $this->writeLn(
+                    "An unknown error appeared while initializing setup : " . $Exception->getMessage(),
+                    self::LEVEL_CRITICAL
+                );
+                exit;
             }
         }
 

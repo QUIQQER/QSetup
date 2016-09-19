@@ -70,16 +70,21 @@ foreach ($versions as $version) {
 }
 
 # Create the zip file
-createZip(__DIR__ . '/setup/');
+$zipLocation = createZip(__DIR__ . '/setup/');
 
 # Create a md5 file
-
+createChecksums($zipLocation);
 
 # Upload zip file to updateserver
-
 $upload = prompt("Do you want to upload the File to the updateserver? (y/n)", false);
 if ($upload == 'y') {
-    executeShellCommand('scp quiqqer.zip root@qui1.pcsg-server.de:/var/www/vhosts/update.quiqqer.com/quiqqer.zip');
+    if (file_exists($zipLocation)) {
+        executeShellCommand('scp ' . $zipLocation . ' root@qui1.pcsg-server.de:/var/www/vhosts/update.quiqqer.com/quiqqer.zip');
+        # Upload file with checksum for quiqqer.zip
+        if (file_exists(dirname($zipLocation) . '/checksum.md5')) {
+            executeShellCommand('scp ' . dirname($zipLocation) . '/checksum.md5' . ' root@qui1.pcsg-server.de:/var/www/vhosts/update.quiqqer.com/checksum.md5');
+        }
+    }
 }
 
 # End execution
@@ -113,6 +118,14 @@ function createZip($target)
     return $zipLocation;
 }
 
+function createChecksums($zipLocation)
+{
+    $md5 = md5_file($zipLocation);
+
+    file_put_contents(dirname($zipLocation) . '/checksum.md5', $md5);
+
+    writeLn("Calculated Checksum for : " . $zipLocation . " : " . $md5);
+}
 
 function downloadXMLForVersion($version)
 {
@@ -323,6 +336,27 @@ function prompt(
 function getColoredString($text, $color)
 {
     return "\033[" . $color . "m" . $text . "\033[0m";
+}
+
+function getDirContent($dir)
+{
+    $content = array();
+
+    if (!is_dir($dir)) {
+        return false;
+    }
+
+    $directory = dir($dir);
+    while (($entry = $directory->read()) !== false) {
+        if ($entry == '.' || $entry == '..' || substr($entry, 0, 1) == '.') {
+            continue;
+        }
+
+        $content[] = $entry;
+    }
+    $directory->close();
+
+    return $content;
 }
 
 #endregion

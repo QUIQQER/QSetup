@@ -52,8 +52,12 @@ class Installer
     public function __construct()
     {
         $this->Setup = new Setup(Setup::MODE_CLI);
-        $this->Setup->setSetupLanguage("en_GB");
-        $this->Locale = new Locale('en_GB');
+        try {
+            $this->Locale = new Locale('en_GB');
+            $this->Setup->setSetupLanguage("en_GB");
+        } catch (Exception $Exception) {
+            $this->writeLn("Setup could not be initialized. The Setup process requires the locale 'en' to be installed on your system! A possible fix is to execute 'sudo localge-gen en-GB'");
+        }
 
         $this->logDir = dirname(dirname(dirname(dirname(__FILE__)))) . '/logs/';
 

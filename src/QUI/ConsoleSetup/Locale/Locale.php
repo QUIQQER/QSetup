@@ -13,6 +13,11 @@ class Locale
 
     private $domain = "messages";
 
+    /**
+     * Locale constructor.
+     * @param $lang
+     * @throws LocaleException
+     */
     public function __construct($lang)
     {
         $this->current = $lang;
@@ -31,9 +36,28 @@ class Locale
                 $this->current . ".UTF8"
             )
         );
+
+        # Try to set english as fallback. If that does not work. Throw an exception!
         if ($res === false) {
-            throw new LocaleException("locale.localeset.failed");
+            if (!setlocale(
+                LC_ALL,
+                array(
+                    'en',
+                    'en_GB',
+                    'en_US',
+                    'en.utf8',
+                    'en_GB.utf8',
+                    'en_US.utf8',
+                    'en.UTF8',
+                    'en_GB.UTF8',
+                    'en_US.UTF8',
+                )
+            )
+            ) {
+                throw new LocaleException("locale.localeset.failed");
+            }
         }
+
         bindtextdomain($this->domain, dirname(__FILE__));
     }
 

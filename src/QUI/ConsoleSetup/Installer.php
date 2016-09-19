@@ -58,7 +58,7 @@ class Installer
         } catch (Exception $Exception) {
             if ($Exception->getMessage() == 'locale.localeset.failed') {
                 $this->writeLn(
-                    "Setup could not be initialized. The Setup process requires the locale 'en' to be installed on your system! A possible fix is to execute 'sudo localge-gen en-GB'",
+                    "Setup could not be initialized. The Setup process requires the locale 'en' to be installed on your system!" . PHP_EOL . " A possible fix is to execute 'sudo locale-gen en_GB'",
                     self::LEVEL_CRITICAL
                 );
                 exit;
@@ -610,7 +610,7 @@ class Installer
             );
 
             $cmsDir = Utils::normalizePath($cmsDir);
-
+            $cmsDir = "/" . ltrim($cmsDir, '/');
             try {
                 Validator::validatePath($cmsDir);
             } catch (SetupException $Exception) {
@@ -625,7 +625,7 @@ class Installer
 
             # Check if Directory is empty
             // TODO better check for existing files, when cmsDir is setupDir
-            if ($cmsDir != dirname(dirname(dirname(dirname(__FILE__)))) &&
+            if (rtrim($cmsDir, '/') != rtrim(dirname(dirname(dirname(dirname(__FILE__)))), '/') &&
                 !Utils::isDirEmpty($cmsDir)
             ) {
                 $this->writeLn(
@@ -670,6 +670,7 @@ class Installer
         );
 
         $urlDir = Utils::normalizePath($urlDir);
+        $urlDir = "/" . ltrim($urlDir, '/');
 
         try {
             $this->Setup->setPaths($host, $cmsDir, $urlDir);
@@ -993,8 +994,6 @@ HEADER;
     }
 
     #endregion
-
-
     private function echoRestorableData($data)
     {
         $setupData = $data['data'];

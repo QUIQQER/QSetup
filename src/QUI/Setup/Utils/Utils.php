@@ -16,7 +16,6 @@ class Utils
     }
 
 
-
     /**
      * Checks if a directory is empty.
      * @param $dir - Path to the directory.
@@ -36,5 +35,31 @@ class Utils
         }
 
         return true;
+    }
+
+    public static function getDirMD5($dir)
+    {
+        if (!is_dir($dir)) {
+            return false;
+        }
+
+        $fileHashes = array();
+
+        $directory = dir($dir);
+
+        while (($entry = $directory->read()) !== false) {
+            if ($entry == '.' || $entry == '..') {
+                continue;
+            }
+
+            if (is_dir($dir . '/' . $entry)) {
+                $fileHashes[] = self::getDirMD5($dir . '/' . $entry);
+            } else {
+                $fileHashes[] = md5($dir . '/' . $entry);
+            }
+        }
+        $directory->close();
+
+        return md5(implode('', $fileHashes));
     }
 }

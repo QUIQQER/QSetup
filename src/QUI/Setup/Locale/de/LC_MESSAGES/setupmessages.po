@@ -29,13 +29,13 @@ msgid "setup.message.step.files"
 msgstr "Erstelle die Bootstrap Dateien"
 
 msgid "setup.message.step.setup"
-msgstr "Starte die Quiqqer Setup routinen"
+msgstr "Starte die QUIQQER Setup routinen"
 
 msgid "setup.message.step.delete"
 msgstr "Lösche die nicht mehr benötigten Dateien des Setups"
 
 msgid "setup.message.step.checks"
-msgstr "Starte die Quiqqer checks"
+msgstr "Starte die QUIQQER checks"
 
 msgid "setup.filesystem.composerjson.notcreated"
 msgstr "Konnte die composer.json Datei nicht erstellen"
@@ -131,5 +131,5 @@ msgid "applypreset.set.layout"
 msgstr "Verwende Layout "
 
 msgid "applypreset.quiqqer.setup"
-msgstr "Führe Quiqqer Setup aus."
+msgstr "Führe QUIQQER Setup aus."
 

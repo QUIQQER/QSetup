@@ -2,7 +2,7 @@ msgid "message.step.language"
 msgstr "Spracheinstellung"
 
 msgid "prompt.language"
-msgstr "Bitte geben Sie die Sprache ein, die Quiqqer verwenden soll: "
+msgstr "Bitte geben Sie die Sprache ein, die QUIQQER verwenden soll: "
 
 msgid "message.step.requirements"
 msgstr "Systemvorraussetzungen"
@@ -44,7 +44,7 @@ msgid "prompt.database.db"
 msgstr "Datenbank Name : "
 
 msgid "prompt.database.createnew"
-msgstr "Die angegebene Datenbank existiert nicht. Soll Quiqqer versuchen sie zu erstellen? (Y/n)"
+msgstr "Die angegebene Datenbank existiert nicht. Soll QUIQQER versuchen sie zu erstellen? (Y/n)"
 
 msgid "prompt.database.prefix"
 msgstr "Datenbank Tabellen-prefix: "
@@ -65,7 +65,7 @@ msgid "prompt.host"
 msgstr "Domain : "
 
 msgid "prompt.cms"
-msgstr "Quiqqer Rootverzeichnis: "
+msgstr "QUIQQER Rootverzeichnis: "
 
 msgid "prompt.url"
 msgstr "Url Verzeichnis: "
@@ -146,7 +146,7 @@ msgid "setup.message.localeset.failed"
 msgstr "Setup could not set the language!"
 
 msgid "prompt.requirements.continue"
-msgstr "Nicht alle Systemvorraussetzungen sind erfüllt. Dies könnte zu maßgeblichen Einschränkungen der Funktionalität von Quiqqer führen. Möchten Sie trotzdem fortfahren?"
+msgstr "Nicht alle Systemvorraussetzungen sind erfüllt. Dies könnte zu maßgeblichen Einschränkungen der Funktionalität von QUIQQER führen. Möchten Sie trotzdem fortfahren?"
 
 msgid "database.credentials.not.valid"
 msgstr "Die Datenbank Zugangsdaten sind nicht korrekt!"
@@ -197,13 +197,13 @@ msgid "prompt.database.not.empty.continue"
 msgstr "Wie möchten Sie fortfahren?\n   - n : Neue Datenbank wählen \n   - c : Datenbank leeren. Warnung! Alle Daten gehen verloren! \n   - q : Setup abbrechen"
 
 msgid "help.prompt.host"
-msgstr "Die Domain unter welcher Quiqqer erreichbar sein wird. \nDie Domain sollte mit 'http://' beginnen und ohne Slash enden!\nBeispiel : http://example.com"
+msgstr "Die Domain unter welcher QUIQQER erreichbar sein wird. \nDie Domain sollte mit 'http://' beginnen und ohne Slash enden!\nBeispiel : http://example.com"
 
 msgid "help.prompt.cms"
-msgstr "Der Absolute Pfad zu dem Verzeichnis, in welches Quiqqer auf dem Filesystem des Servers installiert wird.\nMuss mit Slash beginnen und enden! \nBeispiel : /var/www/vhosts/example.com/httpdocs/"
+msgstr "Der Absolute Pfad zu dem Verzeichnis, in welches QUIQQER auf dem Filesystem des Servers installiert wird.\nMuss mit Slash beginnen und enden! \nBeispiel : /var/www/vhosts/example.com/httpdocs/"
 
 msgid "help.prompt.url"
-msgstr "Der Pfad nach der Domain, falls Quiqqer in ein Unterverzeichnis des Document Roots installiert wird.\nMuss mit Slash beginnen und enden.\nBeispiel : /quiqqer/ für http://example.com/quiqqer/"
+msgstr "Der Pfad nach der Domain, falls QUIQQER in ein Unterverzeichnis des Document Roots installiert wird.\nMuss mit Slash beginnen und enden.\nBeispiel : /quiqqer/ für http://example.com/quiqqer/"
 
 msgid "setup.message.finished.filerights"
 msgstr "Bitte stellen Sie sicher, dass der Webserver Leserechte auf die QUIQQER-Installation hat und der ausführende PHP-Benutzer der Besitzer der Dateien ist."

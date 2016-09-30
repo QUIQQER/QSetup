@@ -132,4 +132,4 @@ msgid "applypreset.set.layout"
 msgstr "Set layout: "
 
 msgid "applypreset.quiqqer.setup"
-msgstr "Executing Quiqqer setup."
+msgstr "Executing QUIQQER setup."

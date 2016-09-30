@@ -1244,7 +1244,7 @@ class Setup
         }
 
 
-        $Composer->requirePackage("bower-asset/mustache", ">2");
+        $Composer->requirePackage("bower-asset/mustache", "2.*");
 
         $target = $this->baseDir . '/packages/bin/mustache';
         if (file_exists($target) && is_link($target)) {

@@ -1,0 +1,81 @@
+@CHARSET "UTF-8";
+
+* {
+    margin: 0;
+    padding: 0;
+
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+    color: #444;
+    line-height: 1.65em;
+    font-weight: 300;
+}
+
+input, textarea, select {
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    border-radius: 0;
+    font-size: 12pt;
+    line-height: 1.75em;
+    letter-spacing: 1px;
+    padding: 10px 16px;
+    margin: 6px 0;
+    box-shadow: 0 0 0 2px #ddd;
+}
+
+textarea {
+    font-family: 'Open Sans', sans-serif;
+    min-height: 10em;
+}
+
+
+h1, h2, h3, h4, h5 {
+    color: #444;
+    line-height: 1.15em;
+    font-weight: 500;
+    padding-bottom: 0.8em;
+}
+
+header > h1,
+header > h2,
+header > h3,
+header > h4,
+header > h4 {
+    padding-bottom: 0;
+}
+
+h1 {
+    font-size: 48px;
+}
+
+h1.brick-title {
+    text-align: center;
+}
+
+h2 {
+    font-size: 32px;
+    font-weight: 400;
+}
+
+h3 {
+    font-size: 26px;
+}
+
+h4 {
+    font-size: 18px;
+}
+
+p {
+    margin-bottom: 1em;
+}

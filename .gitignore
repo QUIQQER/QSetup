@@ -9,3 +9,6 @@
 /src/findMissingTranslations.php
 /components/
 /compileTranslations.sh
+/composer.phar
+/var/
+

@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="/bin/css/style.css" type="text/css"/>
     <link href='//fonts.googleapis.com/css?family=Open+Sans:300,400,600,800' rel='stylesheet' type='text/css'>
 
-    <!-- wegen "componens" muss hier die baseUrl neu definiert werden -->
+    <!-- wegen "componens" muss hier die baseUrl neu gesetzt werden -->
     <script>
         require.config({
             baseUrl: ''
@@ -62,7 +62,7 @@ for($i=0; $i<count($version); $i++) {
 <div class="page">
     <div class="grid-container">
         <div class="nav grid-20 mobile-grid-100">
-            <ul>
+            <ul class="nav-list">
                 <li class="step-done"><i class="fa fa-fw fa-check-square-o"></i>Sprache</li>
                 <li class="step-done"><i class="fa fa-fw fa-check-square-o"></i>Version</li>
                 <li class="step-active"><i class="fa fa-fw fa-square-o"></i>Vorlage</li>
@@ -73,20 +73,47 @@ for($i=0; $i<count($version); $i++) {
             </ul>
         </div>
         <div class="page-main grid-80 mobile-grid-100">
-            <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
-                et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea
-                rebum.</p>
-            <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
-                et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea
-                rebum.</p>
+            <div style="overflow: hidden;">
+            <ul class="steps-list">
+                <!-- step 1 -->
+                <li class="step step-1">
+                    <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
+                        et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea
+                        rebum.</p>
+                    <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
+                        et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea
+                        rebum.</p>
+                </li>
+
+                <!-- step 2 -->
+                <li class="step step-1">
+                    <h3>Wielka Dupa</h3>
+                    <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
+                        et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea
+                        rebum.</p>
+                </li>
+
+                <!-- step 3 -->
+                <li class="step step-1">
+                    <h3>Mini Step</h3>
+                    <p>Lorem ipsum</p>
+                </li>
+
+                <!-- step 4 -->
+                <li class="step step-1">
+                    <h3>Weiterer mini Step</h3>
+                    <p>Lorem ipsum step</p>
+                </li>
+            </ul>
+            </div>
         </div>
     </div>
 </div>
 
-<div class="nav-buttons grid-container">
+<div class="grid-container">
     <div class="nav-buttons grid-80 mobile-grid-100">
         <button class="qui-button back-button">Zurück</button>
-        <button class="qui-button forward-button">Fortfahren</button>
+        <button class="qui-button next-button">Fortfahren</button>
     </div>
 </div>
 

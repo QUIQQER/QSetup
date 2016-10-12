@@ -131,7 +131,7 @@ ul {
     list-style: none;
 }
 
-ul li {
+ul.nav-list li {
     padding: 1em 2em;
     background: #f5f5f5;
     border-bottom: 1px solid #fff;
@@ -139,21 +139,21 @@ ul li {
     font-weight: 500;
 }
 
-ul li.step-done {
+ul.nav-list li.step-done {
     color: #75b947;
     font-weight: normal;
 }
 
-ul li.step-active {
+ul.nav-list li.step-active {
     color: #75b947;
     font-weight: bold;
 }
 
-ul li:first-child {
+ul.nav-list li:first-child {
     padding-top: 0;
 }
 
-ul li:last-child {
+ul.nav-list li:last-child {
     border-bottom: none;
 }
 
@@ -164,11 +164,31 @@ ul li:last-child {
 .page-main {
     padding-top: 3em;
     padding-left: 3em;
+    position: relative;
+    /*overflow: hidden;*/
 }
 
+ul.steps-list {
+    font-size: 0;
+    white-space: nowrap;
+    position: relative;
+}
+
+li.step {
+    font-size: 16px;
+    position: relative;
+    white-space: normal;
+    display: inline-block;
+    float: none;
+    width: 100%;
+}
+
+
+
+
+
 .nav-buttons {
-    padding-left: 3em;
-    padding-top: 1em;
+    padding: 3em 0 3em 3em;
 }
 
 .nav-buttons .qui-button {
@@ -189,12 +209,12 @@ ul li:last-child {
     color: #aaa;
 }
 
-.qui-button.forward-button {
+.qui-button.next-button {
     background: #75b947;
     color: #fff;
     float: right;
 }
 
-.qui-button.forward-button:hover {
+.qui-button.next-button:hover {
     background: #539725;
 }

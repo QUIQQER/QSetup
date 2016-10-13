@@ -53,9 +53,42 @@ for($i=0; $i<count($version); $i++) {
         <h4>INSTALLATION</h4>
     </div>
     <div class="header-right grid-80 mobile-grid-100">
-        <h1> Webseite Sprache installieren</h1>
-        <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
-            dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.</p>
+        <ul class="header-list">
+            <li>
+                <h1>Webseite Sprache installieren</h1>
+                <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+                    tempor invidunt ut labore et
+                    dolore magna aliquyam erat, sed diam voluptua. At
+                    vero eos et accusam et justo duo dolores et ea rebum.</p>
+            </li><!--
+            <li>
+                <h1>Version</h1>
+                <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor</p>
+            </li>
+            <li>
+                <h1>Vorlage</h1>
+                <p>Sodf olore magna aliquyam erat, sed diam voluptua. At vero </p>
+            </li>
+            <li>
+                <h1>Datenbank</h1>
+                <p>Consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
+                    dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et</p>
+            </li>
+            <li>
+                <h1>Benutzer</h1>
+                <p>Ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+                    tempor invidunt ut labore et</p>
+            </li>
+            <li>
+                <h1>Host und Pfade</h1>
+                <p>Ipsum dolor sit amet, consetetur </p>
+            </li>
+            <li>
+                <h1>QLizenz</h1>
+                <p>Lizenzen ohne Ende</p>
+            </li>-->
+        </ul>
+
     </div>
 </div>
 
@@ -63,9 +96,9 @@ for($i=0; $i<count($version); $i++) {
     <div class="grid-container">
         <div class="nav grid-20 mobile-grid-100">
             <ul class="nav-list">
-                <li class="step-done"><i class="fa fa-fw fa-check-square-o"></i>Sprache</li>
-                <li class="step-done"><i class="fa fa-fw fa-check-square-o"></i>Version</li>
-                <li class="step-active"><i class="fa fa-fw fa-square-o"></i>Vorlage</li>
+                <li class="step-active"><i class="fa fa-fw fa-square-o"></i>Sprache</li>
+                <li><i class="fa fa-fw fa-square-o"></i>Version</li>
+                <li><i class="fa fa-fw fa-square-o"></i>Vorlage</li>
                 <li><i class="fa fa-fw fa-square-o"></i>Datenbank</li>
                 <li><i class="fa fa-fw fa-square-o"></i>Root Benutzer</li>
                 <li><i class="fa fa-fw fa-square-o"></i>Host und Pfade</li>
@@ -77,32 +110,70 @@ for($i=0; $i<count($version); $i++) {
             <ul class="steps-list">
                 <!-- step 1 -->
                 <li class="step step-1">
-                    <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
-                        et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea
-                        rebum.</p>
-                    <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
-                        et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea
+                    <h3>Step 1</h3>
+                    <p>Lore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et
+                        justo duo dolores et ea
                         rebum.</p>
                 </li>
 
                 <!-- step 2 -->
                 <li class="step step-1">
-                    <h3>Wielka Dupa</h3>
-                    <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
-                        et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea
+                    <h3>Step 2</h3>
+                    <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
+                        eirmod tempor invidunt ut labore
+                        et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam
+                        et justo duo dolores et ea
                         rebum.</p>
                 </li>
 
                 <!-- step 3 -->
                 <li class="step step-1">
-                    <h3>Mini Step</h3>
+                    <h3>Mini Step 3</h3>
                     <p>Lorem ipsum</p>
                 </li>
 
                 <!-- step 4 -->
                 <li class="step step-1">
-                    <h3>Weiterer mini Step</h3>
+                    <h3>Weiterer mini Step 4</h3>
                     <p>Lorem ipsum step</p>
+                    <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
+                        eirmod tempor invidunt ut labore
+                        et dolore magna aliquyam erat, sed diam voluptua. At vero eos et
+                        accusam et justo duo dolores et ea
+                        rebum.</p>
+                </li>
+
+                <!-- step 5 -->
+                <li class="step step-1">
+                    <h3>Step 5</h3>
+                    <p>Lorem ipsum step</p>
+                    <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
+                        nonumy eirmod tempor invidunt ut labore
+                        et dolore magna aliquyam erat, sed diam voluptua.
+                        At vero eos et accusam et justo duo dolores et ea
+                        rebum.</p>
+                </li>
+
+                <!-- step 6 -->
+                <li class="step step-1">
+                    <h3>Step 6</h3>
+                    <p>Lorem ipsum step</p>
+                    <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed
+                        diam nonumy eirmod tempor invidunt ut labore
+                        et dolore magna aliquyam erat, sed diam voluptua. At vero eos
+                        et accusam et justo duo dolores et ea
+                        rebum.</p>
+                </li>
+
+                <!-- step 7 -->
+                <li class="step step-1">
+                    <h3>Step 7</h3>
+                    <p>Lorem ipsum step</p>
+                    <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed
+                        diam nonumy eirmod tempor invidunt ut labore
+                        et dolore magna aliquyam erat, sed diam voluptua. At vero eos
+                        et accusam et justo duo dolores et ea
+                        rebum.</p>
                 </li>
             </ul>
             </div>
@@ -119,3 +190,6 @@ for($i=0; $i<count($version); $i++) {
 
 </body>
 </html>
+
+<?php
+

@@ -48,11 +48,7 @@ for($i=0; $i<count($version); $i++) {
 ?>
 
 <div class="header grid-container">
-    <div class="header-left grid-20 mobile-grid-100">
-        <img class="header-logo" src="/bin/img/logo.png" title="QUIQQER Logo" alt="Q-Logo"/>
-        <h4>INSTALLATION</h4>
-    </div>
-    <div class="header-right grid-80 mobile-grid-100">
+    <div class="header-right grid-80 push-20 mobile-grid-100">
         <ul class="header-list">
             <li>
                 <h1>Webseite Sprache installieren</h1>
@@ -60,7 +56,7 @@ for($i=0; $i<count($version); $i++) {
                     tempor invidunt ut labore et
                     dolore magna aliquyam erat, sed diam voluptua. At
                     vero eos et accusam et justo duo dolores et ea rebum.</p>
-            </li><!--
+            </li>
             <li>
                 <h1>Version</h1>
                 <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor</p>
@@ -86,9 +82,13 @@ for($i=0; $i<count($version); $i++) {
             <li>
                 <h1>QLizenz</h1>
                 <p>Lizenzen ohne Ende</p>
-            </li>-->
+            </li>
         </ul>
 
+    </div>
+    <div class="header-left grid-20 pull-80 mobile-grid-100">
+        <img class="header-logo" src="/bin/img/logo.png" title="QUIQQER Logo" alt="Q-Logo"/>
+        <h4>INSTALLATION</h4>
     </div>
 </div>
 
@@ -96,13 +96,13 @@ for($i=0; $i<count($version); $i++) {
     <div class="grid-container">
         <div class="nav grid-20 mobile-grid-100">
             <ul class="nav-list">
-                <li class="step-active"><i class="fa fa-fw fa-square-o"></i>Sprache</li>
-                <li><i class="fa fa-fw fa-square-o"></i>Version</li>
-                <li><i class="fa fa-fw fa-square-o"></i>Vorlage</li>
-                <li><i class="fa fa-fw fa-square-o"></i>Datenbank</li>
-                <li><i class="fa fa-fw fa-square-o"></i>Root Benutzer</li>
-                <li><i class="fa fa-fw fa-square-o"></i>Host und Pfade</li>
-                <li><i class="fa fa-fw fa-square-o"></i>Q Lizenz</li>
+                <li class="step-active"><i class="fa fa-fw fa-square-o"></i><span>Sprache</span></li>
+                <li><i class="fa fa-fw fa-square-o"></i><span>Version</span></li>
+                <li><i class="fa fa-fw fa-square-o"></i><span>Vorlage</span></li>
+                <li><i class="fa fa-fw fa-square-o"></i><span>Datenbank</span></li>
+                <li><i class="fa fa-fw fa-square-o"></i><span>Root Benutzer</span></li>
+                <li><i class="fa fa-fw fa-square-o"></i><span>Host und Pfade</span></li>
+                <li><i class="fa fa-fw fa-square-o"></i><span>Q Lizenz</span></li>
             </ul>
         </div>
         <div class="page-main grid-80 mobile-grid-100">
@@ -113,7 +113,7 @@ for($i=0; $i<count($version); $i++) {
                     <h3>Step 1</h3>
                     <p>Lore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et
                         justo duo dolores et ea
-                        rebum.</p>
+                        rebum. justo duo dolores et ea</p>
                 </li>
 
                 <!-- step 2 -->

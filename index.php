@@ -37,6 +37,9 @@
 
 <?php
 
+/*$lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+echo $lang;*/
+
 $Locale = new \QUI\Setup\Locale\Locale('de_DE');
 $text   = $Locale->getStringLang('setup.message.step.database');
 
@@ -48,14 +51,30 @@ for($i=0; $i<count($version); $i++) {
 ?>
 
 <div class="header grid-container">
-    <div class="header-right grid-80 push-20 mobile-grid-100">
+
+    <div class="header-left grid-20 pull-800 mobile-grid-100 hide-on-mobile">
+        <div class="header-logo-container">
+            <img class="header-logo" src="/bin/img/logo.png" title="QUIQQER Logo" alt="Q-Logo"/>
+            <h4>INSTALLATION</h4>
+        </div>
+    </div>
+    <div class="header-right grid-80 push-200 mobile-grid-100">
+        <img class="hide-on-desktop header-logo" src="/bin/img/logo.png" title="QUIQQER Logo" alt="Q-Logo"/>
         <ul class="header-list">
             <li>
                 <h1>Webseite Sprache installieren</h1>
                 <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
                     tempor invidunt ut labore et
                     dolore magna aliquyam erat, sed diam voluptua. At
-                    vero eos et accusam et justo duo dolores et ea rebum.</p>
+                    vero eos et accusam et justo duo dolores et ea rebum.
+                <!--Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+                    tempor invidunt ut labore et
+                    dolore magna aliquyam erat, sed diam voluptua. At
+                    vero eos et accusam et justo duo dolores et ea rebum. vero eos et accusam et justo duo dolores et ea rebum.
+                    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+                    tempor invidunt ut labore et
+                    dolore magna aliquyam erat, sed diam voluptua. At
+                    vero eos et accusam et justo duo dolores et ea rebum.--></p>
             </li>
             <li>
                 <h1>Version</h1>
@@ -84,11 +103,6 @@ for($i=0; $i<count($version); $i++) {
                 <p>Lizenzen ohne Ende</p>
             </li>
         </ul>
-
-    </div>
-    <div class="header-left grid-20 pull-80 mobile-grid-100">
-        <img class="header-logo" src="/bin/img/logo.png" title="QUIQQER Logo" alt="Q-Logo"/>
-        <h4>INSTALLATION</h4>
     </div>
 </div>
 
@@ -96,13 +110,13 @@ for($i=0; $i<count($version); $i++) {
     <div class="grid-container">
         <div class="nav grid-20 mobile-grid-100">
             <ul class="nav-list">
-                <li class="step-active"><i class="fa fa-fw fa-square-o"></i><span>Sprache</span></li>
-                <li><i class="fa fa-fw fa-square-o"></i><span>Version</span></li>
-                <li><i class="fa fa-fw fa-square-o"></i><span>Vorlage</span></li>
-                <li><i class="fa fa-fw fa-square-o"></i><span>Datenbank</span></li>
-                <li><i class="fa fa-fw fa-square-o"></i><span>Root Benutzer</span></li>
-                <li><i class="fa fa-fw fa-square-o"></i><span>Host und Pfade</span></li>
-                <li><i class="fa fa-fw fa-square-o"></i><span>Q Lizenz</span></li>
+                <li class="step-active"><i class="fa fa-fw fa-circle-o"></i><span>Sprache</span></li>
+                <li><i class="fa fa-fw fa-circle-o"></i><span>Version</span></li>
+                <li><i class="fa fa-fw fa-circle-o"></i><span>Vorlage</span></li>
+                <li><i class="fa fa-fw fa-circle-o"></i><span>Datenbank</span></li>
+                <li><i class="fa fa-fw fa-circle-o"></i><span>Root Benutzer</span></li>
+                <li><i class="fa fa-fw fa-circle-o"></i><span>Host und Pfade</span></li>
+                <li><i class="fa fa-fw fa-circle-o"></i><span>Q Lizenz</span></li>
             </ul>
         </div>
         <div class="page-main grid-80 mobile-grid-100">
@@ -110,10 +124,22 @@ for($i=0; $i<count($version); $i++) {
             <ul class="steps-list">
                 <!-- step 1 -->
                 <li class="step step-1">
-                    <h3>Step 1</h3>
-                    <p>Lore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et
-                        justo duo dolores et ea
-                        rebum. justo duo dolores et ea</p>
+                    <label class="test-label">
+                        <input class="test-radio" name="step-1" type="radio" value="" />
+                        <div class="test-div">
+                            <img class="" src="/bin/img/de.png" title="DE Flag" alt="DE Flag" />
+                            Deutsch
+                            <i class="fa fa-check radio-icon"></i>
+                        </div>
+                    </label>
+                    <label class="test-label">
+                        <input class="test-radio" name="step-1" type="radio" value="" />
+                        <div class="test-div">
+                            <img class="" src="/bin/img/en.png" title="EN Flag" alt="EN Flag" />
+                            Englisch
+                            <i class="fa fa-check radio-icon"></i>
+                        </div>
+                    </label>
                 </li>
 
                 <!-- step 2 -->
@@ -182,6 +208,8 @@ for($i=0; $i<count($version); $i++) {
 </div>
 
 <div class="grid-container">
+    <div class="grid-20 hide-on-mobile">
+    </div>
     <div class="nav-buttons grid-80 mobile-grid-100">
         <button class="qui-button back-button">Zurück</button>
         <button class="qui-button next-button">Fortfahren</button>

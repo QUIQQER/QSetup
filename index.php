@@ -1,11 +1,14 @@
 <html>
 <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1,maximum-scale=1" />
+
     <script src="/vendor/quiqqer/qui/qui/lib/mootools-core.js"></script>
     <script src="/vendor/quiqqer/qui/qui/lib/mootools-more.js"></script>
     <script src="/vendor/quiqqer/qui/qui/lib/moofx.js"></script>
 
     <script src="components/require.js"></script>
-    <script src="components/qui/init.js" data-main="bin/js/init.js"></script>
+    <script src="components/qui/initDev.js" data-main="bin/js/init.js"></script>
 
     <link rel="stylesheet" href="/bin/css/font-awesome/css/font-awesome.min.css" type="text/css"/>
     <link rel="stylesheet" href="/bin/css/unsemantic/unsemantic-grid-responsive.css" type="text/css"/>
@@ -49,13 +52,19 @@ for($i=0; $i<count($version); $i++) {
 }*/
 
 ?>
-
+<div class="progress-bar">
+    <div class="progress-bar-done">
+        <span class="progress-bar-done-text">20%</span>
+    </div>
+    <span class="progress-bar-left-text"></span>
+</div>
 <div class="header grid-container">
 
     <div class="header-left grid-20 pull-800 mobile-grid-100 hide-on-mobile">
         <div class="header-logo-container">
             <img class="header-logo" src="/bin/img/logo.png" title="QUIQQER Logo" alt="Q-Logo"/>
-            <h4>INSTALLATION</h4>
+            <h4 style="font-weight: bold;">QUIQQER</h4>
+            <span style="font-size: 13px; color: #555;">INSTALLATION</span>
         </div>
     </div>
     <div class="header-right grid-80 push-200 mobile-grid-100">
@@ -108,15 +117,15 @@ for($i=0; $i<count($version); $i++) {
 
 <div class="page">
     <div class="grid-container">
-        <div class="nav grid-20 mobile-grid-100">
+        <div class="nav grid-20 mobile-grid-100 hide-on-mobile">
             <ul class="nav-list">
-                <li class="step-active"><i class="fa fa-fw fa-circle-o"></i><span>Sprache</span></li>
-                <li><i class="fa fa-fw fa-circle-o"></i><span>Version</span></li>
-                <li><i class="fa fa-fw fa-circle-o"></i><span>Vorlage</span></li>
-                <li><i class="fa fa-fw fa-circle-o"></i><span>Datenbank</span></li>
-                <li><i class="fa fa-fw fa-circle-o"></i><span>Root Benutzer</span></li>
-                <li><i class="fa fa-fw fa-circle-o"></i><span>Host und Pfade</span></li>
-                <li><i class="fa fa-fw fa-circle-o"></i><span>Q Lizenz</span></li>
+                <li class="step-active"><i class="fa fa-fw fa-check"></i><span>Sprache</span></li>
+                <li><i class="fa fa-fw fa-check"></i><span>Version</span></li>
+                <li><i class="fa fa-fw fa-check"></i><span>Vorlage</span></li>
+                <li><i class="fa fa-fw fa-check"></i><span>Datenbank</span></li>
+                <li><i class="fa fa-fw fa-check"></i><span>Root Benutzer</span></li>
+                <li><i class="fa fa-fw fa-check"></i><span>Host und Pfade</span></li>
+                <li><i class="fa fa-fw fa-check"></i><span>Q Lizenz</span></li>
             </ul>
         </div>
         <div class="page-main grid-80 mobile-grid-100">
@@ -124,32 +133,52 @@ for($i=0; $i<count($version); $i++) {
             <ul class="steps-list">
                 <!-- step 1 -->
                 <li class="step step-1">
-                    <label class="test-label">
-                        <input class="test-radio" name="step-1" type="radio" value="" />
-                        <div class="test-div">
+                    <label>
+                        <input class="radio-button" name="step-1-language" type="radio" value="de" />
+                        <div class="label-div">
                             <img class="" src="/bin/img/de.png" title="DE Flag" alt="DE Flag" />
                             Deutsch
-                            <i class="fa fa-check radio-icon"></i>
+                            <i class="fa fa-check button-icon-right"></i>
                         </div>
                     </label>
-                    <label class="test-label">
-                        <input class="test-radio" name="step-1" type="radio" value="" />
-                        <div class="test-div">
+                    <label>
+                        <input class="radio-button" name="step-1-language" type="radio" value="en" />
+                        <div class="label-div">
                             <img class="" src="/bin/img/en.png" title="EN Flag" alt="EN Flag" />
                             Englisch
-                            <i class="fa fa-check radio-icon"></i>
+                            <i class="fa fa-check button-icon-right"></i>
                         </div>
                     </label>
                 </li>
 
                 <!-- step 2 -->
-                <li class="step step-1">
-                    <h3>Step 2</h3>
-                    <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
-                        eirmod tempor invidunt ut labore
-                        et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam
-                        et justo duo dolores et ea
-                        rebum.</p>
+                <li class="step step-1 step-left-align">
+                    <div style="display: inline-block; margin: 0 auto;">
+                        <label>
+                            <input class="radio-button" name="step-2-version" type="radio" value="ver" />
+                            <div class="label-div">
+                                <i class="fa fa-star-o button-icon-left"></i>
+                                1.0.0
+                                <i class="fa fa-check button-icon-right"></i>
+                            </div>
+                        </label>
+                        <label>
+                            <input class="radio-button" name="step-2-version" type="radio" value="master" />
+                            <div class="label-div">
+                                <i class="fa fa-cube button-icon-left"></i>
+                                master
+                                <i class="fa fa-check button-icon-right"></i>
+                            </div>
+                        </label>
+                        <label>
+                            <input class="radio-button" name="step-2-version" type="radio" value="dev" />
+                            <div class="label-div">
+                                <i class="fa fa-cubes button-icon-left"></i>
+                                dev
+                                <i class="fa fa-check button-icon-right"></i>
+                            </div>
+                        </label>
+                    </div>
                 </li>
 
                 <!-- step 3 -->

@@ -44,17 +44,17 @@ textarea {
 h1, h2, h3, h4, h5 {
     color: #666;
     line-height: 1.15em;
-    font-weight: 600;
-    padding-bottom: 0.8em;
+    font-weight: 300;
+    padding-bottom: 0.4em;
 }
-/*
+
 header > h1,
 header > h2,
 header > h3,
 header > h4,
 header > h4 {
     padding-bottom: 0;
-}*/
+}
 
 h1 {
     font-size: 48px;
@@ -75,8 +75,8 @@ h3 {
 
 h4 {
     font-size: 18px;
-    font-weight: bold;
     color: #888;
+    font-weight: 600;
 }
 
 p {
@@ -91,38 +91,82 @@ input {
 }
 
 
-.test-label > .test-radio {
+.radio-button {
     display: none;
     visibility: hidden;
     position: absolute;
 }
 
-.test-label > .test-radio + .test-div {
+label {
+    margin: 0 20px;
+}
+
+label:first-child {
+    margin-left: 0;
+}
+
+label:last-child {
+    margin-right: 0;
+}
+
+
+/* progress bar */
+
+.progress-bar {
+    background: #eee;
+    color: #999;
+    font-weight: 400;
+    line-height: 2em;
+    font-size: 15px;
+}
+
+.progress-bar-done {
+    background: #86c06a;
+    box-shadow: 0 -3px 10px -2px #777;
+    border-bottom-right-radius: 5px;
+    border-top-right-radius: 5px;
+    color: #fff;
+    display: inline-block;
+    text-align: right;
+    width: 20%;
+
+    transition: all 0.3s;
+}
+
+.progress-bar-done-text,
+.progress-bar-left-text{
+    margin: 0 20px;
+}
+
+/* end progress bar */
+
+
+.label-div {
+    color: #aaa;
     cursor: pointer;
-    min-width: 320px;
+    min-width: 260px;
+    max-width: 360px;
+    margin: 10px 0;
     display: inline-flex;
-    margin: 10px 20px;
     border: 1px solid #e5e5e5;
     background: #fff;
     padding: 10px 20px;
-    font-weight: 600;
     border-radius: 6px;
     position: relative;
     
     transition: all 0.3s;
 }
 
-.test-label:hover .test-div {
+.label-div:hover {
     border: 1px solid #ccc;
     box-shadow: 0 0 15px -5px #bbb;
 }
 
-.test-label img {
+.label-div img {
     margin-right: 20px;
 }
 
-
-.test-label > .test-radio + .test-div > .fa {
+.button-icon-right {
     color: #eee;
     transition: all 0.3s;
     font-size: 26px;
@@ -130,12 +174,25 @@ input {
     right: 20px;
 }
 
-.test-label  > .test-radio:checked + .test-div {
-    background: #fff;
+.button-icon-left {
+    color: #ddd;
+    transition: all 0.3s;
+    font-size: 26px;
+    position: relative;
+    margin-right: 20px;
 }
 
-.test-label  > .test-radio:checked + .test-div > .fa {
+.radio-button:checked + .label-div {
+    color: #444;
+    /*font-weight: 600;*/
+}
+
+.radio-button:checked + .label-div .button-icon-right {
     color: #75b947;
+}
+
+.radio-button:checked + .label-div .button-icon-left {
+    color: #666;
 }
 
 
@@ -207,26 +264,25 @@ ul {
 }
 
 ul.nav-list li {
-    padding: 1em 2em 1em 1em;
+    padding: 1em 2em;
     background: #f5f5f5;
     border-bottom: 1px solid #fff;
-    color: #ccc;
-    font-weight: 600;
-
-    transition: all 0.5s;
+    color: #bbb;
+    font-weight: 300;
+    font-size: 15px;
+    transition: all 0.3s;
 }
 
 ul.nav-list li.step-done {
     color: #75b947;
-    transition: all 0.5s;
+    transition: all 0.3s;
 
 }
 
 ul.nav-list li.step-active {
-    color: #75b947;
-    /*font-weight: bold;*/
-    transition: all 0.5s;
-
+    color: #666;
+    font-weight: 400;
+    transition: all 0.3s;
 }
 
 ul.nav-list li:first-child {
@@ -270,18 +326,25 @@ li.step {
     text-align: center;
 }
 
+li.step-left-align {
+    text-align: left;
+}
+
 
 
 .nav-buttons {
     padding: 3em 0 3em 3em;
 }
 
-.nav-buttons .qui-button {
-    width: 150px;
-    height: 40px;
-    font-size: 18px;
+.qui-button.next-button,
+.qui-button.back-button {
     box-shadow: none;
     border-radius: 5px;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 300;
+    height: 40px;
+    width: 150px;
 }
 
 .qui-button.back-button {
@@ -304,8 +367,7 @@ li.step {
     background: #539725;
 }
 
-
-@media (max-width: 767px) {
+@media screen and (max-width: 767px) {
 
     .page {
         max-height: none;
@@ -324,9 +386,7 @@ li.step {
     .header-logo {
         display: block;
         margin: 20px auto;
-        width: 80px;
-        /*margin-top: 10px;*/
-        /*position: absolute;*/
+        width: 60px;
     }
 
     .nav {
@@ -345,15 +405,16 @@ li.step {
     .nav-list span {
         display: none;
     }
-    
+
     ul.nav-list li {
+        border-bottom: none;
         display: inline-block;
-        position: relative;
         padding: 16px 6px;
+        position: relative;
     }
     
     .page {
-        background: none;
+        /*background: none;*/
     }
 
     .header-logo-container {
@@ -365,12 +426,7 @@ li.step {
     }
 
     .header-list h1 {
-        /*text-indent: 60px;*/
         text-align: center;
-    }
-    
-    body {
-        /*background: red !important;*/
     }
 }
 

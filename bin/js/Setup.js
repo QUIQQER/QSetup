@@ -7,9 +7,10 @@
  */
 
 define('bin/js/Setup', [
+    'qui/QUI',
     'qui/utils/Functions'
     // 'qui/controls/Control'
-], function (QUIFunctionUtils) {
+], function (QUI, QUIFunctionUtils) {
     "use strict";
 
     return new Class({
@@ -22,10 +23,11 @@ define('bin/js/Setup', [
             'next',
             'back',
             'recalc',
-            'show',
+            'showCurrentHeader',
             'getHeaderHeight',
             'setHeaderHeight',
-            'testF'
+            'testF',
+            'countInputs'
         ],
 
         initialize: function () {
@@ -41,6 +43,8 @@ define('bin/js/Setup', [
 
             this.headerList = null;
             this.headerLogoContainer = null;
+
+            this.inputs = null;
 
             this.activeHeader = null;
 
@@ -72,6 +76,8 @@ define('bin/js/Setup', [
             this.liElm = this.navList.getElements('li');
             this.fa = this.navList.getElements('.fa');
 
+            this.inputs = this.countInputs();
+
             this.activeHeader = document.getElements('.header-list li');
 
             this.step = 0;
@@ -87,15 +93,24 @@ define('bin/js/Setup', [
 
             this.setHeaderHeight(this.getHeaderHeight());
 
-            // wie mehrere Events hinzufügen?
-            window.addEvent(
-                'resize',
-                QUIFunctionUtils.debounce(this.recalc, 20)
-            );
-            window.addEvent(
-                'resize',
-                QUIFunctionUtils.debounce(this.testF, 20)
-            );
+            this.$hideOnResize = false;
+
+            window.addEvent('resize', function() {
+                if (this.$hideOnResize) {
+                    return;
+                }
+
+                this.$hideOnResize = true;
+                this.stepsList.setStyle('opacity', 0);
+
+                // @todo this.$hideOnResize auf false
+
+            }.bind(this));
+
+            QUI.addEvent('onResize', function() {
+                this.recalc();
+                this.testF();
+            }.bind(this));
 
             moofx(this.activeHeader[this.step]).animate({
                 opacity: 1
@@ -121,8 +136,8 @@ define('bin/js/Setup', [
             }
 
             // nav icons
-            this.fa[this.step].removeClass('fa-circle-o');
-            this.fa[this.step].addClass('fa-check-circle-o');
+            /*this.fa[this.step].removeClass('fa-circle-o');
+            this.fa[this.step].addClass('fa-check-circle-o');*/
 
             // nav color
             this.liElm[this.step].removeClass('step-active');
@@ -138,7 +153,7 @@ define('bin/js/Setup', [
                 duration: 250,
                 equation: 'ease-in-out',
                 callback: function() {
-                    this.show(this.step)
+                    this.showCurrentHeader(this.step)
                 }.bind(this)
             });
 
@@ -170,8 +185,8 @@ define('bin/js/Setup', [
             }
 
             // nav icons
-            this.fa[this.step - 1].removeClass('fa-check-circle-o');
-            this.fa[this.step - 1].addClass('fa-circle-o');
+            /*this.fa[this.step - 1].removeClass('fa-check-circle-o');
+            this.fa[this.step - 1].addClass('fa-circle-o');*/
 
             // nav color
             this.liElm[this.step].removeClass('step-active');
@@ -186,7 +201,7 @@ define('bin/js/Setup', [
                 duration: 250,
                 equation: 'ease-in-out',
                 callback: function() {
-                     this.show(this.step)
+                     this.showCurrentHeader(this.step)
                 }.bind(this)
             });
 
@@ -213,6 +228,8 @@ define('bin/js/Setup', [
                 'left',
                 this.step * -this.listElementWidth
             )*/
+
+            this.$hideOnResize = false;
 
             this.stepsList.setStyle('opacity', 0);
             var newPos = this.step * -this.listElementWidth;
@@ -249,15 +266,12 @@ define('bin/js/Setup', [
         },
 
         setHeaderHeight: function(headerHeight) {
-            /*this.headerLogoContainer.setStyle('min-height', headerHeight);
-            this.headerList.setStyle('min-height', headerHeight);*/
-
             moofx(this.headerList).animate({
                 minHeight: headerHeight,
                 opacity: 1
             }, {
                 duration: 500
-            })
+            });
 
             moofx(this.headerLogoContainer).animate({
                 minHeight: headerHeight
@@ -271,7 +285,7 @@ define('bin/js/Setup', [
          *
          * @param step
          */
-        show: function (step) {
+        showCurrentHeader: function (step) {
             moofx(this.activeHeader[step]).animate({
                 opacity: 1
             }, {
@@ -279,8 +293,63 @@ define('bin/js/Setup', [
             });
         },
 
+        /*checkStep: function () {
+          var radioButtons = document.getElement
+        },*/
+
         testF: function () {
             this.setHeaderHeight(this.getHeaderHeight());
+        },
+
+        countInputs: function () {
+            var inputs = document.getElements('input');
+            var names = [];
+
+            for (var i = 0; i < inputs.length; i++) {
+                console.log(inputs[i].name);
+                if (!namen.includes(inputs[i].name)) {
+                    names.push(inputs[i].name);
+                }
+
+            }
+
+            return names.length;
+        },
+
+        checkProgress: function (x) {
+
         }
     });
 });
+
+
+/*
+var step=0;
+step++;
+
+var elEm = document.getElement('li.step-' + step);
+
+var button = document.getElement('.next-button');
+
+button.addEvent('click', function(e) {
+    check(e);
+});
+
+
+function check(event) {
+
+    console.log('--------> ' + event);
+
+    var radioB = elEm.getElements('input[type="radio"]:checked');
+    console.warn(radioB.length);
+    if (radioB.length == 0) {
+        event.preventDefault();
+        console.warn(radioB);
+        console.info('nichts ausgewählt');
+
+        return;
+    }
+
+}
+
+    */

@@ -874,7 +874,6 @@ SMILEY;
     private function writeHelp($msg)
     {
         $msg = $this->getColoredString($msg, COLOR_GREY);
-        #$msg = "\e[3m".$msg."\e[0m";
         # Add another empty line before the help text.
         echo PHP_EOL . $msg . PHP_EOL;
     }

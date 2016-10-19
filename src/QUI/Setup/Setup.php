@@ -1216,6 +1216,7 @@ class Setup
         # Put composer.phar into varDir/composer
 
 
+        # Create the Composer.json with default values.
         $this->createComposerJson();
         if (!file_exists(CMS_DIR . "composer.json")) {
             throw new SetupException(
@@ -1243,7 +1244,7 @@ class Setup
             $this->exitWithError("setup.unknown.error");
         }
 
-
+        # Workaround for symlink problem
         $Composer->requirePackage("bower-asset/mustache", "2.*");
 
         $target = $this->baseDir . '/packages/bin/mustache';
@@ -1461,6 +1462,22 @@ class Setup
             );
         }
 
+        # Remove asset Plugin from root composer.json
+        if (file_exists(VAR_DIR . "composer/composer.json")) {
+            $json = file_get_contents(VAR_DIR . "composer/composer.json");
+            if (!empty($json)) {
+                $data = json_decode($json, true);
+                if (isset($data['require'])) {
+                    unset($data['require']['fxp/composer-asset-plugin']);
+                }
+
+                $json = json_encode($data, JSON_PRETTY_PRINT);
+                file_put_contents(VAR_DIR . "composer/composer.json", $json);
+            }
+        }
+
+        
+
         if (file_exists(CMS_DIR . "composer.lock")) {
             rename(
                 CMS_DIR . "composer.lock",
@@ -1469,7 +1486,7 @@ class Setup
         }
 
         # Move directories to tmp
-        $dirs = array('src', 'lib', 'xml', 'templates', 'vendor', 'ajax', 'bin', 'tests','components');
+        $dirs = array('src', 'lib', 'xml', 'templates', 'vendor', 'ajax', 'bin', 'tests', 'components');
         foreach ($dirs as $dir) {
             if (is_dir(CMS_DIR . $dir)) {
                 rename(

@@ -5,11 +5,12 @@ namespace QUI\ConsoleSetup;
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
 
-use QUI\ConsoleSetup\Locale\Locale;
+
 use QUI\Exception;
 use QUI\Requirements\Requirements;
 use QUI\Requirements\TestResult;
 use QUI\Setup\Database\Database;
+use QUI\Setup\Locale\Locale;
 use QUI\Setup\Log\Log;
 use QUI\Setup\Setup;
 use QUI\Setup\SetupException;
@@ -874,7 +875,6 @@ SMILEY;
     private function writeHelp($msg)
     {
         $msg = $this->getColoredString($msg, COLOR_GREY);
-        #$msg = "\e[3m".$msg."\e[0m";
         # Add another empty line before the help text.
         echo PHP_EOL . $msg . PHP_EOL;
     }

@@ -1469,7 +1469,7 @@ class Setup
         }
 
         # Move directories to tmp
-        $dirs = array('src', 'lib', 'xml', 'templates', 'vendor', 'ajax', 'bin', 'tests');
+        $dirs = array('src', 'lib', 'xml', 'templates', 'vendor', 'ajax', 'bin', 'tests','components');
         foreach ($dirs as $dir) {
             if (is_dir(CMS_DIR . $dir)) {
                 rename(

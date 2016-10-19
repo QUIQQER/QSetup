@@ -30,12 +30,12 @@
 <body>
 
 <script>
-    new Request({
+    /*new Request({
         url      : '/ajax/getDatabaseDrivers.php',
         onSuccess: function () {
-            console.log(arguments);
+             console.log(arguments);
         }
-    }).send();
+    }).send();*/
 </script>
 
 <?php
@@ -53,10 +53,8 @@ for($i=0; $i<count($version); $i++) {
 
 ?>
 <div class="progress-bar">
-    <div class="progress-bar-done">
-        <span class="progress-bar-done-text">20%</span>
-    </div>
-    <span class="progress-bar-left-text"></span>
+    <div class="progress-bar-done"></div>
+    <span class="progress-bar-text">0%</span>
 </div>
 <div class="header grid-container">
 
@@ -71,19 +69,10 @@ for($i=0; $i<count($version); $i++) {
         <img class="hide-on-desktop header-logo" src="/bin/img/logo.png" title="QUIQQER Logo" alt="Q-Logo"/>
         <ul class="header-list">
             <li>
-                <h1>Webseite Sprache installieren</h1>
+                <h1>Webseite Sprache</h1>
                 <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
                     tempor invidunt ut labore et
-                    dolore magna aliquyam erat, sed diam voluptua. At
-                    vero eos et accusam et justo duo dolores et ea rebum.
-                <!--Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
-                    tempor invidunt ut labore et
-                    dolore magna aliquyam erat, sed diam voluptua. At
-                    vero eos et accusam et justo duo dolores et ea rebum. vero eos et accusam et justo duo dolores et ea rebum.
-                    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
-                    tempor invidunt ut labore et
-                    dolore magna aliquyam erat, sed diam voluptua. At
-                    vero eos et accusam et justo duo dolores et ea rebum.--></p>
+                    dolore magna aliquyam erat.</p>
             </li>
             <li>
                 <h1>Version</h1>
@@ -134,7 +123,7 @@ for($i=0; $i<count($version); $i++) {
                 <!-- step 1 -->
                 <li class="step step-1">
                     <label>
-                        <input class="radio-button" name="step-1-language" type="radio" value="de" />
+                        <input class="input-radio" name="step-1-language" type="radio" value="de" />
                         <div class="label-div">
                             <img class="" src="/bin/img/de.png" title="DE Flag" alt="DE Flag" />
                             Deutsch
@@ -142,7 +131,7 @@ for($i=0; $i<count($version); $i++) {
                         </div>
                     </label>
                     <label>
-                        <input class="radio-button" name="step-1-language" type="radio" value="en" />
+                        <input class="input-radio" name="step-1-language" type="radio" value="en" />
                         <div class="label-div">
                             <img class="" src="/bin/img/en.png" title="EN Flag" alt="EN Flag" />
                             Englisch
@@ -152,10 +141,10 @@ for($i=0; $i<count($version); $i++) {
                 </li>
 
                 <!-- step 2 -->
-                <li class="step step-1 step-left-align">
-                    <div style="display: inline-block; margin: 0 auto;">
+                <li class="step step-2 step-left-align">
+                    <div>
                         <label>
-                            <input class="radio-button" name="step-2-version" type="radio" value="ver" />
+                            <input class="input-radio" name="step-2-version" type="radio" value="ver" />
                             <div class="label-div">
                                 <i class="fa fa-star-o button-icon-left"></i>
                                 1.0.0
@@ -163,7 +152,7 @@ for($i=0; $i<count($version); $i++) {
                             </div>
                         </label>
                         <label>
-                            <input class="radio-button" name="step-2-version" type="radio" value="master" />
+                            <input class="input-radio" name="step-2-version" type="radio" value="master" />
                             <div class="label-div">
                                 <i class="fa fa-cube button-icon-left"></i>
                                 master
@@ -171,7 +160,7 @@ for($i=0; $i<count($version); $i++) {
                             </div>
                         </label>
                         <label>
-                            <input class="radio-button" name="step-2-version" type="radio" value="dev" />
+                            <input class="input-radio" name="step-2-version" type="radio" value="dev" />
                             <div class="label-div">
                                 <i class="fa fa-cubes button-icon-left"></i>
                                 dev
@@ -182,20 +171,55 @@ for($i=0; $i<count($version); $i++) {
                 </li>
 
                 <!-- step 3 -->
-                <li class="step step-1">
-                    <h3>Mini Step 3</h3>
-                    <p>Lorem ipsum</p>
+                <li class="step step-3">
+                    <div>
+                        <label>
+                            <input class="input-radio" name="step-3-vorlage" type="radio" value="business" />
+                            <div class="label-div">
+                                <i class="fa fa-briefcase button-icon-left"></i>
+                                Business
+                                <i class="fa fa-check button-icon-right"></i>
+                            </div>
+                        </label>
+                        <label>
+                            <input class="input-radio" name="step-3-vorlage" type="radio" value="onlineShop" />
+                            <div class="label-div">
+                                <i class="fa fa-shopping-cart button-icon-left"></i>
+                                Online Shop
+                                <i class="fa fa-check button-icon-right"></i>
+                            </div>
+                        </label>
+                        <label>
+                            <input class="input-radio" name="step-3-vorlage" type="radio" value="onePageDesign" />
+                            <div class="label-div">
+                                <i class="fa fa-file-text-o button-icon-left"></i>
+                                Visitenkarte
+                                <i class="fa fa-check button-icon-right"></i>
+                            </div>
+                        </label>
+                    </div>
                 </li>
 
                 <!-- step 4 -->
                 <li class="step step-1">
-                    <h3>Weiterer mini Step 4</h3>
-                    <p>Lorem ipsum step</p>
-                    <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
-                        eirmod tempor invidunt ut labore
-                        et dolore magna aliquyam erat, sed diam voluptua. At vero eos et
-                        accusam et justo duo dolores et ea
-                        rebum.</p>
+                    <div class="grid-50 mobile-grid-100">
+                        <select name="database.driver">
+                            <option value="" disabled selected>Datenbank-Treiber</option>
+                            <option value="mysql">mysql</option>
+                            <option value="value2">Treiber 2</option>
+                            <option value="value3">Treiber 3</option>
+                        </select>
+                        <input class="input-text" type="text" name="database.host"
+                               placeholder="Datenbank Host" value="" />
+                        <input class="input-text" type="text" name="database.port"
+                               placeholder="Datenbank Port" value="" />
+                    </div>
+                    <div class="grid-50 mobile-grid-100">
+                        <input class="input-text" type="text" name="database.user"
+                               placeholder="Datenbank Benutzer" value="" />
+                        <input class="input-text" type="password" name="database.pw"
+                               placeholder="Datenbank Passwort" value="" />
+                    </div>
                 </li>
 
                 <!-- step 5 -->

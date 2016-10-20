@@ -29,7 +29,8 @@ define('bin/js/Setup', [
             'testF',
             'countInputs',
             'checkProgress',
-            'changeProgressBar'
+            'changeProgressBar',
+            'checkPassword'
         ],
 
         initialize: function () {
@@ -48,9 +49,14 @@ define('bin/js/Setup', [
 
             this.inputs = null;
             this.selects = null;
+            this.allInputs = null;
             this.progressBarDone = null;
             this.progressbarText = null;
             this.textColorGrey = null;
+
+            this.userInputs = null;
+            this.passwordAgain = null;
+            this.passwordConfirmed = null;
 
             this.activeHeader = null;
 
@@ -90,6 +96,10 @@ define('bin/js/Setup', [
             this.progressbarText = document.getElement('.progress-bar-text');
             this.textColorGrey = true;
 
+            this.userInputs = document.getElements('.input-text-user');
+            this.passwordAgain = document.getElement('.input-text-user[name="user.userpassword.again"]');
+            this.passwordConfirmed = true;
+
             this.activeHeader = document.getElements('.header-list li');
 
             this.step = 0;
@@ -106,6 +116,7 @@ define('bin/js/Setup', [
             this.setHeaderHeight(this.getHeaderHeight());
             this.checkProgress();
 
+
             this.$hideOnResize = false;
 
             window.addEvent('resize', function() {
@@ -118,13 +129,17 @@ define('bin/js/Setup', [
 
             }.bind(this));
 
+            this.passwordAgain.addEvent('change', this.checkPassword);
             this.inputs.addEvent('change', this.checkProgress);
             this.selects.addEvent('change', this.checkProgress);
+            this.userInputs.addEvent('change', this.changeUserIcon);
+
 
             QUI.addEvent('onResize', function() {
                 this.recalc();
                 this.testF();
             }.bind(this));
+
 
             moofx(this.activeHeader[this.step]).animate({
                 opacity: 1
@@ -261,6 +276,10 @@ define('bin/js/Setup', [
             return Math.max.apply(false,arr).toInt();
         },
 
+        /**
+         *
+         * @param headerHeight
+         */
         setHeaderHeight: function(headerHeight) {
             moofx(this.headerList).animate({
                 minHeight: headerHeight,
@@ -279,7 +298,7 @@ define('bin/js/Setup', [
         /**
          * show header
          *
-         * @param step
+         * @param step {Number}
          */
         showCurrentHeader: function (step) {
             moofx(this.activeHeader[step]).animate({
@@ -314,10 +333,13 @@ define('bin/js/Setup', [
         },
 
         checkProgress: function () {
+
+            if (!this.passwordConfirmed) {
+                return;
+            }
+
             var progress;
             var inputsDone = 0;
-
-            console.log('check progress !!');
 
             // check radio and checkbox
             for (var i = 0; i < this.inputs.length; i++) {
@@ -327,18 +349,13 @@ define('bin/js/Setup', [
             }
 
             // check select
-            console.log('-----------------');
             for (var i = 0; i < this.selects.length; i++) {
-                console.log('petla for dla select');
                 if (this.selects[i].value) {
-                    console.log('warunek w petli byl true');
                     inputsDone++;
                 }
             }
-            console.log('-----------------');
 
             // check text and password input
-            console.log("dlugosc: " + this.textInputs.length);
             for (var i = 0; i < this.textInputs.length; i++) {
                 if (this.textInputs[i].value) {
                     inputsDone++
@@ -356,7 +373,6 @@ define('bin/js/Setup', [
             }
 
             this.changeProgressBar(progress);
-
         },
 
         /**
@@ -392,6 +408,60 @@ define('bin/js/Setup', [
                 });
                 this.textColorGrey = true;
             }
+        },
+
+        changeUserIcon: function () {
+            var Elm = this;
+            var Icon = Elm.getParent().getElement('.fa');
+
+            if (Elm.value) {
+                moofx(Icon).animate({
+                    color: '#555555'
+                }, {
+                    duration: 500
+                });
+                return;
+            }
+
+            moofx(Icon).animate({
+                color: '#dddddd'
+            }, {
+                duration: 500
+            });
+        },
+
+        /**
+         *
+         * @returns {boolean}
+         */
+        checkPassword: function() {
+            var Pw1 = document.getElement('.input-text-user[name="user.userpassword"]');
+            var Pw2 = document.getElement('.input-text-user[name="user.userpassword.again"]');
+            var MooFx= moofx(document.getElement('.user-info'));
+
+            if (Pw1.value != Pw2.value) {
+                Pw1.style.outline = "1px solid #ff0000";
+                Pw2.style.outline = "1px solid #ff0000";
+                MooFx.animate({
+                    top: 0,
+                    opacity: 1
+                }, {
+                    duration: 500,
+                    equation: 'ease-in-out'
+                });
+                return this.passwordConfirmed = false;
+            }
+
+            Pw1.style.outline = "none";
+            Pw2.style.outline = "none";
+            MooFx.animate({
+                  top: -60,
+                  opacity: 0
+              }, {
+                  duration: 500,
+                  equation: 'ease-in-out'
+              })
+            return this.passwordConfirmed = true;
         }
     });
 });

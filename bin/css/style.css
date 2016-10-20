@@ -150,19 +150,103 @@ input {
 /* text input */
 
 .input-text {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
     color: #444;
-    min-width: 260px;
-    max-width: 100%;
+    display: inline;
+    line-height: 50px;
+    margin: 10px 20px;
+    padding: 0 20px;
+    position: relative;
+    width: 300px;
+
+    transition: all 0.3s;
+}
+
+/* user and password */
+
+.input-user-wrapper {
+    display: inline-block;
+    position: relative;
+    width: 300px;
+    z-index: 5;
+}
+
+.input-text-user {
+    padding: 0 20px 0 60px;
+    margin: 10px 0;
+}
+
+.input-text-icon {
+    color: #ddd;
+    transition: all 0.3s;
+    font-size: 26px;
+    position: absolute;
+    margin-right: 20px;
+    vertical-align: middle;
+    left: 20px;
+    top: calc(50% - 13px);
+    z-index: 10;
+}
+
+.user-info {
+    display: block;
+    opacity: 0;
+    font-size: 0.9em;
+    color: #ff0000;
+    top: -60px;
+    position: relative;
+
+    /*transition: all 0.5s ease-in-out;*/
+}
+
+.user-info-show {
+    top: -10px;
+    opacity: 1;
+}
+
+/* select box */
+
+.select-wrapper {
     margin: 10px 20px;
     display: inline-flex;
     border: 1px solid #e5e5e5;
     background: #fff;
-    padding: 10px 20px;
     border-radius: 6px;
     position: relative;
-
     transition: all 0.3s;
+    width: 300px;
+    color: #444;
+    padding: 0;
 }
+
+.select-wrapper:after {
+    content: '\f107';
+    font-family: 'FontAwesome';
+    font-size: 26px;
+    position: absolute;
+    top: calc(50% - 13px);
+    right: 20px;
+}
+
+select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+
+    line-height: 50px !important;
+    box-shadow: none;
+    padding: 0 20px;
+    margin: 0;
+    width: 100%;
+    height: 50px;
+}
+
+select option {
+    line-height: 50px;
+}
+
 
 /* radio input */
 .input-radio {
@@ -177,34 +261,34 @@ label {
     vertical-align: middle;
 }
 
-label:first-child {
+/*label:first-child {
     margin-left: 0;
 }
 
 label:last-child {
     margin-right: 0;
-}
+}*/
 
 .label-div {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
     color: #aaa;
     cursor: pointer;
-    min-width: 260px;
-    max-width: 100%;
+    display: inline-block;
     margin: 10px 0;
-    /*display: inline-flex;*/
-    display: block;
-    border: 1px solid #e5e5e5;
-    background: #fff;
-    padding: 10px 20px;
-    border-radius: 6px;
+    padding: 0 20px;
     position: relative;
     text-align: left;
+    width: 300px;
+    line-height: 50px;
     
     transition: all 0.3s;
 }
 
 .label-div:hover,
-input:hover  {
+input:hover,
+.select-wrapper:hover {
     border: 1px solid #ccc;
     box-shadow: 0 0 15px -5px #bbb;
 }
@@ -218,11 +302,8 @@ input:hover  {
     color: #eee;
     transition: all 0.3s;
     font-size: 26px;
-    /*position: absolute;*/
-    right: 20px;
-    vertical-align: middle;
-    display: inline-block;
     float: right;
+    line-height: 50px;
 }
 
 .button-icon-left {
@@ -321,19 +402,18 @@ ul.nav-list li {
     color: #bbb;
     font-weight: 300;
     font-size: 15px;
-    transition: all 0.3s;
+    transition: all 0.3s, font-weight 0.01s;
 }
 
 ul.nav-list li.step-done {
     color: #75b947;
-    transition: all 0.3s;
-
+    transition: all 0.3s, font-weight 0.01s;
 }
 
 ul.nav-list li.step-active {
     color: #666;
-    font-weight: 400;
-    transition: all 0.3s;
+    font-weight: 600;
+    transition: all 0.3s, font-weight 0.01s;
 }
 
 ul.nav-list li:first-child {
@@ -359,8 +439,8 @@ ul.nav-list li:last-child {
 ul.steps-list {
     font-size: 0;
     opacity: 0;
-    left: -2658px;
-    left: 0px;
+    left: -3544px;
+    /*left: 0px;*/
     white-space: nowrap;
     position: relative;
     vertical-align: top;
@@ -432,7 +512,7 @@ li.step-left-align {
     .progress-bar {
         position: fixed;
         z-index: 50;
-        box-shadow: 0 0 4px 0px #999;
+        box-shadow: 0 0 4px 0 #999;
     }
 
     .header-left{
@@ -496,17 +576,33 @@ li.step-left-align {
         display: block;
         margin: 16px 0;
     }
-    label:first-child,
+    /*label:first-child,
     label:last-child {
         margin-left: 0;
         margin-right: 0;
-    }
+    }*/
 
     .label-div {
         margin: 0 auto;
         width: 90%;
     }
-    
+
+    .input-text {
+        width: 90%;
+    }
+
+    .select-wrapper {
+        width: 90%;
+    }
+
+    .input-user-wrapper {
+        width: 90%;
+    }
+
+    .input-text-user {
+    width: 100%;
+    }
+
     li.step-left-align {
         text-align: center;
     }

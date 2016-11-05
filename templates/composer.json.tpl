@@ -23,6 +23,9 @@
   },
   "repositories": [
     {
+      "packagist": false
+    },
+    {
       "type": "composer",
       "url": "https:\/\/update.quiqqer.com\/"
     },
@@ -32,9 +35,9 @@
     }
   ],
   "require": {
-    "php": ">=5.3.2",
+    "php": ">=5.5",
     "hirak\/prestissimo": "^0.3",
-    "fxp/composer-asset-plugin": "*"
+    "pcsg\/composer-assets": "*"
   },
   "minimum-stability": "dev",
   "preferred-install": "dist",
@@ -43,7 +46,6 @@
     "cache-dir": "",
     "component-dir": "",
     "quiqqer-dir": "",
-    "secure-http": false,
     "symlink": false
   },
   "options": {
@@ -53,6 +55,15 @@
     "asset-installer-paths": {
       "npm-asset-library": "",
       "bower-asset-library": ""
+    },
+    "asset-registry-options": {
+      "npm": false,
+      "bower": false,
+      "npm-searchable": false,
+      "bower-searchable": false
+    },
+    "asset-custom-npm-registries": {
+      "npm.quiqqer.com": "https:\/\/npm.quiqqer.com\/"
     }
   }
 }

@@ -1,5 +1,5 @@
 {
-  "name": "quiqqer\/qsetup",
+  "name": "quiqqer\/setup",
   "type": "quiqqer-library",
   "description": "Load essential packages for quiqqer setup",
   "version": "2.0.0-dev",
@@ -18,16 +18,15 @@
   },
   "repositories": [
     {
+      "packagist": false
+    },
+    {
       "type": "composer",
       "url": "https:\/\/update.quiqqer.com\/"
     },
     {
-      "type": "vcs",
-      "url": "git@dev.quiqqer.com:quiqqer\/composer.git"
-    },
-    {
-      "type": "vcs",
-      "url": "git@dev.quiqqer.com:quiqqer\/requirements.git"
+      "type": "composer",
+      "url": "https:\/\/composer.quiqqer.com\/"
     }
   ],
   "require": {
@@ -36,6 +35,17 @@
     "quiqqer\/qui-php": "dev-dev",
     "quiqqer\/requirements": "dev-dev",
     "quiqqer\/qui": "dev-dev"
+  },
+  "extra": {
+    "asset-registry-options": {
+      "npm": false,
+      "bower": false,
+      "npm-searchable": false,
+      "bower-searchable": false
+    },
+    "asset-custom-npm-registries": {
+      "npm.quiqqer.com": "https:\/\/npm.quiqqer.com\/"
+    }
   },
   "autoload": {
     "psr-4": {

@@ -8,10 +8,10 @@
       ]
     },
     "template": {
-      "name": "quiqqer/template-helios",
+      "name": "quiqqer/template-businesspro",
       "version": "dev-master",
-      "start_layout": "layout/startpage",
-      "default_layout": "layout/startpage"
+      "start_layout": "layout/startPage",
+      "default_layout": "layout/startPage"
     }
   }
 }

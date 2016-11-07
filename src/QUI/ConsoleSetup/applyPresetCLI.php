@@ -47,6 +47,8 @@ try {
     );
 
 
+
+
     $Setup = new QUI\Setup\Setup(QUI\Setup\Setup::MODE_CLI);
     $Setup->restoreData();
     $Setup->setSetupLanguage($language);

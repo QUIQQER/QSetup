@@ -506,7 +506,7 @@ class Setup
         # Constraint to ensure that all Datasteps have been taken or that the Set Data method has been called
         if ($this->stepSum != Setup::STEP_DATA_COMPLETE &&
             $this->stepSum != Setup::STEP_DATA_LANGUAGE + Setup::STEP_DATA_VERSION + Setup::STEP_DATA_PRESET +
-                              Setup::STEP_DATA_DATABASE + Setup::STEP_DATA_USER + Setup::STEP_DATA_PATHS
+            Setup::STEP_DATA_DATABASE + Setup::STEP_DATA_USER + Setup::STEP_DATA_PATHS
         ) {
             $this->Output->writeLn("StepSum " . $this->stepSum, Output::LEVEL_DEBUG);
             $this->Output->writeLnLang("setup.exception.runsetup.missing.data.step", Output::LEVEL_CRITICAL);
@@ -603,8 +603,6 @@ class Setup
         }
 
         $preset = $presets[$presetName];
-
-
         if ($preset == null || empty($preset)) {
             $this->Output->writeLn("Skipping preset : No preset set.");
 
@@ -645,14 +643,17 @@ class Setup
         }
 
         # Apply preset configuration
-
         # Add Repositories to composer.json
         if (file_exists(VAR_DIR . '/composer/composer.json')) {
             $json = file_get_contents(VAR_DIR . '/composer/composer.json');
             $data = json_decode($json, true);
             if (json_last_error() == JSON_ERROR_NONE) {
                 foreach ($repos as $repo) {
-                    $data['repositories'][] = $repo;
+                    $data['repositories'][] = array(
+                        'url'  => $repo['url'],
+                        'type' => $repo['type']
+                    );
+
                     $this->Output->writeLn(
                         $this->Locale->getStringLang(
                             "applypreset.adding.repository",
@@ -660,6 +661,11 @@ class Setup
                         ) . $repo['url'],
                         Output::LEVEL_INFO
                     );
+
+                    QUI::getPackageManager()->addServer($repo['url'], array(
+                        'type'   => $repo['type'],
+                        'active' => 1
+                    ));
                 }
 
                 $json = json_encode($data, JSON_PRETTY_PRINT);
@@ -728,6 +734,8 @@ class Setup
             );
         }
 
+
+        $this->refreshNamespaces($Composer);
 
         # Add new languages if neccessary
         $config = array();
@@ -1384,6 +1392,13 @@ class Setup
 
         QUI::load();
 
+        // Add the npm server to the ini files.
+        QUI::getPackageManager()->addServer("https://npm.quiqqer.com/", array(
+            'type'   => 'npm',
+            'active' => true
+        ));
+        QUI::getPackageManager()->setServerStatus("https://npm.quiqqer.com/", true);
+
         QUI\Log\Logger::$logLevels = array(
             'debug'     => false,
             'info'      => false,
@@ -1756,5 +1771,30 @@ class Setup
     {
         $this->Output->writeLnLang($msg, Output::LEVEL_ERROR);
         exit(1);
+    }
+
+    /**
+     * Refreshes the namespaces in the current composer instance
+     * @param QUI\Composer\Interfaces\ComposerInterface $Composer
+     */
+    protected function refreshNamespaces(QUI\Composer\Interfaces\ComposerInterface $Composer)
+    {
+        $Composer->dumpAutoload();
+        // namespaces
+        $map      = require OPT_DIR . 'composer/autoload_namespaces.php';
+        $classMap = require OPT_DIR . 'composer/autoload_classmap.php';
+        $psr4     = require OPT_DIR . 'composer/autoload_psr4.php';
+
+        foreach ($map as $namespace => $path) {
+            QUI\Autoloader::$ComposerLoader->add($namespace, $path);
+        }
+
+        foreach ($psr4 as $namespace => $path) {
+            QUI\Autoloader::$ComposerLoader->addPsr4($namespace, $path);
+        }
+
+        if ($classMap) {
+            QUI\Autoloader::$ComposerLoader->addClassMap($classMap);
+        }
     }
 }

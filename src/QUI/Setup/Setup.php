@@ -1244,14 +1244,14 @@ class Setup
             $this->exitWithError("setup.unknown.error");
         }
 
-        # Workaround for symlink problem
-        $Composer->requirePackage("bower-asset/mustache", "2.*");
-
-        $target = $this->baseDir . '/packages/bin/mustache';
-        if (file_exists($target) && is_link($target)) {
-            unlink($target);
-            mkdir($target);
-        }
+//        # Workaround for symlink problem
+//        $Composer->requirePackage("npm-asset/mustache", "2.*");
+//
+//        $target = $this->baseDir . '/packages/bin/mustache';
+//        if (file_exists($target) && is_link($target)) {
+//            unlink($target);
+//            mkdir($target);
+//        }
 
         # Require quiqqer/quiqqer
         $res = $Composer->requirePackage("quiqqer/quiqqer", $this->data['version']);
@@ -1259,11 +1259,11 @@ class Setup
             $this->exitWithError("setup.unknown.error");
         }
 
-        $target = $this->baseDir . '/packages/bin/mustache';
-        if (file_exists($target) && is_link($target)) {
-            unlink($target);
-            mkdir($target);
-        }
+//        $target = $this->baseDir . '/packages/bin/mustache';
+//        if (file_exists($target) && is_link($target)) {
+//            unlink($target);
+//            mkdir($target);
+//        }
 
 
         # Execute composer again

@@ -34,7 +34,8 @@
     "quiqqer\/utils": "dev-dev",
     "quiqqer\/qui-php": "dev-dev",
     "quiqqer\/requirements": "dev-dev",
-    "quiqqer\/qui": "dev-dev"
+    "quiqqer\/qui": "dev-dev",
+    "pcsg/composer-assets":"dev-dev"
   },
   "extra": {
     "asset-registry-options": {

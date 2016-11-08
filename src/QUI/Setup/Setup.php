@@ -506,7 +506,7 @@ class Setup
         # Constraint to ensure that all Datasteps have been taken or that the Set Data method has been called
         if ($this->stepSum != Setup::STEP_DATA_COMPLETE &&
             $this->stepSum != Setup::STEP_DATA_LANGUAGE + Setup::STEP_DATA_VERSION + Setup::STEP_DATA_PRESET +
-            Setup::STEP_DATA_DATABASE + Setup::STEP_DATA_USER + Setup::STEP_DATA_PATHS
+                              Setup::STEP_DATA_DATABASE + Setup::STEP_DATA_USER + Setup::STEP_DATA_PATHS
         ) {
             $this->Output->writeLn("StepSum " . $this->stepSum, Output::LEVEL_DEBUG);
             $this->Output->writeLnLang("setup.exception.runsetup.missing.data.step", Output::LEVEL_CRITICAL);
@@ -1426,6 +1426,10 @@ class Setup
         # Add Setup languages
         QUI\Translator::addLang($this->data['lang']);
         QUI\Translator::setup();
+
+        if (file_exists(VAR_DIR . 'locale/localefiles')) {
+            unlink(VAR_DIR . 'locale/localefiles');
+        }
 
         QUI\Setup::all();
 

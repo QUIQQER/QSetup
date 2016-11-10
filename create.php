@@ -2,6 +2,8 @@
 <?php
 /**
  * This script will create a .zip file with all neccessary components for the quiqqer setup.
+ *
+ * Working directory will be in the /tmp
  */
 
 
@@ -25,28 +27,40 @@ const COLOR_WHITE  = '1;37';
 const SETUP_REPO   = 'git@dev.quiqqer.com:quiqqer/qsetup.git';
 const SETUP_BRANCH = '2.0.0-dev';
 
+/** @var array $exclude - Patterns which should be excluded in the zip */
+$exclude = array('/.git/*','create.php', 'tests/*');
 // ****************************************************************
 // *********************   EXECUTE  *******************************
 // ****************************************************************
 
 #region Execute
 
+$workingDir = "/tmp/setup-create/" . time();
+if (is_dir($workingDir)) {
+    \QUI\Utils\System\File::deleteDir($workingDir);
+}
+define('WORKING_DIR', $workingDir);
+define('CLONE_DIR', $workingDir . '/setup');
+
+# Working directory erstellen
+mkdir($workingDir, 0755, true);
+
 writeLn("=== Executing Quiqqer.zip creation ===");
 
 # Rename existing quiqqer.zip to quiqqer.zip.bak
-if (file_exists(__DIR__ . '/quiqqer.zip')) {
+if (file_exists(CLONE_DIR . '/quiqqer.zip')) {
     writeLn("Creating a Backup and removing existing quiqqer.zip");
-    if (file_exists(__DIR__ . "/quiqqer.zip.bak")) {
-        unlink(__DIR__ . "/quiqqer.zip.bak");
+    if (file_exists(CLONE_DIR . "/quiqqer.zip.bak")) {
+        unlink(CLONE_DIR . "/quiqqer.zip.bak");
     }
 
-    rename(__DIR__ . '/quiqqer.zip', __DIR__ . '/quiqqer.zip.bak');
+    rename(CLONE_DIR . '/quiqqer.zip', CLONE_DIR . '/quiqqer.zip.bak');
 }
 
 # Clone Repository
 
-system('git clone --branch=' . SETUP_BRANCH . ' ' . SETUP_REPO . ' ./setup/');
-chdir('setup');
+system('git clone --branch=' . SETUP_BRANCH . ' ' . SETUP_REPO . ' ' . CLONE_DIR);
+chdir(CLONE_DIR);
 
 # Execute composer update
 writeLn("Prepare composer");
@@ -56,10 +70,6 @@ executeShellCommand('php composer.phar update');
 unlink('composer.phar');
 
 # Get all versions
-writeLn("Getting all available versions");
-$packagesJsonPath = __DIR__ . '/packages.json';
-executeShellCommand('curl -o ' . $packagesJsonPath . ' https://update.quiqqer.com/packages.json');
-
 $versions = getVersions();
 writeLn("Found following versions : " . implode(', ', $versions));
 
@@ -70,7 +80,7 @@ foreach ($versions as $version) {
 }
 
 # Create the zip file
-$zipLocation = createZip(__DIR__ . '/setup/');
+$zipLocation = createZip($workingDir . '/setup/');
 
 # Create a md5 file
 createChecksums($zipLocation);
@@ -105,15 +115,24 @@ writeLn("The quiqqer.zip has been created successfully!", null, COLOR_GREEN);
  */
 function createZip($target)
 {
+    global $exclude;
+
+    $cwd = getcwd();
     chdir($target);
-    $zipLocation = __DIR__ . '/quiqqer.zip';
-    executeShellCommand('zip -9 -r  -q ' . $zipLocation . ' ./* -x *.git*');
+    $zipLocation = 'quiqqer.zip';
+
+    $zipCommand = "zip -9 -r  -q {$zipLocation} ./* ";
+    foreach ($exclude as $pattern) {
+        $zipCommand .= " -x '{$pattern}'";
+    }
+    executeShellCommand($zipCommand);
+
 
     if (!file_exists($zipLocation)) {
         exitWithError("Could not create zip file!");
     }
 
-    chdir(__DIR__);
+    chdir($cwd);
 
     return $zipLocation;
 }
@@ -131,7 +150,7 @@ function downloadXMLForVersion($version)
 {
     $url = 'https://dev.quiqqer.com/quiqqer/quiqqer/raw/' . $version . '/database.xml';
 
-    $downloadDir = __DIR__ . '/setup/xml/' . $version . '/';
+    $downloadDir = CLONE_DIR . '/setup/xml/' . $version . '/';
     $xmlFile     = $downloadDir . 'database.xml';
 
     if (!is_dir($downloadDir)) {
@@ -151,9 +170,15 @@ function downloadXMLForVersion($version)
  */
 function getVersions()
 {
+    // Download File
+    writeLn("Getting all available versions");
+    $packagesJsonPath = WORKING_DIR . '/packages.json';
+    executeShellCommand('curl -o ' . $packagesJsonPath . ' https://update.quiqqer.com/packages.json');
+
+    // Parse packages.json
     $versions = array();
-    if (file_exists(__DIR__ . '/packages.json')) {
-        $json = file_get_contents(__DIR__ . '/packages.json');
+    if (file_exists($packagesJsonPath)) {
+        $json = file_get_contents($packagesJsonPath);
         $data = json_decode($json, true);
         if (json_last_error() == JSON_ERROR_NONE) {
             if (isset($data['packages']['quiqqer/quiqqer'])) {
@@ -181,7 +206,7 @@ function getVersions()
             exitWithError("Error while decoding packages.json : " . json_last_error_msg());
         }
 
-        unlink(__DIR__ . '/packages.json');
+        unlink($packagesJsonPath);
     } else {
         exitWithError('Error while downloading packages.json');
     }

@@ -506,7 +506,7 @@ class Setup
         # Constraint to ensure that all Datasteps have been taken or that the Set Data method has been called
         if ($this->stepSum != Setup::STEP_DATA_COMPLETE &&
             $this->stepSum != Setup::STEP_DATA_LANGUAGE + Setup::STEP_DATA_VERSION + Setup::STEP_DATA_PRESET +
-                              Setup::STEP_DATA_DATABASE + Setup::STEP_DATA_USER + Setup::STEP_DATA_PATHS
+            Setup::STEP_DATA_DATABASE + Setup::STEP_DATA_USER + Setup::STEP_DATA_PATHS
         ) {
             $this->Output->writeLn("StepSum " . $this->stepSum, Output::LEVEL_DEBUG);
             $this->Output->writeLnLang("setup.exception.runsetup.missing.data.step", Output::LEVEL_CRITICAL);
@@ -1252,15 +1252,8 @@ class Setup
             $this->exitWithError("setup.unknown.error");
         }
 
-//        # Workaround for symlink problem
-//        $Composer->requirePackage("npm-asset/mustache", "2.*");
-//
-//        $target = $this->baseDir . '/packages/bin/mustache';
-//        if (file_exists($target) && is_link($target)) {
-//            unlink($target);
-//            mkdir($target);
-//        }
 
+        $Composer = new Composer(CMS_DIR, VAR_DIR . "composer/");
         # Require quiqqer/quiqqer
         $res = $Composer->requirePackage("quiqqer/quiqqer", $this->data['version']);
         if ($res === false) {
@@ -1399,6 +1392,7 @@ class Setup
         ));
         QUI::getPackageManager()->setServerStatus("https://npm.quiqqer.com/", true);
 
+        // Adjust Loglevel
         QUI\Log\Logger::$logLevels = array(
             'debug'     => false,
             'info'      => false,
@@ -1409,6 +1403,45 @@ class Setup
             'alert'     => true,
             'emergency' => true
         );
+
+        $logConfig = <<<LOGETC
+;<?php exit; ?>
+[log]
+logAllEvents="0"
+logAdminJsErrors="0"
+logFrontendJsErrors="0"
+
+[log_levels]
+debug="0"
+info="0"
+notice="0"
+warning="0"
+error="1"
+critical="1"
+alert="1"
+emergency="1"
+
+[browser_logs]
+firephp="0"
+chromephp="0"
+browserphp="0"
+debug="0"
+
+[cube]
+server=""
+
+[graylog]
+server=""
+port=""
+
+[newRelic]
+appname=""
+
+[syslogUdp]
+host=""
+port="0"
+LOGETC;
+        file_put_contents(ETC_DIR . '/plugins/quiqqer/log.ini.php', $logConfig);
 
         QUI\Update::importDatabase(OPT_DIR . '/quiqqer/translator/database.xml');
 
@@ -1504,7 +1537,19 @@ class Setup
         }
 
         # Move directories to tmp
-        $dirs = array('src', 'lib', 'xml', 'templates', 'vendor', 'ajax', 'bin', 'tests', 'components');
+        $dirs = array(
+            'src',
+            'lib',
+            'xml',
+            'templates',
+            'vendor',
+            'ajax',
+            'bin',
+            'tests',
+            'components',
+            'logs',
+            'setup'
+        );
         foreach ($dirs as $dir) {
             if (is_dir(CMS_DIR . $dir)) {
                 rename(

@@ -548,6 +548,10 @@ class Setup
         $this->tablePermissions        = $this->data['database']['prefix'] . "permissions";
         $this->tablePermissions2Groups = $this->data['database']['prefix'] . "permissions2groups";
 
+        # Make sure that stored data is removed when the main setup process started
+        $this->removeStoredData();
+
+        # Execute setup steps
         $this->setupDatabase();
         $this->setupUser();
         $this->setupPaths();
@@ -946,11 +950,20 @@ class Setup
         }
     }
 
+    /**
+     * Removes the stored data.
+     */
+    public function removeStoredData()
+    {
+        if (file_exists($this->tmpDir . "setup.json")) {
+            unlink($this->tmpDir . "setup.json");
+        }
+    }
+
     public function rollBack()
     {
         // TODO ROLLBACK
     }
-
     #endregion
 
 

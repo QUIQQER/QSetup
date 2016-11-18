@@ -343,5 +343,23 @@ msgstr "Der Pfad nach der Domain, falls QUIQQER in ein Unterverzeichnis des Docu
 msgid "setup.message.finished.filerights"
 msgstr "Bitte stellen Sie sicher, dass der Webserver Leserechte auf die QUIQQER-Installation hat und der ausführende PHP-Benutzer der Besitzer der Dateien ist."
 
+msgid "setup.message.restoration.database.password.prompt"
+msgstr "Bitte tippen Sie ihr Datenbank Passwort erneut ein."
 
+msgid "setup.message.restoration.user.password.prompt"
+msgstr "Bitte tippen Sie ihr Benutzer Passwort erneut ein."
 
+msgid "setup.prompt.restoration.database.password"
+msgstr "Datenbank Passwort:"
+
+msgid "setup.prompt.restoration.user.password"
+msgstr "Benutzer Passwort:"
+
+msgid "setup.prompt.restoration.database.password.repeat"
+msgstr "Datenbank Passwort wiederholen:"
+
+msgid "setup.prompt.restoration.user.password.repeat"
+msgstr "Benutzer Passwort wiederholen:"
+
+msgid "setup.message.restoration.database.password.invalid"
+msgstr "Das eingegebene password scheint nicht korrekt zu sein. Bitte erneut versuchen."

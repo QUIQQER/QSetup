@@ -90,7 +90,7 @@ class Installer
     {
         $this->echoSetupHeader();
         $this->stepSetupLanguage();
-
+        $data = array();
         # Check if we can restore any data from a previous setup which might have been cancelled or interrupted
         if ($this->Setup->checkRestorableData()) {
             $this->writeLn(
@@ -102,7 +102,7 @@ class Installer
             $data = $this->Setup->getRestorableData();
             $this->echoRestorableData($data);
 
-            # Check if the suer wants to continue with the restored data
+            # Check if the User wants to continue with the restored data
             $continuePrompt = $this->prompt(
                 $this->Locale->getStringLang(
                     "setup.prompt.continue.restored.data",
@@ -114,16 +114,91 @@ class Installer
                 true,
                 false
             );
-
-            # Exit Setup if user does not want to continue with restored data
-            if ($continuePrompt != "y") {
-            }
         }
 
         # Execute Steps to acquire Data
         if (isset($continuePrompt) && $continuePrompt == 'y') {
             $this->Setup->restoreData();
 
+            # Prompt for passwords again, as passwords to not get saved and restored
+            # Database
+            if ($this->Setup->isStepCompleted(Setup::STEP_DATA_DATABASE)) {
+                $this->writeLn($this->Locale->getStringLang(
+                    "setup.message.restoration.database.password.prompt",
+                    "Please enter your database password again:"
+                ));
+
+                do {
+                    $continue = false;
+
+                    $dbPassword = $this->prompt(
+                        $this->Locale->getStringLang(
+                            "setup.prompt.restoration.database.password",
+                            "Database password:"
+                        ),
+                        false,
+                        null,
+                        true,
+                        false,
+                        false
+                    );
+
+                    # Validate password
+                    try {
+                        Validator::validateDatabase(
+                            $data['data']['database']['driver'],
+                            $data['data']['database']['host'],
+                            $data['data']['database']['user'],
+                            $dbPassword
+                        );
+                    } catch (\Exception $Exception) {
+                        $this->writeLn(
+                            $this->Locale->getStringLang(
+                                "setup.message.restoration.database.password.invalid",
+                                "The given password seems to be incorrect. Try again!"
+                            ),
+                            self::LEVEL_ERROR
+                        );
+                        $continue = true;
+                    }
+                } while ($continue);
+
+
+                $this->Setup->restoreDatabasePassword($dbPassword);
+            }
+
+            # User
+            if ($this->Setup->isStepCompleted(Setup::STEP_DATA_USER)) {
+                $this->writeLn($this->Locale->getStringLang(
+                    "setup.message.restoration.user.password.prompt",
+                    "Please enter your database password again:"
+                ));
+
+                do {
+                    $pw = $this->prompt(
+                        $this->Locale->getStringLang("setup.prompt.restoration.user.password", "User password:"),
+                        false,
+                        null,
+                        true
+                    );
+
+                    $pw2 = $this->prompt(
+                        $this->Locale->getStringLang(
+                            "setup.prompt.restoration.user.password.repeat",
+                            "Repeat user password:"
+                        ),
+                        false,
+                        null,
+                        true
+                    );
+                } while ($pw != $pw2);
+
+                $this->Setup->restoreUserPassword($pw);
+            }
+
+
+            # Continue Setup execution.
+            # Switch fallthrough to execute all steps after last finished step
             switch ($data['step']) {
                 case Setup::STEP_INIT:
                     $this->stepVersion();

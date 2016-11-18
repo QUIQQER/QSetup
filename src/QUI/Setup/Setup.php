@@ -167,6 +167,20 @@ class Setup
     // ************************************************** //
 
     /**
+     * Checks whether or not the given step has been completed already.
+     * @param $step
+     * @return bool
+     */
+    public function isStepCompleted($step)
+    {
+        if (($this->stepSum & $step) == $step) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Gets the availalbe presets.
      * @return array - array Key : Presetname ; value = array(option:string=>value:string|array)
      */
@@ -210,6 +224,10 @@ class Setup
         return $presets;
     }
 
+    /**
+     * Gets all available versions for quiqqer/quiqqer
+     * @return array
+     */
     public static function getVersions()
     {
         $validVersions = array(
@@ -853,9 +871,18 @@ class Setup
             mkdir($this->tmpDir, 0755, true);
         }
 
+        $storedData = $this->data;
+        if (isset($storedData['database']['pw'])) {
+            $storedData['database']['pw'] = "";
+        }
+
+        if (isset($storedData['user']['pw'])) {
+            $storedData['user']['pw'] = "";
+        }
+
         $data = array(
             'step'    => $this->Step,
-            'data'    => $this->data,
+            'data'    => $storedData,
             'stepsum' => $this->stepSum
         );
         $json = json_encode($data, JSON_PRETTY_PRINT);
@@ -895,6 +922,28 @@ class Setup
         }
 
         return false;
+    }
+
+    /**
+     * Sets the users password after data restoration
+     * @param $password - Desired password.
+     */
+    public function restoreUserPassword($password)
+    {
+        if ($this->isStepCompleted(self::STEP_DATA_USER)) {
+            $this->data['user']['pw'] = $password;
+        }
+    }
+
+    /**
+     * Sets the database password after data restoration
+     * @param $password - Desired password.
+     */
+    public function restoreDatabasePassword($password)
+    {
+        if ($this->isStepCompleted(self::STEP_DATA_DATABASE)) {
+            $this->data['database']['pw'] = $password;
+        }
     }
 
     public function rollBack()
@@ -1002,11 +1051,7 @@ class Setup
         );
 
         # Creates admin user
-        $salt     = $salt = substr(
-            $this->data['salt'],
-            0,
-            $this->data['saltlength']
-        );
+        $salt     = substr($this->data['salt'], 0, $this->data['saltlength']);
         $password = $salt . md5($salt . $this->data['user']['pw']);
 
         $this->Database->insert(
@@ -1558,19 +1603,6 @@ LOGETC;
                 );
             }
         }
-
-        # Move content of logs dir into var/logs
-//        if (is_dir(CMS_DIR . 'logs/')) {
-//            foreach (scandir(CMS_DIR . 'logs/') as $file) {
-//                if ($file == '.' || $file == '..') {
-//                    continue;
-//                }
-//
-//                rename(CMS_DIR . 'logs/' . $file, VAR_DIR . 'log/setup.' . $file);
-//            }
-//
-//            rename(CMS_DIR . 'logs/', VAR_DIR . 'tmp/logs/');
-//        }
 
         $this->Step = Setup::STEP_SETUP_DELETE;
     }

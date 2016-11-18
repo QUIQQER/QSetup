@@ -342,3 +342,24 @@ msgstr "The path after the domain, if QUIQQER is installed into an subdirectory 
 
 msgid "setup.message.finished.filerights"
 msgstr "Please make sure that the executing PHP-User owns the files and the Webserver has read-access."
+
+msgid "setup.message.restoration.database.password.prompt"
+msgstr "Please enter your database password again:"
+
+msgid "setup.message.restoration.user.password.prompt"
+msgstr "Please enter your user password again:"
+
+msgid "setup.prompt.restoration.database.password"
+msgstr "Database password:"
+
+msgid "setup.prompt.restoration.user.password"
+msgstr "User password:"
+
+msgid "setup.prompt.restoration.database.password.repeat"
+msgstr "Repeat database password:"
+
+msgid "setup.prompt.restoration.user.password.repeat"
+msgstr "Repeat user password:"
+
+msgid "setup.message.restoration.database.password.invalid"
+msgstr "The given password seems to be incorrect. Try again!"

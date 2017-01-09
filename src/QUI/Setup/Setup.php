@@ -576,8 +576,8 @@ class Setup
                 $phpPath = "php ";
             }
 
-
-            echo $phpPath . " {$applyPresetFile} {$cmsDir} {$this->data['template']} {$this->setupLang}". PHP_EOL;
+            // Store user details in temporary password file
+            file_put_contents(CMS_DIR."/var/tmp/.preset_pwd", $this->data['user']['pw']);
 
             exec(
                 $phpPath . " {$applyPresetFile} {$cmsDir} {$this->data['template']} {$this->setupLang}",

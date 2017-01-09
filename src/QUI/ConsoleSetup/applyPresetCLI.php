@@ -36,6 +36,9 @@ if (empty($cmsDir)) {
 require_once $cmsDir . 'bootstrap.php';
 
 
+// Read user authentication details from passwd file
+
+
 
 $Config = parse_ini_file(ETC_DIR . 'conf.ini.php', true);
 if ($Config === false) {
@@ -46,13 +49,14 @@ try {
     $uid  = $Config['globals']['rootuser'];
     $User = QUI::getUsers()->get($uid);
 
+    $passwd = file_get_contents($cmsDir."var/tmp/.preset_pwd");
+
     QUI::getUsers()->login(
         $User->getUsername(),
-        "admin"
+        $passwd
     );
 
-
-
+    unlink($cmsDir."var/tmp/.preset_pwd");
 
     $Setup = new QUI\Setup\Setup(QUI\Setup\Setup::MODE_CLI);
     $Setup->restoreData();

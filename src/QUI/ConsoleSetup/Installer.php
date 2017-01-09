@@ -91,6 +91,9 @@ class Installer
         $this->echoSetupHeader();
         $this->stepSetupLanguage();
         $data = array();
+
+        $firstStep = Setup::STEP_BEGIN;
+
         # Check if we can restore any data from a previous setup which might have been cancelled or interrupted
         if ($this->Setup->checkRestorableData()) {
             $this->writeLn(
@@ -116,11 +119,15 @@ class Installer
             );
         }
 
-        # Execute Steps to acquire Data
+        # Data restoration
         if (isset($continuePrompt) && $continuePrompt == 'y') {
             $this->Setup->restoreData();
 
-            # Prompt for passwords again, as passwords to not get saved and restored
+            /*
+             * We did not store passwords.
+             * Because of that the user has to re-enter all passwords.
+             */
+
             # Database
             if ($this->Setup->isStepCompleted(Setup::STEP_DATA_DATABASE)) {
                 $this->writeLn($this->Locale->getStringLang(
@@ -199,37 +206,12 @@ class Installer
 
             # Continue Setup execution.
             # Switch fallthrough to execute all steps after last finished step
-            switch ($data['step']) {
-                case Setup::STEP_INIT:
-                    $this->stepVersion();
-                // no break
-                case Setup::STEP_DATA_VERSION:
-                    $this->stepPreset();
-                // no break
-                case Setup::STEP_DATA_PRESET:
-                    $this->stepDatabase();
-                // no break
-                case Setup::STEP_DATA_DATABASE:
-                    $this->stepUser();
-                // no break
-                case Setup::STEP_DATA_USER:
-                    $this->stepPaths();
-                    break;
-            }
-        } else {
-            $this->stepCheckRequirements();
-            $this->stepLanguage();
-            $this->stepVersion();
-            $this->stepPreset();
-            $this->stepDatabase();
-            $this->stepUser();
-            $this->stepPaths();
+            $firstStep = $data['step'];
         }
 
-        # Execute Setup
-        $this->echoDecorationCoffe();
-        $this->setup();
-        $this->stepFinish();
+
+        $this->continueAfterStep($firstStep);
+
 
         # Give a warning about setup.error.log if it exists.
         if (file_exists(Log::getErrorLogFile())) {
@@ -243,7 +225,39 @@ class Installer
         }
     }
 
+    /**
+     * Continues the Setup after the given step.
+     * @param $lastExecutedStep
+     */
+    protected function continueAfterStep($lastExecutedStep)
+    {
+        switch ($lastExecutedStep) {
+            case SETUP::STEP_BEGIN:
+                $this->stepCheckRequirements();
+                $this->stepLanguage();
+            // no break
+            case Setup::STEP_INIT:
+                $this->stepVersion();
+            // no break
+            case Setup::STEP_DATA_VERSION:
+                $this->stepPreset();
+            // no break
+            case Setup::STEP_DATA_PRESET:
+                $this->stepDatabase();
+            // no break
+            case Setup::STEP_DATA_DATABASE:
+                $this->stepUser();
+            // no break
+            case Setup::STEP_DATA_USER:
+                $this->stepPaths();
+                break;
+        }
 
+        # Execute Setup
+        $this->echoDecorationCoffe();
+        $this->setup();
+        $this->stepFinish();
+    }
 
     #region STEPS
     /**

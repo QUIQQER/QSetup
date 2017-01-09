@@ -28,6 +28,7 @@ class Setup
     # ----------------
     # Constants
     # ----------------
+    const STEP_BEGIN = -1;
     const STEP_INIT = 0;
     const STEP_DATA_LANGUAGE = 1;
     const STEP_DATA_VERSION = 2;
@@ -574,6 +575,9 @@ class Setup
             } else {
                 $phpPath = "php ";
             }
+
+
+            echo $phpPath . " {$applyPresetFile} {$cmsDir} {$this->data['template']} {$this->setupLang}". PHP_EOL;
 
             exec(
                 $phpPath . " {$applyPresetFile} {$cmsDir} {$this->data['template']} {$this->setupLang}",
@@ -1432,6 +1436,9 @@ class Setup
         if (!defined('QUIQQER_SYSTEM')) {
             define('QUIQQER_SYSTEM', true);
         }
+
+        // Workaround to prevent double inclusion of function declarations while autoloading.
+        define('QUIQQER_SETUP', true);
 
         require OPT_DIR . 'quiqqer/quiqqer/lib/autoload.php';
 

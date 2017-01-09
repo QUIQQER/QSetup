@@ -3,9 +3,14 @@
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
 
+require_once dirname(dirname(dirname(dirname(__FILE__)))) . '/vendor/autoload.php';
+
 if (!defined('QUIQQER_SYSTEM')) {
     define('QUIQQER_SYSTEM', true);
 }
+
+//Workaround to prevent douzble inclusion of function
+define('QUIQQER_SETUP', true);
 
 $args = array_slice($argv, 1);
 
@@ -29,7 +34,7 @@ if (empty($cmsDir)) {
 }
 
 require_once $cmsDir . 'bootstrap.php';
-require_once dirname(dirname(dirname(dirname(__FILE__)))) . '/vendor/autoload.php';
+
 
 
 $Config = parse_ini_file(ETC_DIR . 'conf.ini.php', true);

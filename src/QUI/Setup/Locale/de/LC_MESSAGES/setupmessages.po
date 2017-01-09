@@ -110,7 +110,7 @@ msgid "setup.exception.validation.preset"
 msgstr "Das angegebene Preset ist nicht gültig."
 
 msgid "setup.unknown.error"
-msgstr "Wähend des Installationsvorganges ist etwas schief gegangen. Bitte überprüfen Sie die Logdateien."
+msgstr "Während des Installationsvorganges ist etwas schief gegangen. Bitte überprüfen Sie die Logdateien."
 
 msgid "setup.setup.message.apply.preset"
 msgstr "Wende Vorlage auf die Installation an."

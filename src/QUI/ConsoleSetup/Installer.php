@@ -82,7 +82,7 @@ class Installer
 
     /**
      * Initiates a setup process.
-     * Will promt the user for all neccessary data,
+     * Will prompt the user for all neccessary data,
      * validate inputs and starts the setuproutine afterwards.
      *
      */
@@ -779,6 +779,33 @@ class Installer
      */
     private function setup()
     {
+        # Warn the user of the changes, that cant be undone.
+
+        $this->writeLn(
+            $this->Locale->getStringLang(
+                "setup.warning.execution.start",
+                "This will start executing the setup routine. These changes can not be undone by the setup itself." . PHP_EOL .
+                "If the setup gets aborted you will have to clear the directories contents and start over from the beginning"
+            ),
+            self::LEVEL_WARNING
+        );
+
+        $continue = $this->prompt(
+            $this->Locale->getStringLang(
+                "setup.prompt.execution.start",
+                "Are you sure you want to continue (y/n)"
+            ),
+            false,
+            null,
+            false,
+            true,
+            false
+        );
+
+        if ($continue != "y") {
+            exit;
+        }
+
         $this->echoSectionHeader($this->Locale->getStringLang("message.step.setup", "Executing Setup : "));
 
         $this->Setup->runSetup();

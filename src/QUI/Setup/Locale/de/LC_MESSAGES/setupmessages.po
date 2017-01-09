@@ -362,7 +362,13 @@ msgid "setup.prompt.restoration.user.password.repeat"
 msgstr "Benutzer Passwort wiederholen:"
 
 msgid "setup.message.restoration.database.password.invalid"
-msgstr "Das eingegebene password scheint nicht korrekt zu sein. Bitte erneut versuchen."
+msgstr "Das eingegebene Password scheint nicht korrekt zu sein. Bitte erneut versuchen."
 
 msgid "setup.error.mysql"
 msgstr "MySql Fehler: "
+
+msgid "setup.warning.execution.start"
+msgstr "Ab diesem Schritt sind alle Änderungen nicht mehr automatisch zurücksetzbar. Das heisst, Sie müssen, falls das Setup abrrechen sollte, den Inhalt dieses Verzeichnises löschen und von vorne beginnen."
+
+msgid "setup.prompt.execution.start"
+msgstr "Sind Sie sicher, dass Sie fortfahren wollen? (y/n) "

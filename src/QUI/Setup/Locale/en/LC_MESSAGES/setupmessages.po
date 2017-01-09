@@ -364,6 +364,11 @@ msgstr "Repeat user password:"
 msgid "setup.message.restoration.database.password.invalid"
 msgstr "The given password seems to be incorrect. Try again!"
 
-
 msgid "setup.error.mysql"
 msgstr "MySql encountered an error: "
+
+msgid "setup.warning.execution.start"
+msgstr "With this step all changes made on disk are nor revertable. This means you will have to clear the current directory and start voer again, if the setup should get cancelled."
+
+msgid "setup.prompt.execution.start"
+msgstr "Are you sure you want to continue? (y/n)"

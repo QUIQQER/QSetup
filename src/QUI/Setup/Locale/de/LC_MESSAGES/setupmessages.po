@@ -332,13 +332,13 @@ msgid "prompt.database.not.empty.continue"
 msgstr "Wie möchten Sie fortfahren?\n   - n : Neue Datenbank wählen \n   - c : Datenbank leeren. Warnung! Alle Daten gehen verloren! \n   - q : Setup abbrechen"
 
 msgid "help.prompt.host"
-msgstr "Die Domain unter welcher QUIQQER erreichbar sein wird. \nDie Domain sollte mit 'http://' beginnen und ohne Slash enden!\nBeispiel : http://example.com"
+msgstr "Die Domain unter welcher QUIQQER erreichbar sein wird. \nDie Domain sollte mit 'https://' beginnen und ohne Slash enden!\nBeispiel : https://example.com"
 
 msgid "help.prompt.cms"
 msgstr "Der Absolute Pfad zu dem Verzeichnis, in welches QUIQQER auf dem Filesystem des Servers installiert wird.\nMuss mit Slash beginnen und enden! \nBeispiel : /var/www/vhosts/example.com/httpdocs/"
 
 msgid "help.prompt.url"
-msgstr "Der Pfad nach der Domain, falls QUIQQER in ein Unterverzeichnis des Document Roots installiert wird.\nMuss mit Slash beginnen und enden.\nBeispiel : /quiqqer/ für http://example.com/quiqqer/"
+msgstr "Der Pfad nach der Domain, falls QUIQQER in ein Unterverzeichnis des Document Roots installiert wird.\nMuss mit Slash beginnen und enden.\nBeispiel : /quiqqer/ für https://example.com/quiqqer/"
 
 msgid "setup.message.finished.filerights"
 msgstr "Bitte stellen Sie sicher, dass der Webserver Leserechte auf die QUIQQER-Installation hat und der ausführende PHP-Benutzer der Besitzer der Dateien ist."

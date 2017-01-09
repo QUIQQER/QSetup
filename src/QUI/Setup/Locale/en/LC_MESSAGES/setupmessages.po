@@ -363,3 +363,7 @@ msgstr "Repeat user password:"
 
 msgid "setup.message.restoration.database.password.invalid"
 msgstr "The given password seems to be incorrect. Try again!"
+
+
+msgid "setup.error.mysql"
+msgstr "MySql encountered an error: "

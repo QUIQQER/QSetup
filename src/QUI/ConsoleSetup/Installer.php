@@ -788,10 +788,12 @@ class Installer
     private function stepFinish()
     {
         $this->writeLn(
-            " --- " . $this->Locale->getStringLang(
+            " --- " .
+            $this->Locale->getStringLang(
                 "setup.message.finished.header",
                 "Setup finished"
-            ) . " --- ",
+            ) .
+            " --- ",
             self::LEVEL_INFO,
             COLOR_GREEN
         );

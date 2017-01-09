@@ -577,7 +577,7 @@ class Setup
             }
 
             // Store user details in temporary password file
-            file_put_contents(CMS_DIR."/var/tmp/.preset_pwd", $this->data['user']['pw']);
+            file_put_contents(CMS_DIR . "/var/tmp/.preset_pwd", $this->data['user']['pw']);
 
             exec(
                 $phpPath . " {$applyPresetFile} {$cmsDir} {$this->data['template']} {$this->setupLang}",
@@ -1018,11 +1018,21 @@ class Setup
         if ($version == "dev-dev" || $version == "dev-master") {
             $version = str_replace("dev-", "", $version);
         }
+
         # Load the database tables from xml file
         $xmlDir  = dirname(dirname(dirname(dirname(__FILE__)))) . "/xml";
         $xmlFile = $xmlDir . "/" . $version . "/database.xml";
+
+        # Download the newest database.xml
+        $remoteFileContent = file_get_contents("https://dev.quiqqer.com/quiqqer/quiqqer/raw/" . $version . "/database.xml");
+        file_put_contents($xmlFile, $remoteFileContent);
+
         # Check if xml file exists
         if (!file_exists($xmlFile)) {
+            $this->Output->writeLn(
+                "Could not find a database.xml for the given version. Using default database.xml",
+                Output::LEVEL_WARNING
+            );
             # Try master databasefile as backup-plan
             $xmlFile = $xmlDir . "/master/database.xml";
             if (!file_exists($xmlFile)) {
@@ -1032,7 +1042,18 @@ class Setup
                 );
             }
         }
-        $this->Database->importTables(QUI\Utils\Text\XML::getDataBaseFromXml($xmlFile));
+
+
+        try {
+            $this->Database->importTables(QUI\Utils\Text\XML::getDataBaseFromXml($xmlFile));
+        } catch (\Exception $Exception) {
+            throw new SetupException(
+                $this->Locale->getStringLang("setup.error.mysql", "MySql encountered an error: ").
+                $Exception->getMessage(),
+                SetupException::ERROR_MISSING_RESSOURCE
+            );
+        }
+
 
         $this->Step = Setup::STEP_SETUP_DATABASE;
     }

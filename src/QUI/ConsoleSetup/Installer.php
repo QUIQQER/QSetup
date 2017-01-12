@@ -254,7 +254,6 @@ class Installer
         }
 
         # Execute Setup
-        $this->echoDecorationCoffe();
         $this->setup();
         $this->stepFinish();
     }
@@ -780,7 +779,6 @@ class Installer
     private function setup()
     {
         # Warn the user of the changes, that cant be undone.
-
         $this->writeLn(
             $this->Locale->getStringLang(
                 "setup.warning.execution.start",
@@ -807,7 +805,7 @@ class Installer
         }
 
         $this->echoSectionHeader($this->Locale->getStringLang("message.step.setup", "Executing Setup : "));
-
+        $this->echoDecorationCoffe();
         $this->Setup->runSetup();
     }
 

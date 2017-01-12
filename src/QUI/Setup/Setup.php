@@ -1048,7 +1048,7 @@ class Setup
             $this->Database->importTables(QUI\Utils\Text\XML::getDataBaseFromXml($xmlFile));
         } catch (\Exception $Exception) {
             throw new SetupException(
-                $this->Locale->getStringLang("setup.error.mysql", "MySql encountered an error: ").
+                $this->Locale->getStringLang("setup.error.mysql", "MySql encountered an error: ") .
                 $Exception->getMessage(),
                 SetupException::ERROR_MISSING_RESSOURCE
             );
@@ -1538,9 +1538,14 @@ LOGETC;
 
         QUI\Setup::all();
 
-        # Execute Htaccess
-        $Htaccess = new QUI\System\Console\Tools\Htaccess();
-        $Htaccess->execute();
+        # Execute Htaccess if we detect an apache installation
+        try {
+            if (QUI\Utils\System\Webserver::detectInstalledWebserver() == QUI\Utils\System\Webserver::WEBSERVER_APACHE) {
+                $Htaccess = new QUI\System\Console\Tools\Htaccess();
+                $Htaccess->execute();
+            }
+        } catch (\Exception $Exception) {
+        }
 
         # Add Setup languages
         QUI\Translator::addLang($this->data['lang']);

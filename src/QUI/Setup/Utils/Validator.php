@@ -4,6 +4,7 @@ namespace QUI\Setup\Utils;
 
 use QUI\Database\Exception;
 use QUI\Setup\Database\Database;
+use QUI\Setup\Preset;
 use QUI\Setup\Setup;
 use QUI\Setup\SetupException;
 
@@ -158,7 +159,7 @@ class Validator
      */
     public static function validatePreset($name)
     {
-        $presets = Setup::getPresets();
+        $presets = Preset::getPresets();
 
 
         if (empty($name) || key_exists($name, $presets)) {
@@ -319,7 +320,7 @@ class Validator
             throw new SetupException("data.missing.version", SetupException::ERROR_INVALID_ARGUMENT);
         }
 
-        if (!isset($data['template']) || empty($data['template'])) {
+        if (!isset($data['preset']) || empty($data['preset'])) {
             throw new SetupException("data.missing.template", SetupException::ERROR_INVALID_ARGUMENT);
         }
         #endregion

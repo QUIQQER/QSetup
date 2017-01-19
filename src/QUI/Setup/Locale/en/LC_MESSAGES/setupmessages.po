@@ -372,3 +372,9 @@ msgstr "With this step all changes made on disk are nor revertable. This means y
 
 msgid "setup.prompt.execution.start"
 msgstr "Are you sure you want to continue? (y/n)"
+
+msgid "setup.workspaces.twocolumn.title"
+msgstr "Two Columns"
+
+msgid "setup.workspaces.threecolumn.title"
+msgstr "Three Columns"

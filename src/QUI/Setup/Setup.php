@@ -4,6 +4,7 @@ namespace QUI\Setup;
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
 
+
 use QUI;
 use QUI\Composer\Composer;
 use QUI\Setup\Database\Database;
@@ -73,6 +74,7 @@ class Setup
     private $tableGroups;
     private $tablePermissions;
     private $tablePermissions2Groups;
+    private $tableUsersWorkspaces;
 
     private $baseDir;
     private $tmpDir;
@@ -140,16 +142,25 @@ class Setup
 
         $this->Locale = new Locale("en_GB");
 
+        // Initialize neccessary directories.
         $this->baseDir = dirname(dirname(dirname(dirname(__FILE__))));
-        $this->tmpDir  = dirname(dirname(dirname(dirname(__FILE__)))) . '/var/tmp/';
-        # Logdir
+
+        # TMP Dir
+        $this->tmpDir = dirname(dirname(dirname(dirname(__FILE__)))) . '/var/tmp/';
+        if (!is_dir($this->tmpDir)) {
+            mkdir($this->tmpDir, 0744, true);
+        }
+
+        # Log Dir
         $this->logDir = dirname(dirname(dirname(dirname(__FILE__)))) . '/logs/';
         if (!is_dir($this->logDir)) {
             mkdir($this->logDir, 0744, true);
         }
+
         ini_set('error_log', $this->logDir . 'error.log');
 
 
+        // Initialize Logging
         $this->mode = $mode;
         switch ($mode) {
             case self::MODE_CLI:
@@ -189,7 +200,6 @@ class Setup
     {
         $presets = array();
 
-
         if (file_exists(dirname(__FILE__) . '/presets.json')) {
             $json = file_get_contents(dirname(__FILE__) . '/presets.json');
             $data = json_decode($json, true);
@@ -199,7 +209,6 @@ class Setup
                 }
             }
         }
-
 
         # Read all userdefined presets from templates/presets
         $presetDir = dirname(dirname(dirname(dirname(__FILE__)))) . '/templates/presets';
@@ -256,6 +265,7 @@ class Setup
 
         return $validVersions;
     }
+
     #region Getter/Setter
 
     /**
@@ -332,7 +342,7 @@ class Setup
     {
         try {
             Validator::validatePreset($preset);
-            $this->data['template'] = $preset;
+            $this->data['preset'] = $preset;
 
             $this->Step = Setup::STEP_DATA_PRESET;
             $this->stepSum += Setup::STEP_DATA_PRESET;
@@ -523,11 +533,7 @@ class Setup
     public function runSetup()
     {
         # Constraint to ensure that all Datasteps have been taken or that the Set Data method has been called
-        if ($this->stepSum != Setup::STEP_DATA_COMPLETE &&
-            $this->stepSum != Setup::STEP_DATA_LANGUAGE + Setup::STEP_DATA_VERSION + Setup::STEP_DATA_PRESET +
-            Setup::STEP_DATA_DATABASE + Setup::STEP_DATA_USER + Setup::STEP_DATA_PATHS
-        ) {
-            $this->Output->writeLn("StepSum " . $this->stepSum, Output::LEVEL_DEBUG);
+        if ($this->stepSum != Setup::STEP_DATA_COMPLETE && !$this->canDoStep(self::STEP_DATA_COMPLETE)) {
             $this->Output->writeLnLang("setup.exception.runsetup.missing.data.step", Output::LEVEL_CRITICAL);
             exit;
         }
@@ -548,9 +554,8 @@ class Setup
         $this->tableGroups             = $this->data['database']['prefix'] . "groups";
         $this->tablePermissions        = $this->data['database']['prefix'] . "permissions";
         $this->tablePermissions2Groups = $this->data['database']['prefix'] . "permissions2groups";
+        $this->tableUsersWorkspaces    = $this->data['database']['prefix'] . "users_workspaces";
 
-        # Make sure that stored data is removed when the main setup process started
-        $this->removeStoredData();
 
         # Execute setup steps
         $this->setupDatabase();
@@ -564,48 +569,13 @@ class Setup
         $this->storeSetupState();
 
         # Execute the applyPresetScript in new instance to make sure quiqqer has been initialized correctly.
-        # CLI only, websetup has to make a new ajax call
-        if ($this->mode == Setup::MODE_CLI && isset($this->data['template']) && !empty($this->data['template'])) {
-            $applyPresetFile = dirname(dirname(__FILE__)) . '/ConsoleSetup/applyPresetCLI.php';
-            $cmsDir          = CMS_DIR;
-
-
-            if (defined('PHP_BINARY')) {
-                $phpPath = PHP_BINARY . " ";
-            } else {
-                $phpPath = "php ";
-            }
-
-            // Store user details in temporary password file
-            file_put_contents(CMS_DIR . "/var/tmp/.preset_pwd", $this->data['user']['pw']);
-
-            exec(
-                $phpPath . " {$applyPresetFile} {$cmsDir} {$this->data['template']} {$this->setupLang}",
-                $cmdOutput,
-                $cmdStatus
-            );
-
-            QUI\Setup\Log\Log::append(implode(PHP_EOL, $cmdOutput));
-
-            if ($cmdStatus != 0) {
-                # IF Apply preset script did write its error message into the tmp/applypreset.json file.
-                # Output its error
-                if (file_exists(VAR_DIR . 'tmp/applypreset.json')) {
-                    $json = file_get_contents(VAR_DIR . 'tmp/applypreset.json');
-                    $data = json_decode($json, true);
-                    if (json_last_error() == JSON_ERROR_NONE) {
-                        if (isset($data['message']) && !empty($data['message'])) {
-                            $this->exitWithError($data['message']);
-                        }
-                    }
-                }
-
-                $this->exitWithError("setup.unknown.error");
-            }
+        # CLI only, the Websetup has to make a new ajax call
+        if ($this->mode == Setup::MODE_CLI && isset($this->data['preset']) && !empty($this->data['preset'])) {
+            $this->cliCallApplyPreset();
         }
+
         $this->deleteSetupFiles();
     }
-
 
     /**
      * Applies a preset to an already setup Quiqqer installation
@@ -616,228 +586,283 @@ class Setup
     {
 
         QUI\Setup\Log\Log::info("Applying preset: " . $presetName);
-        # Get the template info
-        $presets = self::getPresets();
 
+        $Preset = new Preset($presetName, $this->Locale);
+        $Preset->apply(CMS_DIR);
 
-        try {
-            Validator::validatePreset($presetName);
-        } catch (SetupException $Exception) {
-            $this->Output->writeLnLang($Exception->getMessage());
-
-            return;
-        }
-
-        $preset = $presets[$presetName];
-        if ($preset == null || empty($preset)) {
-            $this->Output->writeLn("Skipping preset : No preset set.");
-
-            return;
-        }
-
-        $this->Output->writeLnLang("setup.setup.message.apply.preset");
-
-        # Verify User input
-        # Project
-        $projectname = isset($preset['project']['name']) ? $preset['project']['name'] : "";
-        $languages   = isset($preset['project']['languages']) ? $preset['project']['languages'] : array();
-        $languages[] = $this->data['lang'];
-        $languages   = array_unique($languages);
-        #Template
-        $templateName    = isset($preset['template']['name']) ? $preset['template']['name'] : "";
-        $templateVersion = isset($preset['template']['version']) ? $preset['template']['version'] : "";
-        $defaultLayout   = isset($preset['template']['default_layout']) ? $preset['template']['default_layout'] : "";
-        $startLayout     = isset($preset['template']['start_layout']) ? $preset['template']['start_layout'] : "";
-
-        # Packages
-        $packages = isset($preset['packages']) ? $preset['packages'] : array();
-        if (!is_array($packages)) {
-            $packages = array();
-        }
-
-        # Repositories
-        $repos = isset($preset['repositories']) ? $preset['repositories'] : array();
-        if (!is_array($repos)) {
-            $repos = array();
-        }
-
-        # =========================================================================================== #
-
-        # IF no Projectname is set, use the given host
-        if (empty($projectname) && isset($this->data['paths']['preset'])) {
-            $projectname = $this->data['paths']['host'];
-        }
-
-        # Apply preset configuration
-        # Add Repositories to composer.json
-        if (file_exists(VAR_DIR . '/composer/composer.json')) {
-            $json = file_get_contents(VAR_DIR . '/composer/composer.json');
-            $data = json_decode($json, true);
-            if (json_last_error() == JSON_ERROR_NONE) {
-                foreach ($repos as $repo) {
-                    $data['repositories'][] = array(
-                        'url'  => $repo['url'],
-                        'type' => $repo['type']
-                    );
-
-                    $this->Output->writeLn(
-                        $this->Locale->getStringLang(
-                            "applypreset.adding.repository",
-                            "Adding Repository :"
-                        ) . $repo['url'],
-                        Output::LEVEL_INFO
-                    );
-
-                    QUI::getPackageManager()->addServer($repo['url'], array(
-                        'type'   => $repo['type'],
-                        'active' => 1
-                    ));
-                }
-
-                $json = json_encode($data, JSON_PRETTY_PRINT);
-                if (file_put_contents(VAR_DIR . '/composer/composer.json', $json) === false) {
-                    # Writeprocess failed
-                    throw new SetupException("setup.filesystem.composerjson.not.writeable");
-                }
-            } else {
-                throw new SetupException("setup.json.error" . " " . json_last_error_msg());
-            }
-        } else {
-            throw new SetupException("setup.filesystem.composerjson.not.found");
-        }
-
-        # Create project
-        if (!empty($projectname)) {
-            try {
-                QUI::getProjectManager()->createProject(
-                    $projectname,
-                    $this->data['lang']
-                );
-
-                $this->Output->writeLn(
-                    $this->Locale->getStringLang(
-                        "applypreset.creating.project",
-                        "Created Project :"
-                    ) . $projectname,
-                    Output::LEVEL_INFO
-                );
-            } catch (QUI\Exception $Exception) {
-                $exceptionMsg = $this->Locale->getStringLang(
-                    "setup.error.project.creation.failed",
-                    "Could not create project: "
-                );
-                $this->Output->writeLn($exceptionMsg . ' ' . $Exception->getMessage());
-
-                return;
-            }
-        }
-
-        # Require Template and packages
-        $Composer = new Composer(VAR_DIR . "composer/", VAR_DIR . "composer/");
-
-        if (!empty($templateName)) {
-            $Composer->requirePackage($templateName, $templateVersion);
-
-            $this->Output->writeLn(
-                $this->Locale->getStringLang(
-                    "applypreset.require.package",
-                    "Require Package :"
-                ) . $templateName,
-                Output::LEVEL_INFO
-            );
-        }
-
-        # Require additional packages
-        foreach ($packages as $name => $version) {
-            $Composer->requirePackage($name, $version);
-
-            $this->Output->writeLn(
-                $this->Locale->getStringLang(
-                    "applypreset.require.package",
-                    "Require Package :"
-                ) . $name,
-                Output::LEVEL_INFO
-            );
-        }
-
-
-        $this->refreshNamespaces($Composer);
-
-        # Add new languages if neccessary
-        $config = array();
-        if ($projectname != null) {
-            $config['langs'] = implode(',', $languages);
-            QUI::getProjectManager()->setConfigForProject($projectname, $config);
-        }
-
-        # Execute Quiqqersetup to activate new Plugins/translations etc.
-        QUI\Setup::all();
-
-        #Apply Configs to newly created project
-
-        # Config main project to use new template
-        if (!empty($templateName) && !empty($projectname)) {
-            $config['template'] = $templateName;
-        }
-
-        # Set the default Layout
-        if (!empty($templateName) && !empty($projectname) && !empty($defaultLayout)) {
-            $config['layout'] = $defaultLayout;
-        }
-
-        if (!empty($config)) {
-            # Execute this line twice to circumvent the check if the layout exists in the current template
-            QUI::getProjectManager()->setConfigForProject($projectname, $config);
-            QUI::getProjectManager()->setConfigForProject($projectname, $config);
-
-
-            $this->Output->writeLn(
-                $this->Locale->getStringLang(
-                    "applypreset.set.config",
-                    "Apply projectconfig"
-                ),
-                Output::LEVEL_INFO
-            );
-        }
-
-        # Set the Mainpage Layout
-        if (!empty($templateName) && !empty($projectname) && !empty($startLayout)) {
-            foreach ($languages as $lang) {
-                $Project = new QUI\Projects\Project($projectname, $lang);
-                $Edit    = new QUI\Projects\Site\Edit($Project, 1);
-                $Edit->setAttribute('layout', $startLayout);
-                $Edit->save();
-                $Edit->activate();
-
-                $this->Output->writeLn(
-                    $this->Locale->getStringLang(
-                        "applypreset.set.layout",
-                        "Set layout for language : "
-                    ) . $lang,
-                    Output::LEVEL_INFO
-                );
-            }
-        }
-
-
-        $this->Output->writeLn(
-            $this->Locale->getStringLang(
-                "applypreset.quiqqer.setup",
-                "Executing Quiqqer Setup. "
-            ),
-            Output::LEVEL_INFO
-        );
-        QUI\Setup::all();
-
-
-        $this->Output->writeLn(
-            $this->Locale->getStringLang(
-                "applypreset.done",
-                "Preset applied. "
-            ),
-            Output::LEVEL_INFO
-        );
         $this->Step = Setup::STEP_SETUP_PRESET;
+    }
+
+//    protected function applyPresetOld($presetName){
+//                # Get the template info
+//                $presets = Preset::getPresets();
+//
+//                try {
+//                    Validator::validatePreset($presetName);
+//                } catch (SetupException $Exception) {
+//                    $this->Output->writeLnLang($Exception->getMessage());
+//
+//                    return;
+//                }
+//
+//                $preset = $presets[$presetName];
+//                if ($preset == null || empty($preset)) {
+//                    $this->Output->writeLn("Skipping preset : No preset set.");
+//
+//                    return;
+//                }
+//
+//                $this->Output->writeLnLang("setup.setup.message.apply.preset");
+//
+//                # Verify User input
+//                # Project
+//                $projectname = isset($preset['project']['name']) ? $preset['project']['name'] : "";
+//                $languages   = isset($preset['project']['languages']) ? $preset['project']['languages'] : array();
+//                $languages[] = $this->data['lang'];
+//                $languages   = array_unique($languages);
+//                #Template
+//                $templateName    = isset($preset['template']['name']) ? $preset['template']['name'] : "";
+//                $templateVersion = isset($preset['template']['version']) ? $preset['template']['version'] : "";
+//                $defaultLayout   = isset($preset['template']['default_layout']) ? $preset['template']['default_layout'] : "";
+//                $startLayout     = isset($preset['template']['start_layout']) ? $preset['template']['start_layout'] : "";
+//
+//                # Packages
+//                $packages = isset($preset['packages']) ? $preset['packages'] : array();
+//                if (!is_array($packages)) {
+//                    $packages = array();
+//                }
+//
+//                # Repositories
+//                $repos = isset($preset['repositories']) ? $preset['repositories'] : array();
+//                if (!is_array($repos)) {
+//                    $repos = array();
+//                }
+//
+//                # =========================================================================================== #
+//
+//                # IF no Projectname is set, use the given host
+//                if (empty($projectname) && isset($this->data['paths']['preset'])) {
+//                    $projectname = $this->data['paths']['host'];
+//                }
+//
+//                # Apply preset configuration
+//                # Add Repositories to composer.json
+//                if (!file_exists(VAR_DIR . '/composer/composer.json')) {
+//                    throw new SetupException("setup.filesystem.composerjson.not.found");
+//                }
+//
+//                if (json_last_error() !== JSON_ERROR_NONE) {
+//                    throw new SetupException("setup.json.error" . " " . json_last_error_msg());
+//                }
+//
+//                $json = file_get_contents(VAR_DIR . '/composer/composer.json');
+//                $data = json_decode($json, true);
+//
+//                foreach ($repos as $repo) {
+//                    $data['repositories'][] = array(
+//                        'url'  => $repo['url'],
+//                        'type' => $repo['type']
+//                    );
+//
+//                    $this->Output->writeLn(
+//                        $this->Locale->getStringLang(
+//                            "applypreset.adding.repository",
+//                            "Adding Repository :"
+//                        ) . $repo['url'],
+//                        Output::LEVEL_INFO
+//                    );
+//
+//                    QUI::getPackageManager()->addServer($repo['url'], array(
+//                        'type'   => $repo['type'],
+//                        'active' => 1
+//                    ));
+//                }
+//
+//                $json = json_encode($data, JSON_PRETTY_PRINT);
+//                if (file_put_contents(VAR_DIR . '/composer/composer.json', $json) === false) {
+//                    # Writeprocess failed
+//                    throw new SetupException("setup.filesystem.composerjson.not.writeable");
+//                }
+//
+//
+//                # Create project
+//                if (!empty($projectname)) {
+//                    try {
+//                        QUI::getProjectManager()->createProject(
+//                            $projectname,
+//                            $this->data['lang']
+//                        );
+//
+//                        $this->Output->writeLn(
+//                            $this->Locale->getStringLang(
+//                                "applypreset.creating.project",
+//                                "Created Project :"
+//                            ) . $projectname,
+//                            Output::LEVEL_INFO
+//                        );
+//                    } catch (QUI\Exception $Exception) {
+//                        $exceptionMsg = $this->Locale->getStringLang(
+//                            "setup.error.project.creation.failed",
+//                            "Could not create project: "
+//                        );
+//                        $this->Output->writeLn($exceptionMsg . ' ' . $Exception->getMessage());
+//
+//                        return;
+//                    }
+//                }
+//
+//                # Require Template and packages
+//                $Composer = new Composer(VAR_DIR . "composer/", VAR_DIR . "composer/");
+//
+//                if (!empty($templateName)) {
+//                    $Composer->requirePackage($templateName, $templateVersion);
+//
+//                    $this->Output->writeLn(
+//                        $this->Locale->getStringLang(
+//                            "applypreset.require.package",
+//                            "Require Package :"
+//                        ) . $templateName,
+//                        Output::LEVEL_INFO
+//                    );
+//                }
+//
+//                # Require additional packages
+//                foreach ($packages as $name => $version) {
+//                    $Composer->requirePackage($name, $version);
+//
+//                    $this->Output->writeLn(
+//                        $this->Locale->getStringLang(
+//                            "applypreset.require.package",
+//                            "Require Package :"
+//                        ) . $name,
+//                        Output::LEVEL_INFO
+//                    );
+//                }
+//
+//
+//                $this->refreshNamespaces($Composer);
+//
+//                # Add new languages if neccessary
+//                $config = array();
+//                if ($projectname != null) {
+//                    $config['langs'] = implode(',', $languages);
+//                    QUI::getProjectManager()->setConfigForProject($projectname, $config);
+//                }
+//
+//                # Execute Quiqqersetup to activate new Plugins/translations etc.
+//                QUI\Setup::all();
+//
+//                #Apply Configs to newly created project
+//
+//                # Config main project to use new template
+//                if (!empty($templateName) && !empty($projectname)) {
+//                    $config['template'] = $templateName;
+//                }
+//
+//                # Set the default Layout
+//                if (!empty($templateName) && !empty($projectname) && !empty($defaultLayout)) {
+//                    $config['layout'] = $defaultLayout;
+//                }
+//
+//                if (!empty($config)) {
+//                    # Execute this line twice to circumvent the check if the layout exists in the current template
+//                    QUI::getProjectManager()->setConfigForProject($projectname, $config);
+//                    QUI::getProjectManager()->setConfigForProject($projectname, $config);
+//
+//
+//                    $this->Output->writeLn(
+//                        $this->Locale->getStringLang(
+//                            "applypreset.set.config",
+//                            "Apply projectconfig"
+//                        ),
+//                        Output::LEVEL_INFO
+//                    );
+//                }
+//
+//                # Set the Mainpage Layout
+//                if (!empty($templateName) && !empty($projectname) && !empty($startLayout)) {
+//                    foreach ($languages as $lang) {
+//                        $Project = new QUI\Projects\Project($projectname, $lang);
+//                        $Edit    = new QUI\Projects\Site\Edit($Project, 1);
+//                        $Edit->setAttribute('layout', $startLayout);
+//                        $Edit->save();
+//                        $Edit->activate();
+//
+//                        $this->Output->writeLn(
+//                            $this->Locale->getStringLang(
+//                                "applypreset.set.layout",
+//                                "Set layout for language : "
+//                            ) . $lang,
+//                            Output::LEVEL_INFO
+//                        );
+//                    }
+//                }
+//
+//
+//                $this->Output->writeLn(
+//                    $this->Locale->getStringLang(
+//                        "applypreset.quiqqer.setup",
+//                        "Executing Quiqqer Setup. "
+//                    ),
+//                    Output::LEVEL_INFO
+//                );
+//                QUI\Setup::all();
+//
+//
+//                $this->Output->writeLn(
+//                    $this->Locale->getStringLang(
+//                        "applypreset.done",
+//                        "Preset applied. "
+//                    ),
+//                    Output::LEVEL_INFO
+//                );
+//                $this->Step = Setup::STEP_SETUP_PRESET;
+//    }
+
+
+    /**
+     * Calls the applyPresetCLI.php file.
+     * This is neccessary to get a new php instance in the cli version.
+     * Without it QUIQQER is not initialized and we can not make changes to QUIQQER.
+     */
+    protected function cliCallApplyPreset()
+    {
+        $applyPresetFile = dirname(dirname(__FILE__)) . '/ConsoleSetup/applyPresetCLI.php';
+        $cmsDir          = CMS_DIR;
+
+        $phpPath = defined('PHP_BINARY') ? PHP_BINARY : "php";
+
+        // Store user details in temporary password file
+        file_put_contents(CMS_DIR . "var/tmp/.preset_pwd", $this->data['user']['pw']);
+
+        exec(
+            $phpPath . " {$applyPresetFile} {$cmsDir} {$this->data['preset']} {$this->setupLang}",
+            $cmdOutput,
+            $cmdStatus
+        );
+
+        QUI\Setup\Log\Log::append(implode(PHP_EOL, $cmdOutput));
+        if ($cmdStatus == 0) {
+            return;
+        }
+
+        # An error happened
+
+        # IF Apply preset script did write its error message into the tmp/applypreset.json file.
+        # Output its error
+        if (!file_exists(VAR_DIR . 'tmp/applypreset.json')) {
+            $this->exitWithError("setup.unknown.error");
+        }
+
+        $json = file_get_contents(VAR_DIR . 'tmp/applypreset.json');
+        $data = json_decode($json, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $this->exitWithError("setup.unknown.error");
+        }
+
+        if (isset($data['message']) && !empty($data['message'])) {
+            $this->exitWithError($data['message']);
+        }
     }
 
     # region Datarestoration
@@ -848,24 +873,26 @@ class Setup
      */
     public function restoreData()
     {
-        if (file_exists($this->tmpDir . "setup.json")) {
-            $json = file_get_contents($this->tmpDir . "setup.json");
-            $data = json_decode($json, true);
-            if (json_last_error() == JSON_ERROR_NONE) {
-                if (key_exists('data', $data)) {
-                    $this->data = $data['data'];
-                }
+        if (!file_exists($this->tmpDir . "setup.json")) {
+            return;
+        }
 
-                if (key_exists('step', $data)) {
-                    $this->Step = $data['step'];
-                }
+        $json = file_get_contents($this->tmpDir . "setup.json");
+        $data = json_decode($json, true);
+        if (json_last_error() != JSON_ERROR_NONE) {
+            $this->Output->writeLn("Json Error : " . json_last_error_msg());
+        }
 
-                if (key_exists('stepsum', $data)) {
-                    $this->stepSum = $data['stepsum'];
-                }
-            } else {
-                $this->Output->writeLn("Json Error : " . json_last_error_msg());
-            }
+        if (key_exists('data', $data)) {
+            $this->data = $data['data'];
+        }
+
+        if (key_exists('step', $data)) {
+            $this->Step = $data['step'];
+        }
+
+        if (key_exists('stepsum', $data)) {
+            $this->stepSum = $data['stepsum'];
         }
     }
 
@@ -964,9 +991,82 @@ class Setup
         }
     }
 
+    /**
+     * Will try to get the setup back to the point, where it can be executed again
+     */
     public function rollBack()
     {
-        // TODO ROLLBACK
+        // TODO Better ROLLBACK
+
+        if (!defined("CMS_DIR")) {
+            return;
+        }
+
+        # Backup stored setup data
+        if (file_exists(CMS_DIR . "setup.json")) {
+            rename(CMS_DIR . "setup.json", $this->baseDir . "/setup.json");
+        }
+
+        # Backup stored "apply preset" info
+        if (file_exists(CMS_DIR . 'var/tmp/applypreset.json')) {
+            rename(CMS_DIR . 'var/tmp/applypreset.json', $this->baseDir . "/applypreset.json");
+        }
+
+        # Backup stored "apply preset" password
+        if (file_exists(CMS_DIR . 'var/tmp/.preset_pwd')) {
+            rename(CMS_DIR . 'var/tmp/.preset_pwd', $this->baseDir . "/.preset_pwd");
+        }
+
+
+        /////////////////////////////////////////////////////////////////////
+        # Remove var dir
+        if (is_dir(CMS_DIR . "var/")) {
+            QUI\Utils\System\File::deleteDir(CMS_DIR . "var/");
+        }
+
+        # Remove etc dir
+        if (is_dir(CMS_DIR . "etc/")) {
+            QUI\Utils\System\File::deleteDir(CMS_DIR . "etc/");
+        }
+
+
+        # Restore stored setup data
+        if (file_exists($this->baseDir . "setup.json")) {
+            rename($this->baseDir . "/setup.json", CMS_DIR . "setup.json");
+        }
+
+        # Restore stored "apply preset" info
+        if (file_exists($this->baseDir . "setup.json")) {
+            rename($this->baseDir . "/applypreset.json", CMS_DIR . 'var/tmp/applypreset.json');
+        }
+
+        # Restore stored "apply preset" password
+        if (file_exists($this->baseDir . "setup.json")) {
+            rename($this->baseDir . "/.preset_pwd", CMS_DIR . 'var/tmp/.preset_pwd');
+        }
+
+
+        # Clear Database
+        if (!Database::databaseIsEmpty(
+            $this->data['database']['driver'],
+            $this->data['database']['host'],
+            $this->data['database']['user'],
+            $this->data['database']['pw'],
+            $this->data['database']['name'],
+            $this->data['database']['prefix'],
+            $this->data['database']['port']
+        )
+        ) {
+            Database::clearDatabase(
+                $this->data['database']['driver'],
+                $this->data['database']['host'],
+                $this->data['database']['user'],
+                $this->data['database']['pw'],
+                $this->data['database']['name'],
+                $this->data['database']['prefix'],
+                $this->data['database']['port']
+            );
+        }
     }
     #endregion
 
@@ -990,6 +1090,7 @@ class Setup
         }
 
         $this->Output->writeLnLang("setup.message.step.database", Output::LEVEL_INFO);
+
         $this->Database = new Database(
             $this->data['database']['driver'],
             $this->data['database']['host'],
@@ -999,7 +1100,6 @@ class Setup
             $this->data['database']['create_new'] ? "" : $this->data['database']['name'],
             $this->data['database']['prefix']
         );
-
 
         # Create Database if wanted
         if ($this->data['database']['create_new']) {
@@ -1011,6 +1111,9 @@ class Setup
                 );
             }
         }
+
+        # Store Database state
+        //$this->storeDatabaseState();
 
         # Create Tables
         $version = $this->data['version'];
@@ -1102,6 +1205,38 @@ class Setup
                 'su'        => 1,
                 'active'    => 1,
                 'lang'      => $this->Locale->getCurrent() == 'de_DE' ? 'de' : 'en'
+            )
+        );
+
+
+        # Setup the workspace for the user
+        $twoColumnJson = $this->getTemplateContent("workspaces/two_column.json");
+        $twoColumnName = $this->Locale->getStringLang("setup.workspaces.twocolumn.title", "2 Columns");
+
+        $threeColumnJson = $this->getTemplateContent("workspaces/three_column.json");
+        $threeColumnName = $this->Locale->getStringLang("setup.workspaces.threecolumn.title", "3 Columns");
+
+
+
+        $this->Database->insert(
+            $this->tableUsersWorkspaces,
+            array(
+                'uid'       => $this->data['rootUID'],
+                'title'     => $twoColumnName,
+                'data'      => $twoColumnJson,
+                'minHeight' => (int)500,
+                'minWidth'  => (int)700
+            )
+        );
+
+        $this->Database->insert(
+            $this->tableUsersWorkspaces,
+            array(
+                'uid'       => $this->data['rootUID'],
+                'title'     => $threeColumnName,
+                'data'      => $threeColumnJson,
+                'minHeight' => (int)500,
+                'minWidth'  => (int)700
             )
         );
 
@@ -1228,6 +1363,7 @@ class Setup
             );
         }
         #endregion
+
         # -------------------
         # Create config files
         # -------------------
@@ -1316,13 +1452,14 @@ class Setup
             );
         }
 
+        # Copy the composer.phar
         copy(
             dirname(dirname(dirname(dirname(__FILE__)))) . "/lib/composer.phar",
             VAR_DIR . "composer/composer.phar"
         );
 
         if (file_exists(CMS_DIR . "lib/composer.phar")) {
-            rename(
+            copy(
                 CMS_DIR . "lib/composer.phar",
                 VAR_DIR . "composer/composer.phar"
             );
@@ -1343,13 +1480,6 @@ class Setup
             $this->exitWithError("setup.unknown.error");
         }
 
-//        $target = $this->baseDir . '/packages/bin/mustache';
-//        if (file_exists($target) && is_link($target)) {
-//            unlink($target);
-//            mkdir($target);
-//        }
-
-
         # Execute composer again
         $res = $Composer->update();
         if ($res === false) {
@@ -1357,14 +1487,14 @@ class Setup
         }
 
         if (file_exists(CMS_DIR . "composer.json")) {
-            rename(
+            copy(
                 CMS_DIR . "composer.json",
                 VAR_DIR . "composer/composer.json"
             );
         }
 
         if (file_exists(CMS_DIR . "composer.lock")) {
-            rename(
+            copy(
                 CMS_DIR . "composer.lock",
                 VAR_DIR . "composer/composer.lock"
             );
@@ -1599,7 +1729,7 @@ LOGETC;
 
         # Remove composer.json & composer.lock in doc-root
         if (file_exists(CMS_DIR . "composer.json")) {
-            rename(
+            copy(
                 CMS_DIR . "composer.json",
                 VAR_DIR . "composer/composer.json"
             );
@@ -1621,7 +1751,7 @@ LOGETC;
 
 
         if (file_exists(CMS_DIR . "composer.lock")) {
-            rename(
+            copy(
                 CMS_DIR . "composer.lock",
                 VAR_DIR . "composer/composer.lock"
             );
@@ -1649,6 +1779,9 @@ LOGETC;
                 );
             }
         }
+
+        # Make sure that stored data
+        $this->removeStoredData();
 
         $this->Step = Setup::STEP_SETUP_DELETE;
     }
@@ -1681,6 +1814,7 @@ LOGETC;
     // Private - Helper Functions
     // ************************************************** //
 
+    #region Helper Functions
 
     /**
      * Returns the parsed configfile in an assoc. array.
@@ -1868,6 +2002,12 @@ LOGETC;
         return null;
     }
 
+    /**
+     * Attempts to detect the systems timezone.
+     * Defaults to UTC.
+     *
+     * @return mixed|string
+     */
     private function autodetectTimezone()
     {
         $timezone = "UTC";
@@ -1894,6 +2034,10 @@ LOGETC;
         return $timezone;
     }
 
+    /**
+     * Exits the Setup and will write an error to the output
+     * @param $msg
+     */
     private function exitWithError($msg)
     {
         $this->Output->writeLnLang($msg, Output::LEVEL_ERROR);
@@ -1923,5 +2067,21 @@ LOGETC;
         if ($classMap) {
             QUI\Autoloader::$ComposerLoader->addClassMap($classMap);
         }
+    }
+
+    /**
+     * Checks if the setup can proceed with the given step
+     *
+     * @param int $step - The step which should be processed next
+     *
+     * @return boolean
+     */
+    protected function canDoStep($step)
+    {
+        if ($this->stepSum == ($step - 1)) {
+            return true;
+        }
+
+        return false;
     }
 }

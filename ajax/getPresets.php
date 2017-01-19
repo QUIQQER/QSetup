@@ -7,7 +7,7 @@
 require 'header.php';
 
 $result  = array();
-$presets = \QUI\Setup\Setup::getPresets();
+$presets = \QUI\Setup\Preset::getPresets();
 
 foreach ($presets as $name => $values) {
     $result[] = $name;

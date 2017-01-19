@@ -12,6 +12,7 @@ use QUI\Requirements\TestResult;
 use QUI\Setup\Database\Database;
 use QUI\Setup\Locale\Locale;
 use QUI\Setup\Log\Log;
+use QUI\Setup\Preset;
 use QUI\Setup\Setup;
 use QUI\Setup\SetupException;
 use QUI\Setup\Utils\Utils;
@@ -122,6 +123,9 @@ class Installer
         # Data restoration
         if (isset($continuePrompt) && $continuePrompt == 'y') {
             $this->Setup->restoreData();
+
+            #Remove files/directories that could get into the way of the new setup
+            $this->Setup->rollBack();
 
             /*
              * We did not store passwords.
@@ -407,7 +411,7 @@ class Installer
      */
     private function stepPreset()
     {
-        $presets      = Setup::getPresets();
+        $presets      = Preset::getPresets();
         $presetString = "";
         foreach ($presets as $name => $preset) {
             $presetString .= $name . ", ";
@@ -779,30 +783,6 @@ class Installer
     private function setup()
     {
         # Warn the user of the changes, that cant be undone.
-        $this->writeLn(
-            $this->Locale->getStringLang(
-                "setup.warning.execution.start",
-                "This will start executing the setup routine. These changes can not be undone by the setup itself." . PHP_EOL .
-                "If the setup gets aborted you will have to clear the directories contents and start over from the beginning"
-            ),
-            self::LEVEL_WARNING
-        );
-
-        $continue = $this->prompt(
-            $this->Locale->getStringLang(
-                "setup.prompt.execution.start",
-                "Are you sure you want to continue (y/n)"
-            ),
-            false,
-            null,
-            false,
-            true,
-            false
-        );
-
-        if ($continue != "y") {
-            exit;
-        }
 
         $this->echoSectionHeader($this->Locale->getStringLang("message.step.setup", "Executing Setup : "));
         $this->echoDecorationCoffe();

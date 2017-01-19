@@ -36,7 +36,7 @@ class SetupTest extends TestCase
 
     public function testGetPresets()
     {
-        $presets = Setup::getPresets();
+        $presets = Preset::getPresets();
 
         print_r($presets);
     }

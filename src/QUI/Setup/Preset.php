@@ -186,11 +186,13 @@ class Preset
             throw new SetupException($exceptionMsg . ' ' . $Exception->getMessage());
         }
 
+
         Log::info(
             $this->Locale->getStringLang("applypreset.creating.project", "Created Project :") . $this->projectName
         );
 
         \QUI\Setup::all();
+
         $this->refreshNamespaces($this->Composer);
 
         # Add new languages if neccessary
@@ -202,15 +204,24 @@ class Preset
             Log::info("Installed Languages '" . implode(',', $this->languages) . "' for Project {$this->projectName}");
         }
 
-        print_r(\QUI::getProjectManager()->getConfig());
+        # Add the languages and execute the project setup
         foreach ($this->languages as $lang) {
             $Project = \QUI::getProjectManager()->getProject($this->projectName, $lang);
             $Project->setup();
         }
 
         \QUI\Setup::all();
-    }
 
+
+        # Create the default structure for each language
+        foreach ($this->languages as $lang) {
+            $Project = \QUI::getProjectManager()->getProject($this->projectName, $lang);
+            try {
+                \QUI\Utils\Project::createDefaultStructure($Project);
+            } catch (\Exception $Exception) {
+            }
+        }
+    }
 
     /**
      * Adds all neccessary repositories
@@ -259,8 +270,6 @@ class Preset
 
         $Config->save();
 
-
-        print_r(\QUI::getProjectManager()->getConfig());
         # Set the Mainpage Layout
         if (!empty($this->templateName) && !empty($this->projectName) && !empty($this->startLayout)) {
             foreach ($this->languages as $lang) {

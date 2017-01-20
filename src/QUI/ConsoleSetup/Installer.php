@@ -48,6 +48,8 @@ class Installer
     private $logDir;
 
 
+    private $url = "";
+
     /**
      * Installer constructor.
      */
@@ -174,6 +176,16 @@ class Installer
                     }
                 } while ($continue);
 
+
+                $this->clearDatabaseIfNotEmpty(
+                    $data['data']['database']['driver'],
+                    $data['data']['database']['host'],
+                    $data['data']['database']['user'],
+                    $dbPassword,
+                    $data['data']['database']['name'],
+                    $data['data']['database']['prefix'],
+                    $data['data']['database']['port']
+                );
 
                 $this->Setup->restoreDatabasePassword($dbPassword);
             }
@@ -517,8 +529,7 @@ class Installer
                     true
                 );
 
-                if ($createPromptResult == "y"
-                ) {
+                if ($createPromptResult == "y") {
                     if (!Database::checkDatabaseCreationAccess($driver, $host, $user, $pw, $port)) {
                         # User does not have database creation permission
                         $this->writeLn(
@@ -558,44 +569,7 @@ class Installer
         );
 
         # This will check if the database is empty and put out a warning if not
-        if (!Database::databaseIsEmpty($driver, $host, $user, $pw, $db, $prefix, $port)) {
-            $this->writeLn(
-                $this->Locale->getStringLang(
-                    "warning.database.not.empty",
-                    "The given database is not empty."
-                ),
-                self::LEVEL_WARNING
-            );
-
-            $nonEmptyDbPromptResult = $this->prompt(
-                $this->Locale->getStringLang(
-                    "prompt.database.not.empty.continue",
-                    "How do you want to proceed? (n = Select new; c = clear database (All data will be lost!); q = quit setup) :"
-                ),
-                "n",
-                COLOR_YELLOW,
-                false,
-                true
-            );
-
-            switch ($nonEmptyDbPromptResult) {
-                case 'n':
-                    return $this->stepDatabase();
-                    break;
-
-                case 'c':
-                    Database::clearDatabase($driver, $host, $user, $pw, $db, $prefix, $port);
-                    break;
-
-                case 'q':
-                    exit;
-                    break;
-
-                default:
-                    return $this->stepDatabase();
-                    break;
-            }
-        }
+        $this->clearDatabaseIfNotEmpty($driver, $host, $user, $pw, $db, $prefix, $port);
 
 
         $this->Setup->setDatabase($driver, $host, $db, $user, $pw, $port, $prefix, $createNew);
@@ -683,8 +657,8 @@ class Installer
         if (substr($host, 0, 7) != 'http://' && substr($host, 0, 8) != 'https://') {
             $host = "http://" . $host;
         }
-        $host = rtrim($host, '/');
-
+        $host      = rtrim($host, '/');
+        $this->url = $host;
         # CMS dir
         $continue = true;
 
@@ -839,6 +813,21 @@ SMILEY;
 
         $this->writeLn(
             $this->Locale->getStringLang("setup.message.finished.text", "Setup finished"),
+            self::LEVEL_INFO,
+            COLOR_GREEN
+        );
+
+        $this->writeLn(
+            $this->Locale->getStringLang("setup.message.finished.url", "Website URL: ") . $this->url,
+            self::LEVEL_INFO,
+            COLOR_GREEN
+        );
+
+        $this->writeLn(
+            $this->Locale->getStringLang(
+                "setup.message.finished.admin.url",
+                "Adminarea URL: "
+            ) . rtrim($this->url, '/') . "/admin",
             self::LEVEL_INFO,
             COLOR_GREEN
         );
@@ -1212,6 +1201,83 @@ HEADER;
                 ) . $setupData['paths']['url_dir'],
                 self::LEVEL_INFO
             );
+        }
+    }
+
+    /**
+     * Checks if the given database is empty or not.
+     * If the Database is not empty it will try to clear the database to avoid conflicting tablenames.
+     * @param $driver
+     * @param $host
+     * @param $user
+     * @param $pw
+     * @param $db
+     * @param $prefix
+     * @param $port
+     * @return bool
+     */
+    protected function clearDatabaseIfNotEmpty($driver, $host, $user, $pw, $db, $prefix, $port)
+    {
+        if (!Database::databaseIsEmpty($driver, $host, $user, $pw, $db, $prefix, $port)) {
+            $this->writeLn(
+                $this->Locale->getStringLang(
+                    "warning.database.not.empty",
+                    "The given database is not empty."
+                ),
+                self::LEVEL_WARNING
+            );
+
+            $nonEmptyDbPromptResult = $this->prompt(
+                $this->Locale->getStringLang(
+                    "prompt.database.not.empty.continue",
+                    "How do you want to proceed? (n = Select new; c = clear database (All data will be lost!); q = quit setup) :"
+                ),
+                "n",
+                COLOR_YELLOW,
+                false,
+                true
+            );
+
+
+            switch ($nonEmptyDbPromptResult) {
+                case 'n':
+                    return $this->stepDatabase();
+                    break;
+
+                case 'c':
+                    // This wil ltry to clear the database with saved tabledata.
+                    // If no data is found, all tables will get dropped!
+                    try {
+                        $storedTables = $this->Setup->getSavedDatabaseState();
+                        Database::resetDatabase($storedTables, $driver, $host, $user, $pw, $db, $prefix, $port);
+                    } catch (\Exception $Exception) {
+                        if ($this->prompt(
+                            $this->Locale->getStringLang(
+                                "prompt.database.hard.reset.warning",
+                                "The Setup will DROP! all tables in the given database. Are you sure you want to continue? (y/n)"
+                            ),
+                            false,
+                            COLOR_RED,
+                            false,
+                            true,
+                            false
+                        ) === 'y'
+                        ) {
+                            Database::hardResetDatabase($driver, $host, $user, $pw, $db, $prefix, $port);
+                        } else {
+                            exit;
+                        }
+                    }
+
+                    break;
+
+                case 'q':
+                    exit;
+                    break;
+                default:
+                    return $this->stepDatabase();
+                    break;
+            }
         }
     }
 }

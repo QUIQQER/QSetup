@@ -176,6 +176,16 @@ class Database
         return false;
     }
 
+    /**
+     * Builds a connection string usable by the PDO class
+     *
+     * @param $driver
+     * @param $host
+     * @param string $db
+     * @param string $port
+     *
+     * @return string
+     */
     private static function getConnectionString($driver, $host, $db = "", $port = "")
     {
         $connectionString = $driver . ":host=" . $host;
@@ -264,6 +274,17 @@ class Database
     }
 
 
+    /**
+     * Checks if the given user can create databases
+     *
+     * @param $driver
+     * @param $host
+     * @param $user
+     * @param $pw
+     * @param string $port
+     *
+     * @return bool
+     */
     public static function checkDatabaseCreationAccess($driver, $host, $user, $pw, $port = "")
     {
         $dsn = self::getConnectionString($driver, $host, "", $port);
@@ -286,7 +307,48 @@ class Database
         }
     }
 
-    public static function clearDatabase($driver, $host, $user, $pw, $db, $prefix, $port = "")
+    /**
+     * Removes all Tables given in the given array
+     *
+     * @param $tables
+     * @param $driver
+     * @param $host
+     * @param $user
+     * @param $pw
+     * @param $db
+     * @param $prefix
+     * @param string $port
+     */
+    public static function resetDatabase($tables, $driver, $host, $user, $pw, $db, $prefix, $port = "")
+    {
+
+        $Database = new self($driver, $host, $user, $pw, $db, $prefix, $port);
+
+        $currentTables = $Database->getTables();
+
+        foreach ($currentTables as $tableName) {
+            if (!in_array($tableName, $tables)) {
+                $Database->dropTable($tableName);
+            }
+        }
+    }
+
+    /**
+     * Removes all tables beginning with the given prefix.
+     * Attention : This will remove all tables if no prefix is given!
+     *
+     * @param $driver
+     * @param $host
+     * @param $user
+     * @param $pw
+     * @param $db
+     * @param $prefix
+     * @param string $port
+     *
+     * @return bool
+     * @throws SetupException
+     */
+    public static function hardResetDatabase($driver, $host, $user, $pw, $db, $prefix, $port = "")
     {
         $prefix = $prefix . "%";
 
@@ -322,7 +384,7 @@ class Database
                     foreach ($result as $row) {
                         $table = $row['TABLE_NAME'];
 
-                        $sql = "DROP TABLE " . $db . "." . $table;
+                        $sql    = "DROP TABLE " . $db . "." . $table;
                         $result = $pdo->query($sql);
 
                         if (!$result) {
@@ -370,6 +432,28 @@ class Database
         }
 
         return $tables;
+    }
+
+
+    /**
+     * Comapres the current tablenames with the tablenames in the given array and returns an array with table names that have been added in comparison to the given array.
+     * @param array $savedTables
+     *
+     * @return array
+     */
+    public function getTableDifference(array $savedTables)
+    {
+        $currentTables = $this->getTables();
+
+        $diff = array();
+
+        foreach ($currentTables as $currentTable) {
+            if (!in_array($currentTable, $savedTables)) {
+                $diff[] = $currentTable;
+            }
+        }
+
+        return $diff;
     }
 
     /**
@@ -500,5 +584,24 @@ class Database
             throw new SetupException("database.no.database.selected", SetupException::ERROR_MISSING_RESSOURCE);
         }
         $this->DB->insert($table, $data);
+    }
+
+    /**
+     * Drops the given table
+     *
+     * @param $tableName
+     * @throws \Exception
+     */
+    public function dropTable($tableName)
+    {
+        if (empty($tableName)) {
+            throw new \Exception("No Tablename given");
+        }
+
+        if (!in_array($tableName, $this->getTables())) {
+            return;
+        }
+
+        $this->DB->table()->delete($tableName);
     }
 }

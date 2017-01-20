@@ -107,6 +107,7 @@ class Setup
             'pw'         => "",
             'name'       => "",
             'prefix'     => "",
+            'port'       => "3306"
         ),
         'user'     => array(
             'name' => '',
@@ -124,8 +125,7 @@ class Setup
         )
     );
 
-    #Rollback-data
-    private $rollback = array();
+
     #======================================================================================================#
     #====================================         Functions            ====================================#
     #======================================================================================================#
@@ -989,6 +989,10 @@ class Setup
         if (file_exists($this->tmpDir . "setup.json")) {
             unlink($this->tmpDir . "setup.json");
         }
+
+        if (file_exists($this->tmpDir . "databaseState.json")) {
+            unlink($this->tmpDir . "databaseState.json");
+        }
     }
 
     /**
@@ -1044,29 +1048,6 @@ class Setup
         if (file_exists($this->baseDir . "setup.json")) {
             rename($this->baseDir . "/.preset_pwd", CMS_DIR . 'var/tmp/.preset_pwd');
         }
-
-
-        # Clear Database
-        if (!Database::databaseIsEmpty(
-            $this->data['database']['driver'],
-            $this->data['database']['host'],
-            $this->data['database']['user'],
-            $this->data['database']['pw'],
-            $this->data['database']['name'],
-            $this->data['database']['prefix'],
-            $this->data['database']['port']
-        )
-        ) {
-            Database::clearDatabase(
-                $this->data['database']['driver'],
-                $this->data['database']['host'],
-                $this->data['database']['user'],
-                $this->data['database']['pw'],
-                $this->data['database']['name'],
-                $this->data['database']['prefix'],
-                $this->data['database']['port']
-            );
-        }
     }
     #endregion
 
@@ -1113,7 +1094,7 @@ class Setup
         }
 
         # Store Database state
-        //$this->storeDatabaseState();
+        $this->saveDatabaseState();
 
         # Create Tables
         $version = $this->data['version'];
@@ -1215,7 +1196,6 @@ class Setup
 
         $threeColumnJson = $this->getTemplateContent("workspaces/three_column.json");
         $threeColumnName = $this->Locale->getStringLang("setup.workspaces.threecolumn.title", "3 Columns");
-
 
 
         $this->Database->insert(
@@ -2083,5 +2063,39 @@ LOGETC;
         }
 
         return false;
+    }
+
+    /**
+     * Stores the current database state into a temporary file.
+     */
+    protected function saveDatabaseState()
+    {
+        $tables = $this->Database->getTables();
+        $json = json_encode($tables, JSON_PRETTY_PRINT);
+
+        file_put_contents($this->tmpDir . 'databaseState.json', $json);
+    }
+
+    /**
+     * Tries to fetch the stored database state.
+     * Will throw an eception if no stored data was found.
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function getSavedDatabaseState()
+    {
+        if (!file_exists($this->tmpDir . 'databaseState.json')) {
+            throw new \Exception("No DatabaseState saved");
+        }
+
+        $json = file_get_contents($this->tmpDir . 'databaseState.json');
+        $data = json_decode($json, true);
+
+        if (json_last_error() != JSON_ERROR_NONE) {
+            throw new \Exception("JSON Error: " . json_last_error_msg());
+        }
+
+        return $data;
     }
 }

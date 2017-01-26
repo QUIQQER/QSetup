@@ -20,7 +20,7 @@ class ConsoleOutput implements Output
     {
         $this->logDir = dirname(dirname(dirname(dirname(dirname(__FILE__))))) . '/logs/';
         if (!is_dir($this->logDir)) {
-            mkdir($this->logDir, 0744, true);
+            mkdir($this->logDir, 0755, true);
         }
         ini_set('error_log', $this->logDir . 'error.log');
 

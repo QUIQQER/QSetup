@@ -148,13 +148,13 @@ class Setup
         # TMP Dir
         $this->tmpDir = dirname(dirname(dirname(dirname(__FILE__)))) . '/var/tmp/';
         if (!is_dir($this->tmpDir)) {
-            mkdir($this->tmpDir, 0744, true);
+            mkdir($this->tmpDir, 0755, true);
         }
 
         # Log Dir
         $this->logDir = dirname(dirname(dirname(dirname(__FILE__)))) . '/logs/';
         if (!is_dir($this->logDir)) {
-            mkdir($this->logDir, 0744, true);
+            mkdir($this->logDir, 0755, true);
         }
 
         ini_set('error_log', $this->logDir . 'error.log');

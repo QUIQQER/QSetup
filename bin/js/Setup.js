@@ -65,6 +65,8 @@ define('bin/js/Setup', [
             this.activeHeader = null;
 
             this.step = 1;
+
+            this.goNext = true;
         },
 
         /**
@@ -96,7 +98,7 @@ define('bin/js/Setup', [
             this.textColorGrey   = true;
 
             this.userInputs        = document.getElements('.input-text-user');
-            this.passwordAgain     = document.getElement('.input-text-user[name="user-userpassword.again"]');
+            this.passwordAgain     = document.getElement('.input-text-user[name="userPasswordAgain"]');
             this.passwordConfirmed = true;
 
             this.activeHeader = document.getElements('.header-list li');
@@ -167,15 +169,16 @@ define('bin/js/Setup', [
             if (this.step + 1 == 5) {
                 this.checkDataBase().then(function () {
                     console.log("data base Prüfung war ok");
-                    // slider weiter
+                    // slider weiter;
                 }).catch(function () {
-                    console.log("Fehler bei Database Prüfung...");
+                    console.warn("Fehler bei Database Prüfung...");
                     // irgendwas falsch
-                    return;
+
                 });
-
-
+                return;
             }
+
+            console.log("next function");
 
             if (this.step == this.ListElement.length) {
                 this.$exeInstall();
@@ -287,7 +290,7 @@ define('bin/js/Setup', [
             this.$hideOnResize    = false;
 
             this.StepsList.setStyle('opacity', 0);
-            var newPos = this.step * -this.listElementWidth;
+            var newPos = (this.step - 1) * -this.listElementWidth;
 
             moofx(this.StepsList).animate({
                 left   : newPos,
@@ -430,6 +433,13 @@ define('bin/js/Setup', [
                     if (!document.getElements('[name="vorlage"]:checked').length) {
                         document.getElements('[name="vorlage"]')[0].checked = true;
                     }
+                    break;
+                case 4:
+                    this.fillTestData(4);
+                    break;
+                case 5:
+                    this.fillTestData(5);
+                    break;
             }
         },
 
@@ -493,8 +503,8 @@ define('bin/js/Setup', [
          * @returns {boolean}
          */
         checkPassword: function () {
-            var Pw1   = document.getElement('.input-text-user[name="user-userpassword"]');
-            var Pw2   = document.getElement('.input-text-user[name="user-userpassword.again"]');
+            var Pw1   = document.getElement('.input-text-user[name="userPassword"]');
+            var Pw2   = document.getElement('.input-text-user[name="userPasswordAgain"]');
             var MooFx = moofx(document.getElement('.user-info'));
 
             if (Pw1.value != Pw2.value) {
@@ -539,16 +549,17 @@ define('bin/js/Setup', [
                         host    : Form.databaseHost,
                         user    : Form.databaseUser,
                         password: Form.databasePassword,
-                        database: Form.database
+                        name    : Form.databaseName
                     },
                     onSuccess: function (responseText) {
-                        console.log(responseText);
-
-
-                        // wnen alles ok, dann:
-                        resolve();
-                    },
-                    onError  : function () {
+                        console.info(typeof(responseText));
+                        console.info(responseText);
+                        if(responseText == 'true') {
+                            console.log("bin in true");
+                            resolve();
+                            return;
+                        }
+                        console.warn("bin in false...");
                         reject();
                     }
                 }).send();
@@ -557,9 +568,33 @@ define('bin/js/Setup', [
 
         /**
          * install -> send data
+         * (test)
          */
         $exeInstall: function () {
             console.info(QUIFormUtils.getFormData(this.FormSetup))
-        }
+        },
+
+        /**
+         * inputs ausfüllen mit beispiel Daten
+         * (test)
+         */
+        fillTestData: function (step) {
+
+            switch (step) {
+                case 4:
+                    document.getElement('select[name="databaseDriver"]').options[1].selected = true;
+                    document.getElement('input[name="databaseHost"]').value                  = 'localhost';
+                    document.getElement('input[name="databaseName"]').value                  = 'QUIQQERTest';
+                    document.getElement('input[name="databaseUser"]').value                  = 'root';
+                    document.getElement('input[name="databasePassword"]').value              = 'root';
+                    document.getElement('input[name="databasePort"]').value              = '3306';
+                    break;
+                case 5:
+                    document.getElement('input[name="userName"]').value = 'admin';
+                    document.getElement('input[name="userPassword"]').value = 'admin';
+                    document.getElement('input[name="userPasswordAgain"]').value = 'admin';
+
+            }
+        }.bind(this)
     });
 });

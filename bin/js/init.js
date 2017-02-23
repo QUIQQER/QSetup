@@ -11,24 +11,15 @@ window.addEvent("domready", function () {
         SetupControl.load();
     });
 
-    document.getElement('#huh').addEvent('click', function (event) {
-        event.stop();
+    /*var regNumber   = new RegExp(/^\d+$/);
 
-        new Request({
-            url      : '/ajax/test.php',
-            data     : {test: "testValue", testVariable: "test variable ohne Ende"},
-            onSuccess: function (response) {
-                console.log(response);
-                document.getElement('.loading').set('html', response);
-            },
-            onRequest: function () {
-                document.getElement('.loading').set('html', '<h3>Loading...</h3>');
-            },
-            onError  : function () {
-                console.log("BIG error");
-            }
-
-        }).send();
-
-    });
+    document.getElement('input[type="number"]').addEvent('keydown', function (event) {
+        var inputNumber = document.getElement('input[type="number"]');
+        if (regNumber.test(document.getElement('input[type="number"]').value)) {
+            console.log("number!");
+            return;
+        }
+        console.log("not number...");
+        inputNumber.slice(0, inputNumber.length - 1);
+    });*/
 });

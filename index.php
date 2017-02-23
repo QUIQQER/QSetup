@@ -152,9 +152,6 @@ for($i=0; $i<count($version); $i++) {
                                     </label>
                                 </div>
                             </fieldset>
-                            <span class="loading"></span>
-                            <button id="huh" type="submit" class="button" value="senden!">huh</button>
-
                         </li>
 
 
@@ -243,10 +240,12 @@ for($i=0; $i<count($version); $i++) {
                                 </div>
                                 <input class="input-text" type="text" name="databaseHost"
                                        placeholder="Datenbank Host" value=""/>
-                                <input class="input-text" type="text" name="database"
-                                       placeholder="Datenbank" value=""/>
+                                <input class="input-text" type="number" name="databasePort"
+                                       placeholder="Datenbank Port" value=""/>
                             </div>
                             <div class="grid-50 mobile-grid-100">
+                                <input class="input-text" type="text" name="databaseName"
+                                       placeholder="Datenbank Name" value=""/>
                                 <input class="input-text" type="text" name="databaseUser"
                                        placeholder="Datenbank Benutzer" value=""/>
                                 <input class="input-text" type="password" name="databasePassword"
@@ -260,7 +259,7 @@ for($i=0; $i<count($version); $i++) {
                                 <div class="input-user-wrapper">
                                     <i class="fa fa-user input-text-icon"></i>
                                     <input class="input-text input-text-user" type="text"
-                                           name="user-username" placeholder="Benutzer" value=""/>
+                                           name="userName" placeholder="Benutzer" value=""/>
                                 </div>
 
                             </div>
@@ -269,12 +268,12 @@ for($i=0; $i<count($version); $i++) {
                                 <div class="input-user-wrapper">
                                     <i class="fa fa-lock input-text-icon"></i>
                                     <input class="input-text input-text-user" type="password"
-                                           name="user-userpassword" placeholder="Passwort" value=""/>
+                                           name="userPassword" placeholder="Passwort" value=""/>
                                 </div>
                                 <div class="input-user-wrapper">
                                     <i class="fa fa-lock input-text-icon"></i>
                                     <input class="input-text input-text-user" type="password"
-                                           name="user-userpassword.again"
+                                           name="userPasswordAgain"
                                            placeholder="Passwort wiederholen" value=""/>
                                 </div>
 

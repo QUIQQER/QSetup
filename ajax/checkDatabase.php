@@ -10,7 +10,7 @@ require 'header.php';
  */
 
 if (!isset($_REQUEST['driver'])) {
-    \QUI\Setup\Utils\Ajax::output("missing.argument.driver", 400);
+    \QUI\Setup\Utils\Ajax::output("missing.argument.driver", 500666400);
 }
 
 if (!isset($_REQUEST['host'])) {
@@ -25,8 +25,8 @@ if (!isset($_REQUEST['password'])) {
     \QUI\Setup\Utils\Ajax::output("missing.argument.password", 400);
 }
 
-if (!isset($_REQUEST['database'])) {
-    \QUI\Setup\Utils\Ajax::output("missing.argument.database", 400);
+if (!isset($_REQUEST['name'])) {
+    \QUI\Setup\Utils\Ajax::output("missing.argument.name", 400);
 }
 
 // Fetch variables
@@ -34,14 +34,15 @@ $driver = $_REQUEST['driver'];
 $host   = $_REQUEST['host'];
 $user   = $_REQUEST['user'];
 $pw     = $_REQUEST['password'];
-$db     = $_REQUEST['database'];
+$db     = $_REQUEST['name'];
 
 
 // Validate database credentials
 try {
     \QUI\Setup\Utils\Validator::validateDatabase($driver, $host, $user, $pw, $db);
-    var_dump(\QUI\Setup\Utils\Validator::validateDatabase($driver, $host, $user, $pw, $db));
-    \QUI\Setup\Utils\Ajax::output('OK');
+//    \QUI\Setup\Utils\Ajax::output('OK');
+    \QUI\Setup\Utils\Ajax::output(true);
 } catch (\QUI\Setup\SetupException $Exception) {
-    \QUI\Setup\Utils\Ajax::output($Exception->toArray(), 400);
+//    \QUI\Setup\Utils\Ajax::output($Exception->toArray(), 400);
+    \QUI\Setup\Utils\Ajax::output(false);
 }

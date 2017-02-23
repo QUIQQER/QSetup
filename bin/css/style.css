@@ -32,7 +32,8 @@ input, textarea, select {
     letter-spacing: 1px;
     padding: 10px 16px;
     margin: 6px 0;
-    box-shadow: 0 0 0 2px #ddd;
+    box-shadow: none;
+    outline: none;
 }
 
 textarea {
@@ -121,14 +122,24 @@ p {
 /* end progress bar */
 
 
-/* buttons, inputs */
-
-button:focus,
+/* inputs */
+input,
 input:focus,
-button,
-input {
+input:hover,
+input[type='checkbox'],
+input[type='radio'],
+input[type='checkbox']:hover,
+input[type='radio']:hover,
+input[type='checkbox']:focus,
+input[type='radio']:focus {
     outline: none;
     box-shadow: none;
+}
+
+fieldset {
+    outline: none;
+    box-shadow: none;
+    border: none;
 }
 
 ::-webkit-input-placeholder {
@@ -146,10 +157,9 @@ input {
     font-size: 1em;
 }
 
-
 /* text input */
 
-.input-text {
+input {
     background: #fff;
     border: 1px solid #e5e5e5;
     border-radius: 6px;
@@ -250,24 +260,24 @@ select option {
 
 /* radio input */
 .input-radio {
-    display: none;
-    visibility: hidden;
+    display: block;
+    visibility: visible;
     position: absolute;
+    margin: 0;
+    height: 100%;
+    z-index: -10;
+    opacity: 0;
+    width: 100%;
 }
+
 
 label {
     margin: 0 20px;
     display: inline-block;
     vertical-align: middle;
+    position: relative;
 }
 
-/*label:first-child {
-    margin-left: 0;
-}
-
-label:last-child {
-    margin-right: 0;
-}*/
 
 .label-div {
     background: #fff;
@@ -288,9 +298,10 @@ label:last-child {
 
 .label-div:hover,
 input:hover,
+input:focus,
 .select-wrapper:hover {
     border: 1px solid #ccc;
-    box-shadow: 0 0 15px -5px #bbb;
+    box-shadow: 0 3px 10px #bbb;
 }
 
 .label-div img {
@@ -328,9 +339,41 @@ input:hover,
 }
 
 
+/* buttons */
+input[type='button'],
+input[type='submit'],
+button,
+.button {
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 300;
+    min-width: 150px;
+    padding: 10px 20px;
+    transition: all 0.2s ease-in-out;
+}
 
+input[type='button']:hover,
+input[type='button']:focus,
+input[type='submit']:hover,
+input[type='submit']:focus,
+button:hover,
+button:focus,
+.button:hover,
+.button:focus {
+    border: none;
+    box-shadow: none;
+    outline: none;
+}
 
-
+input:disabled,
+select:disabled,
+button:disabled,
+button:disabled {
+    cursor: default;
+}
 
 
 
@@ -439,8 +482,8 @@ ul.nav-list li:last-child {
 ul.steps-list {
     font-size: 0;
     opacity: 0;
-    left: -3544px;
-    /*left: 0px;*/
+    /*left: -3544px;*/
+    left: 0px;
     white-space: nowrap;
     position: relative;
     vertical-align: top;
@@ -462,40 +505,45 @@ li.step-left-align {
     text-align: left;
 }
 
+.button {
 
+}
 
 .nav-buttons {
     padding: 3em 0 3em 3em;
 }
 
-.qui-button.next-button,
-.qui-button.back-button {
-    box-shadow: none;
-    border-radius: 5px;
-    font-family: 'Open Sans', sans-serif;
-    font-size: 18px;
-    font-weight: 300;
-    height: 40px;
-    width: 150px;
+
+.back-button {
+    color: #888;
+    background: #e8e8e8;
 }
 
-.qui-button.back-button {
-    color: #aaa;
+.back-button:disabled,
+.back-button:disabled:hover,
+.back-button:disabled:focus {
+    color: #bbb;
     background: #f5f5f5;
 }
 
-.qui-button.back-button:hover {
-    background: #e5e5e5;
-    color: #aaa;
+.back-button:disabled {
+    opacity: 0.9;
 }
 
-.qui-button.next-button {
+.back-button:hover {
+    color: #888;
+    background: #dadada;
+}
+
+.next-button,
+.next-button:disabled:hover,
+.next-button:disabled:active {
     background: #75b947;
     color: #fff;
     float: right;
 }
 
-.qui-button.next-button:hover {
+.next-button:hover {
     background: #539725;
 }
 
@@ -557,7 +605,6 @@ li.step-left-align {
     
     .page {
         min-height: auto;
-
     }
 
     .header-logo-container {

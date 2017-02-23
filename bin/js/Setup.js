@@ -8,17 +8,18 @@
 
 define('bin/js/Setup', [
     'qui/QUI',
-    'qui/utils/Functions'
+    'qui/utils/Functions',
+    'qui/utils/Form'
     // 'qui/controls/Control'
-], function (QUI, QUIFunctionUtils) {
+], function (QUI, QUIFunctionUtils, QUIFormUtils) {
     "use strict";
 
     return new Class({
 
         // Extends: QUIControl,
 
-        Type  : 'bin/js/Setup',
-        Binds : [
+        Type : 'bin/js/Setup',
+        Binds: [
             'load',
             'next',
             'back',
@@ -26,100 +27,100 @@ define('bin/js/Setup', [
             'showCurrentHeader',
             'getHeaderHeight',
             'setHeaderHeight',
-            'testF',
+            /*'testF',*/
             'countInputs',
             'checkProgress',
             'changeProgressBar',
-            'checkPassword'
+            'checkPassword',
+            '$exeInstall'
         ],
 
         initialize: function () {
-            this.NextStep = null;
-            this.BackStep = null;
-            this.StepsList = null;
-            this.ListElement = null;
+            this.NextStep         = null;
+            this.BackStep         = null;
+            this.StepsList        = null;
+            this.ListElement      = null;
             this.listElementWidth = null;
 
             this.NavList = null;
-            this.liElm = null;
-            this.fa = null;
+            this.liElm   = null;
+            this.fa      = null;
 
-            this.headerList = null;
+            this.headerList          = null;
             this.headerLogoContainer = null;
 
-            this.inputs = null;
-            this.selects = null;
-            this.allInputs = null;
+            this.inputs          = null;
+            this.selects         = null;
+            this.allInputs       = null;
             this.progressBarDone = null;
             this.progressbarText = null;
-            this.textColorGrey = null;
+            this.textColorGrey   = null;
 
-            this.userInputs = null;
-            this.passwordAgain = null;
+            this.userInputs        = null;
+            this.passwordAgain     = null;
             this.passwordConfirmed = null;
+            this.buttonInstall     = false;
+
 
             this.activeHeader = null;
 
-            this.step = 0;
+            this.step = 1;
         },
-
-        // $onImport: function()
-        // {
-        //     console.log(111);
-        //
-        //     console.log(this.getElm());
-        // },
 
         /**
          * event : on load
          */
         load: function () {
 
-            this.NextStep = document.getElement('.next-button');
-            this.BackStep = document.getElement('.back-button');
-            this.StepsList = document.getElement('.steps-list');
-            this.ListElement = document.getElements('.step');
+            this.FormSetup = document.getElement('#form-setup');
+
+            this.NextStep         = document.getElement('#next-button');
+            this.BackStep         = document.getElement('#back-button');
+            this.StepsList        = document.getElement('.steps-list');
+            this.ListElement      = document.getElements('.step');
             this.listElementWidth = document.getElement('.step').getSize().x;
 
-            this.headerList = document.getElement('.header-list');
+            this.headerList          = document.getElement('.header-list');
             this.headerLogoContainer = document.getElement('.header-logo-container');
 
             this.NavList = document.getElement('.nav-list');
-            this.liElm = this.NavList.getElements('li');
-            this.fa = this.NavList.getElements('.fa');
+            this.liElm   = this.NavList.getElements('li');
+            this.fa      = this.NavList.getElements('.fa');
 
-            this.inputs = document.getElements('input');
-            this.textInputs = document.getElements('input[type="text"], input[type="password"]');
-            this.selects = document.getElements('select');
-            this.allInputs = document.getElements('input, select');
+            this.inputs          = document.getElements('input');
+            this.textInputs      = document.getElements('input[type="text"], input[type="password"]');
+            this.selects         = document.getElements('select');
+            this.allInputs       = document.getElements('input, select');
             this.progressBarDone = document.getElement('.progress-bar-done');
             this.progressbarText = document.getElement('.progress-bar-text');
-            this.textColorGrey = true;
+            this.textColorGrey   = true;
 
-            this.userInputs = document.getElements('.input-text-user');
-            this.passwordAgain = document.getElement('.input-text-user[name="user.userpassword.again"]');
+            this.userInputs        = document.getElements('.input-text-user');
+            this.passwordAgain     = document.getElement('.input-text-user[name="user-userpassword.again"]');
             this.passwordConfirmed = true;
 
             this.activeHeader = document.getElements('.header-list li');
 
-            this.step = 0;
 
             this.NextStep.addEvent('click', this.next);
             this.BackStep.addEvent('click', this.back);
 
-            /*window.addEvents({
-                resize: function() {
-                    QUIFunctionUtils.debounce(this.recalc, 20);
+            window.addEvents({
+                resize: function () {
+                    QUIFunctionUtils.debounce(this.recalc, 2000);
                 }
-            });*/
+            });
 
             this.setHeaderHeight(this.getHeaderHeight());
-            this.checkProgress();
+
+            // check progress erst nach NEXT click
+            // this.checkProgress();
+            this.changeProgressBar(1);
 
 
             this.$hideOnResize = false;
 
-            window.addEvent('resize', function() {
+            window.addEvent('resize', function () {
                 if (this.$hideOnResize) {
                     return;
                 }
@@ -130,18 +131,19 @@ define('bin/js/Setup', [
             }.bind(this));
 
             this.passwordAgain.addEvent('change', this.checkPassword);
-            this.inputs.addEvent('change', this.checkProgress);
-            this.selects.addEvent('change', this.checkProgress);
+            // check progress erst nach NEXT click
+            /*this.inputs.addEvent('change', this.checkProgress);
+             this.selects.addEvent('change', this.checkProgress);*/
             this.userInputs.addEvent('change', this.changeUserIcon);
 
 
-            QUI.addEvent('onResize', function() {
+            QUI.addEvent('onResize', function () {
                 this.recalc();
-                this.testF();
+                this.setHeaderHeight(this.getHeaderHeight());
             }.bind(this));
 
 
-            moofx(this.activeHeader[this.step]).animate({
+            moofx(this.activeHeader[this.step - 1]).animate({
                 opacity: 1
             }, {
                 duration: 500
@@ -152,26 +154,41 @@ define('bin/js/Setup', [
             }, {
                 duration: 500
             });
+
+            console.log(QUIFormUtils.getFormData(this.FormSetup));
         },
 
         /**
          * next step
          */
         next: function () {
-            var currentPos = this.StepsList.getStyle('left').toInt();
 
-            if (currentPos == ((this.ListElement.length-1) * -this.listElementWidth )) {
-                return;
+            // data base check
+            if (this.step + 1 == 5) {
+                this.checkDataBase().then(function () {
+                    console.log("data base Prüfung war ok");
+                    // slider weiter
+                }).catch(function () {
+                    console.log("Fehler bei Database Prüfung...");
+                    // irgendwas falsch
+                    return;
+                });
+
+
             }
 
+            if (this.step == this.ListElement.length) {
+                this.$exeInstall();
+                return;
+            }
             // nav icons
             /*this.fa[this.step].removeClass('fa-circle-o');
-            this.fa[this.step].addClass('fa-check-circle-o');*/
+             this.fa[this.step].addClass('fa-check-circle-o');*/
 
             // nav color
-            this.liElm[this.step].removeClass('step-active');
-            this.liElm[this.step].addClass('step-done');
-            this.liElm[this.step + 1].addClass('step-active');
+            this.liElm[this.step - 1].removeClass('step-active');
+            this.liElm[this.step - 1].addClass('step-done');
+            this.liElm[this.step].addClass('step-active');
 
             this.step++;
 
@@ -181,25 +198,32 @@ define('bin/js/Setup', [
             }, {
                 duration: 250,
                 equation: 'ease-in-out',
-                callback: function() {
+                callback: function () {
                     this.showCurrentHeader(this.step)
                 }.bind(this)
             });
 
+            // enable back button
             if (this.step > 0) {
                 this.BackStep.disabled = false;
             }
-
-            var pos = currentPos - this.listElementWidth;
+            var currentPos = this.StepsList.getStyle('left').toInt();
+            var pos        = currentPos - this.listElementWidth;
 
             moofx(this.StepsList).animate({
-                 left: pos
+                left: pos
             }, {
                 duration: 500,
                 equation: 'ease-in-out'
             });
 
+            // change button text from "next" to "install"
+            if (this.step == 7) {
+                this.buttonInstall = true;
+                this.NextStep.set('html', 'Installieren');
+            }
 
+            this.checkProgress();
         },
 
         /**
@@ -214,22 +238,27 @@ define('bin/js/Setup', [
 
             // nav icons
             /*this.fa[this.step - 1].removeClass('fa-check-circle-o');
-            this.fa[this.step - 1].addClass('fa-circle-o');*/
+             this.fa[this.step - 1].addClass('fa-circle-o');*/
 
             // nav color
-            this.liElm[this.step].removeClass('step-active');
-            this.liElm[this.step -1 ].removeClass('step-done');
-            this.liElm[this.step - 1].addClass('step-active');
+            this.liElm[this.step - 1].removeClass('step-active');
+            this.liElm[this.step - 1].removeClass('step-done');
+            this.liElm[this.step - 2].addClass('step-active');
 
             this.step--;
+
+            // disable back button
+            if (this.step == 1) {
+                this.BackStep.disabled = true;
+            }
 
             moofx(this.activeHeader).animate({
                 opacity: 0
             }, {
                 duration: 250,
                 equation: 'ease-in-out',
-                callback: function() {
-                     this.showCurrentHeader(this.step)
+                callback: function () {
+                    this.showCurrentHeader(this.step)
                 }.bind(this)
             });
 
@@ -237,24 +266,31 @@ define('bin/js/Setup', [
 
             moofx(this.StepsList).animate({
                 left: pos
-            },{
+            }, {
                 duration: 300,
                 equation: 'ease-in-out'
             });
+
+            // change button text from "install" to "next"
+            if (this.buttonInstall) {
+                this.NextStep.set('html', 'Fortfahren');
+            }
+
+            this.checkProgress();
         },
 
         /**
          * recalc the ListElement width
          */
-        recalc: function() {
+        recalc: function () {
             this.listElementWidth = document.getElement('.step').getSize().x;
-            this.$hideOnResize = false;
+            this.$hideOnResize    = false;
 
             this.StepsList.setStyle('opacity', 0);
             var newPos = this.step * -this.listElementWidth;
 
             moofx(this.StepsList).animate({
-                left: newPos,
+                left   : newPos,
                 opacity: 1
             }, {
                 duration: 500
@@ -262,28 +298,30 @@ define('bin/js/Setup', [
         },
 
         /**
+         * get header height
          *
          * @returns {*}
          */
-        getHeaderHeight: function() {
-            var arr = [];
+        getHeaderHeight: function () {
+            var arr   = [];
             var liElm = this.headerList.getElements('li');
             for (var i = 0; i < this.liElm.length; i++) {
                 arr[i] = liElm[i].getSize().y;
             }
 
             // Was wird hier zurückgegeben? was bedeutet {*}?
-            return Math.max.apply(false,arr).toInt();
+            return Math.max.apply(false, arr).toInt();
         },
 
         /**
+         * set header height
          *
          * @param headerHeight
          */
-        setHeaderHeight: function(headerHeight) {
+        setHeaderHeight: function (headerHeight) {
             moofx(this.headerList).animate({
                 minHeight: headerHeight,
-                opacity: 1
+                opacity  : 1
             }, {
                 duration: 500
             });
@@ -301,38 +339,43 @@ define('bin/js/Setup', [
          * @param step {Number}
          */
         showCurrentHeader: function (step) {
-            moofx(this.activeHeader[step]).animate({
+            moofx(this.activeHeader[step - 1]).animate({
                 opacity: 1
             }, {
                 duration: 250
             });
         },
 
-        testF: function () {
-            this.setHeaderHeight(this.getHeaderHeight());
-        },
+        /*testF: function () {
+         this.setHeaderHeight(this.getHeaderHeight());
+         },*/
 
         /**
-         * Count all inputs fields
+         * Count all inputs fields -> for progress bar
          * Each group of fields (i.e. radio buttons) will be count as 1
          *
          * @returns {Number}
          */
-        countInputs: function () {
-            for (var i = 0; i < this.selects.length; i++) {
-                this.allInputs.push(+ this.selects[i]);
-            }
-            var names = [];
+        /*countInputs: function () {
+         for (var i = 0; i < this.selects.length; i++) {
+         this.allInputs.push(+this.selects[i]);
+         }
+         var names = [];
 
-            for (var i = 0; i < this.allInputs.length; i++) {
-                if (!names.include(this.allInputs[i].name)) {
-                    names.push(this.allInputs[i].name);
-                }
-            }
-            return names.length;
-        },
+         for (var i = 0; i < this.allInputs.length; i++) {
+         if (!names.include(this.allInputs[i].name)) {
+         names.push(this.allInputs[i].name);
+         }
+         }
+
+         console.log(names.length);
+         console.log(Object.getLength(QUIFormUtils.getFormData(this.FormSetup)));
+
+         return names.length;
+         },*/
 
         checkProgress: function () {
+
 
             if (!this.passwordConfirmed) {
                 return;
@@ -362,8 +405,10 @@ define('bin/js/Setup', [
                 }
             }
 
-            progress = (inputsDone / this.countInputs() * 100).toString();
-            var arr = progress.split('.');
+            var inputsNumber = Object.getLength(QUIFormUtils.getFormData(this.FormSetup));
+
+            progress = (inputsDone / inputsNumber * 100).toString();
+            var arr  = progress.split('.');
             progress = arr[0];
 
             this.progressbarText.innerHTML = progress + "%";
@@ -373,6 +418,19 @@ define('bin/js/Setup', [
             }
 
             this.changeProgressBar(progress);
+
+            // default values
+            switch (this.step) {
+                case 2:
+                    if (!document.getElements('[name="version"]:checked').length) {
+                        document.getElements('[name="version"]')[0].checked = true;
+                    }
+                    break;
+                case 3:
+                    if (!document.getElements('[name="vorlage"]:checked').length) {
+                        document.getElements('[name="vorlage"]')[0].checked = true;
+                    }
+            }
         },
 
         /**
@@ -381,7 +439,7 @@ define('bin/js/Setup', [
          * @param x {Number}
          */
         changeProgressBar: function (x) {
-            moofx(this.progressBarDone).animate ({
+            moofx(this.progressBarDone).animate({
                 width: x + "%"
             }, {
                 duration: 500,
@@ -411,7 +469,7 @@ define('bin/js/Setup', [
         },
 
         changeUserIcon: function () {
-            var Elm = this;
+            var Elm  = this;
             var Icon = Elm.getParent().getElement('.fa');
 
             if (Elm.value) {
@@ -434,16 +492,16 @@ define('bin/js/Setup', [
          *
          * @returns {boolean}
          */
-        checkPassword: function() {
-            var Pw1 = document.getElement('.input-text-user[name="user.userpassword"]');
-            var Pw2 = document.getElement('.input-text-user[name="user.userpassword.again"]');
-            var MooFx= moofx(document.getElement('.user-info'));
+        checkPassword: function () {
+            var Pw1   = document.getElement('.input-text-user[name="user-userpassword"]');
+            var Pw2   = document.getElement('.input-text-user[name="user-userpassword.again"]');
+            var MooFx = moofx(document.getElement('.user-info'));
 
             if (Pw1.value != Pw2.value) {
                 Pw1.style.outline = "1px solid #ff0000";
                 Pw2.style.outline = "1px solid #ff0000";
                 MooFx.animate({
-                    top: 0,
+                    top    : 0,
                     opacity: 1
                 }, {
                     duration: 500,
@@ -455,45 +513,53 @@ define('bin/js/Setup', [
             Pw1.style.outline = "none";
             Pw2.style.outline = "none";
             MooFx.animate({
-                  top: -60,
-                  opacity: 0
-              }, {
-                  duration: 500,
-                  equation: 'ease-in-out'
-              })
+                top    : -60,
+                opacity: 0
+            }, {
+                duration: 500,
+                equation: 'ease-in-out'
+            });
             return this.passwordConfirmed = true;
+        },
+
+        /**
+         *
+         * @returns {Promise}
+         */
+        checkDataBase: function () {
+            var Form = QUIFormUtils.getFormData(this.FormSetup);
+
+            return new Promise(function (resolve, reject) {
+                // database request
+                new Request({
+                    url      : '/ajax/checkDatabase.php',
+                    noCache  : true,
+                    data     : {
+                        driver  : Form.databaseDriver,
+                        host    : Form.databaseHost,
+                        user    : Form.databaseUser,
+                        password: Form.databasePassword,
+                        database: Form.database
+                    },
+                    onSuccess: function (responseText) {
+                        console.log(responseText);
+
+
+                        // wnen alles ok, dann:
+                        resolve();
+                    },
+                    onError  : function () {
+                        reject();
+                    }
+                }).send();
+            });
+        },
+
+        /**
+         * install -> send data
+         */
+        $exeInstall: function () {
+            console.info(QUIFormUtils.getFormData(this.FormSetup))
         }
     });
 });
-
-
-/*
-var step=0;
-step++;
-
-var elEm = document.getElement('li.step-' + step);
-
-var button = document.getElement('.next-button');
-
-button.addEvent('click', function(e) {
-    check(e);
-});
-
-
-function check(event) {
-
-    console.log('--------> ' + event);
-
-    var radioB = elEm.getElements('input[type="radio"]:checked');
-    console.warn(radioB.length);
-    if (radioB.length == 0) {
-        event.preventDefault();
-        console.warn(radioB);
-        console.info('nichts ausgewählt');
-
-        return;
-    }
-
-}
-
-    */

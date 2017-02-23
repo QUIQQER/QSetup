@@ -149,7 +149,6 @@ class Validator
         return true;
     }
 
-
     /**
      * Validates a given preset.
      * Checks for existence and for syntax errors

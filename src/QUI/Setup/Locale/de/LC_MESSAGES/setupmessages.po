@@ -387,3 +387,6 @@ msgstr "Adresse der Webseite: "
 
 msgid "setup.message.finished.admin.url"
 msgstr "Adresse des Adminbereiches: "
+
+msgid "prompt.cannot.be.empty"
+msgstr "Darf nicht leer sein. Bitte erneut versuchen."

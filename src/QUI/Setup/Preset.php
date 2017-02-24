@@ -242,7 +242,10 @@ class Preset
                 'type'   => $repo['type'],
                 'active' => 1
             ));
+
+            \QUI::getPackageManager()->setServerStatus($repo['url'], true);
         }
+
     }
 
     /**
@@ -288,6 +291,7 @@ class Preset
         Log::info(
             $this->Locale->getStringLang("applypreset.require.package", "Require Package :") . $this->templateName
         );
+
     }
 
     /**
@@ -302,11 +306,12 @@ class Preset
                 $this->Locale->getStringLang("applypreset.require.package", "Require Package :") . $name
             );
         }
+
     }
 
 
     /**
-     * Gets the availalbe presets.
+     * Gets the available presets.
      * @return array - array Key : Presetname ; value = array(option:string=>value:string|array)
      */
     public static function getPresets()
@@ -358,7 +363,7 @@ class Preset
      */
     protected function getComposerJsonContent()
     {
-        if (file_exists(VAR_DIR . '/composer/composer.json')) {
+        if (!file_exists(VAR_DIR . '/composer/composer.json')) {
             throw new SetupException("setup.filesystem.composerjson.not.found");
         }
 

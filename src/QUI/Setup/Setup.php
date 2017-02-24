@@ -1709,15 +1709,14 @@ LOGETC;
 
         # Remove composer.json & composer.lock in doc-root
         if (file_exists(CMS_DIR . "composer.json")) {
-            copy(
-                CMS_DIR . "composer.json",
-                VAR_DIR . "composer/composer.json"
-            );
+            unlink(CMS_DIR . "composer.json");
         }
+
 
         # Remove asset Plugin from root composer.json
         if (file_exists(VAR_DIR . "composer/composer.json")) {
             $json = file_get_contents(VAR_DIR . "composer/composer.json");
+
             if (!empty($json)) {
                 $data = json_decode($json, true);
                 if (isset($data['require'])) {
@@ -1731,10 +1730,7 @@ LOGETC;
 
 
         if (file_exists(CMS_DIR . "composer.lock")) {
-            copy(
-                CMS_DIR . "composer.lock",
-                VAR_DIR . "composer/composer.lock"
-            );
+            unlink(CMS_DIR . "composer.lock");
         }
 
         # Move directories to tmp
@@ -2071,7 +2067,7 @@ LOGETC;
     protected function saveDatabaseState()
     {
         $tables = $this->Database->getTables();
-        $json = json_encode($tables, JSON_PRETTY_PRINT);
+        $json   = json_encode($tables, JSON_PRETTY_PRINT);
 
         file_put_contents($this->tmpDir . 'databaseState.json', $json);
     }

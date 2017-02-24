@@ -382,8 +382,8 @@ msgstr "Three Columns"
 msgid "prompt.database.hard.reset.warning"
 msgstr "The Setup will DROP! all tables in the given database. Are you sure you want to continue? (y/n) "
 
-msgid "setup.message.finished.admin.url"
+msgid "setup.message.finished.url"
 msgstr "Adress of the website: "
 
-msgid "setup.message.finished.url"
+msgid "setup.message.finished.admin.url"
 msgstr "Adresse of the admin area: "

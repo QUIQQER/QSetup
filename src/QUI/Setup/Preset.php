@@ -245,7 +245,6 @@ class Preset
 
             \QUI::getPackageManager()->setServerStatus($repo['url'], true);
         }
-
     }
 
     /**
@@ -291,7 +290,6 @@ class Preset
         Log::info(
             $this->Locale->getStringLang("applypreset.require.package", "Require Package :") . $this->templateName
         );
-
     }
 
     /**
@@ -306,7 +304,6 @@ class Preset
                 $this->Locale->getStringLang("applypreset.require.package", "Require Package :") . $name
             );
         }
-
     }
 
 

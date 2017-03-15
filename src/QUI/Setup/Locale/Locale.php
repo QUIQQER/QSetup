@@ -2,7 +2,6 @@
 
 namespace QUI\Setup\Locale;
 
-use QUI\ConsoleSetup\Locale\LocaleException;
 use QUI\Exception;
 
 /** Localization class */

@@ -437,7 +437,7 @@ class Installer
             $this->Locale->getStringLang("message.preset.available", "Available presets: ") . $presetString,
             self::LEVEL_INFO
         );
-        $template = $this->prompt(
+        $preset = $this->prompt(
             $this->Locale->getStringLang("prompt.template", "Select one"),
             "default",
             null,
@@ -445,7 +445,7 @@ class Installer
             true
         );
 
-        $this->Setup->setPreset($template);
+        $this->Setup->setPreset($preset);
         $this->Setup->storeSetupState();
     }
 
@@ -763,7 +763,9 @@ class Installer
         $this->Setup->runSetup();
     }
 
-
+    /**
+     * This will display data about the setups completion.
+     */
     private function stepFinish()
     {
         $this->writeLn(
@@ -885,7 +887,13 @@ SMILEY;
                     $continue = false;
                 } else {
                     if (!$allowEmpty) {
-                        $this->writeLn("Darf nicht leer sein. Bitte erneut versuchen", self::LEVEL_WARNING);
+                        $this->writeLn(
+                            $this->Locale->getStringLang(
+                                "prompt.cannot.be.empty",
+                                "Can not be empty. Please try again."
+                            ),
+                            self::LEVEL_WARNING
+                        );
                     } else {
                         $continue = false;
                     }
@@ -1079,6 +1087,7 @@ HEADER;
     }
 
     #endregion
+
     private function echoRestorableData($data)
     {
         $setupData = $data['data'];

@@ -382,8 +382,11 @@ msgstr "Drei Spalten"
 msgid "prompt.database.hard.reset.warning"
 msgstr "Das Setup wird alle Tabellen in der angegebenen Datenbank LÖSCHEN! Sind Sie sicher, dass Sie fortfahren wollen? (y/n) "
 
-msgid "setup.message.finished.admin.url"
+msgid "setup.message.finished.url"
 msgstr "Adresse der Webseite: "
 
-msgid "setup.message.finished.url"
+msgid "setup.message.finished.admin.url"
 msgstr "Adresse des Adminbereiches: "
+
+msgid "prompt.cannot.be.empty"
+msgstr "Darf nicht leer sein. Bitte erneut versuchen."

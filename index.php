@@ -185,34 +185,34 @@ $text   = $Locale->getStringLang('setup.message.step.database');
 
                         <!-- step 3 -->
                         <li class="step step-3">
-                                <label>
-                                    <input class="input-radio" name="vorlage"
-                                           type="radio" value="business"/>
-                                    <div class="label-div">
-                                        <i class="fa fa-briefcase button-icon-left"></i>
-                                        Business
-                                        <i class="fa fa-check button-icon-right"></i>
-                                    </div>
-                                </label>
-                                <label>
-                                    <input class="input-radio" name="vorlage"
-                                           type="radio" value="onlineShop"/>
-                                    <div class="label-div">
-                                        <i class="fa fa-shopping-cart button-icon-left"></i>
-                                        Online Shop
-                                        <i class="fa fa-check button-icon-right"></i>
-                                    </div>
-                                </label>
+                            <label>
+                                <input class="input-radio" name="vorlage"
+                                       type="radio" value="business"/>
+                                <div class="label-div">
+                                    <i class="fa fa-briefcase button-icon-left"></i>
+                                    Business
+                                    <i class="fa fa-check button-icon-right"></i>
+                                </div>
+                            </label>
+                            <label>
+                                <input class="input-radio" name="vorlage"
+                                       type="radio" value="onlineShop"/>
+                                <div class="label-div">
+                                    <i class="fa fa-shopping-cart button-icon-left"></i>
+                                    Online Shop
+                                    <i class="fa fa-check button-icon-right"></i>
+                                </div>
+                            </label>
 
-                                <label>
-                                    <input class="input-radio" name="vorlage"
-                                           type="radio" value="onePageDesign"/>
-                                    <div class="label-div">
-                                        <i class="fa fa-file-text-o button-icon-left"></i>
-                                        Visitenkarte
-                                        <i class="fa fa-check button-icon-right"></i>
-                                    </div>
-                                </label>
+                            <label>
+                                <input class="input-radio" name="vorlage"
+                                       type="radio" value="onePageDesign"/>
+                                <div class="label-div">
+                                    <i class="fa fa-file-text-o button-icon-left"></i>
+                                    Visitenkarte
+                                    <i class="fa fa-check button-icon-right"></i>
+                                </div>
+                            </label>
                         </li>
 
                         <!-- step 4 -->
@@ -227,8 +227,8 @@ $text   = $Locale->getStringLang('setup.message.step.database');
                                         <?php
                                         $avaibleDrivers = \QUI\Setup\Database\Database::getAvailableDrivers();
 
-                                        foreach($avaibleDrivers as $driver) {
-                                            echo '<option value="'. $driver .'">' . $driver . '</option>';
+                                        foreach ($avaibleDrivers as $driver) {
+                                            echo '<option value="' . $driver . '">' . $driver . '</option>';
                                         }
                                         ?>
 
@@ -281,7 +281,7 @@ $text   = $Locale->getStringLang('setup.message.step.database');
                                            placeholder="Passwort wiederholen" value=""/>
                                 </div>
                             </label>
-                                <span class="user-info">Passwörter stimmen nicht überein</span>
+                            <span class="user-info">Passwörter stimmen nicht überein</span>
 
                         </li>
 

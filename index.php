@@ -1,3 +1,4 @@
+<!DOCTYPE>
 <html>
 <head>
     <meta charset="utf-8"/>
@@ -46,11 +47,6 @@ echo $lang;*/
 $Locale = new \QUI\Setup\Locale\Locale('de_DE');
 $text   = $Locale->getStringLang('setup.message.step.database');
 
-/*fire$version = QUI\Setup\Setup::getVersions();
-for($i=0; $i<count($version); $i++) {
-    echo $version[i];
-}*/
-
 ?>
 <div class="progress-bar">
     <div class="progress-bar-done"></div>
@@ -72,7 +68,8 @@ for($i=0; $i<count($version); $i++) {
                 <h1>Webseite Sprache</h1>
                 <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
                     tempor invidunt ut labore et
-                    dolore magna aliquyam erat.Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+                    dolore magna aliquyam erat.Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
+                    eirmod
                     tempor invidunt ut labore et
                     dolore magna aliquyam erat.</p>
             </li>
@@ -121,82 +118,76 @@ for($i=0; $i<count($version); $i++) {
         </div>
         <form name="form-setup" id="form-setup" action="" method="post">
             <div class="page-main grid-80 mobile-grid-100">
-                <div style="overflow: hidden;">
+                <div class="steps-list-container">
                     <ul class="steps-list">
                         <!-- step 1 -->
                         <li class="step step-1">
                             <fieldset>
-                                <div class="grid-50 mobile-grid-100">
-                                    <label>
-                                        <input class="input-radio" name="project-language" type="radio"
-                                               value="de" tabindex="1" required checked="checked" />
-                                        <div class="label-div">
-                                            <img class="" src="/bin/img/de.png" title="DE Flag"
-                                                 alt="DE Flag"/>
-                                            Deutsch
-                                            <i class="fa fa-check button-icon-right"></i>
-                                        </div>
-                                    </label>
-                                </div>
 
-                                <div class="grid-50 mobile-grid-100">
-                                    <label>
-                                        <input class="input-radio" name="project-language"
-                                               type="radio" value="en"tabindex="2" required/>
-                                        <div class="label-div">
-                                            <img class="" src="/bin/img/en.png" title="EN Flag"
-                                                 alt="EN Flag"/>
-                                            Englisch
-                                            <i class="fa fa-check button-icon-right"></i>
-                                        </div>
-                                    </label>
-                                </div>
+                                <?php
+
+                                ?>
+                                <label>
+                                    <input class="input-radio" name="project-language" type="radio"
+                                           value="de" tabindex="1" required checked="checked"/>
+                                    <div class="label-div">
+                                        <img class="" src="/bin/img/de.png" title="DE Flag"
+                                             alt="DE Flag"/>
+                                        Deutsch
+                                        <i class="fa fa-check button-icon-right"></i>
+                                    </div>
+                                </label>
+
+                                <label>
+                                    <input class="input-radio" name="project-language"
+                                           type="radio" value="en" tabindex="2" required/>
+                                    <div class="label-div">
+                                        <img class="" src="/bin/img/en.png" title="EN Flag"
+                                             alt="EN Flag"/>
+                                        Englisch
+                                        <i class="fa fa-check button-icon-right"></i>
+                                    </div>
+                                </label>
                             </fieldset>
                         </li>
 
 
                         <!-- step 2 -->
                         <li class="step step-2 step-left-align">
-                            <div class="grid-50 mobile-grid-100">
-                                <label>
-                                    <input class="input-radio" name="version"
-                                           type="radio" value="1-0-0" />
-                                    <div class="label-div">
-                                        <i class="fa fa-star-o button-icon-left"></i>
-                                        1.0.0
-                                        <i class="fa fa-check button-icon-right"></i>
-                                    </div>
-                                </label>
-                            </div>
 
-                            <div class="grid-50 mobile-grid-100">
-                                <label>
+                            <?php
+                            $version = QUI\Setup\Setup::getVersions();
+                            for ($i = 0; $i < count($version); $i++) {
+                                switch ($version[$i]) {
+                                    case 'dev-dev':
+                                        $icon = '<i class="fa fa-cubes button-icon-left"></i>';
+                                        break;
+                                    case 'dev-master':
+                                        $icon = '<i class="fa fa-cube button-icon-left"></i>';
+                                        break;
+                                    default:
+                                        $icon = '<i class="fa fa-star-o button-icon-left"></i>';
+                                }
+
+                                $output = '<label>
                                     <input class="input-radio" name="version"
-                                           type="radio" value="master"/>
-                                    <div class="label-div">
-                                        <i class="fa fa-cube button-icon-left"></i>
-                                        master
-                                        <i class="fa fa-check button-icon-right"></i>
+                                           type="radio" value="' . $version[$i] . '" />';
+                                $output .= '<div class="label-div">' . $icon;
+                                $output .= $version[$i];
+                                $output .= '<i class="fa fa-check button-icon-right"></i>
                                     </div>
-                                </label>
-                                <label>
-                                    <input class="input-radio" name="version"
-                                           type="radio" value="dev"/>
-                                    <div class="label-div">
-                                        <i class="fa fa-cubes button-icon-left"></i>
-                                        dev
-                                        <i class="fa fa-check button-icon-right"></i>
-                                    </div>
-                                </label>
-                            </div>
+                                </label>';
+                                echo $output;
+                            }
+                            ?>
+
                         </li>
 
                         <!-- step 3 -->
                         <li class="step step-3">
-                            <div class="grid-50 mobile-grid-100">
                                 <label>
                                     <input class="input-radio" name="vorlage"
-                                           type="radio" value="business" />
+                                           type="radio" value="business"/>
                                     <div class="label-div">
                                         <i class="fa fa-briefcase button-icon-left"></i>
                                         Business
@@ -212,9 +203,7 @@ for($i=0; $i<count($version); $i++) {
                                         <i class="fa fa-check button-icon-right"></i>
                                     </div>
                                 </label>
-                            </div>
 
-                            <div class="grid-50 mobile-grid-100">
                                 <label>
                                     <input class="input-radio" name="vorlage"
                                            type="radio" value="onePageDesign"/>
@@ -224,62 +213,76 @@ for($i=0; $i<count($version); $i++) {
                                         <i class="fa fa-check button-icon-right"></i>
                                     </div>
                                 </label>
-                            </div>
                         </li>
 
                         <!-- step 4 -->
                         <li class="step step-4">
-                            <div class="grid-50 mobile-grid-100">
+
+
+                            <label>
                                 <div class="select-wrapper">
                                     <select name="databaseDriver">
                                         <option value="" disabled selected>Datenbank-Treiber</option>
-                                        <option value="mysql">mysql</option>
-                                        <option value="value2">Treiber 2</option>
-                                        <option value="value3">Treiber 3</option>
+
+                                        <?php
+                                        $avaibleDrivers = \QUI\Setup\Database\Database::getAvailableDrivers();
+
+                                        foreach($avaibleDrivers as $driver) {
+                                            echo '<option value="'. $driver .'">' . $driver . '</option>';
+                                        }
+                                        ?>
+
                                     </select>
                                 </div>
+                            </label>
+                            <label>
                                 <input class="input-text" type="text" name="databaseHost"
                                        placeholder="Datenbank Host" value=""/>
+                            </label>
+                            <label>
                                 <input class="input-text" type="number" name="databasePort"
                                        placeholder="Datenbank Port" value=""/>
-                            </div>
-                            <div class="grid-50 mobile-grid-100">
+                            </label>
+                            <label>
                                 <input class="input-text" type="text" name="databaseName"
                                        placeholder="Datenbank Name" value=""/>
+                            </label>
+                            <label>
                                 <input class="input-text" type="text" name="databaseUser"
                                        placeholder="Datenbank Benutzer" value=""/>
+                            </label>
+                            <label>
                                 <input class="input-text" type="password" name="databasePassword"
                                        placeholder="Datenbank Passwort" value=""/>
-                            </div>
+                            </label>
                         </li>
 
                         <!-- step 5 -->
                         <li class="step step-5">
-                            <div class="grid-50 mobile-grid-100">
+                            <label>
                                 <div class="input-user-wrapper">
                                     <i class="fa fa-user input-text-icon"></i>
                                     <input class="input-text input-text-user" type="text"
                                            name="userName" placeholder="Benutzer" value=""/>
                                 </div>
-
-                            </div>
-
-                            <div class="grid-50 mobile-grid-100">
+                            </label>
+                            <label>
                                 <div class="input-user-wrapper">
                                     <i class="fa fa-lock input-text-icon"></i>
                                     <input class="input-text input-text-user" type="password"
                                            name="userPassword" placeholder="Passwort" value=""/>
                                 </div>
+                            </label>
+                            <label style="float: right;">
                                 <div class="input-user-wrapper">
                                     <i class="fa fa-lock input-text-icon"></i>
                                     <input class="input-text input-text-user" type="password"
                                            name="userPasswordAgain"
                                            placeholder="Passwort wiederholen" value=""/>
                                 </div>
-
+                            </label>
                                 <span class="user-info">Passwörter stimmen nicht überein</span>
 
-                            </div>
                         </li>
 
                         <!-- step 6 -->
@@ -315,7 +318,7 @@ for($i=0; $i<count($version); $i++) {
     </div>
     <div class="nav-buttons grid-80 mobile-grid-100">
         <button id="back-button" class="qui-buttonn button back-button" disabled>Zurück</button>
-        <button id="next-button" class="qui-buttonn next-button" tabindex="3" >Fortfahren</button>
+        <button id="next-button" class="qui-buttonn next-button" tabindex="3">Fortfahren</button>
     </div>
 </div>
 

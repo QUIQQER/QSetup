@@ -10,11 +10,15 @@ require 'header.php';
  */
 
 if (!isset($_REQUEST['driver'])) {
-    \QUI\Setup\Utils\Ajax::output("missing.argument.driver", 500666400);
+    \QUI\Setup\Utils\Ajax::output("missing.argument.driver", 400);
 }
 
 if (!isset($_REQUEST['host'])) {
     \QUI\Setup\Utils\Ajax::output("missing.argument.host", 400);
+}
+
+if (!isset($_REQUEST['port'])) {
+    \QUI\Setup\Utils\Ajax::output("missing.argument.port", 400);
 }
 
 if (!isset($_REQUEST['user'])) {
@@ -32,17 +36,19 @@ if (!isset($_REQUEST['name'])) {
 // Fetch variables
 $driver = $_REQUEST['driver'];
 $host   = $_REQUEST['host'];
+$port   = $_REQUEST['port'];
 $user   = $_REQUEST['user'];
 $pw     = $_REQUEST['password'];
-$db     = $_REQUEST['name'];
-
+$dbName = $_REQUEST['name'];
 
 // Validate database credentials
 try {
-    \QUI\Setup\Utils\Validator::validateDatabase($driver, $host, $user, $pw, $db);
+    \QUI\Setup\Utils\Validator::validateDatabase($driver, $host, $user, $pw, $port, $dbName);
 //    \QUI\Setup\Utils\Ajax::output('OK');
     \QUI\Setup\Utils\Ajax::output(true);
 } catch (\QUI\Setup\SetupException $Exception) {
-//    \QUI\Setup\Utils\Ajax::output($Exception->toArray(), 400);
-    \QUI\Setup\Utils\Ajax::output(false);
+//    var_dump($Exception->getMessage());
+    \QUI\Setup\Utils\Ajax::output($Exception->toArray());
+//    \QUI\Setup\Utils\Ajax::output($Exception->getMessage(), 400);
+//    \QUI\Setup\Utils\Ajax::output(false);
 }

@@ -9,9 +9,10 @@
 define('bin/js/Setup', [
     'qui/QUI',
     'qui/utils/Functions',
-    'qui/utils/Form'
+    'qui/utils/Form',
+    'qui/Locale'
     // 'qui/controls/Control'
-], function (QUI, QUIFunctionUtils, QUIFormUtils) {
+], function (QUI, QUIFunctionUtils, QUIFormUtils, QUILocale) {
     "use strict";
 
     return new Class({
@@ -165,68 +166,83 @@ define('bin/js/Setup', [
          */
         next: function () {
 
+            var FuncExecuteNext = function () {
+                console.info("next function");
+
+                if (this.step == this.ListElement.length) {
+                    this.$exeInstall();
+                    return;
+                }
+                // nav icons
+                /*this.fa[this.step].removeClass('fa-circle-o');
+                 this.fa[this.step].addClass('fa-check-circle-o');*/
+
+                // nav color
+                this.liElm[this.step - 1].removeClass('step-active');
+                this.liElm[this.step - 1].addClass('step-done');
+                this.liElm[this.step].addClass('step-active');
+
+                this.step++;
+
+                // header
+                moofx(this.activeHeader).animate({
+                    opacity: 0
+                }, {
+                    duration: 250,
+                    equation: 'ease-in-out',
+                    callback: function () {
+                        this.showCurrentHeader(this.step)
+                    }.bind(this)
+                });
+
+                // enable back button
+                if (this.step > 0) {
+                    this.BackStep.disabled = false;
+                }
+                var currentPos = this.StepsList.getStyle('left').toInt();
+                var pos        = currentPos - this.listElementWidth;
+
+                moofx(this.StepsList).animate({
+                    left: pos
+                }, {
+                    duration: 500,
+                    equation: 'ease-in-out'
+                });
+
+                // change button text from "next" to "install"
+                if (this.step == 7) {
+                    this.buttonInstall = true;
+                    this.NextStep.set('html', 'Installieren');
+                }
+
+                this.checkProgress();
+            }.bind(this);
+
             // data base check
             if (this.step + 1 == 5) {
                 this.checkDataBase().then(function () {
                     console.log("data base Prüfung war ok");
-                    // slider weiter;
-                }).catch(function () {
-                    console.warn("Fehler bei Database Prüfung...");
-                    // irgendwas falsch
+                    FuncExecuteNext();
+                }, function (error) {
 
+                    QUI.getMessageHandler().then(function(MH) {
+                        var errorDecoded = JSON.decode(error),
+                        message = 'Fehler bei der Verbindung zu Datenbank. <br /><br />';
+
+
+
+                        message += errorDecoded.code + '<br />';
+                        message += errorDecoded.message + '<br />';
+
+                        MH.setAttribute('displayTimeMessages', 8000);
+                        MH.addError(message);
+                    })
                 });
+
                 return;
             }
 
-            console.log("next function");
-
-            if (this.step == this.ListElement.length) {
-                this.$exeInstall();
-                return;
-            }
-            // nav icons
-            /*this.fa[this.step].removeClass('fa-circle-o');
-             this.fa[this.step].addClass('fa-check-circle-o');*/
-
-            // nav color
-            this.liElm[this.step - 1].removeClass('step-active');
-            this.liElm[this.step - 1].addClass('step-done');
-            this.liElm[this.step].addClass('step-active');
-
-            this.step++;
-
-            // header
-            moofx(this.activeHeader).animate({
-                opacity: 0
-            }, {
-                duration: 250,
-                equation: 'ease-in-out',
-                callback: function () {
-                    this.showCurrentHeader(this.step)
-                }.bind(this)
-            });
-
-            // enable back button
-            if (this.step > 0) {
-                this.BackStep.disabled = false;
-            }
-            var currentPos = this.StepsList.getStyle('left').toInt();
-            var pos        = currentPos - this.listElementWidth;
-
-            moofx(this.StepsList).animate({
-                left: pos
-            }, {
-                duration: 500,
-                equation: 'ease-in-out'
-            });
-
-            // change button text from "next" to "install"
-            if (this.step == 7) {
-                this.buttonInstall = true;
-                this.NextStep.set('html', 'Installieren');
-            }
-
-            this.checkProgress();
+            FuncExecuteNext();
         },
 
         /**
@@ -446,7 +462,7 @@ define('bin/js/Setup', [
         /**
          * Set the width and color of the progress bar
          *
-         * @param x {Number}
+         * @param x {Number} - % change
          */
         changeProgressBar: function (x) {
             moofx(this.progressBarDone).animate({
@@ -547,19 +563,22 @@ define('bin/js/Setup', [
                     data     : {
                         driver  : Form.databaseDriver,
                         host    : Form.databaseHost,
+                        port    : Form.databasePort,
                         user    : Form.databaseUser,
                         password: Form.databasePassword,
                         name    : Form.databaseName
                     },
                     onSuccess: function (responseText) {
-                        console.info(typeof(responseText));
-                        console.info(responseText);
-                        if(responseText == 'true') {
+                        if (responseText == 'true') {
                             console.log("bin in true");
                             resolve();
                             return;
                         }
-                        console.warn("bin in false...");
+
+                        reject(responseText);
+                    },
+                    onFailure: function() {
+                        // console.log("bin in false");
                         reject();
                     }
                 }).send();
@@ -587,11 +606,11 @@ define('bin/js/Setup', [
                     document.getElement('input[name="databaseName"]').value                  = 'QUIQQERTest';
                     document.getElement('input[name="databaseUser"]').value                  = 'root';
                     document.getElement('input[name="databasePassword"]').value              = 'root';
-                    document.getElement('input[name="databasePort"]').value              = '3306';
+                    document.getElement('input[name="databasePort"]').value                  = '3306';
                     break;
                 case 5:
-                    document.getElement('input[name="userName"]').value = 'admin';
-                    document.getElement('input[name="userPassword"]').value = 'admin';
+                    document.getElement('input[name="userName"]').value          = 'admin';
+                    document.getElement('input[name="userPassword"]').value      = 'admin';
                     document.getElement('input[name="userPasswordAgain"]').value = 'admin';
 
             }

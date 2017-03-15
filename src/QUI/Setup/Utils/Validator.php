@@ -125,7 +125,7 @@ class Validator
      * @return bool
      * @throws SetupException
      */
-    public static function validateDatabase($dbDriver, $dbHost, $dbUser, $dbPw, $dbPort = "", $dbName = "")
+    public static function validateDatabase($dbDriver, $dbHost, $dbUser, $dbPw, $dbPort = '', $dbName)
     {
 
         if (!in_array($dbDriver, Database::getAvailableDrivers())) {

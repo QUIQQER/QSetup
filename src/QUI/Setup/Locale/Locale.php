@@ -122,10 +122,99 @@ class Locale
     }
 
     /**
+     * This will read all localization variables from the .po file for the current language
+     *
      * @return array
+     * @throws LocaleException
      */
     public function getAll()
     {
-        return array();
+        $translations = array();
+
+        $current = $this->getCurrent();
+        if (strpos($current, "_") !== false) {
+            $split   = explode("_", $current, 2);
+            $current = $split[0];
+        }
+
+        $langFile = dirname(__FILE__) . "/" . $current . "/LC_MESSAGES/setupmessages.po";
+
+        if (!file_exists($langFile)) {
+            throw new LocaleException("Localization file not found: " . $langFile);
+        }
+
+        $FileHandle = @fopen($langFile, "r");
+        if ($FileHandle === false) {
+            throw new LocaleException("Could not open the language file: " . $langFile);
+        }
+
+        while (!feof($FileHandle)) {
+            $line = fgets($FileHandle);
+            $line = trim($line);
+
+            if (empty($line)) {
+                continue;
+            }
+
+            // Check wether or not the line defines a msgstr or msgid
+            if (substr($line, 0, 5) != "msgid") {
+                continue;
+            }
+
+            $msgid = $this->extractStringFromPOLine($line);
+
+            while (!feof($FileHandle)) {
+                $nextLine = fgets($FileHandle);
+                // keep looking until next valid msgstr line is found
+                if ($nextLine === false) {
+                    continue;
+                }
+
+                if (empty($nextLine)) {
+                    continue;
+                }
+
+                if (substr($nextLine, 0, 6) != "msgstr") {
+                    continue;
+                }
+
+                // Found the next msgstr line.
+                $msg = $this->extractStringFromPOLine($nextLine);
+
+                if (!empty($msgid) && !empty($msg)) {
+                    $translations[$msgid] = $msg;
+                }
+                // Stop parsing the next lines
+                break;
+            }
+        }
+
+
+        return $translations;
+    }
+
+    /**
+     * Extracts the relevant string from the given .po line
+     * @param $line
+     * @return mixed
+     */
+    protected function extractStringFromPOLine($line)
+    {
+        $stub = trim($line);
+        if (substr($line, 0, 5) == "msgid") {
+            $stub = trim(substr($line, 5)); // Remove the msgid identifier
+        }
+
+        if (substr($line, 0, 6) == "msgstr") {
+            $stub = trim(substr($line, 6)); // Remove the msgid identifier
+        }
+
+        // Replace the first "
+        $stub = preg_replace("~^(\"|')~i", "", $stub);
+
+        // Replace the last "
+        $string = preg_replace("~(\"|')$~i", "", $stub);
+
+        return $string;
     }
 }

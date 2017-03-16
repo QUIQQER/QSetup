@@ -368,7 +368,7 @@ msgid "setup.error.mysql"
 msgstr "MySql Fehler: "
 
 msgid "setup.warning.execution.start"
-msgstr "Ab diesem Schritt sind alle Änderungen nicht mehr automatisch zurücksetzbar. Das heisst, Sie müssen, falls das Setup abrrechen sollte, den Inhalt dieses Verzeichnises löschen und von vorne beginnen."
+msgstr "Ab diesem Schritt sind alle Änderungen nicht mehr automatisch zurücksetzbar. Das heisst, Sie müssen, falls das Setup abbrechen sollte, den Inhalt dieses Verzeichnises löschen und von vorne beginnen."
 
 msgid "setup.prompt.execution.start"
 msgstr "Sind Sie sicher, dass Sie fortfahren wollen? (y/n) "
@@ -390,3 +390,4 @@ msgstr "Adresse des Adminbereiches: "
 
 msgid "prompt.cannot.be.empty"
 msgstr "Darf nicht leer sein. Bitte erneut versuchen."
+

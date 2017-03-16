@@ -29,6 +29,9 @@
     $Locale = new \QUI\Setup\Locale\Locale('de_DE');
     $text   = $Locale->getStringLang('setup.message.step.database');
 
+    /*echo '<pre>';
+    $presets = \QUI\Setup\Preset::getPresets();
+    print_r($presets);*/
     ?>
     <script>
         var CURRENT_LOCALE      = '<?php echo $Locale->getCurrent(); ?>';
@@ -122,29 +125,31 @@
                             <fieldset>
 
                                 <?php
+                                $availableLangs = QUI\Setup\Utils\Utils::getAvailalbeLanguages();
+                                $tabIndex = 1;
+
+                                $checked = 'checked="checked"';
+                                foreach ($availableLangs as $lang) {
+
+                                    $localeVar = 'setup.web.lang.' . $lang;
+                                    $language = $Locale->getStringLang($localeVar);
+
+                                    $output = '<label for="'. $lang .'">';
+                                    $output .= '<input class="input-radio" name="project-language" type="radio"
+                                           value="' . $lang . '" required '. $checked . 'id="'. $lang .'"/>';
+                                    $output .= '<div class="label-div">
+                                                    <img class="" src="/bin/img/flags/'. $lang .'.png" 
+                                                        title="'. $language .' Flag" alt="'. $language .'"/>';
+                                    $output .= $language;
+                                    $output .= '<i class="fa fa-check button-icon-right"></i>
+                                                </div>
+                                            </label>';
+
+                                    echo $output;
+                                    $checked = '';
+                                }
 
                                 ?>
-                                <label>
-                                    <input class="input-radio" name="project-language" type="radio"
-                                           value="de" tabindex="1" required checked="checked"/>
-                                    <div class="label-div">
-                                        <img class="" src="/bin/img/de.png" title="DE Flag"
-                                             alt="DE Flag"/>
-                                        Deutsch
-                                        <i class="fa fa-check button-icon-right"></i>
-                                    </div>
-                                </label>
-
-                                <label>
-                                    <input class="input-radio" name="project-language"
-                                           type="radio" value="en" tabindex="2" required/>
-                                    <div class="label-div">
-                                        <img class="" src="/bin/img/en.png" title="EN Flag"
-                                             alt="EN Flag"/>
-                                        Englisch
-                                        <i class="fa fa-check button-icon-right"></i>
-                                    </div>
-                                </label>
                             </fieldset>
                         </li>
 
@@ -182,34 +187,45 @@
 
                         <!-- step 3 -->
                         <li class="step step-3">
-                            <label>
-                                <input class="input-radio" name="vorlage"
-                                       type="radio" value="business"/>
-                                <div class="label-div">
-                                    <i class="fa fa-briefcase button-icon-left"></i>
-                                    Business
-                                    <i class="fa fa-check button-icon-right"></i>
-                                </div>
-                            </label>
-                            <label>
-                                <input class="input-radio" name="vorlage"
-                                       type="radio" value="onlineShop"/>
-                                <div class="label-div">
-                                    <i class="fa fa-shopping-cart button-icon-left"></i>
-                                    Online Shop
-                                    <i class="fa fa-check button-icon-right"></i>
-                                </div>
-                            </label>
 
-                            <label>
+                            <?php
+                            $presets = \QUI\Setup\Preset::getPresets();
+                            $lang = $Locale->getCurrent();
+
+                            foreach ($presets as $key => $value) {
+                                if (!isset($value['meta'])) {
+                                    continue;
+                                }
+
+                                if (!isset($value['meta']['name'])) {
+                                    continue;
+                                }
+                                if (!isset($value['meta']['name'][$lang])) {
+                                    continue;
+                                }
+
+                                $name = $value['meta']['name'][$lang];
+                                $icon = 'fa-file-text-o';
+
+                                if (isset($value['meta']['icon'])) {
+                                    $icon = $value['meta']['icon'];
+                                }
+
+                                $output = '<label>
                                 <input class="input-radio" name="vorlage"
-                                       type="radio" value="onePageDesign"/>
+                                       type="radio" value="'. $key .'"/>
                                 <div class="label-div">
-                                    <i class="fa fa-file-text-o button-icon-left"></i>
-                                    Visitenkarte
+                                    <i class="fa '. $icon .' button-icon-left"></i>';
+
+                                $output .= $name;
+                                $output .= '
                                     <i class="fa fa-check button-icon-right"></i>
                                 </div>
-                            </label>
+                            </label>';
+                                echo $output;
+                            }
+                            ?>
+
                         </li>
 
                         <!-- step 4 -->

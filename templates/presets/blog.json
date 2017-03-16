@@ -15,5 +15,12 @@
   ],
   "packages": {
     "quiqqer/gitlab": "dev-dev"
-  }
+  },
+  "meta": {
+      "name": {
+          "en_EN": "Blog",
+          "de_DE": "Blog"
+        },
+      "icon": "fa-book"
+    }
 }

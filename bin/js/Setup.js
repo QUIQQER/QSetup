@@ -17,8 +17,8 @@ define('bin/js/Setup', [
 
     QUILocale.setCurrent(CURRENT_LOCALE);
 
-console.log(CURRENT_LOCALE);
-console.log(LOCALE_TRANSLATIONS);
+// console.log(CURRENT_LOCALE);
+// console.log(LOCALE_TRANSLATIONS);
 
     return new Class({
 

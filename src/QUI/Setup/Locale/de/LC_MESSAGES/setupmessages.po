@@ -391,3 +391,9 @@ msgstr "Adresse des Adminbereiches: "
 msgid "prompt.cannot.be.empty"
 msgstr "Darf nicht leer sein. Bitte erneut versuchen."
 
+
+msgid "setup.web.lang.de"
+msgstr "Deutsch"
+
+msgid "setup.web.lang.en"
+msgstr "Englisch"

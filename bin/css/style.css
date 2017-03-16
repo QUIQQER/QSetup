@@ -299,6 +299,7 @@ label {
     transition: all 0.3s;
 }
 
+.input[type="radio"]:focus + .label-div,
 .label-div:hover,
 input:hover,
 input:focus,

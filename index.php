@@ -26,7 +26,14 @@
     <?php
     require "vendor/autoload.php";
 
+    $Locale = new \QUI\Setup\Locale\Locale('de_DE');
+    $text   = $Locale->getStringLang('setup.message.step.database');
+
     ?>
+    <script>
+        var CURRENT_LOCALE      = '<?php echo $Locale->getCurrent(); ?>';
+        var LOCALE_TRANSLATIONS = <?php echo json_encode($Locale->getAll()); ?>;
+    </script>
 </head>
 <body>
 
@@ -38,16 +45,6 @@
      }
      }).send();*/
 </script>
-
-<?php
-
-/*$lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
-echo $lang;*/
-
-$Locale = new \QUI\Setup\Locale\Locale('de_DE');
-$text   = $Locale->getStringLang('setup.message.step.database');
-
-?>
 <div class="progress-bar">
     <div class="progress-bar-done"></div>
     <span class="progress-bar-text">0%</span>

@@ -15,6 +15,11 @@ define('bin/js/Setup', [
 ], function (QUI, QUIFunctionUtils, QUIFormUtils, QUILocale) {
     "use strict";
 
+    QUILocale.setCurrent(CURRENT_LOCALE);
+
+console.log(CURRENT_LOCALE);
+console.log(LOCALE_TRANSLATIONS);
+
     return new Class({
 
         // Extends: QUIControl,
@@ -33,6 +38,7 @@ define('bin/js/Setup', [
             'checkProgress',
             'changeProgressBar',
             'checkPassword',
+            'checkPassword2',
             '$exeInstall'
         ],
 
@@ -133,7 +139,7 @@ define('bin/js/Setup', [
 
             }.bind(this));
 
-            this.passwordAgain.addEvent('change', this.checkPassword);
+            this.passwordAgain.addEvent('change', this.checkPassword2);
             // check progress erst nach NEXT click
             /*this.inputs.addEvent('change', this.checkProgress);
              this.selects.addEvent('change', this.checkProgress);*/
@@ -225,10 +231,9 @@ define('bin/js/Setup', [
                     FuncExecuteNext();
                 }, function (error) {
 
-                    QUI.getMessageHandler().then(function(MH) {
+                    QUI.getMessageHandler().then(function (MH) {
                         var errorDecoded = JSON.decode(error),
-                        message = 'Fehler bei der Verbindung zu Datenbank. <br /><br />';
-
+                            message      = 'Fehler bei der Verbindung zu Datenbank. <br /><br />';
 
 
                         message += errorDecoded.code + '<br />';
@@ -548,6 +553,21 @@ define('bin/js/Setup', [
             return this.passwordConfirmed = true;
         },
 
+        checkPassword2: function () {
+            var pass1 = document.getElement('.input-text-user[name="userPassword"]');
+            var pass2 = document.getElement('.input-text-user[name="userPasswordAgain"]');
+
+            console.log(pass1);
+            console.log(pass2);
+            if (pass1.value != pass2.value) {
+                pass2.setCustomValidity("Passwords Don't Match");
+            } else {
+                //empty string means no validation error
+                pass2.setCustomValidity('');
+            }
+
+        },
+
         /**
          *
          * @returns {Promise}
@@ -577,7 +597,7 @@ define('bin/js/Setup', [
 
                         reject(responseText);
                     },
-                    onFailure: function() {
+                    onFailure: function () {
                         // console.log("bin in false");
                         reject();
                     }

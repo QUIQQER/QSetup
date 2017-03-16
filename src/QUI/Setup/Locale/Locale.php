@@ -44,21 +44,19 @@ class Locale
         if ($res === false) {
             # Try to set english as fallback. If that does not work. Throw an exception!
             if ($res === false) {
-                if (!setlocale(
-                    LC_ALL,
-                    array(
-                        'en',
-                        'en_GB',
-                        'en_US',
-                        'en.utf8',
-                        'en_GB.utf8',
-                        'en_US.utf8',
-                        'en.UTF8',
-                        'en_GB.UTF8',
-                        'en_US.UTF8',
-                    )
-                )
-                ) {
+                $set = setlocale(LC_ALL, array(
+                    'en',
+                    'en_GB',
+                    'en_US',
+                    'en.utf8',
+                    'en_GB.utf8',
+                    'en_US.utf8',
+                    'en.UTF8',
+                    'en_GB.UTF8',
+                    'en_US.UTF8',
+                ));
+
+                if (!$set) {
                     throw new LocaleException("locale.localeset.failed");
                 }
             }
@@ -66,7 +64,6 @@ class Locale
 
         bindtextdomain($this->domain, dirname(__FILE__));
     }
-
 
     /**
      * Returns a translated String. Returns a fallback if translation is not found.
@@ -99,18 +96,36 @@ class Locale
     public function setLanguage($lang)
     {
         $this->current = $lang;
+
         putenv("LANGUAGE=" . $this->current);
         putenv("LANG=" . $this->current);
         putenv('LC_ALL=' . $this->current);
-        $res = setlocale(LC_ALL, array($this->current, $this->current . ".utf8", $this->current . ".UTF8"));
+
+        $res = setlocale(
+            LC_ALL,
+            array($this->current, $this->current . ".utf8", $this->current . ".UTF8")
+        );
+
         if ($res === false) {
             throw new LocaleException("locale.localeset.failed");
         }
+
         bindtextdomain($this->domain, dirname(__FILE__));
     }
 
+    /**
+     * @return string
+     */
     public function getCurrent()
     {
         return $this->current;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAll()
+    {
+        return array();
     }
 }

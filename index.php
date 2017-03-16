@@ -130,7 +130,6 @@
 
                                 $checked = 'checked="checked"';
                                 foreach ($availableLangs as $lang) {
-
                                     $localeVar = 'setup.web.lang.' . $lang;
                                     $language  = $Locale->getStringLang($localeVar);
 

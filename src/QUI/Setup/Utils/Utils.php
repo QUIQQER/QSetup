@@ -4,6 +4,22 @@ namespace QUI\Setup\Utils;
 
 class Utils
 {
+
+    /**
+     * Gets all availalbe languages
+     *
+     * @return array
+     */
+    public static function getAvailalbeLanguages()
+    {
+        $langs = array();
+
+        $langs[] = "de";
+        $langs[] = "en";
+
+        return $langs;
+    }
+
     /**
      * Makes sure , that the path ends with a trailing slash.
      *
@@ -37,6 +53,11 @@ class Utils
         return true;
     }
 
+    /**
+     * Calculates the MD5 sum of the given directory
+     * @param $dir
+     * @return bool|string
+     */
     public static function getDirMD5($dir)
     {
         if (!is_dir($dir)) {

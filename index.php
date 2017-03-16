@@ -126,20 +126,20 @@
 
                                 <?php
                                 $availableLangs = QUI\Setup\Utils\Utils::getAvailalbeLanguages();
-                                $tabIndex = 1;
+                                $tabIndex       = 1;
 
                                 $checked = 'checked="checked"';
                                 foreach ($availableLangs as $lang) {
 
                                     $localeVar = 'setup.web.lang.' . $lang;
-                                    $language = $Locale->getStringLang($localeVar);
+                                    $language  = $Locale->getStringLang($localeVar);
 
-                                    $output = '<label for="'. $lang .'">';
+                                    $output = '<label for="' . $lang . '">';
                                     $output .= '<input class="input-radio" name="project-language" type="radio"
-                                           value="' . $lang . '" required '. $checked . 'id="'. $lang .'"/>';
+                                           value="' . $lang . '" required ' . $checked . 'id="' . $lang . '"/>';
                                     $output .= '<div class="label-div">
-                                                    <img class="" src="/bin/img/flags/'. $lang .'.png" 
-                                                        title="'. $language .' Flag" alt="'. $language .'"/>';
+                                                    <img class="" src="/bin/img/flags/' . $lang . '.png" 
+                                                        title="' . $language . ' Flag" alt="' . $language . '"/>';
                                     $output .= $language;
                                     $output .= '<i class="fa fa-check button-icon-right"></i>
                                                 </div>
@@ -190,7 +190,7 @@
 
                             <?php
                             $presets = \QUI\Setup\Preset::getPresets();
-                            $lang = $Locale->getCurrent();
+                            $lang    = $Locale->getCurrent();
 
                             foreach ($presets as $key => $value) {
                                 if (!isset($value['meta'])) {
@@ -213,9 +213,9 @@
 
                                 $output = '<label>
                                 <input class="input-radio" name="vorlage"
-                                       type="radio" value="'. $key .'"/>
+                                       type="radio" value="' . $key . '"/>
                                 <div class="label-div">
-                                    <i class="fa '. $icon .' button-icon-left"></i>';
+                                    <i class="fa ' . $icon . ' button-icon-left"></i>';
 
                                 $output .= $name;
                                 $output .= '

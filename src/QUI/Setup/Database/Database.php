@@ -68,6 +68,7 @@ class Database
 
     /**
      * Checks if the given Database exists in the information_schema.
+     *
      * @param $driver
      * @param $host
      * @param $user

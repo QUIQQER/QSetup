@@ -137,9 +137,9 @@ class Validator
 
         # Check Credentials
         try {
-            Database::checkCredentials($dbDriver, $dbHost, $dbUser, $dbPw, $dbName);
+            Database::checkCredentials($dbDriver, $dbHost, $dbUser, $dbPw, $dbName, $dbPort);
 
-            if (!empty($dbName) && !Database::databaseExists($dbDriver, $dbHost, $dbUser, $dbPw, $dbName)) {
+            if (!empty($dbName) && !Database::databaseExists($dbDriver, $dbHost, $dbUser, $dbPw, $dbName, $dbPort)) {
                 throw new SetupException("setup.validation.database.not.exists");
             }
         } catch (SetupException $Exception) {

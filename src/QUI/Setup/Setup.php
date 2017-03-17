@@ -858,7 +858,7 @@ class Setup
             $this->data['database']['prefix']
         );
 
-        
+
         # Create Database if wanted
         if ($this->data['database']['create_new']) {
             $success = $this->Database->createDatabase($this->data['database']['name']);

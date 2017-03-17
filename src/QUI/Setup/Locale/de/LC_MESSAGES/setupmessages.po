@@ -37,6 +37,9 @@ msgstr "Lösche die nicht mehr benötigten Dateien des Setups"
 msgid "setup.message.step.checks"
 msgstr "Starte die QUIQQER checks"
 
+msgid "setup.message.step.preset"
+msgstr "Setze Vorlage um. Dies kann etwas dauern."
+
 msgid "setup.filesystem.composerjson.notcreated"
 msgstr "Konnte die composer.json Datei nicht erstellen"
 

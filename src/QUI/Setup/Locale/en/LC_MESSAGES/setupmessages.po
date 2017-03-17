@@ -37,6 +37,9 @@ msgstr "Deleting setupfiles"
 msgid "setup.message.step.checks"
 msgstr "Running quiqqer health checks"
 
+msgid "setup.message.step.preset"
+msgstr "Applying preset. This may take a while."
+
 msgid "setup.filesystem.composerjson.notcreated"
 msgstr "Could not create the composer.json file"
 

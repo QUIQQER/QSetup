@@ -13,7 +13,7 @@ class Log
      */
     public static function info($msg)
     {
-        $msg = "[INFO] " . $msg . PHP_EOL;
+        $msg = self::getTimeStamp() . "[INFO] " . $msg . PHP_EOL;
         if (!is_writable(self::getLogFile())) {
             echo "\033[1;31m Logfile (" . self::getLogFile() . ") is not writeable! \033[0m" . PHP_EOL;
 
@@ -28,7 +28,7 @@ class Log
      */
     public static function warning($msg)
     {
-        $msg = "[WARNING] " . $msg . PHP_EOL;
+        $msg = self::getTimeStamp() . "[WARNING] " . $msg . PHP_EOL;
         if (!is_writable(self::getLogFile())) {
             echo "\033[1;31m Logfile (" . self::getLogFile() . ") is not writeable! \033[0m" . PHP_EOL;
 
@@ -44,7 +44,7 @@ class Log
      */
     public static function error($msg)
     {
-        $msg = "[ERROR] " . $msg . PHP_EOL;
+        $msg = self::getTimeStamp() . "[ERROR] " . $msg . PHP_EOL;
         if (!is_writable(self::getLogFile())) {
             echo "\033[1;31m Logfile (" . self::getLogFile() . ") is not writeable! \033[0m" . PHP_EOL;
 
@@ -71,7 +71,7 @@ class Log
      */
     public static function append($msg)
     {
-        $msg = $msg . PHP_EOL;
+        $msg = self::getTimeStamp() . $msg . PHP_EOL;
         if (!is_writable(self::getLogFile())) {
             echo "\033[1;31m Logfile (" . self::getLogFile() . ") is not writeable! \033[0m" . PHP_EOL;
 
@@ -86,7 +86,7 @@ class Log
      */
     public static function appendError($msg)
     {
-        $msg = $msg . PHP_EOL;
+        $msg = self::getTimeStamp() . $msg . PHP_EOL;
 
         if (!file_exists(self::getErrorLogFile())) {
             file_put_contents(self::getErrorLogFile(), '');
@@ -97,8 +97,10 @@ class Log
 
             return;
         }
+
         file_put_contents(self::getErrorLogFile(), $msg, FILE_APPEND);
     }
+
 
     /**
      * Returns the path to the log file
@@ -149,5 +151,20 @@ class Log
         self::$errorLogFile = $file;
 
         return $file;
+    }
+
+    /**
+     * Generates a timestamp for log messages.
+     * Return Format "[Y-m-d H:i:s] - "
+     *
+     * @return string
+     */
+    protected static function getTimeStamp()
+    {
+        $DateTime = new \DateTime();
+
+        $formatted = $DateTime->format("Y-m-d H:i:s");
+
+        return "[" . $formatted . "] - ";
     }
 }

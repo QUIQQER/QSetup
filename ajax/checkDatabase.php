@@ -48,7 +48,7 @@ try {
     \QUI\Setup\Utils\Ajax::output(true);
 } catch (\QUI\Setup\SetupException $Exception) {
 //    var_dump($Exception->getMessage());
-    \QUI\Setup\Utils\Ajax::output($Exception->toArray());
+    \QUI\Setup\Utils\Ajax::output($Exception->toArray(), 400);
 //    \QUI\Setup\Utils\Ajax::output($Exception->getMessage(), 400);
 //    \QUI\Setup\Utils\Ajax::output(false);
 }

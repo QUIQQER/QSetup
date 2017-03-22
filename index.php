@@ -27,7 +27,7 @@
     require "vendor/autoload.php";
 
     $Locale = new \QUI\Setup\Locale\Locale('de_DE');
-    $text   = $Locale->getStringLang('setup.message.step.database');
+//    $text   = $Locale->getStringLang('setup.message.step.database');
 
     /*echo '<pre>';
     $presets = \QUI\Setup\Preset::getPresets();
@@ -157,9 +157,10 @@
                         <li class="step step-2 step-left-align">
 
                             <?php
-                            $version = QUI\Setup\Setup::getVersions();
-                            for ($i = 0; $i < count($version); $i++) {
-                                switch ($version[$i]) {
+                            $versions = QUI\Setup\Setup::getVersions();
+                            sort($versions);
+                            for ($i = 0; $i < count($versions); $i++) {
+                                switch ($versions[$i]) {
                                     case 'dev-dev':
                                         $icon = '<i class="fa fa-cubes button-icon-left"></i>';
                                         break;
@@ -172,9 +173,9 @@
 
                                 $output = '<label>
                                     <input class="input-radio" name="version"
-                                           type="radio" value="' . $version[$i] . '" />';
+                                           type="radio" value="' . $versions[$i] . '" />';
                                 $output .= '<div class="label-div">' . $icon;
-                                $output .= $version[$i];
+                                $output .= $versions[$i];
                                 $output .= '<i class="fa fa-check button-icon-right"></i>
                                     </div>
                                 </label>';
@@ -289,7 +290,7 @@
                                 <div class="input-user-wrapper">
                                     <i class="fa fa-lock input-text-icon"></i>
                                     <input class="input-text input-text-user" type="password"
-                                           name="userPasswordAgain"
+                                           name="userPasswordRepeat"
                                            placeholder="Passwort wiederholen" value=""/>
                                 </div>
                             </label>
@@ -299,13 +300,18 @@
 
                         <!-- step 6 -->
                         <li class="step step-6">
-                            <h3>Step 6</h3>
-                            <p>Lorem ipsum step</p>
-                            <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed
-                                diam nonumy eirmod tempor invidunt ut labore
-                                et dolore magna aliquyam erat, sed diam voluptua. At vero eos
-                                et accusam et justo duo dolores et ea
-                                rebum.</p>
+                            <label>
+                                <input class="input-text" type="text" name="domain"
+                                       placeholder="Domain" value=""/>
+                            </label>
+                            <label>
+                                <input class="input-text" type="text" name="rootPath"
+                                       placeholder="Rootverzeichnis" value=""/>
+                            </label>
+                            <label>
+                                <input class="input-text" type="text" name="URLsubPath"
+                                       placeholder="URL Unterverzeichnis" value=""/>
+                            </label>
                         </li>
 
                         <!-- step 7 -->

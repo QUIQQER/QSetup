@@ -18,7 +18,7 @@ define('bin/js/Setup', [
     QUILocale.setCurrent(CURRENT_LOCALE);
 
 // console.log(CURRENT_LOCALE);
-// console.log(LOCALE_TRANSLATIONS);
+//     console.log(LOCALE_TRANSLATIONS);
 
     return new Class({
 
@@ -37,8 +37,8 @@ define('bin/js/Setup', [
             'countInputs',
             'checkProgress',
             'changeProgressBar',
-            'checkPassword',
-            'checkPassword2',
+            'checkDatabase',
+            'checkUserAndPassword',
             '$exeInstall'
         ],
 
@@ -63,11 +63,8 @@ define('bin/js/Setup', [
             this.progressbarText = null;
             this.textColorGrey   = null;
 
-            this.userInputs        = null;
-            this.passwordAgain     = null;
-            this.passwordConfirmed = null;
-            this.buttonInstall     = false;
-
+            this.userInputs    = null;
+            this.buttonInstall = false;
 
             this.activeHeader = null;
 
@@ -104,9 +101,7 @@ define('bin/js/Setup', [
             this.progressbarText = document.getElement('.progress-bar-text');
             this.textColorGrey   = true;
 
-            this.userInputs        = document.getElements('.input-text-user');
-            this.passwordAgain     = document.getElement('.input-text-user[name="userPasswordAgain"]');
-            this.passwordConfirmed = true;
+            this.userInputs = document.getElements('.input-text-user');
 
             this.activeHeader = document.getElements('.header-list li');
 
@@ -139,10 +134,7 @@ define('bin/js/Setup', [
 
             }.bind(this));
 
-            this.passwordAgain.addEvent('change', this.checkPassword2);
-            // check progress erst nach NEXT click
-            /*this.inputs.addEvent('change', this.checkProgress);
-             this.selects.addEvent('change', this.checkProgress);*/
+
             this.userInputs.addEvent('change', this.changeUserIcon);
 
 
@@ -173,7 +165,6 @@ define('bin/js/Setup', [
         next: function () {
 
             var FuncExecuteNext = function () {
-                console.info("next function");
 
                 if (this.step == this.ListElement.length) {
                     this.$exeInstall();
@@ -225,16 +216,13 @@ define('bin/js/Setup', [
             }.bind(this);
 
             // data base check
-            if (this.step + 1 == 5) {
+            if (this.step == 4) {
                 this.checkDataBase().then(function () {
-                    console.log("data base Prüfung war ok");
                     FuncExecuteNext();
                 }, function (error) {
-
                     QUI.getMessageHandler().then(function (MH) {
-                        var errorDecoded = JSON.decode(error),
-                            message      = 'Fehler bei der Verbindung zu Datenbank. <br /><br />';
-
+                        var errorDecoded = JSON.decode(error.response),
+                            message      = 'Fehler beim Aufbau einer Datenbankverbindung.<br /><br />';
 
                         message += errorDecoded.code + '<br />';
                         message += errorDecoded.message + '<br />';
@@ -244,6 +232,20 @@ define('bin/js/Setup', [
                     })
                 });
 
+                return;
+            }
+
+            if (this.step == 5) {
+                this.checkUserAndPassword().then(function () {
+                    FuncExecuteNext();
+                }, function (error) {
+                    QUI.getMessageHandler().then(function (MH) {
+                        var errorDecoded = JSON.decode(error.response);
+
+                        MH.setAttribute('displayTimeMessages', 8000);
+                        MH.addError(errorDecoded.message);
+                    })
+                });
                 return;
             }
 
@@ -401,10 +403,6 @@ define('bin/js/Setup', [
         checkProgress: function () {
 
 
-            if (!this.passwordConfirmed) {
-                return;
-            }
-
             var progress;
             var inputsDone = 0;
 
@@ -521,55 +519,6 @@ define('bin/js/Setup', [
 
         /**
          *
-         * @returns {boolean}
-         */
-        checkPassword: function () {
-            var Pw1   = document.getElement('.input-text-user[name="userPassword"]');
-            var Pw2   = document.getElement('.input-text-user[name="userPasswordAgain"]');
-            var MooFx = moofx(document.getElement('.user-info'));
-
-            if (Pw1.value != Pw2.value) {
-                Pw1.style.outline = "1px solid #ff0000";
-                Pw2.style.outline = "1px solid #ff0000";
-                MooFx.animate({
-                    top    : 0,
-                    opacity: 1
-                }, {
-                    duration: 500,
-                    equation: 'ease-in-out'
-                });
-                return this.passwordConfirmed = false;
-            }
-
-            Pw1.style.outline = "none";
-            Pw2.style.outline = "none";
-            MooFx.animate({
-                top    : -60,
-                opacity: 0
-            }, {
-                duration: 500,
-                equation: 'ease-in-out'
-            });
-            return this.passwordConfirmed = true;
-        },
-
-        checkPassword2: function () {
-            var pass1 = document.getElement('.input-text-user[name="userPassword"]');
-            var pass2 = document.getElement('.input-text-user[name="userPasswordAgain"]');
-
-            console.log(pass1);
-            console.log(pass2);
-            if (pass1.value != pass2.value) {
-                pass2.setCustomValidity("Passwords Don't Match");
-            } else {
-                //empty string means no validation error
-                pass2.setCustomValidity('');
-            }
-
-        },
-
-        /**
-         *
          * @returns {Promise}
          */
         checkDataBase: function () {
@@ -586,20 +535,51 @@ define('bin/js/Setup', [
                         port    : Form.databasePort,
                         user    : Form.databaseUser,
                         password: Form.databasePassword,
-                        name    : Form.databaseName
+                        name    : Form.databaseName,
+                        lang    : CURRENT_LOCALE
                     },
-                    onSuccess: function (responseText) {
-                        if (responseText == 'true') {
-                            console.log("bin in true");
+                    onSuccess: function () {
+                        resolve();
+                    },
+                    onFailure: function (response) {
+                        reject(response);
+                    }
+                }).send();
+            });
+        },
+
+        /**
+         * Check, if user is not empty,
+         * password is strong enough,
+         * and if the second password matches
+         *
+         * @returns {Promise}
+         */
+        checkUserAndPassword: function () {
+            var Form = QUIFormUtils.getFormData(this.FormSetup);
+
+            return new Promise(function (resolve, reject) {
+                // check user and password
+                new Request({
+                    url    : '/ajax/checkUserAndPassword.php',
+                    noCache: true,
+                    data   : {
+                        userName          : Form.userName,
+                        userPassword      : Form.userPassword,
+                        userPasswordRepeat: Form.userPasswordRepeat,
+                        lang              : CURRENT_LOCALE
+                    },
+
+                    onSuccess: function (response) {
+                        if (response == 'true') {
                             resolve();
                             return;
                         }
 
-                        reject(responseText);
+                        reject(response);
                     },
-                    onFailure: function () {
-                        // console.log("bin in false");
-                        reject();
+                    onFailure: function (response) {
+                        reject(response);
                     }
                 }).send();
             });
@@ -629,9 +609,9 @@ define('bin/js/Setup', [
                     document.getElement('input[name="databasePort"]').value                  = '3306';
                     break;
                 case 5:
-                    document.getElement('input[name="userName"]').value          = 'admin';
-                    document.getElement('input[name="userPassword"]').value      = 'admin';
-                    document.getElement('input[name="userPasswordAgain"]').value = 'admin';
+                    document.getElement('input[name="userName"]').value           = 'admin';
+                    document.getElement('input[name="userPassword"]').value       = 'admin';
+                    document.getElement('input[name="userPasswordRepeat"]').value = 'admin';
 
             }
         }.bind(this)

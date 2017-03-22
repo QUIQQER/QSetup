@@ -393,3 +393,15 @@ msgstr "Adresse of the admin area: "
 
 msgid "prompt.cannot.be.empty"
 msgstr "Can not be empty. Please try again."
+
+msgid "setup.web.lang.de"
+msgstr "German"
+
+msgid "setup.web.lang.en"
+msgstr "English"
+
+msgid "exception.validation.database.connection"
+msgstr "Error on establishing data base connection"
+
+msgid "exception.validation.user.empty"
+msgstr "The user name can not be empty."

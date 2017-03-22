@@ -28,7 +28,7 @@ $Locale = new \QUI\Setup\Locale\Locale($_REQUEST['lang']);
 
 // check if user name is not empty
 if ($_REQUEST['userName'] == '') {
-    $Exception  = new QUI\Exception($Locale->getStringLang("exception.validation.user.empty"));
+    $Exception = new QUI\Exception($Locale->getStringLang("exception.validation.user.empty"));
     \QUI\Setup\Utils\Ajax::output($Exception->toArray(), 400);
 }
 
@@ -38,7 +38,7 @@ $pass1 = $_REQUEST['userPassword'];
 $pass2 = $_REQUEST['userPasswordRepeat'];
 
 if ($pass1 != $pass2) {
-    $Exception  = new QUI\Exception($Locale->getStringLang("setup.warning.password.missmatch"));
+    $Exception = new QUI\Exception($Locale->getStringLang("setup.warning.password.missmatch"));
     \QUI\Setup\Utils\Ajax::output($Exception->toArray(), 400);
 }
 

@@ -46,7 +46,6 @@ if ($pass1 != $pass2) {
 try {
     QUI\Setup\Utils\Validator::validatePassword($_REQUEST['userPassword']);
     \QUI\Setup\Utils\Ajax::output(true);
-
 } catch (\QUI\Setup\SetupException $Exception) {
     QUI\Setup\Utils\Ajax::output($Exception->toArray(), 400);
 }

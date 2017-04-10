@@ -400,8 +400,29 @@ msgstr "Deutsch"
 msgid "setup.web.lang.en"
 msgstr "Englisch"
 
+msgid "setup.web.password.show"
+msgstr "Passwort anzeigen"
+
+msgid "setup.web.password.hide"
+msgstr "Password verbergen"
+
 msgid "exception.validation.database.connection"
-msgstr "Fehler beim Aufbau einer Datenbankverbindung"
+msgstr "Fehler beim Aufbau der Datenbankverbindung"
 
 msgid "exception.validation.user.empty"
-msgstr "Der Benutzername darf nicht leer sein"
+msgstr "Das Benutzernamefeld darf nicht leer sein"
+
+msgid "exception.validation.passwords.empty"
+msgstr "Das Passwordfeld darf nicht leer sein"
+
+msgid "exception.validation.password.minlength"
+msgstr "Das eingegebene Passwort ist zu kurz."
+
+msgid "exception.validation.password.uppercasecount"
+msgstr "Bitte verwenden Sie Groß- und Kleinbuchstaben."
+
+msgid "exception.validation.password.specialcount"
+msgstr "Das Passwort enthält keine Sonderzeichen."
+
+msgid "exception.validation.password.numbercount"
+msgstr "Bitte verwenden Sie auch Zahlen."

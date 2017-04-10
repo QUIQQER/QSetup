@@ -400,8 +400,29 @@ msgstr "German"
 msgid "setup.web.lang.en"
 msgstr "English"
 
+msgid "setup.web.password.show"
+msgstr "Show password"
+
+msgid "setup.web.password.hide"
+msgstr "Hide password"
+
 msgid "exception.validation.database.connection"
 msgstr "Error on establishing data base connection"
 
 msgid "exception.validation.user.empty"
-msgstr "The user name can not be empty."
+msgstr "The user name field can not be empty."
+
+msgid "exception.validation.passwords.empty"
+msgstr "The password field can not be empty."
+
+msgid "exception.validation.password.minlength"
+msgstr "The password is to short."
+
+msgid "exception.validation.password.uppercasecount"
+msgstr "The password does not contain any upper case."
+
+msgid "exception.validation.password.specialcount"
+msgstr "The password does not contain a special character."
+
+msgid "exception.validation.password.numbercount"
+msgstr "The password does not contain a number."

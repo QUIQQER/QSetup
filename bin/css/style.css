@@ -41,7 +41,6 @@ textarea {
     min-height: 10em;
 }
 
-
 h1, h2, h3, h4, h5 {
     color: #666;
     line-height: 1.15em;
@@ -84,7 +83,6 @@ p {
     margin-bottom: 1em;
 }
 
-
 /* progress bar */
 
 .progress-bar {
@@ -120,7 +118,6 @@ p {
 }
 
 /* end progress bar */
-
 
 /* inputs */
 input,
@@ -183,7 +180,8 @@ input.input-text {
     z-index: 5;
 }
 
-input.input-text-user {
+input.input-text-user,
+input.input-text-password {
     padding: 0 20px 0 60px;
     /*margin: 10px 0;*/
 }
@@ -257,7 +255,6 @@ select option {
     line-height: 50px;
 }
 
-
 /* radio input */
 .input-radio {
     display: block;
@@ -270,7 +267,6 @@ select option {
     width: 100%;
 }
 
-
 label {
     margin: 0 20px;
     display: inline-block;
@@ -280,7 +276,6 @@ label {
     width: calc(50% - 40px);
     text-align: center;
 }
-
 
 .label-div {
     background: #fff;
@@ -295,7 +290,7 @@ label {
     text-align: left;
     width: 100%;
     line-height: 50px;
-    
+
     transition: all 0.3s;
 }
 
@@ -342,6 +337,47 @@ input:focus,
     color: #666;
 }
 
+/* step user password */
+
+.user-password-step-float-right {
+    float: right;
+}
+
+.show-password {
+    position: absolute;
+    top: calc(50% - 12px);
+    right: 0;
+    padding: 0 20px;
+    font-size: 24px;
+    color: #75b947;
+}
+
+.fa-eye-slash {
+    color: #ddd;
+}
+
+/* host und pfade */
+.step-6 label {
+    float: none;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+.host-and-url-info {
+    position: absolute;
+    top: calc(50% - 12px);
+    right: 0;
+    margin: 0 20px;
+    font-size: 24px;
+    color: #eee;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+.host-and-url-info:hover {
+    color: #75b947;
+}
 
 /* buttons */
 input[type='button'],
@@ -377,6 +413,11 @@ select:disabled,
 button:disabled,
 button:disabled {
     cursor: default;
+}
+
+.qui-window-popup-buttons .qui-button:hover,
+.qui-window-popup-buttons .qui-button:focus {
+    background: #75b947;
 }
 
 /* specific setup style */
@@ -430,9 +471,9 @@ button:disabled {
 }
 
 .nav {
-    padding: 3em  0 0;
+    padding: 3em 0 0;
     overflow: visible;
-    white-space:nowrap;
+    white-space: nowrap;
 }
 
 ul {
@@ -528,7 +569,6 @@ li.step-left-align {
     padding: 3em 0 3em 3em;
 }
 
-
 .back-button {
     color: #888;
     background: #e8e8e8;
@@ -578,7 +618,7 @@ li.step-left-align {
         box-shadow: 0 0 4px 0 #999;
     }
 
-    .header-left{
+    .header-left {
         background: none;
     }
 
@@ -597,7 +637,7 @@ li.step-left-align {
     .nav {
         padding: 0;
     }
-    
+
     .nav-list {
         text-align: center;
         background: #f5f5f5;
@@ -606,7 +646,7 @@ li.step-left-align {
         left: -10px;
         font-size: 26px;
     }
-    
+
     .nav-list span {
         display: none;
     }
@@ -617,7 +657,7 @@ li.step-left-align {
         padding: 16px 6px;
         position: relative;
     }
-    
+
     .page {
         min-height: auto;
     }
@@ -636,9 +676,9 @@ li.step-left-align {
 
     label {
         display: block;
-        margin: 16px 0;
+        margin: 16px auto;
         float: none;
-        width: 100%;
+        width: 90%;
     }
 
     .label-div {
@@ -646,20 +686,18 @@ li.step-left-align {
         width: 90%;
     }
 
-    .input-text {
-        width: 90%;
+    .user-password-step-float-right {
+        float: none;
     }
 
-    .select-wrapper {
-        width: 90%;
+    .select-wrapper,
+    input.input-text {
+        margin: 0;
     }
 
-    .input-user-wrapper {
-        width: 90%;
-    }
-
-    .input-text-user {
-    width: 100%;
+    .input-text-user,
+    .input-text-password {
+        width: 100%;
     }
 
     li.step-left-align {

@@ -276,41 +276,53 @@
                                 <div class="input-user-wrapper">
                                     <i class="fa fa-user input-text-icon"></i>
                                     <input class="input-text input-text-user" type="text"
-                                           name="userName" placeholder="Benutzer" value=""/>
+                                           name="userName" placeholder="Benutzer" value=""
+                                           required="required" />
                                 </div>
                             </label>
                             <label>
                                 <div class="input-user-wrapper">
                                     <i class="fa fa-lock input-text-icon"></i>
-                                    <input class="input-text input-text-user" type="password"
-                                           name="userPassword" placeholder="Passwort" value=""/>
+                                    <input class="input-text input-text-password" type="password"
+                                           name="userPassword" placeholder="Passwort" value=""
+                                           required="required" />
+                                    <i class="fa fa-eye-slash show-password"
+                                       title="<?php echo $Locale->getStringLang('setup.web.password.show'); ?>"></i>
                                 </div>
                             </label>
-                            <label style="float: right;">
+                            <label class="user-password-step-float-right">
                                 <div class="input-user-wrapper">
                                     <i class="fa fa-lock input-text-icon"></i>
-                                    <input class="input-text input-text-user" type="password"
+                                    <input class="input-text input-text-password" type="password"
                                            name="userPasswordRepeat"
-                                           placeholder="Passwort wiederholen" value=""/>
+                                           placeholder="Passwort wiederholen" value=""
+                                           required="required" />
                                 </div>
                             </label>
-                            <span class="user-info">Passwörter stimmen nicht überein</span>
 
                         </li>
 
                         <!-- step 6 -->
-                        <li class="step step-6">
+                        <li class="step step-6" style="text-align: center">
                             <label>
                                 <input class="input-text" type="text" name="domain"
                                        placeholder="Domain" value=""/>
+                                <i class="fa fa-info-circle host-and-url-info"
+                                   data-attr="mega super info"
+                                   title="<?php echo $Locale->getStringLang('setup.web.hostAndUrl.info'); ?>"></i>
                             </label>
                             <label>
                                 <input class="input-text" type="text" name="rootPath"
                                        placeholder="Rootverzeichnis" value=""/>
+                                <i class="fa fa-info-circle host-and-url-info"
+                                   title="<?php echo $Locale->getStringLang('setup.web.hostAndUrl.info'); ?>"></i>
                             </label>
                             <label>
                                 <input class="input-text" type="text" name="URLsubPath"
                                        placeholder="URL Unterverzeichnis" value=""/>
+                                <i class="fa fa-info-circle host-and-url-info"
+                                   data-attr="Huhuhu"
+                                   title="<?php echo $Locale->getStringLang('setup.web.hostAndUrl.info'); ?>"></i>
                             </label>
                         </li>
 

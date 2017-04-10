@@ -9,6 +9,8 @@ require 'header.php';
  * @param  database - Database databasename
  */
 
+
+
 if (!isset($_REQUEST['driver'])) {
     \QUI\Setup\Utils\Ajax::output("missing.argument.driver", 400);
 }
@@ -44,11 +46,7 @@ $dbName = $_REQUEST['name'];
 // Validate database credentials
 try {
     \QUI\Setup\Utils\Validator::validateDatabase($driver, $host, $user, $pw, $port, $dbName);
-//    \QUI\Setup\Utils\Ajax::output('OK');
     \QUI\Setup\Utils\Ajax::output(true);
 } catch (\QUI\Setup\SetupException $Exception) {
-//    var_dump($Exception->getMessage());
     \QUI\Setup\Utils\Ajax::output($Exception->toArray(), 400);
-//    \QUI\Setup\Utils\Ajax::output($Exception->getMessage(), 400);
-//    \QUI\Setup\Utils\Ajax::output(false);
 }

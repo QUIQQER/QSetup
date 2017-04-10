@@ -10,9 +10,10 @@ define('bin/js/Setup', [
     'qui/QUI',
     'qui/utils/Functions',
     'qui/utils/Form',
-    'qui/Locale'
+    'qui/Locale',
+    'qui/controls/windows/Popup'
     // 'qui/controls/Control'
-], function (QUI, QUIFunctionUtils, QUIFormUtils, QUILocale) {
+], function (QUI, QUIFunctionUtils, QUIFormUtils, QUILocale, QUIPopup) {
     "use strict";
 
     QUILocale.setCurrent(CURRENT_LOCALE);
@@ -28,6 +29,7 @@ define('bin/js/Setup', [
         Binds: [
             'load',
             'next',
+            'nextExecute',
             'back',
             'recalc',
             'showCurrentHeader',
@@ -39,7 +41,9 @@ define('bin/js/Setup', [
             'changeProgressBar',
             'checkDatabase',
             'checkUserAndPassword',
-            '$exeInstall'
+            '$exeInstall',
+            'showPassword',
+            'showInfoPopup'
         ],
 
         initialize: function () {
@@ -70,7 +74,14 @@ define('bin/js/Setup', [
 
             this.step = 1;
 
-            this.goNext = true;
+            /*var Popup = new QUIPopup({
+                maxWidth       : 360,
+                maxHeight      : 280,
+                closeButtonText: 'schließen',
+                content        : 'huh'
+            });*/
+            // Popup.open();
+
         },
 
         /**
@@ -156,73 +167,65 @@ define('bin/js/Setup', [
                 duration: 500
             });
 
+            // show password (user step)
+            this.showPasswordIcon = document.getElement('.show-password');
+            this.passwordHidden   = true;
+            this.showPasswordIcon.addEvent('click', function () {
+
+                var passwords = document.getElements('.input-text-password');
+
+                if (this.passwordHidden) {
+                    this.showPasswordIcon.removeClass('fa-eye-slash');
+                    this.showPasswordIcon.addClass('fa-eye');
+                    this.passwordHidden = false;
+                    passwords.forEach(function (Elm) {
+                        Elm.setAttribute('type', 'text');
+                    });
+                    return;
+                }
+
+                this.showPasswordIcon.removeClass('fa-eye');
+                this.showPasswordIcon.addClass('fa-eye-slash');
+                passwords.forEach(function (Elm) {
+                    Elm.setAttribute('type', 'password');
+                });
+                this.passwordHidden = true;
+            }.bind(this));
+
+            // show host and url info
+            // todo soll funktionieren
+            /*this.showInfo = document.getElement('.host-and-url-info');
+            this.showInfo.addEvent('click', function() {
+                var self = this;
+                var Popup = new QUIPopup({
+                 maxWidth       : 360,
+                 maxHeight      : 280,
+                 closeButtonText: 'schließen',
+                 content        : self.showInfo.get('data-attr')
+                 }.bind(self));
+                Popup.open();
+            });*/
+
             console.log(QUIFormUtils.getFormData(this.FormSetup));
         },
 
         /**
          * next step
+         * check, if the next step can be executed
          */
         next: function () {
 
-            var FuncExecuteNext = function () {
-
-                if (this.step == this.ListElement.length) {
-                    this.$exeInstall();
-                    return;
-                }
-                // nav icons
-                /*this.fa[this.step].removeClass('fa-circle-o');
-                 this.fa[this.step].addClass('fa-check-circle-o');*/
-
-                // nav color
-                this.liElm[this.step - 1].removeClass('step-active');
-                this.liElm[this.step - 1].addClass('step-done');
-                this.liElm[this.step].addClass('step-active');
-
-                this.step++;
-
-                // header
-                moofx(this.activeHeader).animate({
-                    opacity: 0
-                }, {
-                    duration: 250,
-                    equation: 'ease-in-out',
-                    callback: function () {
-                        this.showCurrentHeader(this.step)
-                    }.bind(this)
-                });
-
-                // enable back button
-                if (this.step > 0) {
-                    this.BackStep.disabled = false;
-                }
-                var currentPos = this.StepsList.getStyle('left').toInt();
-                var pos        = currentPos - this.listElementWidth;
-
-                moofx(this.StepsList).animate({
-                    left: pos
-                }, {
-                    duration: 500,
-                    equation: 'ease-in-out'
-                });
-
-                // change button text from "next" to "install"
-                if (this.step == 7) {
-                    this.buttonInstall = true;
-                    this.NextStep.set('html', 'Installieren');
-                }
-
-                this.checkProgress();
-            }.bind(this);
+            var self = this;
 
             // data base check
             if (this.step == 4) {
                 this.checkDataBase().then(function () {
-                    FuncExecuteNext();
+                    self.nextExecute();
                 }, function (error) {
                     QUI.getMessageHandler().then(function (MH) {
                         var errorDecoded = JSON.decode(error.response),
-                            message      = 'Fehler beim Aufbau einer Datenbankverbindung.<br /><br />';
+                            message      = LOCALE_TRANSLATIONS['exception.validation.database.connection'] +
+                                '.<br /><br />';
 
                         message += errorDecoded.code + '<br />';
                         message += errorDecoded.message + '<br />';
@@ -237,19 +240,72 @@ define('bin/js/Setup', [
 
             if (this.step == 5) {
                 this.checkUserAndPassword().then(function () {
-                    FuncExecuteNext();
+                    self.nextExecute();
                 }, function (error) {
                     QUI.getMessageHandler().then(function (MH) {
-                        var errorDecoded = JSON.decode(error.response);
 
-                        MH.setAttribute('displayTimeMessages', 8000);
-                        MH.addError(errorDecoded.message);
+                        MH.setAttribute('displayTimeMessages', 5000);
+                        MH.addError(error.response);
                     })
                 });
                 return;
             }
 
-            FuncExecuteNext();
+            this.nextExecute();
+        },
+
+        /**
+         * go to the next step if anything ok
+         *
+         */
+        nextExecute: function () {
+            if (this.step == this.ListElement.length) {
+                this.$exeInstall();
+                return;
+            }
+            // nav icons
+            /*this.fa[this.step].removeClass('fa-circle-o');
+             this.fa[this.step].addClass('fa-check-circle-o');*/
+
+            // nav color
+            this.liElm[this.step - 1].removeClass('step-active');
+            this.liElm[this.step - 1].addClass('step-done');
+            this.liElm[this.step].addClass('step-active');
+
+            this.step++;
+
+            // header
+            moofx(this.activeHeader).animate({
+                opacity: 0
+            }, {
+                duration: 250,
+                equation: 'ease-in-out',
+                callback: function () {
+                    this.showCurrentHeader(this.step)
+                }.bind(this)
+            });
+
+            // enable back button
+            if (this.step > 0) {
+                this.BackStep.disabled = false;
+            }
+            var currentPos = this.StepsList.getStyle('left').toInt();
+            var pos        = currentPos - this.listElementWidth;
+
+            moofx(this.StepsList).animate({
+                left: pos
+            }, {
+                duration: 500,
+                equation: 'ease-in-out'
+            });
+
+            // change button text from "next" to "install"
+            if (this.step == 7) {
+                this.buttonInstall = true;
+                this.NextStep.set('html', 'Installieren');
+            }
+
+            this.checkProgress();
         },
 
         /**
@@ -551,7 +607,7 @@ define('bin/js/Setup', [
         /**
          * Check, if user is not empty,
          * password is strong enough,
-         * and if the second password matches
+         * the second password matches
          *
          * @returns {Promise}
          */
@@ -605,7 +661,7 @@ define('bin/js/Setup', [
                     document.getElement('input[name="databaseHost"]').value                  = 'localhost';
                     document.getElement('input[name="databaseName"]').value                  = 'QUIQQERTest';
                     document.getElement('input[name="databaseUser"]').value                  = 'root';
-                    document.getElement('input[name="databasePassword"]').value              = 'root';
+                    document.getElement('input[name="databasePassword"]').value              = '548?Q_Xggg-v$';
                     document.getElement('input[name="databasePort"]').value                  = '3306';
                     break;
                 case 5:

@@ -66,6 +66,8 @@ define('bin/js/Setup', [
             this.progressBarDone = null;
             this.progressbarText = null;
             this.textColorGrey   = null;
+            this.licenseCheckbox = null;
+            this.licenseLabel    = null;
 
             this.userInputs    = null;
             this.buttonInstall = false;
@@ -73,14 +75,6 @@ define('bin/js/Setup', [
             this.activeHeader = null;
 
             this.step = 1;
-
-            /*var Popup = new QUIPopup({
-                maxWidth       : 360,
-                maxHeight      : 280,
-                closeButtonText: 'schließen',
-                content        : 'huh'
-            });*/
-            // Popup.open();
 
         },
 
@@ -111,6 +105,8 @@ define('bin/js/Setup', [
             this.progressBarDone = document.getElement('.progress-bar-done');
             this.progressbarText = document.getElement('.progress-bar-text');
             this.textColorGrey   = true;
+            this.licenseCheckbox = document.getElement('.license-checkbox');
+            this.licenseLabel    = document.getElement('.license-label');
 
             this.userInputs = document.getElements('.input-text-user');
 
@@ -169,15 +165,15 @@ define('bin/js/Setup', [
 
             // show password (user step)
             this.showPasswordIcon = document.getElement('.show-password');
-            this.passwordHidden   = true;
             this.showPasswordIcon.addEvent('click', function () {
 
-                var passwords = document.getElements('.input-text-password');
+                var passwords = document.getElements('.input-text-password'),
+                    input     = this.showPasswordIcon.getParent().getElement('input');
 
-                if (this.passwordHidden) {
+
+                if (input.getAttribute('type') == 'password') {
                     this.showPasswordIcon.removeClass('fa-eye-slash');
                     this.showPasswordIcon.addClass('fa-eye');
-                    this.passwordHidden = false;
                     passwords.forEach(function (Elm) {
                         Elm.setAttribute('type', 'text');
                     });
@@ -189,22 +185,22 @@ define('bin/js/Setup', [
                 passwords.forEach(function (Elm) {
                     Elm.setAttribute('type', 'password');
                 });
-                this.passwordHidden = true;
             }.bind(this));
 
-            // show host and url info
-            // todo soll funktionieren
-            /*this.showInfo = document.getElement('.host-and-url-info');
-            this.showInfo.addEvent('click', function() {
-                var self = this;
-                var Popup = new QUIPopup({
-                 maxWidth       : 360,
-                 maxHeight      : 280,
-                 closeButtonText: 'schließen',
-                 content        : self.showInfo.get('data-attr')
-                 }.bind(self));
-                Popup.open();
-            });*/
+            // show host and url popup help
+            document.getElements('.host-and-url-info').forEach(function (Elm) {
+                Elm.addEvent('click', function () {
+
+                    var Popup = new QUIPopup({
+                        maxWidth       : 420,
+                        maxHeight      : 340,
+                        title          : Elm.getAttribute('title'),
+                        closeButtonText: 'schließen',
+                        content        : Elm.getAttribute('data-attr')
+                    });
+                    Popup.open();
+                }.bind(this));
+            });
 
             console.log(QUIFormUtils.getFormData(this.FormSetup));
         },
@@ -259,7 +255,17 @@ define('bin/js/Setup', [
          *
          */
         nextExecute: function () {
+
+            // last step --> install QUIQQER
             if (this.step == this.ListElement.length) {
+                if (!this.licenseCheckbox.checked) {
+                    this.licenseLabel.setStyle('color', '#cc0000');
+                    this.licenseCheckbox.getParent().addClass('error');
+                    return;
+                }
+
+                this.licenseLabel.setStyle('color', 'inherit');
+                this.licenseCheckbox.getParent().removeClass('error');
                 this.$exeInstall();
                 return;
             }
@@ -302,7 +308,7 @@ define('bin/js/Setup', [
             // change button text from "next" to "install"
             if (this.step == 7) {
                 this.buttonInstall = true;
-                this.NextStep.set('html', 'Installieren');
+                this.NextStep.set('html', LOCALE_TRANSLATIONS['setup.web.button.install']);
             }
 
             this.checkProgress();
@@ -355,7 +361,7 @@ define('bin/js/Setup', [
 
             // change button text from "install" to "next"
             if (this.buttonInstall) {
-                this.NextStep.set('html', 'Fortfahren');
+                this.NextStep.set('html', LOCALE_TRANSLATIONS['setup.web.button.next']);
             }
 
             this.checkProgress();
@@ -498,6 +504,7 @@ define('bin/js/Setup', [
             this.changeProgressBar(progress);
 
             // default values
+            // nur zum Testen
             switch (this.step) {
                 case 2:
                     if (!document.getElements('[name="version"]:checked').length) {

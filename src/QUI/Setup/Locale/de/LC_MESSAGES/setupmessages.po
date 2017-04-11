@@ -406,6 +406,15 @@ msgstr "Passwort anzeigen"
 msgid "setup.web.password.hide"
 msgstr "Password verbergen"
 
+msgid "setup.web.domain.help"
+msgstr "Domain - Hilfe"
+
+msgid "setup.web.rootDirectory.help"
+msgstr "Rootverzeichnis - Hilfe"
+
+msgid "setup.web.urlSubPath.help"
+msgstr "URL Unterverzeichnis - Hilfe"
+
 msgid "exception.validation.database.connection"
 msgstr "Fehler beim Aufbau der Datenbankverbindung"
 
@@ -426,3 +435,13 @@ msgstr "Das Passwort enthält keine Sonderzeichen."
 
 msgid "exception.validation.password.numbercount"
 msgstr "Bitte verwenden Sie auch Zahlen."
+
+
+msgid "setup.web.button.next"
+msgstr "Fortfahren"
+
+msgid "setup.web.button.back"
+msgstr "Zurück"
+
+msgid "setup.web.button.install"
+msgstr "Installieren"

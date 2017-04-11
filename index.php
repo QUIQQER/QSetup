@@ -27,7 +27,9 @@
     require "vendor/autoload.php";
 
     $Locale = new \QUI\Setup\Locale\Locale('de_DE');
-//    $text   = $Locale->getStringLang('setup.message.step.database');
+    //    $Locale = new \QUI\Setup\Locale\Locale('en_EN');
+
+    //    $text   = $Locale->getStringLang('setup.message.step.database');
 
     /*echo '<pre>';
     $presets = \QUI\Setup\Preset::getPresets();
@@ -54,7 +56,7 @@
 </div>
 <div class="header grid-container">
 
-    <div class="header-left grid-20 pull-800 mobile-grid-100 hide-on-mobile">
+    <div class="header-left left-sidebar grid-20 pull-800 mobile-grid-100 hide-on-mobile">
         <div class="header-logo-container">
             <img class="header-logo" src="/bin/img/logo.png" title="QUIQQER Logo" alt="Q-Logo"/>
             <h4 style="font-weight: bold;">QUIQQER</h4>
@@ -105,7 +107,7 @@
 
 <div class="page">
     <div class="grid-container">
-        <div class="nav grid-20 mobile-grid-100 hide-on-mobile">
+        <div class="nav left-sidebar grid-20 mobile-grid-100 hide-on-mobile">
             <ul class="nav-list">
                 <li class="step-active"><i class="fa fa-fw fa-check"></i><span>Sprache</span></li>
                 <li><i class="fa fa-fw fa-check"></i><span>Version</span></li>
@@ -126,10 +128,16 @@
 
                                 <?php
                                 $availableLangs = QUI\Setup\Utils\Utils::getAvailalbeLanguages();
-                                $tabIndex       = 1;
+                                $currentLang    = substr($Locale->getCurrent(), 0, 2);
 
-                                $checked = 'checked="checked"';
+                                $checked = '';
                                 foreach ($availableLangs as $lang) {
+                                    $checked = '';
+                                    // vorauswahl der Projektsprache
+                                    if ($lang == $currentLang) {
+                                        $checked = 'checked="checked"';
+                                    }
+
                                     $localeVar = 'setup.web.lang.' . $lang;
                                     $language  = $Locale->getStringLang($localeVar);
 
@@ -145,7 +153,6 @@
                                             </label>';
 
                                     echo $output;
-                                    $checked = '';
                                 }
 
                                 ?>
@@ -277,7 +284,7 @@
                                     <i class="fa fa-user input-text-icon"></i>
                                     <input class="input-text input-text-user" type="text"
                                            name="userName" placeholder="Benutzer" value=""
-                                           required="required" />
+                                           required="required"/>
                                 </div>
                             </label>
                             <label>
@@ -285,7 +292,7 @@
                                     <i class="fa fa-lock input-text-icon"></i>
                                     <input class="input-text input-text-password" type="password"
                                            name="userPassword" placeholder="Passwort" value=""
-                                           required="required" />
+                                           required="required"/>
                                     <i class="fa fa-eye-slash show-password"
                                        title="<?php echo $Locale->getStringLang('setup.web.password.show'); ?>"></i>
                                 </div>
@@ -296,7 +303,7 @@
                                     <input class="input-text input-text-password" type="password"
                                            name="userPasswordRepeat"
                                            placeholder="Passwort wiederholen" value=""
-                                           required="required" />
+                                           required="required"/>
                                 </div>
                             </label>
 
@@ -308,33 +315,59 @@
                                 <input class="input-text" type="text" name="domain"
                                        placeholder="Domain" value=""/>
                                 <i class="fa fa-info-circle host-and-url-info"
-                                   data-attr="mega super info"
-                                   title="<?php echo $Locale->getStringLang('setup.web.hostAndUrl.info'); ?>"></i>
+                                   data-attr="<?php echo nl2br($Locale->getStringLang('help.prompt.host')); ?>"
+                                   title="<?php echo $Locale->getStringLang('setup.web.domain.help'); ?>"></i>
                             </label>
                             <label>
                                 <input class="input-text" type="text" name="rootPath"
                                        placeholder="Rootverzeichnis" value=""/>
                                 <i class="fa fa-info-circle host-and-url-info"
-                                   title="<?php echo $Locale->getStringLang('setup.web.hostAndUrl.info'); ?>"></i>
+                                   data-attr="<?php echo nl2br($Locale->getStringLang('help.prompt.cms')); ?>"
+                                   title="<?php echo $Locale->getStringLang('setup.web.rootDirectory.help'); ?>"></i>
                             </label>
                             <label>
                                 <input class="input-text" type="text" name="URLsubPath"
                                        placeholder="URL Unterverzeichnis" value=""/>
                                 <i class="fa fa-info-circle host-and-url-info"
-                                   data-attr="Huhuhu"
-                                   title="<?php echo $Locale->getStringLang('setup.web.hostAndUrl.info'); ?>"></i>
+                                   data-attr="<?php echo nl2br($Locale->getStringLang('help.prompt.url')); ?>"
+                                   title="<?php echo $Locale->getStringLang('setup.web.urlSubPath.help'); ?>"></i>
                             </label>
                         </li>
 
                         <!-- step 7 -->
                         <li class="step step-7">
-                            <h3>Step 7</h3>
-                            <p>Lorem ipsum step</p>
-                            <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed
-                                diam nonumy eirmod tempor invidunt ut labore
-                                et dolore magna aliquyam erat, sed diam voluptua. At vero eos
-                                et accusam et justo duo dolores et ea
-                                rebum.</p>
+                            <div class="license-box-wrapper">
+                                <div class="license-box">
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis vel augue elementum,
+                                    pellentesque nulla eu, hendrerit est. Integer ut venenatis nulla, vel iaculis lacus.
+                                    Vestibulum mollis dolor id nisl suscipit aliquam id ac sapien. Praesent urna turpis,
+                                    tincidunt id pellentesque nec, porttitor in erat. Duis tempor velit cursus ante
+                                    bibendum, sit amet finibus arcu ultrices. Nullam tempus eu augue quis sodales. Donec
+                                    eget pharetra ex, sed sodales enim. Etiam tincidunt lacus vitae massa suscipit
+                                    eleifend. Quisque sagittis laoreet dolor at scelerisque. Duis viverra libero tortor,
+                                    quis semper purus condimentum ac. Phasellus id rhoncus ligula. Nullam vitae pulvinar
+                                    neque. Vestibulum at finibus ipsum. Ut nec orci sagittis, ultrices metus non,
+                                    eleifend ex. Integer vitae turpis vel augue aliquet suscipit.
+
+                                    In hac habitasse platea dictumst. Fusce eu scelerisque augue. Aliquam sagittis
+                                    tortor vitae diam euismod, eget mollis est sagittis. Nullam scelerisque velit non
+                                    leo pharetra egestas. Vestibulum a eleifend risus, quis ultricies nibh. Fusce
+                                    ullamcorper, nisi at efficitur facilisis, quam ipsum imperdiet urna, quis semper
+                                    eros arcu vel arcu. Nunc egestas tempus eros. Etiam pellentesque mi vel molestie
+                                    euismod. Nam sed ligula elementum, auctor risus ut, eleifend urna. Class aptent
+                                    taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nulla
+                                    vulputate rhoncus nisl, tempor facilisis nunc accumsan non. Quisque eget turpis
+                                    vitae libero iaculis porta non sed orci. Vestibulum vitae gravida enim. Etiam
+                                    venenatis eget ante ut pharetra.
+                                </div>
+                            </div>
+                            <div class="license-checkbox-wrapper">
+                                <input id="license-checkbox" class="license-checkbox"
+                                       name="license" type="checkbox" required="required" />
+                                <label for="license-checkbox">
+                                    <span class="license-label">Ja, ich stimme zu</span>
+                                </label>
+                            </div>
                         </li>
                     </ul>
                 </div>
@@ -347,8 +380,12 @@
     <div class="grid-20 hide-on-mobile">
     </div>
     <div class="nav-buttons grid-80 mobile-grid-100">
-        <button id="back-button" class="qui-buttonn button back-button" disabled>Zurück</button>
-        <button id="next-button" class="qui-buttonn next-button" tabindex="3">Fortfahren</button>
+        <button id="back-button" class="qui-buttonn button back-button" disabled>
+            <?php echo $Locale->getStringLang('setup.web.button.back'); ?>
+        </button>
+        <button id="next-button" class="qui-buttonn next-button">
+            <?php echo $Locale->getStringLang('setup.web.button.next'); ?>
+        </button>
     </div>
 </div>
 

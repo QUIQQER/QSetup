@@ -332,10 +332,10 @@ msgid "warning.requirement.unknown"
 msgstr "Some Requirements could not be detected. Please make sure that those Requirements are installed. This warning is void, if you know they are installed."
 
 msgid "prompt.database.not.empty.continue"
-msgstr "How do you want to proceed?\n   - n : Select new database \n   - c : Clear the selected database. Warnung all data will be lost! \n   - q : Quit setup"
+msgstr "How do you want to proceed?\n   - n : Select new database \n   - c : Clear the selected database. Warning all data will be lost! \n   - q : Quit setup"
 
 msgid "help.prompt.host"
-msgstr "The domain under which QUIQQER will be reachable. \nShould start with https:// and end with with slash. \nExample : https://example.com"
+msgstr "The domain under which QUIQQER will be reachable. \nShould start with https:// and end with slash. \nExample : https://example.com"
 
 msgid "help.prompt.cms"
 msgstr "The absolute path of the directory in which QUIQQER will be installed.\nShould end and start with slash.\nExample: /var/www/vhosts/example.com/httpdocs/"
@@ -406,6 +406,15 @@ msgstr "Show password"
 msgid "setup.web.password.hide"
 msgstr "Hide password"
 
+msgid "setup.web.domain.help"
+msgstr "Domain - help"
+
+msgid "setup.web.rootDirectory.help"
+msgstr "Root directory - help"
+
+msgid "setup.web.urlSubPath.help"
+msgstr "URL path - help"
+
 msgid "exception.validation.database.connection"
 msgstr "Error on establishing data base connection"
 
@@ -426,3 +435,13 @@ msgstr "The password does not contain a special character."
 
 msgid "exception.validation.password.numbercount"
 msgstr "The password does not contain a number."
+
+
+msgid "setup.web.button.next"
+msgstr "next"
+
+msgid "setup.web.button.back"
+msgstr "back"
+
+msgid "setup.web.button.install"
+msgstr "install"

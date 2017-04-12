@@ -394,26 +394,158 @@ msgstr "Adresse of the admin area: "
 msgid "prompt.cannot.be.empty"
 msgstr "Can not be empty. Please try again."
 
-msgid "setup.web.lang.de"
+
+
+
+msgid "setup.web.subTitle"
+msgstr "Installation"
+
+msgid "setup.web.header.siteLang"
+msgstr "Website language"
+
+msgid "setup.web.header.siteLang.text"
+msgstr "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat.Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy tempor invidunt ut labore et."
+
+msgid "setup.web.header.version"
+msgstr "Version"
+
+msgid "setup.web.header.version.text"
+msgstr "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor"
+
+msgid "setup.web.header.template"
+msgstr "Template"
+
+msgid "setup.web.header.template.text"
+msgstr "Sodf olore magna aliquyam erat, sed diam voluptua. At vero"
+
+msgid "setup.web.header.dataBase"
+msgstr "Data base"
+
+msgid "setup.web.header.dataBase.text"
+msgstr "Consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et"
+
+msgid "setup.web.header.user"
+msgstr "Root user"
+
+msgid "setup.web.header.user.text"
+msgstr "Ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et"
+
+msgid "setup.web.header.hostAndDirectory"
+msgstr "Host and directories"
+
+msgid "setup.web.header.hostAndDirectory.text"
+msgstr "Ipsum dolor sit amet, consetetur"
+
+msgid "setup.web.header.license"
+msgstr "License"
+
+msgid "setup.web.header.license.text"
+msgstr "Lorem license ipsum endu"
+
+
+msgid "setup.web.nav.siteLang"
+msgstr "Language"
+
+msgid "setup.web.nav.version"
+msgstr "Version"
+
+msgid "setup.web.nav.template"
+msgstr "Template"
+
+msgid "setup.web.nav.dataBase"
+msgstr "Data base"
+
+msgid "setup.web.nav.user"
+msgstr "Root user"
+
+msgid "setup.web.nav.hostAndDirectory"
+msgstr "Host and directories"
+
+msgid "setup.web.nav.license"
+msgstr "License"
+
+
+msgid "setup.web.content.lang.de"
 msgstr "German"
 
-msgid "setup.web.lang.en"
+msgid "setup.web.content.lang.en"
 msgstr "English"
 
-msgid "setup.web.password.show"
+
+msgid "setup.web.content.dbDriver"
+msgstr "Database driver"
+
+msgid "setup.web.content.dbHost"
+msgstr "Database host"
+
+msgid "setup.web.content.dbPort"
+msgstr "Databse port"
+
+msgid "setup.web.content.dbName"
+msgstr "Database name"
+
+msgid "setup.web.content.dbUser"
+msgstr "Database user"
+
+msgid "setup.web.content.dbPassword"
+msgstr "Database password"
+
+
+
+msgid "setup.web.content.rootUser"
+msgstr "User"
+
+msgid "setup.web.content.rootPassword"
+msgstr "Password"
+
+msgid "setup.web.content.rootPasswordRepeat"
+msgstr "Repeat password"
+
+msgid "setup.web.content.password.show"
 msgstr "Show password"
 
-msgid "setup.web.password.hide"
+msgid "setup.web.content.password.hide"
 msgstr "Hide password"
 
-msgid "setup.web.domain.help"
+
+
+msgid "setup.web.content.domain"
+msgstr "Domain"
+
+msgid "setup.web.content.rootDirectory"
+msgstr "Root directory"
+
+msgid "setup.web.content.urlDirectory"
+msgstr "URL directory"
+
+msgid "setup.web.content.domain.help"
 msgstr "Domain - help"
 
-msgid "setup.web.rootDirectory.help"
+msgid "setup.web.content.rootDirectory.help"
 msgstr "Root directory - help"
 
-msgid "setup.web.urlSubPath.help"
+msgid "setup.web.content.urlSubPath.help"
 msgstr "URL path - help"
+
+msgid "setup.web.content.hostError"
+msgstr "All fields are required."
+
+
+msgid "setup.web.content.license.text"
+msgstr "<h1>Lorem ipsum license</h1><p>Lorem ipsum dolor sit amet, pellentesque nulla eu, hendrerit est. Integer ut venenatis nulla, vel iaculis lacus. Vestibulum mollis dolor id nisl suscipit aliquam id ac sapien. Praesent urna turpis.</p><h2>Ipsum section</h2><p>Tincidunt id pellentesque nec, porttitor in erat. Duis tempor velit cursus ante bibendum, sit amet finibus arcu ultrices. Nullam tempus eu augue quis sodales. Donec eget pharetra ex, sed sodales enim. Etiam tincidunt lacus vitae massa suscipit eleifend. Quisque sagittis laoreet dolor at scelerisque. Duis viverra libero tortor</p><h2>Heading 2</h2><p>quis semper purus condimentum ac. Phasellus id rhoncus ligula. Nullam vitae pulvinar</p><h3>Heading 3</h3><p>Vestibulum at finibus ipsum. Ut nec orci sagittis, ultrices metus non, eleifend ex. Integer vitae turpis vel augue aliquet suscipit. habitasse platea dictumst. Fusce eu scelerisque augue. Aliquam sagittis tortor vitae diam euismod, eget mollis est sagittis. Nullam scelerisque velit non leo pharetra egestas. Vestibulum a eleifend risus, quis ultricies nibh.</p><p>Nunc egestas tempus eros. Etiam pellentesque mi vel molestie euismod. Nam sed ligula elementum, auctor risus ut, eleifend urna. Class aptent taciti sociosqu ad litora torquent.</p><p>Anisi at efficitur facilisis, quam ipsum imperdiet urna, quis semper eros arcu vel arcu. Nunc egestas tempus eros. Etiam pellentesque mi vel molestie euismod.</p><h3>Headign 3</h3><p>Nisi at efficitur facilisis, quam ipsum imperdiet urna, quis semper eros arcu vel arcu. Nunc egestas tempus eros. Etiam pellentesque mi vel molestie euismod.</p><h2></h2><p>Nam sed ligula elementum, auctor risus ut, eleifend urna. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nulla vulputate rhoncus nisl, tempor facilisis nunc accumsan non. Quisque eget turpis vitae libero iaculis porta non sed orci.</p><p>Vestibulum vitae gravida enim. Etiamvenenatis eget ante ut pharetra.</p>"
+
+msgid "setup.web.content.license.checkbox"
+msgstr "Yes, I agree to terms"
+
+msgid "setup.web.content.button.next"
+msgstr "next"
+
+msgid "setup.web.content.button.back"
+msgstr "back"
+
+msgid "setup.web.content.button.install"
+msgstr "install"
+
 
 msgid "exception.validation.database.connection"
 msgstr "Error on establishing data base connection"
@@ -435,13 +567,3 @@ msgstr "The password does not contain a special character."
 
 msgid "exception.validation.password.numbercount"
 msgstr "The password does not contain a number."
-
-
-msgid "setup.web.button.next"
-msgstr "next"
-
-msgid "setup.web.button.back"
-msgstr "back"
-
-msgid "setup.web.button.install"
-msgstr "install"

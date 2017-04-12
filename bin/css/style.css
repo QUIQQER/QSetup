@@ -397,10 +397,44 @@ label:hover .label-div,
     height: 160px;
     overflow-y: auto;
     overflow-x: hidden;
+    font-size: 0.9em;
+}
+
+.license-box h1,
+.license-box h2,
+.license-box h3,
+.license-box h4,
+.license-box h5 {
+    color: #666;
+    line-height: 1.15em;
+    font-weight: 400;
+    padding-bottom: 0.4em;
+}
+
+.license-box h1 {
+    font-size: 200%;
+}
+
+
+.license-box h2 {
+    font-size: 150%;
+}
+
+.license-box h3 {
+    font-size: 120%;
+}
+
+.license-box h4 {
+    font-size: 110%;
 }
 
 .license-line {
     margin-bottom: 10px;
+}
+
+.license-checkbox-wrapper {
+    display: flex;
+    justify-content: center;
 }
 
 input[type=checkbox].license-checkbox {
@@ -421,11 +455,20 @@ input[type=checkbox] + label:focus:before {
 
 input[type=checkbox].license-checkbox + label {
     width: auto;
-    margin: 20px 0 0;
+    background-color: #fff;
+    margin: 20px 0;
     cursor: pointer;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #e5e5e5;
+    transition: 0.2s all ease-in-out;
 }
 
-/* unchecked icon */
+input[type=checkbox].license-checkbox + label:hover {
+    box-shadow: 0 3px 10px #bbb;
+}
+
+    /* unchecked icon */
 input[type=checkbox].license-checkbox + label:before {
     content: "\f096";
     width: 50px;
@@ -438,8 +481,15 @@ input[type=checkbox].license-checkbox:checked + label:before {
     content: "\f046";
     color: #75b947;
 }
+input[type=checkbox].license-checkbox:checked + label {
+    border-color: #75b947;
+}
+/* if checkbox not checked */
+.error input[type=checkbox].license-checkbox + label {
+    border-color: #cc0000;
+}
 
-.license-label {
+/*.license-label {
     position: relative;
     display: inline-block;
 }
@@ -459,7 +509,7 @@ input[type=checkbox].license-checkbox:checked + label:before {
 .error .license-label:after {
     bottom: -3px;
     opacity: 0.8;
-}
+}*/
 
 
 
@@ -549,8 +599,8 @@ button:disabled {
 
 .page {
     background: #f5f5f5;
-    max-height: 300px;
-    min-height: 300px;
+    max-height: 320px;
+    min-height: 320px;
     overflow: visible;
 }
 
@@ -654,7 +704,7 @@ li.step-left-align {
 }
 
 .nav-buttons {
-    padding: 3em 0 3em 3em;
+    padding: 1em 0 1em 3em;
 }
 
 .back-button {
@@ -667,6 +717,7 @@ li.step-left-align {
 .back-button:disabled:focus {
     color: #bbb;
     background: #f5f5f5;
+    cursor: not-allowed;
 }
 
 .back-button:disabled {

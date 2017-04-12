@@ -35,7 +35,6 @@ define('bin/js/Setup', [
             'showCurrentHeader',
             'getHeaderHeight',
             'setHeaderHeight',
-            /*'testF',*/
             'countInputs',
             'checkProgress',
             'changeProgressBar',
@@ -60,14 +59,15 @@ define('bin/js/Setup', [
             this.headerList          = null;
             this.headerLogoContainer = null;
 
-            this.inputs          = null;
-            this.selects         = null;
-            this.allInputs       = null;
-            this.progressBarDone = null;
-            this.progressbarText = null;
-            this.textColorGrey   = null;
-            this.licenseCheckbox = null;
-            this.licenseLabel    = null;
+            this.inputRadioCheckbox = null;
+            this.inputText          = null;
+            this.inputSelect        = null;
+            this.allInputs          = null;
+            this.progressBarDone    = null;
+            this.progressbarText    = null;
+            this.textColorGrey      = null;
+            this.licenseCheckbox    = null;
+            this.licenseLabel       = null;
 
             this.userInputs    = null;
             this.buttonInstall = false;
@@ -85,6 +85,9 @@ define('bin/js/Setup', [
 
             this.FormSetup = document.getElement('#form-setup');
 
+            // console.log(this.FormSetup);
+            // console.log(QUIFormUtils.getFormData(this.FormSetup));
+
             this.NextStep         = document.getElement('#next-button');
             this.BackStep         = document.getElement('#back-button');
             this.StepsList        = document.getElement('.steps-list');
@@ -98,15 +101,15 @@ define('bin/js/Setup', [
             this.liElm   = this.NavList.getElements('li');
             this.fa      = this.NavList.getElements('.fa');
 
-            this.inputs          = document.getElements('input');
-            this.textInputs      = document.getElements('input[type="text"], input[type="password"]');
-            this.selects         = document.getElements('select');
-            this.allInputs       = document.getElements('input, select');
-            this.progressBarDone = document.getElement('.progress-bar-done');
-            this.progressbarText = document.getElement('.progress-bar-text');
-            this.textColorGrey   = true;
-            this.licenseCheckbox = document.getElement('.license-checkbox');
-            this.licenseLabel    = document.getElement('.license-label');
+            this.inputRadioCheckbox = document.getElements('input[type="radio"], input[type="checkbox"]');
+            this.inputText          = document.getElements('input[type="text"], input[type="password"], input[type="number"]');
+            this.inputSelect        = document.getElements('select');
+            this.allInputs          = document.getElements('input, select');
+            this.progressBarDone    = document.getElement('.progress-bar-done');
+            this.progressbarText    = document.getElement('.progress-bar-text');
+            this.textColorGrey      = true;
+            this.licenseCheckbox    = document.getElement('.license-checkbox');
+            this.licenseLabel       = document.getElement('.license-label');
 
             this.userInputs = document.getElements('.input-text-user');
 
@@ -130,7 +133,6 @@ define('bin/js/Setup', [
 
 
             this.$hideOnResize = false;
-
             window.addEvent('resize', function () {
                 if (this.$hideOnResize) {
                     return;
@@ -141,9 +143,7 @@ define('bin/js/Setup', [
 
             }.bind(this));
 
-
             this.userInputs.addEvent('change', this.changeUserIcon);
-
 
             QUI.addEvent('onResize', function () {
                 this.recalc();
@@ -165,8 +165,8 @@ define('bin/js/Setup', [
 
             // show password (user step)
             this.showPasswordIcon = document.getElement('.show-password');
-            this.showPasswordIcon.addEvent('click', function () {
-
+            this.showPasswordIcon.addEvent('click', function (event) {
+                event.stop();
                 var passwords = document.getElements('.input-text-password'),
                     input     = this.showPasswordIcon.getParent().getElement('input');
 
@@ -189,7 +189,8 @@ define('bin/js/Setup', [
 
             // show host and url popup help
             document.getElements('.host-and-url-info').forEach(function (Elm) {
-                Elm.addEvent('click', function () {
+                Elm.addEvent('click', function (event) {
+                    event.stop();
 
                     var Popup = new QUIPopup({
                         maxWidth       : 420,
@@ -201,6 +202,15 @@ define('bin/js/Setup', [
                     Popup.open();
                 }.bind(this));
             });
+
+            // licence checkbox
+            this.licenseCheckbox.addEvent('change', function () {
+                if (this.licenseCheckbox.checked) {
+                    this.licenseLabel.setStyle('color', 'inherit');
+                    this.licenseCheckbox.getParent().removeClass('error');
+                    this.checkProgress();
+                }
+            }.bind(this));
 
             console.log(QUIFormUtils.getFormData(this.FormSetup));
         },
@@ -234,6 +244,7 @@ define('bin/js/Setup', [
                 return;
             }
 
+            // user step
             if (this.step == 5) {
                 this.checkUserAndPassword().then(function () {
                     self.nextExecute();
@@ -245,6 +256,28 @@ define('bin/js/Setup', [
                     })
                 });
                 return;
+            }
+
+            if (this.step == 6) {
+                var stepHost = document.getElement('.step-6'),
+                    inputs = stepHost.getElements('input'),
+                    goToNext = true;
+
+                inputs.forEach(function (Elm) {
+                    if (Elm.value == '') {
+                        goToNext = false;
+                    }
+                });
+
+                if (!goToNext) {
+                    QUI.getMessageHandler().then(function (MH) {
+
+                        MH.setAttribute('displayTimeMessages', 4000);
+                        MH.addError(LOCALE_TRANSLATIONS['setup.web.content.hostError']);
+                    });
+                    return;
+                }
+
             }
 
             this.nextExecute();
@@ -264,8 +297,6 @@ define('bin/js/Setup', [
                     return;
                 }
 
-                this.licenseLabel.setStyle('color', 'inherit');
-                this.licenseCheckbox.getParent().removeClass('error');
                 this.$exeInstall();
                 return;
             }
@@ -308,7 +339,7 @@ define('bin/js/Setup', [
             // change button text from "next" to "install"
             if (this.step == 7) {
                 this.buttonInstall = true;
-                this.NextStep.set('html', LOCALE_TRANSLATIONS['setup.web.button.install']);
+                this.NextStep.set('html', LOCALE_TRANSLATIONS['setup.web.content.button.install']);
             }
 
             this.checkProgress();
@@ -361,7 +392,7 @@ define('bin/js/Setup', [
 
             // change button text from "install" to "next"
             if (this.buttonInstall) {
-                this.NextStep.set('html', LOCALE_TRANSLATIONS['setup.web.button.next']);
+                this.NextStep.set('html', LOCALE_TRANSLATIONS['setup.web.content.button.next']);
             }
 
             this.checkProgress();
@@ -397,7 +428,6 @@ define('bin/js/Setup', [
                 arr[i] = liElm[i].getSize().y;
             }
 
-            // Was wird hier zurückgegeben? was bedeutet {*}?
             return Math.max.apply(false, arr).toInt();
         },
 
@@ -434,62 +464,58 @@ define('bin/js/Setup', [
             });
         },
 
-        /*testF: function () {
-         this.setHeaderHeight(this.getHeaderHeight());
-         },*/
-
         /**
          * Count all inputs fields -> for progress bar
          * Each group of fields (i.e. radio buttons) will be count as 1
          *
          * @returns {Number}
          */
-        /*countInputs: function () {
-         for (var i = 0; i < this.selects.length; i++) {
-         this.allInputs.push(+this.selects[i]);
-         }
-         var names = [];
+        countInputs: function () {
+            for (var i = 0; i < this.inputSelect.length; i++) {
+                this.allInputs.push(+this.inputSelect[i]);
+            }
+            var names = [];
 
-         for (var i = 0; i < this.allInputs.length; i++) {
-         if (!names.include(this.allInputs[i].name)) {
-         names.push(this.allInputs[i].name);
-         }
-         }
+            for (var i = 0; i < this.allInputs.length; i++) {
+                if (!names.include(this.allInputs[i].name)) {
+                    names.push(this.allInputs[i].name);
+                }
+            }
 
-         console.log(names.length);
-         console.log(Object.getLength(QUIFormUtils.getFormData(this.FormSetup)));
+            // console.log(names.length);
+            // console.log(Object.getLength(QUIFormUtils.getFormData(this.FormSetup)));
 
-         return names.length;
-         },*/
+            return names.length;
+        },
 
         checkProgress: function () {
-
 
             var progress;
             var inputsDone = 0;
 
             // check radio and checkbox
-            for (var i = 0; i < this.inputs.length; i++) {
-                if (this.inputs[i].checked) {
-                    inputsDone++
-                }
-            }
-
-            // check select
-            for (var i = 0; i < this.selects.length; i++) {
-                if (this.selects[i].value) {
+            for (var i = 0; i < this.inputRadioCheckbox.length; i++) {
+                if (this.inputRadioCheckbox[i].checked) {
                     inputsDone++;
                 }
             }
 
-            // check text and password input
-            for (var i = 0; i < this.textInputs.length; i++) {
-                if (this.textInputs[i].value) {
-                    inputsDone++
+            // check select
+            for (var i = 0; i < this.inputSelect.length; i++) {
+                if (this.inputSelect[i].value) {
+                    inputsDone++;
                 }
             }
 
-            var inputsNumber = Object.getLength(QUIFormUtils.getFormData(this.FormSetup));
+            // check text, password and number input
+            for (var i = 0; i < this.inputText.length; i++) {
+                if (this.inputText[i].value) {
+                    inputsDone++;
+                }
+            }
+
+            // var inputsNumber = Object.getLength(QUIFormUtils.getFormData(this.FormSetup));
+            var inputsNumber = this.countInputs();
 
             progress = (inputsDone / inputsNumber * 100).toString();
             var arr  = progress.split('.');
@@ -504,7 +530,6 @@ define('bin/js/Setup', [
             this.changeProgressBar(progress);
 
             // default values
-            // nur zum Testen
             switch (this.step) {
                 case 2:
                     if (!document.getElements('[name="version"]:checked').length) {
@@ -653,6 +678,7 @@ define('bin/js/Setup', [
          * (test)
          */
         $exeInstall: function () {
+
             console.info(QUIFormUtils.getFormData(this.FormSetup))
         },
 

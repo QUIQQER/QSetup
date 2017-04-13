@@ -1,5 +1,6 @@
 <?php
 
+// setup language
 $language = require_once "languageDetection.php";
 
 ?>
@@ -34,17 +35,12 @@ $language = require_once "languageDetection.php";
         require "vendor/autoload.php";
 
         $Locale = new \QUI\Setup\Locale\Locale($language);
-        //        $Locale = new \QUI\Setup\Locale\Locale('en_EN');
 
-        //    $text   = $Locale->getStringLang('setup.message.step.database');
-
-        /*echo '<pre>';
-        $presets = \QUI\Setup\Preset::getPresets();
-        print_r($presets);*/
         ?>
         <script>
-            var CURRENT_LOCALE      = '<?php echo $Locale->getCurrent(); ?>';
-            var LOCALE_TRANSLATIONS = <?php echo json_encode($Locale->getAll()); ?>;
+            var CURRENT_LOCALE      = '<?php echo $Locale->getCurrent(); ?>',
+                LOCALE_TRANSLATIONS = <?php echo json_encode($Locale->getAll()); ?>,
+                ROOT_PATH           = '<?php echo dirname(__FILE__); ?>';
         </script>
     </head>
     <body>
@@ -200,7 +196,7 @@ $language = require_once "languageDetection.php";
                                         $localeVar = 'setup.web.content.lang.' . $lang;
                                         $language  = $Locale->getStringLang($localeVar);
 
-                                        $output = '<label for="' . $lang . '">';
+                                            $output = '<label class="input-wrapper" for="' . $lang . '">';
                                         $output .= '<input class="input-radio" name="project-language" type="radio"
                                            value="' . $lang . '" required ' . $checked . 'id="' . $lang . '"/>';
                                         $output .= '<div class="label-div">
@@ -239,7 +235,7 @@ $language = require_once "languageDetection.php";
                                             $icon = '<i class="fa fa-star-o button-icon-left"></i>';
                                     }
 
-                                    $output = '<label>
+                                    $output = '<label class="input-wrapper">
                                     <input class="input-radio" name="version"
                                            type="radio" value="' . $versions[$i] . '"' . $checked . ' />';
                                     $output .= '<div class="label-div">' . $icon;
@@ -282,7 +278,7 @@ $language = require_once "languageDetection.php";
                                         $icon = $value['meta']['icon'];
                                     }
 
-                                    $output = '<label>
+                                    $output = '<label class="input-wrapper">
                                 <input class="input-radio" name="vorlage"
                                        type="radio" value="' . $key . '"' . $checked . '/>
                                 <div class="label-div">
@@ -302,122 +298,169 @@ $language = require_once "languageDetection.php";
                             <!-- step 4 -->
                             <li class="step step-4">
 
+                                <!-- Datenbank driver -->
+                                <div class="select-wrapper">
+                                    <label class="animated-label">Datenbank Treiber:</label>
+                                    <select name="databaseDriver" required
+                                            title="<?php echo $Locale->getStringLang('setup.web.content.dbDriver') ?>">
+                                        <option value="" disabled selected>
+                                            <?php echo $Locale->getStringLang('setup.web.content.dbDriver') ?>
+                                        </option>
 
-                                <label>
-                                    <div class="select-wrapper">
-                                        <select name="databaseDriver" required>
-                                            <option value="" disabled selected>
-                                                <?php echo $Locale->getStringLang('setup.web.content.dbDriver') ?>
-                                            </option>
+                                        <?php
+                                        $avaibleDrivers = \QUI\Setup\Database\Database::getAvailableDrivers();
 
-                                            <?php
-                                            $avaibleDrivers = \QUI\Setup\Database\Database::getAvailableDrivers();
+                                        foreach ($avaibleDrivers as $driver) {
+                                            echo '<option value="' . $driver . '">' . $driver . '</option>';
+                                        }
+                                        ?>
 
-                                            foreach ($avaibleDrivers as $driver) {
-                                                echo '<option value="' . $driver . '">' . $driver . '</option>';
-                                            }
-                                            ?>
+                                    </select>
+                                </div>
 
-                                        </select>
-                                    </div>
-                                </label>
-                                <label>
+                                <div class="input-wrapper">
                                     <!-- Datenbank Host -->
+                                    <label class="animated-label">
+                                        <?php echo $Locale->getStringLang('setup.web.content.dbHost') ?>:
+                                    </label>
                                     <input class="input-text" type="text" name="databaseHost" value="" required
                                            placeholder="<?php echo $Locale->getStringLang('setup.web.content.dbHost') ?>"/>
-                                </label>
-                                <label>
+                                </div>
+                                <div class="input-wrapper">
                                     <!-- Datenbank Port -->
+                                    <label class="animated-label">
+                                        <?php echo $Locale->getStringLang('setup.web.content.dbPort') ?>:
+                                    </label>
                                     <input class="input-text" type="number" name="databasePort" value="" required
                                            placeholder="<?php echo $Locale->getStringLang('setup.web.content.dbPort') ?>"/>
-                                </label>
-                                <label>
+                                </div>
+                                <div class="input-wrapper">
                                     <!-- Datenbank Name -->
+                                    <label class="animated-label">
+                                        <?php echo $Locale->getStringLang('setup.web.content.dbName') ?>:
+                                    </label>
                                     <input class="input-text" type="text" name="databaseName" value="" required
                                            placeholder="<?php echo $Locale->getStringLang('setup.web.content.dbName') ?>"/>
-                                </label>
-                                <label>
+                                </div>
+                                <div class="input-wrapper input-wrapper-33">
+                                    <!-- Datenbank Prefix -->
+                                    <label class="animated-label">
+                                        <?php echo $Locale->getStringLang('setup.web.content.dbPrefix') ?>:
+                                    </label>
+                                    <input class="input-text" type="text" name="databasePrefix" value=""
+                                           placeholder="<?php echo $Locale->getStringLang('setup.web.content.dbPrefix') ?>"/>
+                                </div>
+                                <div class="input-wrapper input-wrapper-33">
                                     <!-- Datenbank Benutzer -->
+                                    <label class="animated-label">
+                                        <?php echo $Locale->getStringLang('setup.web.content.dbUser') ?>:
+                                    </label>
                                     <input class="input-text" type="text" name="databaseUser" value="" required
                                            placeholder="<?php echo $Locale->getStringLang('setup.web.content.dbUser') ?>"/>
-                                </label>
-                                <label>
+                                </div>
+                                <div class="input-wrapper input-wrapper-33">
                                     <!-- Datenbank Passwort -->
+                                    <label class="animated-label">
+                                        <?php echo $Locale->getStringLang('setup.web.content.dbPassword') ?>:
+                                    </label>
                                     <input class="input-text" type="password" name="databasePassword" value="" required
                                            placeholder="<?php echo $Locale->getStringLang('setup.web.content.dbPassword') ?>"/>
-                                </label>
+                                </div>
                             </li>
 
                             <!-- step 5 -->
                             <li class="step step-5">
-                                <label>
-                                    <div class="input-user-wrapper">
-                                        <!-- Root Benutzer -->
-                                        <i class="fa fa-user input-text-icon"></i>
-                                        <input class="input-text input-text-user" type="text"
-                                               name="userName" value="" required="required"
-                                               placeholder="<?php echo $Locale->getStringLang('setup.web.content.rootUser') ?>"
-                                        />
+                                <div class="input-wrapper">
+                                    <label class="animated-label">
+                                        <?php echo $Locale->getStringLang('setup.web.content.rootUser') ?>:
+                                    </label>
 
-                                    </div>
-                                </label>
-                                <label>
-                                    <div class="input-user-wrapper">
-                                        <!-- Root Passwort -->
-                                        <i class="fa fa-lock input-text-icon"></i>
-                                        <input class="input-text input-text-password" type="password"
-                                               name="userPassword" value="" required="required"
-                                               onclick="console.log('input clicked!')"
-                                               placeholder="<?php echo $Locale->getStringLang('setup.web.content.rootPassword') ?>"
-                                        />
+                                    <!-- Root Benutzer -->
+                                    <i class="fa fa-user input-text-icon"></i>
+                                    <input class="input-text input-text-user" type="text"
+                                           name="userName" value="" required="required"
+                                           placeholder="<?php echo $Locale->getStringLang('setup.web.content.rootUser') ?>"
+                                    />
 
-                                        <i class="fa fa-eye-slash show-password"
-                                           title="<?php echo $Locale->getStringLang('setup.web.password.show'); ?>"></i>
-                                    </div>
-                                </label>
-                                <label class="user-password-step-float-right">
-                                    <div class="input-user-wrapper">
-                                        <!-- Root Passwort wiederholen -->
-                                        <i class="fa fa-lock input-text-icon"></i>
-                                        <input class="input-text input-text-password" type="password"
-                                               name="userPasswordRepeat" value="" required="required"
-                                               placeholder="<?php echo $Locale->getStringLang('setup.web.content.rootPasswordRepeat') ?>"
-                                        />
-                                    </div>
-                                </label>
+
+                                </div>
+                                <div class="input-wrapper">
+                                    <label class="animated-label">
+                                        <?php echo $Locale->getStringLang('setup.web.content.rootPassword') ?>:
+                                    </label>
+                                    <!-- Root Passwort -->
+                                    <i class="fa fa-lock input-text-icon"></i>
+                                    <input class="input-text input-text-password" type="password"
+                                           name="userPassword" value="" required="required"
+                                           placeholder="<?php echo $Locale->getStringLang('setup.web.content.rootPassword') ?>"
+                                    />
+
+                                    <i class="fa fa-eye-slash show-password"
+                                       title="<?php echo $Locale->getStringLang('setup.web.content.password.show'); ?>"></i>
+
+                                </div>
+                                <div class="input-wrapper user-password-step-float-right">
+                                    <label class="animated-label">
+                                        <?php echo $Locale->getStringLang('setup.web.content.rootPasswordRepeat') ?>:
+                                    </label>
+                                    <!-- Root Passwort wiederholen -->
+                                    <i class="fa fa-lock input-text-icon"></i>
+                                    <input class="input-text input-text-password" type="password"
+                                           name="userPasswordRepeat" value="" required="required"
+                                           placeholder="<?php echo $Locale->getStringLang('setup.web.content.rootPasswordRepeat') ?>"
+                                    />
+
+                                </div>
 
                             </li>
 
                             <!-- step 6 -->
                             <li class="step step-6" style="text-align: center">
-                                <label>
+                                <div class="input-wrapper">
                                     <!-- Domain -->
+                                    <label class="animated-label">
+                                        <?php echo $Locale->getStringLang('setup.web.content.domain') ?>:
+                                    </label>
                                     <input class="input-text" type="text" name="domain" value=""
                                            placeholder="<?php echo $Locale->getStringLang('setup.web.content.domain') ?>"
                                     />
                                     <i class="fa fa-info-circle host-and-url-info"
                                        data-attr="<?php echo nl2br($Locale->getStringLang('help.prompt.host')); ?>"
                                        title="<?php echo $Locale->getStringLang('setup.web.content.domain.help'); ?>"></i>
-                                </label>
-                                <label>
+                                </div>
+
+                                <div class="input-wrapper">
                                     <!-- Rootverzeichnis -->
-                                    <input class="input-text" type="text" name="rootPath" value="
-<?php echo dirname(__FILE__); ?>/"
+                                    <label class="animated-label">
+                                        <?php echo $Locale->getStringLang('setup.web.content.rootDirectory') ?>:
+                                    </label>
+                                    <input class="input-text" type="text" name="rootPath" value=""
                                            placeholder="<?php echo $Locale->getStringLang('setup.web.content.rootDirectory') ?>"
                                     />
                                     <i class="fa fa-info-circle host-and-url-info"
                                        data-attr="<?php echo nl2br($Locale->getStringLang('help.prompt.cms')); ?>"
                                        title="<?php echo $Locale->getStringLang('setup.web.content.rootDirectory.help'); ?>"></i>
-                                </label>
-                                <label>
+                                </div>
+
+                                <div class="input-wrapper">
                                     <!-- URL Unterverzeichnis -->
+                                    <label class="animated-label">
+                                        <?php echo $Locale->getStringLang('setup.web.content.urlDirectory') ?>:
+                                    </label>
                                     <input class="input-text" type="text" name="URLsubPath" value=""
                                            placeholder="<?php echo $Locale->getStringLang('setup.web.content.urlDirectory') ?>"
                                     />
                                     <i class="fa fa-info-circle host-and-url-info"
                                        data-attr="<?php echo nl2br($Locale->getStringLang('help.prompt.url')); ?>"
                                        title="<?php echo $Locale->getStringLang('setup.web.content.urlSubPath.help'); ?>"></i>
-                                </label>
+                                </div>
+                                <div class="input-wrapper-button">
+
+                                    <button class="auto-fill">
+                                        <span class="fa fa-pencil-square-o auto-fill-icon"></span>
+                                        <?php echo $Locale->getStringLang('setup.web.content.autoFill'); ?>
+                                    </button>
+                                </div>
                             </li>
 
                             <!-- step 7 -->
@@ -448,10 +491,10 @@ $language = require_once "languageDetection.php";
         <div class="grid-20 hide-on-mobile">
         </div>
         <div class="nav-buttons grid-80 mobile-grid-100">
-            <button id="back-button" class="qui-buttonn button back-button" disabled>
+            <button id="back-button" class="button back-button" disabled>
                 <?php echo $Locale->getStringLang('setup.web.content.button.back'); ?>
             </button>
-            <button id="next-button" class="qui-buttonn next-button">
+            <button id="next-button" class="next-button">
                 <?php echo $Locale->getStringLang('setup.web.content.button.next'); ?>
             </button>
         </div>

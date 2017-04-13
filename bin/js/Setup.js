@@ -111,7 +111,7 @@ define('bin/js/Setup', [
             this.licenseCheckbox    = document.getElement('.license-checkbox');
             this.licenseLabel       = document.getElement('.license-label');
 
-            this.userInputs = document.getElements('.input-text-user');
+            this.userInputs = document.getElements('.input-text-user, .input-text-password');
 
             this.activeHeader = document.getElements('.header-list li');
 
@@ -143,13 +143,11 @@ define('bin/js/Setup', [
 
             }.bind(this));
 
-            this.userInputs.addEvent('change', this.changeUserIcon);
 
             QUI.addEvent('onResize', function () {
                 this.recalc();
                 this.setHeaderHeight(this.getHeaderHeight());
             }.bind(this));
-
 
             moofx(this.activeHeader[this.step - 1]).animate({
                 opacity: 1
@@ -161,6 +159,27 @@ define('bin/js/Setup', [
                 opacity: 1
             }, {
                 duration: 500
+            });
+
+            // change icon in input field (user step)
+            this.userInputs.addEvent('change', function () {
+                var Elm  = this;
+                var Icon = Elm.getParent().getElement('.fa');
+
+                if (Elm.value) {
+                    moofx(Icon).animate({
+                        color: '#555555'
+                    }, {
+                        duration: 500
+                    });
+                    return;
+                }
+
+                moofx(Icon).animate({
+                    color: '#dddddd'
+                }, {
+                    duration: 500
+                });
             });
 
             // show password (user step)
@@ -215,6 +234,54 @@ define('bin/js/Setup', [
                 this.checkProgress();
             }.bind(this));
 
+
+            // show label by inputs
+            var inputChange = function (event) {
+                var Target = event.target;
+                if (Target) {
+                    if (Target.value === '') {
+                        Target.getParent().removeClass('show-label');
+                    } else {
+                        Target.getParent().addClass('show-label');
+                    }
+                    return;
+                }
+
+                if (event.value === '') {
+                    event.getParent().removeClass('show-label');
+                } else {
+                    event.getParent().addClass('show-label');
+                }
+            };
+
+            this.inputText.addEvents({
+                change: inputChange,
+                keyup : inputChange
+            });
+
+            this.inputSelect.addEvents({
+                change: inputChange,
+                keyup : inputChange
+            });
+
+            // auto fill button (domain step)
+            document.getElement('.auto-fill').addEvent('click', function () {
+                var domain     = document.getElement('input[name="domain"]'),
+                    rootPath   = document.getElement('input[name="rootPath"]'),
+                    urlSubPath = document.getElement('input[name="URLsubPath"]'),
+                    subPath = '/';
+
+                if (window.location.pathname != '/') {
+                    subPath = window.location.pathname + '/';
+                }
+                domain.value     = window.location.origin;
+                rootPath.value   = ROOT_PATH + '/';
+                urlSubPath.value = subPath;
+                /*inputChange(domain);
+                inputChange(rootPath);
+                inputChange(urlSubPath);*/
+            });
+
             console.log(QUIFormUtils.getFormData(this.FormSetup));
         },
 
@@ -263,7 +330,7 @@ define('bin/js/Setup', [
 
             if (this.step == 6) {
                 var stepHost = document.getElement('.step-6'),
-                    inputs = stepHost.getElements('input'),
+                    inputs   = stepHost.getElements('input'),
                     goToNext = true;
 
                 inputs.forEach(function (Elm) {
@@ -518,7 +585,8 @@ define('bin/js/Setup', [
             }
 
             // var inputsNumber = Object.getLength(QUIFormUtils.getFormData(this.FormSetup));
-            var inputsNumber = this.countInputs();
+            // -1 denn ein Input ist optional
+            var inputsNumber = this.countInputs() - 1;
 
             progress = (inputsDone / inputsNumber * 100).toString();
             var arr  = progress.split('.');
@@ -586,26 +654,6 @@ define('bin/js/Setup', [
                 });
                 this.textColorGrey = true;
             }
-        },
-
-        changeUserIcon: function () {
-            var Elm  = this;
-            var Icon = Elm.getParent().getElement('.fa');
-
-            if (Elm.value) {
-                moofx(Icon).animate({
-                    color: '#555555'
-                }, {
-                    duration: 500
-                });
-                return;
-            }
-
-            moofx(Icon).animate({
-                color: '#dddddd'
-            }, {
-                duration: 500
-            });
         },
 
         /**

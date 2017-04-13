@@ -484,6 +484,9 @@ msgstr "Databse port"
 msgid "setup.web.content.dbName"
 msgstr "Database name"
 
+msgid "setup.web.content.dbPrefix"
+msgstr "Database prefix"
+
 msgid "setup.web.content.dbUser"
 msgstr "Database user"
 
@@ -529,6 +532,9 @@ msgstr "URL path - help"
 
 msgid "setup.web.content.hostError"
 msgstr "All fields are required."
+
+msgid "setup.web.content.autoFill"
+msgstr "Detect automatically"
 
 
 msgid "setup.web.content.license.text"

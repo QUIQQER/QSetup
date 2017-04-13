@@ -41,6 +41,34 @@ textarea {
     min-height: 10em;
 }
 
+input[type='button'],
+input[type='submit'],
+button,
+.button {
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 300;
+    min-width: 150px;
+    padding: 10px 20px;
+    transition: all 0.3s ease-in-out;
+}
+
+input[type='button']:hover,
+input[type='button']:focus,
+input[type='submit']:hover,
+input[type='submit']:focus,
+button:hover,
+button:focus,
+.button:hover,
+.button:focus {
+    border: none;
+    box-shadow: none;
+    outline: none;
+}
+
 h1, h2, h3, h4, h5 {
     color: #666;
     line-height: 1.15em;
@@ -58,10 +86,6 @@ header > h4 {
 
 h1 {
     font-size: 48px;
-}
-
-h1.brick-title {
-    text-align: center;
 }
 
 h2 {
@@ -83,8 +107,10 @@ p {
     margin-bottom: 1em;
 }
 
-/* progress bar */
 
+/**************************/
+/****** progress bar ******/
+/**************************/
 .progress-bar {
     background: #eee;
     color: #999;
@@ -106,7 +132,6 @@ p {
     height: 100%;
     width: 0;
     max-width: 100%;
-
     transition: all 0.3s;
 }
 
@@ -117,9 +142,10 @@ p {
     top: 0;
 }
 
-/* end progress bar */
 
-/* inputs */
+/**************************/
+/******** inputs **********/
+/**************************/
 input,
 input:focus,
 input:hover,
@@ -155,7 +181,6 @@ fieldset {
 }
 
 /* text input */
-
 input.input-text {
     background: #fff;
     border: 1px solid #e5e5e5;
@@ -163,7 +188,6 @@ input.input-text {
     color: #444;
     display: inline;
     line-height: 50px;
-    margin: 10px 0;
     padding: 0 20px;
     position: relative;
     width: 100%;
@@ -172,14 +196,6 @@ input.input-text {
 }
 
 /* user and password */
-
-.input-user-wrapper {
-    display: inline-block;
-    position: relative;
-    width: 100%;
-    z-index: 5;
-}
-
 input.input-text-user,
 input.input-text-password {
     padding: 0 20px 0 60px;
@@ -199,18 +215,19 @@ input.input-text-password {
 }
 
 /* select box */
-
 .select-wrapper {
-    margin: 10px 0;
-    display: inline-flex;
     border: 1px solid #e5e5e5;
     background: #fff;
     border-radius: 6px;
-    position: relative;
     transition: all 0.3s;
-    width: 100%;
     color: #444;
     padding: 0;
+    margin: 14px 15px;
+    display: inline-block;
+    vertical-align: middle;
+    position: relative;
+    float: left;
+    width: calc(50% - 30px);
 }
 
 .select-wrapper:after {
@@ -251,14 +268,17 @@ select option {
     width: 100%;
 }
 
-label {
-    margin: 0 20px;
+.input-wrapper {
+    margin: 14px 15px;
     display: inline-block;
     vertical-align: middle;
     position: relative;
     float: left;
-    width: calc(50% - 40px);
-    /*text-align: center;*/
+    width: calc(50% - 30px);
+}
+
+.input-wrapper-33 {
+    width: calc(33.333% - 30px);
 }
 
 .label-div {
@@ -268,7 +288,6 @@ label {
     color: #aaa;
     cursor: pointer;
     display: inline-block;
-    margin: 10px 0;
     padding: 0 20px;
     position: relative;
     text-align: left;
@@ -278,9 +297,9 @@ label {
     transition: all 0.3s;
 }
 
-label:hover input,
+.input-wrapper:hover input,
 input:focus,
-label:hover .label-div,
+.input-wrapper:hover .label-div,
 .select-wrapper:hover {
     border: 1px solid #ccc;
     box-shadow: 0 3px 10px #bbb;
@@ -320,8 +339,30 @@ label:hover .label-div,
     color: #666;
 }
 
-/* step user password */
+/* animated label for text input */
+.animated-label {
+    position: absolute;
+    z-index: 1;
+    font-size: 0.9em;
+    top: -13px;
+    opacity: 0;
+    transition: 0.2s all ease-in-out;
+    color: #75b947;
+    font-weight: 600;
+    visibility: hidden;
+}
 
+.show-label .animated-label {
+    top: -24px;
+    opacity: 1;
+    visibility: visible;
+    white-space: nowrap;
+}
+
+
+/**************************/
+/*** step user password ***/
+/**************************/
 .user-password-step-float-right {
     float: right;
 }
@@ -339,16 +380,16 @@ label:hover .label-div,
     color: #ddd;
 }
 
-/******************/
-/* host und pfade */
-/******************/
-.step-6 label {
+
+/**************************/
+/***** Host und Pfade *****/
+/**************************/
+/*.step-6 .input-wrapper {
     float: none;
     margin-left: auto;
     margin-right: auto;
-    display: block;
     width: calc(60% - 40px)
-}
+}*/
 
 .host-and-url-info {
     position: absolute;
@@ -357,7 +398,7 @@ label:hover .label-div,
     margin: 0 20px;
     font-size: 24px;
     color: #eee;
-    transition: all 0.2s ease-in-out;
+    transition: all 0.3s ease-in-out;
     cursor: pointer;
 }
 
@@ -383,10 +424,48 @@ label:hover .label-div,
     font-weight: 600;
 }
 
-/******************/
-/* license */
-/******************/
+/* auto fill button */
+.input-wrapper-button {
+    margin: 14px 20px;
+    display: block;
+    vertical-align: middle;
+    position: relative;
+    float: left;
+    width: 100%;
+}
 
+.input-wrapper-button .auto-fill {
+    color: #666;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #e5e5e5;
+    display: inline;
+    background-color: #fff;
+    transition: 0.3s all ease-in-out;
+}
+
+.auto-fill-icon {
+    margin-right: 20px;
+    color: #aaa;
+    transition: 0.3s all ease-in-out;
+}
+
+.input-wrapper-button .auto-fill:hover,
+.input-wrapper-button .auto-fill:focus {
+    /*color: #75b947;*/
+    box-shadow: 0 3px 10px #bbb;
+    /*border-color: #75b947;*/
+}
+
+.auto-fill:hover .auto-fill-icon,
+.auto-fill:focus .auto-fill-icon {
+    color: #333;
+}
+
+
+/**************************/
+/******** license *********/
+/**************************/
 .license-box-wrapper {
     /*padding: 5px;*/
     /*background: #eee;*/
@@ -445,7 +524,7 @@ input[type=checkbox] + label:before {
     font-family: FontAwesome;
     display: inline-block;
     color: #aaa;
-    transition: all 0.2s ease-in-out;
+    transition: all 0.3s ease-in-out;
 }
 
 input[type=checkbox] + label:hover:before,
@@ -461,14 +540,14 @@ input[type=checkbox].license-checkbox + label {
     padding: 10px;
     border-radius: 6px;
     border: 1px solid #e5e5e5;
-    transition: 0.2s all ease-in-out;
+    transition: 0.3s all ease-in-out;
 }
 
 input[type=checkbox].license-checkbox + label:hover {
     box-shadow: 0 3px 10px #bbb;
 }
 
-    /* unchecked icon */
+/* unchecked icon */
 input[type=checkbox].license-checkbox + label:before {
     content: "\f096";
     width: 50px;
@@ -489,76 +568,10 @@ input[type=checkbox].license-checkbox:checked + label {
     border-color: #cc0000;
 }
 
-/*.license-label {
-    position: relative;
-    display: inline-block;
-}
 
-.license-label:after {
-    content: '';
-    width: calc(100% + 14px);
-    height: 2px;
-    background-color: #cc0000;
-    position: absolute;
-    left: -7px;
-    bottom: 3px;
-    opacity: 0;
-    transition: all 0.1s ease-in-out;
-}
-
-.error .license-label:after {
-    bottom: -3px;
-    opacity: 0.8;
-}*/
-
-
-
-/* buttons */
-input[type='button'],
-input[type='submit'],
-button,
-.button {
-    border-radius: 5px;
-    border: none;
-    cursor: pointer;
-    font-family: 'Open Sans', sans-serif;
-    font-size: 18px;
-    font-weight: 300;
-    min-width: 150px;
-    padding: 10px 20px;
-    transition: all 0.2s ease-in-out;
-}
-
-input[type='button']:hover,
-input[type='button']:focus,
-input[type='submit']:hover,
-input[type='submit']:focus,
-button:hover,
-button:focus,
-.button:hover,
-.button:focus {
-    border: none;
-    box-shadow: none;
-    outline: none;
-}
-
-input:disabled,
-select:disabled,
-button:disabled,
-button:disabled {
-    cursor: default;
-}
-
-.qui-window-popup-buttons .qui-button:hover,
-.qui-window-popup-buttons .qui-button:focus {
-    background: #75b947;
-}
-
-/* specific setup style */
-
-.header {
-}
-
+/**************************/
+/** specific setup style **/
+/**************************/
 .header-left {
     background: #f5f5f5;
     text-align: center;
@@ -605,9 +618,10 @@ button:disabled {
 }
 
 .nav {
-    padding: 3em 0 0;
+    padding: 0;
     overflow: visible;
-    white-space: nowrap;
+    line-height: 26px;
+    /*white-space: nowrap;*/
 }
 
 ul {
@@ -622,6 +636,7 @@ ul.nav-list li {
     font-weight: 300;
     font-size: 15px;
     transition: all 0.3s, font-weight 0.01s;
+    display: flex;
 }
 
 ul.nav-list li.step-done {
@@ -635,35 +650,34 @@ ul.nav-list li.step-active {
     transition: all 0.3s, font-weight 0.01s;
 }
 
-ul.nav-list li:first-child {
-    padding-top: 0;
-}
-
 ul.nav-list li:last-child {
     border-bottom: none;
 }
 
 .nav .fa {
     margin-right: 0.5em;
+    line-height: inherit;
 }
 
 .page-main {
-    padding-top: 3em;
+    /*padding-top: 3em;*/
     padding-left: 3em;
     position: relative;
-    padding-bottom: 3em;
+    /*padding-bottom: 3em;*/
     /*overflow: hidden;*/
 }
 
 .steps-list-container {
     overflow: hidden;
+    padding-top: 2em;
+    padding-bottom: 2em;
     /*background-color: #ee9900;*/
 }
 
 ul.steps-list {
     font-size: 0;
     opacity: 0;
-    left: 0px;
+    left: 0;
     white-space: nowrap;
     position: relative;
     vertical-align: top;
@@ -695,14 +709,10 @@ li.step-left-align {
     text-align: left;
 }
 
-.left-sidebar {
-    /*min-width: 200px;*/
-}
 
-.button {
-
-}
-
+/**************************/
+/****** nav buttons *******/
+/**************************/
 .nav-buttons {
     padding: 1em 0 1em 3em;
 }
@@ -741,6 +751,10 @@ li.step-left-align {
     background: #539725;
 }
 
+
+/**************************/
+/****** media query *******/
+/**************************/
 @media screen and (max-width: 767px) {
 
     h1 {
@@ -797,9 +811,6 @@ li.step-left-align {
         position: relative;
     }
 
-    .page {
-        min-height: auto;
-    }
 
     .header-logo-container {
         height: auto !important;
@@ -813,14 +824,15 @@ li.step-left-align {
         text-align: center;
     }
 
-    label {
+    .input-wrapper,
+    .select-wrapper {
         display: block;
-        margin: 16px auto;
+        margin: 30px auto;
         float: none;
         width: 90%;
     }
 
-    .step-6 label {
+    .step-6 .input-wrapper {
         width: 90%;
     }
 
@@ -831,11 +843,6 @@ li.step-left-align {
 
     .user-password-step-float-right {
         float: none;
-    }
-
-    .select-wrapper,
-    input.input-text {
-        margin: 0;
     }
 
     .input-text-user,

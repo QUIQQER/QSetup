@@ -484,6 +484,9 @@ msgstr "Datenbank Port"
 msgid "setup.web.content.dbName"
 msgstr "Datenbank Name"
 
+msgid "setup.web.content.dbPrefix"
+msgstr "Datenbank Prefix"
+
 msgid "setup.web.content.dbUser"
 msgstr "Datenbank Benutzer"
 
@@ -528,6 +531,9 @@ msgstr "URL Unterverzeichnis - Hilfe"
 
 msgid "setup.web.content.hostError"
 msgstr "Alle Felder müssen ausgefüllt sein."
+
+msgid "setup.web.content.autoFill"
+msgstr "Automatisch ermitteln"
 
 
 

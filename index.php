@@ -1,455 +1,464 @@
-<!DOCTYPE>
-<html>
-<head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1,maximum-scale=1"/>
+<?php
 
-    <script src="/vendor/quiqqer/qui/qui/lib/mootools-core.js"></script>
-    <script src="/vendor/quiqqer/qui/qui/lib/mootools-more.js"></script>
-    <script src="/vendor/quiqqer/qui/qui/lib/moofx.js"></script>
+$language = require_once "languageDetection.php";
 
-    <script src="components/require.js"></script>
-    <script src="components/qui/initDev.js" data-main="bin/js/init.js"></script>
+?>
+    <!DOCTYPE>
+    <html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1,maximum-scale=1"/>
 
-    <link rel="stylesheet" href="/bin/css/font-awesome/css/font-awesome.min.css" type="text/css"/>
-    <link rel="stylesheet" href="/bin/css/unsemantic/unsemantic-grid-responsive.css" type="text/css"/>
-    <link rel="stylesheet" href="/bin/css/style.css" type="text/css"/>
-    <link href='//fonts.googleapis.com/css?family=Open+Sans:300,400,600,800' rel='stylesheet' type='text/css'>
+        <script src="/vendor/quiqqer/qui/qui/lib/mootools-core.js"></script>
+        <script src="/vendor/quiqqer/qui/qui/lib/mootools-more.js"></script>
+        <script src="/vendor/quiqqer/qui/qui/lib/moofx.js"></script>
 
-    <!-- wegen "componens" muss hier die baseUrl neu gesetzt werden -->
+        <script src="components/require.js"></script>
+        <script src="components/qui/initDev.js" data-main="bin/js/init.js"></script>
+
+        <link rel="stylesheet" href="/bin/css/font-awesome/css/font-awesome.min.css" type="text/css"/>
+        <link rel="stylesheet" href="/bin/css/unsemantic/unsemantic-grid-responsive.css" type="text/css"/>
+        <link rel="stylesheet" href="/bin/css/style.css" type="text/css"/>
+        <link href='//fonts.googleapis.com/css?family=Open+Sans:300,400,600,800' rel='stylesheet' type='text/css'>
+
+        <!-- wegen "componens" muss hier die baseUrl neu gesetzt werden -->
+        <script>
+            require.config({
+                baseUrl: ''
+            });
+
+            ROOT_DIR = "<?php echo dirname(__FILE__); ?>";
+        </script>
+
+        <?php
+        require "vendor/autoload.php";
+
+        $Locale = new \QUI\Setup\Locale\Locale($language);
+        //        $Locale = new \QUI\Setup\Locale\Locale('en_EN');
+
+        //    $text   = $Locale->getStringLang('setup.message.step.database');
+
+        /*echo '<pre>';
+        $presets = \QUI\Setup\Preset::getPresets();
+        print_r($presets);*/
+        ?>
+        <script>
+            var CURRENT_LOCALE      = '<?php echo $Locale->getCurrent(); ?>';
+            var LOCALE_TRANSLATIONS = <?php echo json_encode($Locale->getAll()); ?>;
+        </script>
+    </head>
+    <body>
+
     <script>
-        require.config({
-            baseUrl: ''
-        });
+        /*new Request({
+         url      : '/ajax/getDatabaseDrivers.php',
+         onSuccess: function () {
+         console.log(arguments);
+         }
+         }).send();*/
     </script>
+    <div class="progress-bar">
+        <div class="progress-bar-done"></div>
+        <span class="progress-bar-text">0%</span>
+    </div>
+    <div class="header grid-container">
 
-    <?php
-    require "vendor/autoload.php";
-
-    $Locale = new \QUI\Setup\Locale\Locale('de_DE');
-//        $Locale = new \QUI\Setup\Locale\Locale('en_EN');
-
-    //    $text   = $Locale->getStringLang('setup.message.step.database');
-
-    /*echo '<pre>';
-    $presets = \QUI\Setup\Preset::getPresets();
-    print_r($presets);*/
-    ?>
-    <script>
-        var CURRENT_LOCALE      = '<?php echo $Locale->getCurrent(); ?>';
-        var LOCALE_TRANSLATIONS = <?php echo json_encode($Locale->getAll()); ?>;
-    </script>
-</head>
-<body>
-
-<script>
-    /*new Request({
-     url      : '/ajax/getDatabaseDrivers.php',
-     onSuccess: function () {
-     console.log(arguments);
-     }
-     }).send();*/
-</script>
-<div class="progress-bar">
-    <div class="progress-bar-done"></div>
-    <span class="progress-bar-text">0%</span>
-</div>
-<div class="header grid-container">
-
-    <div class="header-left left-sidebar grid-20 pull-800 mobile-grid-100 hide-on-mobile">
-        <div class="header-logo-container">
-            <img class="header-logo" src="/bin/img/logo.png" title="QUIQQER Logo" alt="Q-Logo"/>
-            <h4 style="font-weight: bold;">QUIQQER</h4>
-            <span style="font-size: 13px; color: #555;">
+        <div class="header-left left-sidebar grid-20 pull-800 mobile-grid-100 hide-on-mobile">
+            <div class="header-logo-container">
+                <img class="header-logo" src="/bin/img/logo.png" title="QUIQQER Logo" alt="Q-Logo"/>
+                <h4 style="font-weight: bold;">QUIQQER</h4>
+                <span style="font-size: 13px; color: #555;">
                 <?php echo $Locale->getStringLang('setup.web.subTitle') ?>
             </span>
+            </div>
         </div>
-    </div>
-    <div class="header-right grid-80 push-200 mobile-grid-100">
-        <img class="hide-on-desktop header-logo" src="/bin/img/logo.png" title="QUIQQER Logo" alt="Q-Logo"/>
-        <ul class="header-list">
-            <li>
-                <!-- Webseite Sprache -->
-                <h1>
-                    <?php echo $Locale->getStringLang('setup.web.header.siteLang') ?>
-                </h1>
-                <p>
-                    <?php echo $Locale->getStringLang('setup.web.header.siteLang.text') ?>
-                </p>
-            </li>
-            <li>
-                <!-- Version -->
-                <h1>
-                    <?php echo $Locale->getStringLang('setup.web.header.version') ?>
-                </h1>
-                <p>
-                    <?php echo $Locale->getStringLang('setup.web.header.version.text') ?>
-                </p>
-            </li>
-            <li>
-                <!-- Vorlage -->
-                <h1>
-                    <?php echo $Locale->getStringLang('setup.web.header.template') ?>
-                </h1>
-                <p>
-                    <?php echo $Locale->getStringLang('setup.web.header.template.text') ?>
-                </p>
-            </li>
-            <li>
-                <!-- Datenbank -->
-                <h1>
-                    <?php echo $Locale->getStringLang('setup.web.header.dataBase') ?>
-                </h1>
-                <p>
-                    <?php echo $Locale->getStringLang('setup.web.header.dataBase.text') ?>
-                </p>
-            </li>
-            <li>
-                <!-- Benutzer -->
-                <h1>
-                    <?php echo $Locale->getStringLang('setup.web.header.user') ?>
-                </h1>
-                <p>
-                    <?php echo $Locale->getStringLang('setup.web.header.user.text') ?>
-                </p>
-            </li>
-            <li>
-                <!-- Host und Pfade -->
-                <h1>
-                    <?php echo $Locale->getStringLang('setup.web.header.hostAndDirectory') ?>
-                </h1>
-                <p>
-                    <?php echo $Locale->getStringLang('setup.web.header.hostAndDirectory.text') ?>
-                </p>
-            </li>
-            <li>
-                <!-- Lizenz -->
-                <h1>
-                    <?php echo $Locale->getStringLang('setup.web.header.license') ?>
-                </h1>
-                <p>
-                    <?php echo $Locale->getStringLang('setup.web.header.license.text') ?>
-                </p>
-            </li>
-        </ul>
-    </div>
-</div>
-
-<div class="page">
-    <div class="grid-container">
-        <div class="nav left-sidebar grid-20 mobile-grid-100 hide-on-mobile">
-            <ul class="nav-list">
-                <li class="step-active">
-                    <i class="fa fa-fw fa-check"></i>
-                    <!--Sprache-->
-                    <?php echo $Locale->getStringLang('setup.web.nav.siteLang') ?>
+        <div class="header-right grid-80 push-200 mobile-grid-100">
+            <img class="hide-on-desktop header-logo" src="/bin/img/logo.png" title="QUIQQER Logo" alt="Q-Logo"/>
+            <ul class="header-list">
+                <li>
+                    <!-- Webseite Sprache -->
+                    <h1>
+                        <?php echo $Locale->getStringLang('setup.web.header.siteLang') ?>
+                    </h1>
+                    <p>
+                        <?php echo $Locale->getStringLang('setup.web.header.siteLang.text') ?>
+                    </p>
                 </li>
-                <li><i class="fa fa-fw fa-check"></i>
-                    <!--Version-->
-                    <?php echo $Locale->getStringLang('setup.web.nav.version') ?>
+                <li>
+                    <!-- Version -->
+                    <h1>
+                        <?php echo $Locale->getStringLang('setup.web.header.version') ?>
+                    </h1>
+                    <p>
+                        <?php echo $Locale->getStringLang('setup.web.header.version.text') ?>
+                    </p>
                 </li>
-                <li><i class="fa fa-fw fa-check"></i>
-                    <!--Vorlage-->
-                    <?php echo $Locale->getStringLang('setup.web.nav.template') ?>
+                <li>
+                    <!-- Vorlage -->
+                    <h1>
+                        <?php echo $Locale->getStringLang('setup.web.header.template') ?>
+                    </h1>
+                    <p>
+                        <?php echo $Locale->getStringLang('setup.web.header.template.text') ?>
+                    </p>
                 </li>
-                <li><i class="fa fa-fw fa-check"></i>
-                    <!--Datenbank-->
-                    <?php echo $Locale->getStringLang('setup.web.nav.dataBase') ?>
+                <li>
+                    <!-- Datenbank -->
+                    <h1>
+                        <?php echo $Locale->getStringLang('setup.web.header.dataBase') ?>
+                    </h1>
+                    <p>
+                        <?php echo $Locale->getStringLang('setup.web.header.dataBase.text') ?>
+                    </p>
                 </li>
-                <li><i class="fa fa-fw fa-check"></i>
-                    <!--Root Benutzer-->
-                    <?php echo $Locale->getStringLang('setup.web.nav.user') ?>
+                <li>
+                    <!-- Benutzer -->
+                    <h1>
+                        <?php echo $Locale->getStringLang('setup.web.header.user') ?>
+                    </h1>
+                    <p>
+                        <?php echo $Locale->getStringLang('setup.web.header.user.text') ?>
+                    </p>
                 </li>
-                <li><i class="fa fa-fw fa-check"></i>
-                    <!--Host und Pfade-->
-                    <?php echo $Locale->getStringLang('setup.web.nav.hostAndDirectory') ?>
+                <li>
+                    <!-- Host und Pfade -->
+                    <h1>
+                        <?php echo $Locale->getStringLang('setup.web.header.hostAndDirectory') ?>
+                    </h1>
+                    <p>
+                        <?php echo $Locale->getStringLang('setup.web.header.hostAndDirectory.text') ?>
+                    </p>
                 </li>
-                <li><i class="fa fa-fw fa-check"></i>
-                    <!--Lizenz-->
-                    <?php echo $Locale->getStringLang('setup.web.nav.license') ?>
+                <li>
+                    <!-- Lizenz -->
+                    <h1>
+                        <?php echo $Locale->getStringLang('setup.web.header.license') ?>
+                    </h1>
+                    <p>
+                        <?php echo $Locale->getStringLang('setup.web.header.license.text') ?>
+                    </p>
                 </li>
             </ul>
         </div>
-        <form name="form-setup" id="form-setup" action="" method="post">
-            <div class="page-main grid-80 mobile-grid-100">
-                <div class="steps-list-container">
-                    <ul class="steps-list">
-                        <!-- step 1 -->
-                        <li class="step step-1">
-                            <fieldset>
+    </div>
 
-                                <?php
-                                $availableLangs = QUI\Setup\Utils\Utils::getAvailalbeLanguages();
-                                $currentLang    = substr($Locale->getCurrent(), 0, 2);
+    <div class="page">
+        <div class="grid-container">
+            <div class="nav left-sidebar grid-20 mobile-grid-100 hide-on-mobile">
+                <ul class="nav-list">
+                    <li class="step-active">
+                        <i class="fa fa-fw fa-check"></i>
+                        <!--Sprache-->
+                        <?php echo $Locale->getStringLang('setup.web.nav.siteLang') ?>
+                    </li>
+                    <li><i class="fa fa-fw fa-check"></i>
+                        <!--Version-->
+                        <?php echo $Locale->getStringLang('setup.web.nav.version') ?>
+                    </li>
+                    <li><i class="fa fa-fw fa-check"></i>
+                        <!--Vorlage-->
+                        <?php echo $Locale->getStringLang('setup.web.nav.template') ?>
+                    </li>
+                    <li><i class="fa fa-fw fa-check"></i>
+                        <!--Datenbank-->
+                        <?php echo $Locale->getStringLang('setup.web.nav.dataBase') ?>
+                    </li>
+                    <li><i class="fa fa-fw fa-check"></i>
+                        <!--Root Benutzer-->
+                        <?php echo $Locale->getStringLang('setup.web.nav.user') ?>
+                    </li>
+                    <li><i class="fa fa-fw fa-check"></i>
+                        <!--Host und Pfade-->
+                        <?php echo $Locale->getStringLang('setup.web.nav.hostAndDirectory') ?>
+                    </li>
+                    <li><i class="fa fa-fw fa-check"></i>
+                        <!--Lizenz-->
+                        <?php echo $Locale->getStringLang('setup.web.nav.license') ?>
+                    </li>
+                </ul>
+            </div>
+            <form name="form-setup" id="form-setup" action="" method="post">
+                <div class="page-main grid-80 mobile-grid-100">
+                    <div class="steps-list-container">
+                        <ul class="steps-list">
+                            <!-- step 1 -->
+                            <li class="step step-1">
+                                <fieldset>
 
-                                $checked = '';
-                                foreach ($availableLangs as $lang) {
+                                    <?php
+                                    $availableLangs = QUI\Setup\Utils\Utils::getAvailalbeLanguages();
+                                    $currentLang    = substr($Locale->getCurrent(), 0, 2);
+
                                     $checked = '';
-                                    // vorauswahl der Projektsprache
-                                    if ($lang == $currentLang) {
-                                        $checked = 'checked="checked"';
-                                    }
+                                    foreach ($availableLangs as $lang) {
+                                        $checked = '';
+                                        // vorauswahl der Projektsprache
+                                        if ($lang == $currentLang) {
+                                            $checked = 'checked="checked"';
+                                        }
 
-                                    $localeVar = 'setup.web.content.lang.' . $lang;
-                                    $language  = $Locale->getStringLang($localeVar);
+                                        $localeVar = 'setup.web.content.lang.' . $lang;
+                                        $language  = $Locale->getStringLang($localeVar);
 
-                                    $output = '<label for="' . $lang . '">';
-                                    $output .= '<input class="input-radio" name="project-language" type="radio"
+                                        $output = '<label for="' . $lang . '">';
+                                        $output .= '<input class="input-radio" name="project-language" type="radio"
                                            value="' . $lang . '" required ' . $checked . 'id="' . $lang . '"/>';
-                                    $output .= '<div class="label-div">
+                                        $output .= '<div class="label-div">
                                                     <img class="" src="/bin/img/flags/' . $lang . '.png" 
                                                         title="' . $language . ' Flag" alt="' . $language . '"/>';
-                                    $output .= $language;
-                                    $output .= '<i class="fa fa-check button-icon-right"></i>
+                                        $output .= $language;
+                                        $output .= '<i class="fa fa-check button-icon-right"></i>
                                                 </div>
                                             </label>';
 
-                                    echo $output;
-                                }
+                                        echo $output;
+                                    }
 
-                                ?>
-                            </fieldset>
-                        </li>
+                                    ?>
+                                </fieldset>
+                            </li>
 
 
-                        <!-- step 2 -->
-                        <li class="step step-2 step-left-align">
+                            <!-- step 2 -->
+                            <li class="step step-2 step-left-align">
 
-                            <?php
-                            $versions = QUI\Setup\Setup::getVersions();
-                            sort($versions);
-                            $checked = '';
-                            //                            $checked = 'checked="checked"';
-                            for ($i = 0; $i < count($versions); $i++) {
-                                switch ($versions[$i]) {
-                                    case 'dev-dev':
-                                        $icon = '<i class="fa fa-cubes button-icon-left"></i>';
-                                        break;
-                                    case 'dev-master':
-                                        $icon = '<i class="fa fa-cube button-icon-left"></i>';
-                                        break;
-                                    default:
-                                        $icon = '<i class="fa fa-star-o button-icon-left"></i>';
-                                }
+                                <?php
+                                $versions = QUI\Setup\Setup::getVersions();
+                                sort($versions);
+                                $checked = '';
+                                //                            $checked = 'checked="checked"';
+                                for ($i = 0; $i < count($versions); $i++) {
+                                    switch ($versions[$i]) {
+                                        case 'dev-dev':
+                                            $icon = '<i class="fa fa-cubes button-icon-left"></i>';
+                                            break;
+                                        case 'dev-master':
+                                            $icon = '<i class="fa fa-cube button-icon-left"></i>';
+                                            break;
+                                        default:
+                                            $icon = '<i class="fa fa-star-o button-icon-left"></i>';
+                                    }
 
-                                $output = '<label>
+                                    $output = '<label>
                                     <input class="input-radio" name="version"
                                            type="radio" value="' . $versions[$i] . '"' . $checked . ' />';
-                                $output .= '<div class="label-div">' . $icon;
-                                $output .= $versions[$i];
-                                $output .= '<i class="fa fa-check button-icon-right"></i>
+                                    $output .= '<div class="label-div">' . $icon;
+                                    $output .= $versions[$i];
+                                    $output .= '<i class="fa fa-check button-icon-right"></i>
                                     </div>
                                 </label>';
+                                    $checked = '';
+                                    echo $output;
+                                }
+                                ?>
+
+                            </li>
+
+                            <!-- step 3 -->
+                            <li class="step step-3">
+
+                                <?php
+                                $presets = \QUI\Setup\Preset::getPresets();
+                                $lang    = $Locale->getCurrent();
+
                                 $checked = '';
-                                echo $output;
-                            }
-                            ?>
+                                //                            $checked = 'checked="checked"';
+                                foreach ($presets as $key => $value) {
+                                    if (!isset($value['meta'])) {
+                                        continue;
+                                    }
 
-                        </li>
+                                    if (!isset($value['meta']['name'])) {
+                                        continue;
+                                    }
+                                    if (!isset($value['meta']['name'][$lang])) {
+                                        continue;
+                                    }
 
-                        <!-- step 3 -->
-                        <li class="step step-3">
+                                    $name = $value['meta']['name'][$lang];
+                                    $icon = 'fa-file-text-o';
 
-                            <?php
-                            $presets = \QUI\Setup\Preset::getPresets();
-                            $lang    = $Locale->getCurrent();
+                                    if (isset($value['meta']['icon'])) {
+                                        $icon = $value['meta']['icon'];
+                                    }
 
-                            $checked = '';
-                            //                            $checked = 'checked="checked"';
-                            foreach ($presets as $key => $value) {
-                                if (!isset($value['meta'])) {
-                                    continue;
-                                }
-
-                                if (!isset($value['meta']['name'])) {
-                                    continue;
-                                }
-                                if (!isset($value['meta']['name'][$lang])) {
-                                    continue;
-                                }
-
-                                $name = $value['meta']['name'][$lang];
-                                $icon = 'fa-file-text-o';
-
-                                if (isset($value['meta']['icon'])) {
-                                    $icon = $value['meta']['icon'];
-                                }
-
-                                $output = '<label>
+                                    $output = '<label>
                                 <input class="input-radio" name="vorlage"
                                        type="radio" value="' . $key . '"' . $checked . '/>
                                 <div class="label-div">
                                     <i class="fa ' . $icon . ' button-icon-left"></i>';
 
-                                $output .= $name;
-                                $output .= '
+                                    $output .= $name;
+                                    $output .= '
                                     <i class="fa fa-check button-icon-right"></i>
                                 </div>
                             </label>';
-                                echo $output;
-                            }
-                            ?>
+                                    echo $output;
+                                }
+                                ?>
 
-                        </li>
+                            </li>
 
-                        <!-- step 4 -->
-                        <li class="step step-4">
+                            <!-- step 4 -->
+                            <li class="step step-4">
 
 
-                            <label>
-                                <div class="select-wrapper">
-                                    <select name="databaseDriver" required>
-                                        <option value="" disabled selected>
-                                            <?php echo $Locale->getStringLang('setup.web.content.dbDriver') ?>
-                                        </option>
+                                <label>
+                                    <div class="select-wrapper">
+                                        <select name="databaseDriver" required>
+                                            <option value="" disabled selected>
+                                                <?php echo $Locale->getStringLang('setup.web.content.dbDriver') ?>
+                                            </option>
 
-                                        <?php
-                                        $avaibleDrivers = \QUI\Setup\Database\Database::getAvailableDrivers();
+                                            <?php
+                                            $avaibleDrivers = \QUI\Setup\Database\Database::getAvailableDrivers();
 
-                                        foreach ($avaibleDrivers as $driver) {
-                                            echo '<option value="' . $driver . '">' . $driver . '</option>';
-                                        }
-                                        ?>
+                                            foreach ($avaibleDrivers as $driver) {
+                                                echo '<option value="' . $driver . '">' . $driver . '</option>';
+                                            }
+                                            ?>
 
-                                    </select>
-                                </div>
-                            </label>
-                            <label>
-                                <!-- Datenbank Host -->
-                                <input class="input-text" type="text" name="databaseHost" value="" required
-                                       placeholder="<?php echo $Locale->getStringLang('setup.web.content.dbHost') ?>" />
-                            </label>
-                            <label>
-                                <!-- Datenbank Port -->
-                                <input class="input-text" type="number" name="databasePort" value="" required
-                                       placeholder="<?php echo $Locale->getStringLang('setup.web.content.dbPort') ?>" />
-                            </label>
-                            <label>
-                                <!-- Datenbank Name -->
-                                <input class="input-text" type="text" name="databaseName" value="" required
-                                       placeholder="<?php echo $Locale->getStringLang('setup.web.content.dbName') ?>" />
-                            </label>
-                            <label>
-                                <!-- Datenbank Benutzer -->
-                                <input class="input-text" type="text" name="databaseUser" value="" required
-                                       placeholder="<?php echo $Locale->getStringLang('setup.web.content.dbUser') ?>" />
-                            </label>
-                            <label>
-                                <!-- Datenbank Passwort -->
-                                <input class="input-text" type="password" name="databasePassword" value="" required
-                                       placeholder="<?php echo $Locale->getStringLang('setup.web.content.dbPassword') ?>" />
-                            </label>
-                        </li>
+                                        </select>
+                                    </div>
+                                </label>
+                                <label>
+                                    <!-- Datenbank Host -->
+                                    <input class="input-text" type="text" name="databaseHost" value="" required
+                                           placeholder="<?php echo $Locale->getStringLang('setup.web.content.dbHost') ?>"/>
+                                </label>
+                                <label>
+                                    <!-- Datenbank Port -->
+                                    <input class="input-text" type="number" name="databasePort" value="" required
+                                           placeholder="<?php echo $Locale->getStringLang('setup.web.content.dbPort') ?>"/>
+                                </label>
+                                <label>
+                                    <!-- Datenbank Name -->
+                                    <input class="input-text" type="text" name="databaseName" value="" required
+                                           placeholder="<?php echo $Locale->getStringLang('setup.web.content.dbName') ?>"/>
+                                </label>
+                                <label>
+                                    <!-- Datenbank Benutzer -->
+                                    <input class="input-text" type="text" name="databaseUser" value="" required
+                                           placeholder="<?php echo $Locale->getStringLang('setup.web.content.dbUser') ?>"/>
+                                </label>
+                                <label>
+                                    <!-- Datenbank Passwort -->
+                                    <input class="input-text" type="password" name="databasePassword" value="" required
+                                           placeholder="<?php echo $Locale->getStringLang('setup.web.content.dbPassword') ?>"/>
+                                </label>
+                            </li>
 
-                        <!-- step 5 -->
-                        <li class="step step-5">
-                            <label>
-                                <div class="input-user-wrapper">
-                                    <!-- Root Benutzer -->
-                                    <i class="fa fa-user input-text-icon"></i>
-                                    <input class="input-text input-text-user" type="text"
-                                           name="userName" value="" required="required"
-                                           placeholder="<?php echo $Locale->getStringLang('setup.web.content.rootUser') ?>"
+                            <!-- step 5 -->
+                            <li class="step step-5">
+                                <label>
+                                    <div class="input-user-wrapper">
+                                        <!-- Root Benutzer -->
+                                        <i class="fa fa-user input-text-icon"></i>
+                                        <input class="input-text input-text-user" type="text"
+                                               name="userName" value="" required="required"
+                                               placeholder="<?php echo $Locale->getStringLang('setup.web.content.rootUser') ?>"
+                                        />
+
+                                    </div>
+                                </label>
+                                <label>
+                                    <div class="input-user-wrapper">
+                                        <!-- Root Passwort -->
+                                        <i class="fa fa-lock input-text-icon"></i>
+                                        <input class="input-text input-text-password" type="password"
+                                               name="userPassword" value="" required="required"
+                                               onclick="console.log('input clicked!')"
+                                               placeholder="<?php echo $Locale->getStringLang('setup.web.content.rootPassword') ?>"
+                                        />
+
+                                        <i class="fa fa-eye-slash show-password"
+                                           title="<?php echo $Locale->getStringLang('setup.web.password.show'); ?>"></i>
+                                    </div>
+                                </label>
+                                <label class="user-password-step-float-right">
+                                    <div class="input-user-wrapper">
+                                        <!-- Root Passwort wiederholen -->
+                                        <i class="fa fa-lock input-text-icon"></i>
+                                        <input class="input-text input-text-password" type="password"
+                                               name="userPasswordRepeat" value="" required="required"
+                                               placeholder="<?php echo $Locale->getStringLang('setup.web.content.rootPasswordRepeat') ?>"
+                                        />
+                                    </div>
+                                </label>
+
+                            </li>
+
+                            <!-- step 6 -->
+                            <li class="step step-6" style="text-align: center">
+                                <label>
+                                    <!-- Domain -->
+                                    <input class="input-text" type="text" name="domain" value=""
+                                           placeholder="<?php echo $Locale->getStringLang('setup.web.content.domain') ?>"
                                     />
-
-                                </div>
-                            </label>
-                            <label>
-                                <div class="input-user-wrapper">
-                                    <!-- Root Passwort -->
-                                    <i class="fa fa-lock input-text-icon"></i>
-                                    <input class="input-text input-text-password" type="password"
-                                           name="userPassword" value="" required="required" onclick="console.log('input clicked!')"
-                                           placeholder="<?php echo $Locale->getStringLang('setup.web.content.rootPassword') ?>"
-                                   />
-
-                                    <i class="fa fa-eye-slash show-password"
-                                       title="<?php echo $Locale->getStringLang('setup.web.password.show'); ?>"></i>
-                                </div>
-                            </label>
-                            <label class="user-password-step-float-right">
-                                <div class="input-user-wrapper">
-                                    <!-- Root Passwort wiederholen -->
-                                    <i class="fa fa-lock input-text-icon"></i>
-                                    <input class="input-text input-text-password" type="password"
-                                           name="userPasswordRepeat" value="" required="required"
-                                           placeholder="<?php echo $Locale->getStringLang('setup.web.content.rootPasswordRepeat') ?>"
+                                    <i class="fa fa-info-circle host-and-url-info"
+                                       data-attr="<?php echo nl2br($Locale->getStringLang('help.prompt.host')); ?>"
+                                       title="<?php echo $Locale->getStringLang('setup.web.content.domain.help'); ?>"></i>
+                                </label>
+                                <label>
+                                    <!-- Rootverzeichnis -->
+                                    <input class="input-text" type="text" name="rootPath" value="
+<?php echo dirname(__FILE__); ?>/"
+                                           placeholder="<?php echo $Locale->getStringLang('setup.web.content.rootDirectory') ?>"
                                     />
+                                    <i class="fa fa-info-circle host-and-url-info"
+                                       data-attr="<?php echo nl2br($Locale->getStringLang('help.prompt.cms')); ?>"
+                                       title="<?php echo $Locale->getStringLang('setup.web.content.rootDirectory.help'); ?>"></i>
+                                </label>
+                                <label>
+                                    <!-- URL Unterverzeichnis -->
+                                    <input class="input-text" type="text" name="URLsubPath" value=""
+                                           placeholder="<?php echo $Locale->getStringLang('setup.web.content.urlDirectory') ?>"
+                                    />
+                                    <i class="fa fa-info-circle host-and-url-info"
+                                       data-attr="<?php echo nl2br($Locale->getStringLang('help.prompt.url')); ?>"
+                                       title="<?php echo $Locale->getStringLang('setup.web.content.urlSubPath.help'); ?>"></i>
+                                </label>
+                            </li>
+
+                            <!-- step 7 -->
+                            <li class="step step-7">
+                                <div class="license-box-wrapper">
+                                    <div class="license-box">
+                                        <?php echo $Locale->getStringLang('setup.web.content.license.text'); ?>
+                                    </div>
                                 </div>
-                            </label>
-
-                        </li>
-
-                        <!-- step 6 -->
-                        <li class="step step-6" style="text-align: center">
-                            <label>
-                                <!-- Domain -->
-                                <input class="input-text" type="text" name="domain" value=""
-                                       placeholder="<?php echo $Locale->getStringLang('setup.web.content.domain') ?>"
-                                />
-                                <i class="fa fa-info-circle host-and-url-info"
-                                   data-attr="<?php echo nl2br($Locale->getStringLang('help.prompt.host')); ?>"
-                                   title="<?php echo $Locale->getStringLang('setup.web.content.domain.help'); ?>"></i>
-                            </label>
-                            <label>
-                                <!-- Rootverzeichnis -->
-                                <input class="input-text" type="text" name="rootPath" value=""
-                                       placeholder="<?php echo $Locale->getStringLang('setup.web.content.rootDirectory') ?>"
-                                />
-                                <i class="fa fa-info-circle host-and-url-info"
-                                   data-attr="<?php echo nl2br($Locale->getStringLang('help.prompt.cms')); ?>"
-                                   title="<?php echo $Locale->getStringLang('setup.web.content.rootDirectory.help'); ?>"></i>
-                            </label>
-                            <label>
-                                <!-- URL Unterverzeichnis -->
-                                <input class="input-text" type="text" name="URLsubPath" value=""
-                                       placeholder="<?php echo $Locale->getStringLang('setup.web.content.urlDirectory') ?>"
-                                />
-                                <i class="fa fa-info-circle host-and-url-info"
-                                   data-attr="<?php echo nl2br($Locale->getStringLang('help.prompt.url')); ?>"
-                                   title="<?php echo $Locale->getStringLang('setup.web.content.urlSubPath.help'); ?>"></i>
-                            </label>
-                        </li>
-
-                        <!-- step 7 -->
-                        <li class="step step-7">
-                            <div class="license-box-wrapper">
-                                <div class="license-box">
-                                    <?php echo $Locale->getStringLang('setup.web.content.license.text'); ?>
-                                </div>
-                            </div>
-                            <div class="license-checkbox-wrapper">
-                                <input id="license-checkbox" class="license-checkbox"
-                                       name="license" type="checkbox" required="required"/>
-                                <label for="license-checkbox">
+                                <div class="license-checkbox-wrapper">
+                                    <input id="license-checkbox" class="license-checkbox"
+                                           name="license" type="checkbox" required="required"/>
+                                    <label for="license-checkbox">
                                     <span class="license-label">
                                         <?php echo $Locale->getStringLang('setup.web.content.license.checkbox'); ?>
                                     </span>
-                                </label>
-                            </div>
-                        </li>
-                    </ul>
+                                    </label>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
-</div>
 
-<div class="grid-container">
-    <div class="grid-20 hide-on-mobile">
+    <div class="grid-container">
+        <div class="grid-20 hide-on-mobile">
+        </div>
+        <div class="nav-buttons grid-80 mobile-grid-100">
+            <button id="back-button" class="qui-buttonn button back-button" disabled>
+                <?php echo $Locale->getStringLang('setup.web.content.button.back'); ?>
+            </button>
+            <button id="next-button" class="qui-buttonn next-button">
+                <?php echo $Locale->getStringLang('setup.web.content.button.next'); ?>
+            </button>
+        </div>
     </div>
-    <div class="nav-buttons grid-80 mobile-grid-100">
-        <button id="back-button" class="qui-buttonn button back-button" disabled>
-            <?php echo $Locale->getStringLang('setup.web.content.button.back'); ?>
-        </button>
-        <button id="next-button" class="qui-buttonn next-button">
-            <?php echo $Locale->getStringLang('setup.web.content.button.next'); ?>
-        </button>
-    </div>
-</div>
 
-</body>
-</html>
+    </body>
+    </html>
 
 <?php
 

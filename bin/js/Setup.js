@@ -209,7 +209,10 @@ define('bin/js/Setup', [
                     this.licenseLabel.setStyle('color', 'inherit');
                     this.licenseCheckbox.getParent().removeClass('error');
                     this.checkProgress();
+                    return;
                 }
+
+                this.checkProgress();
             }.bind(this));
 
             console.log(QUIFormUtils.getFormData(this.FormSetup));

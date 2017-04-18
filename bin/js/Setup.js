@@ -83,6 +83,9 @@ define('bin/js/Setup', [
          */
         load: function () {
 
+            // javascript is active
+            document.getElement('.script-is-on').setStyle('display', 'block');
+
             this.FormSetup = document.getElement('#form-setup');
 
             // console.log(this.FormSetup);
@@ -264,23 +267,18 @@ define('bin/js/Setup', [
                 keyup : inputChange
             });
 
-            // auto fill button (domain step)
-            document.getElement('.auto-fill').addEvent('click', function () {
-                var domain     = document.getElement('input[name="domain"]'),
-                    rootPath   = document.getElement('input[name="rootPath"]'),
-                    urlSubPath = document.getElement('input[name="URLsubPath"]'),
-                    subPath = '/';
+            // host - fill placeholder
+            var domain     = document.getElement('input[name="domain"]'),
+                rootPath   = document.getElement('input[name="rootPath"]'),
+                urlSubPath = document.getElement('input[name="URLsubPath"]'),
+                subPath    = '/';
 
-                if (window.location.pathname != '/') {
-                    subPath = window.location.pathname + '/';
-                }
-                domain.value     = window.location.origin;
-                rootPath.value   = ROOT_PATH + '/';
-                urlSubPath.value = subPath;
-                /*inputChange(domain);
-                inputChange(rootPath);
-                inputChange(urlSubPath);*/
-            });
+            if (window.location.pathname != '/') {
+                subPath = window.location.pathname + '/';
+            }
+            domain.placeholder     = window.location.origin;
+            rootPath.placeholder   = ROOT_PATH + '/';
+            urlSubPath.placeholder = subPath;
 
             console.log(QUIFormUtils.getFormData(this.FormSetup));
         },
@@ -328,30 +326,23 @@ define('bin/js/Setup', [
                 return;
             }
 
+            // host step
             if (this.step == 6) {
                 var stepHost = document.getElement('.step-6'),
-                    inputs   = stepHost.getElements('input'),
-                    goToNext = true;
+                    inputs   = stepHost.getElements('input');
 
                 inputs.forEach(function (Elm) {
                     if (Elm.value == '') {
-                        goToNext = false;
+                        Elm.value = Elm.placeholder;
                     }
                 });
-
-                if (!goToNext) {
-                    QUI.getMessageHandler().then(function (MH) {
-
-                        MH.setAttribute('displayTimeMessages', 4000);
-                        MH.addError(LOCALE_TRANSLATIONS['setup.web.content.hostError']);
-                    });
-                    return;
-                }
 
             }
 
             this.nextExecute();
-        },
+        }
+
+        ,
 
         /**
          * go to the next step if anything ok
@@ -413,7 +404,8 @@ define('bin/js/Setup', [
             }
 
             this.checkProgress();
-        },
+        }
+        ,
 
         /**
          * back step
@@ -466,7 +458,8 @@ define('bin/js/Setup', [
             }
 
             this.checkProgress();
-        },
+        }
+        ,
 
         /**
          * recalc the ListElement width
@@ -484,7 +477,8 @@ define('bin/js/Setup', [
             }, {
                 duration: 500
             });
-        },
+        }
+        ,
 
         /**
          * get header height
@@ -499,7 +493,8 @@ define('bin/js/Setup', [
             }
 
             return Math.max.apply(false, arr).toInt();
-        },
+        }
+        ,
 
         /**
          * set header height
@@ -519,7 +514,8 @@ define('bin/js/Setup', [
             }, {
                 duration: 500
             })
-        },
+        }
+        ,
 
         /**
          * show header
@@ -532,7 +528,8 @@ define('bin/js/Setup', [
             }, {
                 duration: 250
             });
-        },
+        }
+        ,
 
         /**
          * Count all inputs fields -> for progress bar
@@ -556,7 +553,8 @@ define('bin/js/Setup', [
             // console.log(Object.getLength(QUIFormUtils.getFormData(this.FormSetup)));
 
             return names.length;
-        },
+        }
+        ,
 
         checkProgress: function () {
 
@@ -619,7 +617,8 @@ define('bin/js/Setup', [
                     this.fillTestData(5);
                     break;
             }
-        },
+        }
+        ,
 
         /**
          * Set the width and color of the progress bar
@@ -654,7 +653,8 @@ define('bin/js/Setup', [
                 });
                 this.textColorGrey = true;
             }
-        },
+        }
+        ,
 
         /**
          *
@@ -671,7 +671,7 @@ define('bin/js/Setup', [
                     data     : {
                         driver  : Form.databaseDriver,
                         host    : Form.databaseHost,
-                        port    : Form.databasePort,
+                        port    : 3306,
                         user    : Form.databaseUser,
                         password: Form.databasePassword,
                         name    : Form.databaseName,
@@ -685,7 +685,8 @@ define('bin/js/Setup', [
                     }
                 }).send();
             });
-        },
+        }
+        ,
 
         /**
          * Check, if user is not empty,
@@ -722,7 +723,8 @@ define('bin/js/Setup', [
                     }
                 }).send();
             });
-        },
+        }
+        ,
 
         /**
          * install -> send data
@@ -731,7 +733,8 @@ define('bin/js/Setup', [
         $exeInstall: function () {
 
             console.info(QUIFormUtils.getFormData(this.FormSetup))
-        },
+        }
+        ,
 
         /**
          * inputs ausfüllen mit beispiel Daten
@@ -746,7 +749,7 @@ define('bin/js/Setup', [
                     document.getElement('input[name="databaseName"]').value                  = 'QUIQQERTest';
                     document.getElement('input[name="databaseUser"]').value                  = 'root';
                     document.getElement('input[name="databasePassword"]').value              = '548?Q_Xggg-v$';
-                    document.getElement('input[name="databasePort"]').value                  = '3306';
+                    // document.getElement('input[name="databasePort"]').value                  = '3306';
                     break;
                 case 5:
                     document.getElement('input[name="userName"]').value           = 'admin';
@@ -754,6 +757,7 @@ define('bin/js/Setup', [
                     document.getElement('input[name="userPasswordRepeat"]').value = 'admin';
 
             }
-        }.bind(this)
+        }
+            .bind(this)
     });
 });

@@ -395,7 +395,8 @@ msgid "prompt.cannot.be.empty"
 msgstr "Can not be empty. Please try again."
 
 
-
+msgid "setup.web.noscript"
+msgstr "The QUIQQER Setup only works in browser with JavaScript. Please activate JavaScript in your browser and refresh this page to continue."
 
 msgid "setup.web.subTitle"
 msgstr "Installation"

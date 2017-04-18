@@ -11,6 +11,7 @@ use QUI\Projects\Site\Edit;
 use QUI\Setup\Locale\Locale;
 use QUI\Setup\Log\Log;
 use QUI\Setup\Utils\Validator;
+use QUI\Translator;
 
 /**
  * Class Preset
@@ -191,8 +192,6 @@ class Preset
             $this->Locale->getStringLang("applypreset.creating.project", "Created Project :") . $this->projectName
         );
 
-        \QUI\Setup::all();
-
         $this->refreshNamespaces($this->Composer);
 
         # Add new languages if neccessary
@@ -204,22 +203,29 @@ class Preset
             Log::info("Installed Languages '" . implode(',', $this->languages) . "' for Project {$this->projectName}");
         }
 
+
         # Add the languages and execute the project setup
         foreach ($this->languages as $lang) {
-            $Project = \QUI::getProjectManager()->getProject($this->projectName, $lang);
+            $Project = new Project($this->projectName, $lang);
             $Project->setup();
         }
 
-        \QUI\Setup::all();
+        # Remove the cachefile to make sure QUIQQER re-reads all locale.xml files
+        if (file_exists(VAR_DIR . 'locale/localefiles')) {
+            unlink(VAR_DIR . 'locale/localefiles');
+        }
 
+        \QUI::getPackage('quiqqer/quiqqer')->setup();
+        \QUI::getLocale()->refresh();
 
-        # Create the default structure for each language
-        foreach ($this->languages as $lang) {
-            $Project = \QUI::getProjectManager()->getProject($this->projectName, $lang);
-            try {
-                \QUI\Utils\Project::createDefaultStructure($Project);
-            } catch (\Exception $Exception) {
-            }
+        if (!defined("ADMIN")) {
+            define("ADMIN", 1);
+        }
+
+        try {
+            \QUI\Utils\Project::createDefaultStructure(new Project($this->projectName));
+        } catch (\Exception $Exception) {
+            Log::warning($Exception->getMessage());
         }
     }
 

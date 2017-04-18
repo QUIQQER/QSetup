@@ -1345,6 +1345,7 @@ class Setup
             define('QUIQQER_SYSTEM', true);
         }
 
+
         // Workaround to prevent double inclusion of function declarations while autoloading.
         define('QUIQQER_SETUP', true);
 
@@ -1436,7 +1437,7 @@ LOGETC;
 
         # Add Setup languages
         QUI\Translator::addLang($this->data['lang']);
-        QUI\Translator::setup();
+        QUI\Translator::create();
 
         if (file_exists(VAR_DIR . 'locale/localefiles')) {
             unlink(VAR_DIR . 'locale/localefiles');

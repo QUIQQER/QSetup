@@ -40,6 +40,8 @@ define('bin/js/Setup', [
             'changeProgressBar',
             'checkDatabase',
             'checkUserAndPassword',
+            'disableAllTab',
+            'activeTabForThisStep',
             '$exeInstall',
             'showPassword',
             'showInfoPopup'
@@ -118,15 +120,19 @@ define('bin/js/Setup', [
 
             this.activeHeader = document.getElements('.header-list li');
 
-
             this.NextStep.addEvent('click', this.next);
             this.BackStep.addEvent('click', this.back);
+
+            // diasble all TAB key
+            this.disableAllTab();
 
             window.addEvents({
                 resize: function () {
                     QUIFunctionUtils.debounce(this.recalc, 2000);
                 }
             });
+
+
 
             this.setHeaderHeight(this.getHeaderHeight());
 
@@ -289,6 +295,7 @@ define('bin/js/Setup', [
          */
         next: function () {
 
+            this.NextStep.blur();
             var self = this;
 
             // data base check
@@ -340,9 +347,7 @@ define('bin/js/Setup', [
             }
 
             this.nextExecute();
-        }
-
-        ,
+        },
 
         /**
          * go to the next step if anything ok
@@ -361,9 +366,6 @@ define('bin/js/Setup', [
                 this.$exeInstall();
                 return;
             }
-            // nav icons
-            /*this.fa[this.step].removeClass('fa-circle-o');
-             this.fa[this.step].addClass('fa-check-circle-o');*/
 
             // nav color
             this.liElm[this.step - 1].removeClass('step-active');
@@ -371,6 +373,9 @@ define('bin/js/Setup', [
             this.liElm[this.step].addClass('step-active');
 
             this.step++;
+
+            // active TAB key in next step
+            this.activeTabForThisStep(this.step);
 
             // header
             moofx(this.activeHeader).animate({
@@ -411,15 +416,12 @@ define('bin/js/Setup', [
          * back step
          */
         back: function () {
+            this.BackStep.blur();
             var currentPos = this.StepsList.getStyle('left').toInt();
 
             if (currentPos == 0) {
                 return;
             }
-
-            // nav icons
-            /*this.fa[this.step - 1].removeClass('fa-check-circle-o');
-             this.fa[this.step - 1].addClass('fa-circle-o');*/
 
             // nav color
             this.liElm[this.step - 1].removeClass('step-active');
@@ -543,9 +545,9 @@ define('bin/js/Setup', [
             }
             var names = [];
 
-            for (var i = 0; i < this.allInputs.length; i++) {
-                if (!names.include(this.allInputs[i].name)) {
-                    names.push(this.allInputs[i].name);
+            for (var j = 0; j < this.allInputs.length; j++) {
+                if (!names.include(this.allInputs[j].name)) {
+                    names.push(this.allInputs[j].name);
                 }
             }
 
@@ -556,6 +558,11 @@ define('bin/js/Setup', [
         }
         ,
 
+        /**
+         * check the progress
+         * take all input fields and show
+         * how much of them are filled
+         */
         checkProgress: function () {
 
             var progress;
@@ -582,8 +589,7 @@ define('bin/js/Setup', [
                 }
             }
 
-            // var inputsNumber = Object.getLength(QUIFormUtils.getFormData(this.FormSetup));
-            // -1 denn ein Input ist optional
+            // "-1" because one input field is not required (db_prefix)
             var inputsNumber = this.countInputs() - 1;
 
             progress = (inputsDone / inputsNumber * 100).toString();
@@ -596,9 +602,10 @@ define('bin/js/Setup', [
                 progress = 1;
             }
 
+            // animate the progress bar
             this.changeProgressBar(progress);
 
-            // default values
+            // default values for some fields
             switch (this.step) {
                 case 2:
                     if (!document.getElements('[name="version"]:checked').length) {
@@ -610,15 +617,14 @@ define('bin/js/Setup', [
                         document.getElements('[name="vorlage"]')[0].checked = true;
                     }
                     break;
-                case 4:
+                case 4: // only test
                     this.fillTestData(4);
                     break;
-                case 5:
+                case 5: //only test
                     this.fillTestData(5);
                     break;
             }
-        }
-        ,
+        },
 
         /**
          * Set the width and color of the progress bar
@@ -657,6 +663,8 @@ define('bin/js/Setup', [
         ,
 
         /**
+         * Check the data base credentials
+         *
          *
          * @returns {Promise}
          */
@@ -723,8 +731,28 @@ define('bin/js/Setup', [
                     }
                 }).send();
             });
-        }
-        ,
+        },
+
+        /**
+         * disable TAB key on all inputs
+         */
+        disableAllTab: function () {
+            this.allInputs.forEach(function (Elm) {
+                Elm.setAttribute('tabindex', '-1')
+            });
+        },
+
+        /**
+         * active TAB key only in actual step
+         *
+         * @param step
+         */
+        activeTabForThisStep: function (step) {
+            var cssClass = '.step-' + step;
+            document.getElement(cssClass).getElements('input, select').forEach(function (Elm) {
+                Elm.setAttribute('tabindex', '2');
+            });
+        },
 
         /**
          * install -> send data
@@ -733,8 +761,7 @@ define('bin/js/Setup', [
         $exeInstall: function () {
 
             console.info(QUIFormUtils.getFormData(this.FormSetup))
-        }
-        ,
+        },
 
         /**
          * inputs ausfüllen mit beispiel Daten
@@ -749,7 +776,6 @@ define('bin/js/Setup', [
                     document.getElement('input[name="databaseName"]').value                  = 'QUIQQERTest';
                     document.getElement('input[name="databaseUser"]').value                  = 'root';
                     document.getElement('input[name="databasePassword"]').value              = '548?Q_Xggg-v$';
-                    // document.getElement('input[name="databasePort"]').value                  = '3306';
                     break;
                 case 5:
                     document.getElement('input[name="userName"]').value           = 'admin';
@@ -757,7 +783,6 @@ define('bin/js/Setup', [
                     document.getElement('input[name="userPasswordRepeat"]').value = 'admin';
 
             }
-        }
-            .bind(this)
+        }.bind(this)
     });
 });

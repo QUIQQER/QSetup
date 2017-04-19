@@ -183,17 +183,17 @@ fieldset {
 }
 
 ::-webkit-input-placeholder {
-    color: rgba(0, 0, 0, 0.3);
+    color: rgba(0, 0, 0, 0.2);
     font-size: 1em;
 }
 
 ::-moz-placeholder {
-    color: rgba(0, 0, 0, 0.3);
+    color: rgba(0, 0, 0, 0.2);
     font-size: 1em;
 }
 
 :-ms-input-placeholder {
-    color: rgba(0, 0, 0, 0.3);
+    color: rgba(0, 0, 0, 0.2);
     font-size: 1em;
 }
 
@@ -305,7 +305,7 @@ select option {
     color: #aaa;
     cursor: pointer;
     display: inline-block;
-    padding: 0 20px;
+    padding: 0 14px 0 20px;
     position: relative;
     text-align: left;
     width: 100%;
@@ -333,6 +333,8 @@ input:focus,
     font-size: 26px;
     float: right;
     line-height: 50px;
+    padding-left: 14px;
+    border-left: 1px solid #e5e5e5;
 }
 
 .button-icon-left {
@@ -603,7 +605,7 @@ input[type=checkbox] + label:focus:before {
 
 input[type=checkbox].license-checkbox + label {
     width: auto;
-    background-color: #fff;
+    background-color: #f8f8f8;
     margin: 20px 0;
     cursor: pointer;
     padding: 10px;
@@ -824,21 +826,21 @@ li.step-left-align {
     background: #e8e8e8;
 }
 
+.back-button:hover,
+.back-button:active,
+.back-button:focus {
+    color: #666;
+    background: #e1e1e1;
+    box-shadow: 0 3px 10px -4px #999;
+}
+
 .back-button:disabled,
 .back-button:disabled:hover,
 .back-button:disabled:focus {
     color: #ddd;
     background: #eee;
     cursor: not-allowed;
-}
-
-.back-button:disabled {
-    /*opacity: 0.9;*/
-}
-
-.back-button:hover {
-    color: #888;
-    background: #dadada;
+    box-shadow: none;
 }
 
 .next-button,
@@ -849,8 +851,11 @@ li.step-left-align {
     float: right;
 }
 
-.next-button:hover {
-    background: #539725;
+.next-button:hover,
+.next-button:active,
+.next-button:focus {
+    background: #64a836;
+    box-shadow: 0 3px 10px #bbb;
 }
 
 .nav-buttons .fa {

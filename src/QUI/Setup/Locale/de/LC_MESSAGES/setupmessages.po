@@ -402,46 +402,46 @@ msgid "setup.web.subTitle"
 msgstr "Installation"
 
 msgid "setup.web.header.siteLang"
-msgstr "Webseite Sprache"
+msgstr "Sprache"
 
 msgid "setup.web.header.siteLang.text"
-msgstr "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat.Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy tempor invidunt ut labore et."
+msgstr "Wählen Sie die Sprache für Ihre Installation aus. Sie können die Sprache jederzeit in QUIQQER Einstellungen ändern."
 
 msgid "setup.web.header.version"
 msgstr "Version"
 
 msgid "setup.web.header.version.text"
-msgstr "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor"
+msgstr "Für produktiver Einsatz wird die neueste Version (höchste Nummer) empfohlen. Entwickler können auch zwischen dev-dev und dev-master Versionen wählen. Die Developer-Versionen sind zwar auf dem neusten Stand, können aber unter Umständen instabil sein."
 
 msgid "setup.web.header.template"
 msgstr "Vorlage"
 
 msgid "setup.web.header.template.text"
-msgstr "Sodf olore magna aliquyam erat, sed diam voluptua. At vero"
+msgstr "Ein vorgefertigtes Template für Ihren Webauftritt. Sie können nachher andere Vorlagen installieren oder auch eigene erstellen."
 
 msgid "setup.web.header.dataBase"
 msgstr "Datenbank"
 
 msgid "setup.web.header.dataBase.text"
-msgstr "Consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et"
+msgstr "Geben Sie alle Daten ein, die benötigt werden um sich mit Ihrer Datenbank zu verbinden. Verwenden Sie <i>\"Tabellen-Prefix\"</i>, wenn Sie eine bereits existierende und benutze Datenbank verwenden wollen bzw. müssen."
 
 msgid "setup.web.header.user"
 msgstr "Root Benutzer"
 
 msgid "setup.web.header.user.text"
-msgstr "Ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et"
+msgstr "Die Zugangsdaten, mit denen Sie sich in Backend-Panel als <i>Administrator</i> einloggen können. Aus Sicherheitsgründen empfiehlt sich ein starkes Passwort zu verwenden."
 
 msgid "setup.web.header.hostAndDirectory"
 msgstr "Host und Pfade"
 
 msgid "setup.web.header.hostAndDirectory.text"
-msgstr "Ipsum dolor sit amet, consetetur"
+msgstr "Wenn Sie die Felder leer lassen, werden die benötigte Daten automatisch ermittelt und übernommen. Bitte nur dann ändern, wenn Sie explizit wissen, was sie machen. Mehr Informationen erfahren Sie, wenn Sie auf die <i>Info-Icon</i> clicken."
 
 msgid "setup.web.header.license"
 msgstr "Lizenz"
 
 msgid "setup.web.header.license.text"
-msgstr "Lizenzen ohne Ende"
+msgstr "Bitte lesen Sie folgende Lizenzvereinbarung sorgfältig durch und akzeptieren Sie diese, um mit der QUIQQER Installation anfangen zu können."
 
 
 msgid "setup.web.nav.siteLang"
@@ -486,7 +486,7 @@ msgid "setup.web.content.dbName"
 msgstr "Datenbank Name"
 
 msgid "setup.web.content.dbPrefix"
-msgstr "Datenbank Prefix"
+msgstr "Tabellen-Prefix"
 
 msgid "setup.web.content.dbUser"
 msgstr "Datenbank Benutzer"

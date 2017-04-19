@@ -209,7 +209,7 @@ $language = require_once "languageDetection.php";
                                                 $language  = $Locale->getStringLang($localeVar);
 
                                                 $output = '<label class="input-wrapper" for="' . $lang . '">';
-                                                $output .= '<input class="input-radio" name="project-language" type="radio"
+                                                $output .= '<input class="input-radio" name="project-language" type="radio" tabindex="-1"
                                                value="' . $lang . '" required ' . $checked . 'id="' . $lang . '"/>';
                                                 $output .= '<div class="label-div">
                                                         <img class="" src="/bin/img/flags/' . $lang . '.png" 
@@ -249,7 +249,7 @@ $language = require_once "languageDetection.php";
                                             }
 
                                             $output = '<label class="input-wrapper">
-                                        <input class="input-radio" name="version"
+                                        <input class="input-radio" name="version" tabindex="-1" 
                                                type="radio" value="' . $versions[$i] . '"' . $checked . ' />';
                                             $output .= '<div class="label-div">' . $icon;
                                             $output .= $versions[$i];
@@ -292,7 +292,7 @@ $language = require_once "languageDetection.php";
                                             }
 
                                             $output = '<label class="input-wrapper">
-                                    <input class="input-radio" name="vorlage"
+                                    <input class="input-radio" name="vorlage" tabindex="-1" 
                                            type="radio" value="' . $key . '"' . $checked . '/>
                                     <div class="label-div">
                                         <i class="fa ' . $icon . ' button-icon-left"></i>';
@@ -340,14 +340,6 @@ $language = require_once "languageDetection.php";
                                                    placeholder="<?php echo $Locale->getStringLang('setup.web.content.dbHost') ?>"/>
                                         </div>
 
-                                        <!--<div class="input-wrapper">
-                                        <!-- Datenbank Port --
-                                        <label class="animated-label">
-                                            <?php /*echo $Locale->getStringLang('setup.web.content.dbPort') */ ?>:
-                                        </label>
-                                        <input class="input-text" type="number" name="databasePort" value="" required
-                                               placeholder="<?php /*echo $Locale->getStringLang('setup.web.content.dbPort') */ ?>"/>
-                                    </div>-->
                                         <div class="input-wrapper">
                                             <!-- Datenbank Name -->
                                             <label class="animated-label">
@@ -357,11 +349,11 @@ $language = require_once "languageDetection.php";
                                                    placeholder="<?php echo $Locale->getStringLang('setup.web.content.dbName') ?>"/>
                                         </div>
                                         <div class="input-wrapper">
-                                            <!-- Datenbank Prefix -->
+                                            <!-- Tabellen Prefix -->
                                             <label class="animated-label">
                                                 <?php echo $Locale->getStringLang('setup.web.content.dbPrefix') ?>:
                                             </label>
-                                            <input class="input-text" type="text" name="databasePrefix" value=""
+                                            <input class="input-text" type="text" name="databasePrefix" value="" required tabindex="-1"
                                                    placeholder="<?php echo $Locale->getStringLang('setup.web.content.dbPrefix') ?>"/>
                                         </div>
                                         <div class="input-wrapper">
@@ -369,7 +361,7 @@ $language = require_once "languageDetection.php";
                                             <label class="animated-label">
                                                 <?php echo $Locale->getStringLang('setup.web.content.dbUser') ?>:
                                             </label>
-                                            <input class="input-text" type="text" name="databaseUser" value="" required
+                                            <input class="input-text" type="text" name="databaseUser" value="" required tabindex="-1"
                                                    placeholder="<?php echo $Locale->getStringLang('setup.web.content.dbUser') ?>"/>
                                         </div>
                                         <div class="input-wrapper">
@@ -377,7 +369,7 @@ $language = require_once "languageDetection.php";
                                             <label class="animated-label">
                                                 <?php echo $Locale->getStringLang('setup.web.content.dbPassword') ?>:
                                             </label>
-                                            <input class="input-text" type="password" name="databasePassword" value=""
+                                            <input class="input-text" type="password" name="databasePassword" value="" tabindex="-1"
                                                    required
                                                    placeholder="<?php echo $Locale->getStringLang('setup.web.content.dbPassword') ?>"/>
                                         </div>
@@ -393,7 +385,7 @@ $language = require_once "languageDetection.php";
                                             <!-- Root Benutzer -->
                                             <i class="fa fa-user input-text-icon"></i>
                                             <input class="input-text input-text-user" type="text"
-                                                   name="userName" value="" required="required"
+                                                   name="userName" value="" required tabindex="-1"
                                                    placeholder="<?php echo $Locale->getStringLang('setup.web.content.rootUser') ?>"
                                             />
 
@@ -406,7 +398,7 @@ $language = require_once "languageDetection.php";
                                             <!-- Root Passwort -->
                                             <i class="fa fa-lock input-text-icon"></i>
                                             <input class="input-text input-text-password" type="password"
-                                                   name="userPassword" value="" required="required"
+                                                   name="userPassword" value="" required tabindex="-1"
                                                    placeholder="<?php echo $Locale->getStringLang('setup.web.content.rootPassword') ?>"
                                             />
 
@@ -416,8 +408,7 @@ $language = require_once "languageDetection.php";
                                         </div>
                                         <div class="input-wrapper user-password-step-float-right">
                                             <label class="animated-label">
-                                                <?php echo $Locale->getStringLang('setup.web.content.rootPasswordRepeat') ?>
-                                                :
+                                                <?php echo $Locale->getStringLang('setup.web.content.rootPasswordRepeat') ?>:
                                             </label>
                                             <!-- Root Passwort wiederholen -->
                                             <i class="fa fa-lock input-text-icon"></i>
@@ -530,11 +521,11 @@ $language = require_once "languageDetection.php";
                 <!--<div class="grid-20 hide-on-mobile">
                 </div>-->
                 <div class="nav-buttons grid-80 mobile-grid-100">
-                    <button id="back-button" class="button back-button" disabled>
+                    <button id="back-button" class="button back-button" disabled tabindex="1">
                         <span class="fa fa-angle-left" style="margin-right: 10px;"></span>
                         <?php echo $Locale->getStringLang('setup.web.content.button.back'); ?>
                     </button>
-                    <button id="next-button" class="next-button">
+                    <button id="next-button" class="next-button" tabindex="3">
                         <?php echo $Locale->getStringLang('setup.web.content.button.next'); ?>
                         <span class="fa fa-angle-right" style="margin-left: 10px;"></span>
                     </button>

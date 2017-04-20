@@ -590,7 +590,6 @@ class Setup
         if ($this->mode !== Setup::MODE_WEB) {
             $this->deleteSetupFiles();
         }
-
     }
 
     /**
@@ -1507,8 +1506,7 @@ LOGETC;
     public function deleteSetupFiles()
     {
         # Contraint to ensure correct setup order.
-        if (
-            $this->Step != Setup::STEP_SETUP_CHECKS &&
+        if ($this->Step != Setup::STEP_SETUP_CHECKS &&
             $this->Step != Setup::STEP_DATA_COMPLETE &&
             $this->Step != Setup::STEP_SETUP_PRESET
         ) {

@@ -2,7 +2,6 @@
 
 namespace QUI\Setup\Output;
 
-
 use QUI\Setup\Locale\Locale;
 use QUI\Setup\Log\Log;
 use QUI\Setup\Output\Interfaces\Output;
@@ -148,6 +147,4 @@ class NullOutput implements Output
     {
         return $string;
     }
-
-
 }

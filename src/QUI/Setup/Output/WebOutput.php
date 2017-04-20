@@ -123,7 +123,6 @@ class WebOutput implements Output
 
         echo $msg . " <br />";
         $this->flush();
-
     }
 
     /**

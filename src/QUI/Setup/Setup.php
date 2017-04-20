@@ -985,7 +985,8 @@ class Setup
                 'usergroup' => $this->data['rootGID'],
                 'su'        => 1,
                 'active'    => 1,
-                'lang'      => $this->Locale->getCurrent() == 'de_DE' ? 'de' : 'en'
+                'lang'      => $this->Locale->getCurrent() == 'de_DE' ? 'de' : 'en',
+                'regdate'   => time()
             )
         );
 

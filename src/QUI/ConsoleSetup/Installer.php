@@ -275,6 +275,7 @@ class Installer
     }
 
     #region STEPS
+
     /**
      * Prompts the user for the desired setup language and
      * sets the language for the currently used Locale
@@ -760,6 +761,12 @@ class Installer
 
         $this->echoSectionHeader($this->Locale->getStringLang("message.step.setup", "Executing Setup : "));
         $this->echoDecorationCoffe();
+
+        // TODO REMOVE
+        $json = json_encode($this->Setup->getData());
+        file_put_contents("/tmp/setupdata.txt", $json);
+
+
         $this->Setup->runSetup();
     }
 
@@ -1261,16 +1268,16 @@ HEADER;
                         Database::resetDatabase($storedTables, $driver, $host, $user, $pw, $db, $prefix, $port);
                     } catch (\Exception $Exception) {
                         if ($this->prompt(
-                            $this->Locale->getStringLang(
-                                "prompt.database.hard.reset.warning",
-                                "The Setup will DROP! all tables in the given database. Are you sure you want to continue? (y/n)"
-                            ),
-                            false,
-                            COLOR_RED,
-                            false,
-                            true,
-                            false
-                        ) === 'y'
+                                $this->Locale->getStringLang(
+                                    "prompt.database.hard.reset.warning",
+                                    "The Setup will DROP! all tables in the given database. Are you sure you want to continue? (y/n)"
+                                ),
+                                false,
+                                COLOR_RED,
+                                false,
+                                true,
+                                false
+                            ) === 'y'
                         ) {
                             Database::hardResetDatabase($driver, $host, $user, $pw, $db, $prefix, $port);
                         } else {

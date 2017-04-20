@@ -11,5 +11,5 @@
 /compileTranslations.sh
 /composer.phar
 /var/
-
+/setupdata.json
 /test.php

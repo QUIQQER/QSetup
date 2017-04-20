@@ -1,21 +1,22 @@
 <?php
+
 namespace QUI\Setup;
 
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
 
 
+use Composer\Console\Application;
 use QUI;
 use QUI\Composer\Composer;
 use QUI\Setup\Database\Database;
 use QUI\Setup\Locale\Locale;
 use QUI\Setup\Locale\LocaleException;
 use QUI\Setup\Output\ConsoleOutput;
+use QUI\Setup\Output\Interfaces\Output;
 use QUI\Setup\Output\WebOutput;
 use QUI\Setup\Utils\Utils;
 use QUI\Setup\Utils\Validator;
-use QUI\Setup\Output\Interfaces\Output;
-use QUI\Database as QUIDB;
 
 /**
  * Class Setup
@@ -139,7 +140,6 @@ class Setup
     {
         $this->autodetectTimezone();
 
-
         $this->Locale = new Locale("en_GB");
 
         // Initialize neccessary directories.
@@ -190,6 +190,17 @@ class Setup
         }
 
         return false;
+    }
+
+    /**
+     * Gets the current Setup step
+     * @see Setup::STEP_BEGIN
+     *
+     * @return int
+     */
+    public function getStep()
+    {
+        return $this->Step;
     }
 
     /**
@@ -285,7 +296,7 @@ class Setup
             $this->Output->writeLn(
                 $this->Locale->getStringLang($Exception->getMessage()),
                 Output::LEVEL_ERROR,
-                Output::COLOR_RED
+                Output::COLOR_ERROR
             );
             exit;
         }
@@ -310,7 +321,7 @@ class Setup
     {
         $this->data['lang'] = $lang;
 
-        $this->Step = Setup::STEP_DATA_LANGUAGE;
+        $this->Step    = Setup::STEP_DATA_LANGUAGE;
         $this->stepSum += Setup::STEP_DATA_LANGUAGE;
     }
 
@@ -329,7 +340,7 @@ class Setup
             throw $Exception;
         }
 
-        $this->Step = Setup::STEP_DATA_VERSION;
+        $this->Step    = Setup::STEP_DATA_VERSION;
         $this->stepSum += Setup::STEP_DATA_VERSION;
     }
 
@@ -344,7 +355,7 @@ class Setup
             Validator::validatePreset($preset);
             $this->data['preset'] = $preset;
 
-            $this->Step = Setup::STEP_DATA_PRESET;
+            $this->Step    = Setup::STEP_DATA_PRESET;
             $this->stepSum += Setup::STEP_DATA_PRESET;
         } catch (SetupException $Exception) {
             $this->Output->writeLn(
@@ -387,7 +398,7 @@ class Setup
         $this->data['database']['prefix']     = $dbPrefix;
         $this->data['database']['create_new'] = $createNew;
 
-        $this->Step = Setup::STEP_DATA_DATABASE;
+        $this->Step    = Setup::STEP_DATA_DATABASE;
         $this->stepSum += Setup::STEP_DATA_DATABASE;
     }
 
@@ -411,7 +422,7 @@ class Setup
         $this->data['user']['name'] = $user;
         $this->data['user']['pw']   = $pw;
 
-        $this->Step = Setup::STEP_DATA_USER;
+        $this->Step    = Setup::STEP_DATA_USER;
         $this->stepSum += Setup::STEP_DATA_USER;
 
         return true;
@@ -495,7 +506,7 @@ class Setup
         define('VAR_DIR', $varDir);
         $this->data['paths'] = $paths;
 
-        $this->Step = Setup::STEP_DATA_PATHS;
+        $this->Step    = Setup::STEP_DATA_PATHS;
         $this->stepSum += Setup::STEP_DATA_PATHS;
     }
 
@@ -574,7 +585,12 @@ class Setup
             $this->cliCallApplyPreset();
         }
 
-        $this->deleteSetupFiles();
+
+        # Workaround for the preset application
+        if ($this->mode !== Setup::MODE_WEB) {
+            $this->deleteSetupFiles();
+        }
+
     }
 
     /**
@@ -587,12 +603,20 @@ class Setup
 
         QUI\Setup\Log\Log::info("Applying preset: " . $presetName);
 
-        $Preset = new Preset($presetName, $this->Locale);
+        $Output = null;
+        if ($this->mode == Setup::MODE_WEB) {
+            $Output = new WebOutput($this->setupLang);
+        }
+
+        if ($this->mode == Setup::MODE_CLI) {
+            $Output = new ConsoleOutput($this->setupLang);
+        }
+
+        $Preset = new \QUI\Setup\Preset($presetName, $this->Locale, $Output);
         $Preset->apply(CMS_DIR);
 
         $this->Step = Setup::STEP_SETUP_PRESET;
     }
-
 
 
     /**
@@ -1197,8 +1221,24 @@ class Setup
         }
 
         $this->Output->writeLnLang("setup.message.step.composer", Output::LEVEL_INFO);
-        # Put composer.phar into varDir/composer
 
+
+        ######################################
+        # Copy and prepare composer.phar
+        ######################################
+
+        $composerDir = VAR_DIR . 'composer/';
+        # Copy the composer.phar
+        copy(
+            dirname(dirname(dirname(dirname(__FILE__)))) . "/lib/composer.phar",
+            VAR_DIR . "composer/composer.phar"
+        );
+        chmod(VAR_DIR . "composer/composer.phar", 0755);
+
+
+        ######################################
+        # Prepare composer.json
+        ######################################
 
         # Create the Composer.json with default values.
         $this->createComposerJson();
@@ -1209,54 +1249,61 @@ class Setup
             );
         }
 
-        # Copy the composer.phar
-        copy(
-            dirname(dirname(dirname(dirname(__FILE__)))) . "/lib/composer.phar",
-            VAR_DIR . "composer/composer.phar"
-        );
-
-        if (file_exists(CMS_DIR . "lib/composer.phar")) {
+        if (file_exists(CMS_DIR . "composer.json")) {
             copy(
-                CMS_DIR . "lib/composer.phar",
-                VAR_DIR . "composer/composer.phar"
+                CMS_DIR . "composer.json",
+                VAR_DIR . "composer/composer.json"
             );
+
+            unlink(CMS_DIR . "composer.json");
+            chdir($composerDir);
         }
 
+        ######################################
+        # Excute composer to install plugins
+        ######################################
+
         # Execute Composer
-        $Composer = new Composer(CMS_DIR, VAR_DIR . "composer/");
+        $Composer = new Composer($composerDir, $composerDir);
         $res      = $Composer->update();
         if ($res === false) {
             $this->exitWithError("setup.unknown.error");
         }
 
 
-        $Composer = new Composer(CMS_DIR, VAR_DIR . "composer/");
-        # Require quiqqer/quiqqer
-        $res = $Composer->requirePackage("quiqqer/quiqqer", $this->data['version']);
-        if ($res === false) {
-            $this->exitWithError("setup.unknown.error");
+        ######################################
+        # Execute composer to install QUIQQER
+        ######################################
+
+        # Rebuild the composer instance to load freshly installed plugins
+        chdir($composerDir);
+        $Composer = new Composer($composerDir, $composerDir);
+
+        # Workaround to reload plugins in the web version
+        /* @var $Application Application */
+        if ($Composer->getMode() == Composer::MODE_WEB) {
+            $Application = $Composer->getRunner()->getApplication();
+            $Comp        = $Application->getComposer();
+            $Comp->getPluginManager()->loadInstalledPlugins();
         }
 
         # Execute composer again
-        $res = $Composer->update();
+
+
+        $res = $Composer->requirePackage('quiqqer/quiqqer', $this->data['version']);
         if ($res === false) {
             $this->exitWithError("setup.unknown.error");
         }
 
-        if (file_exists(CMS_DIR . "composer.json")) {
-            copy(
-                CMS_DIR . "composer.json",
-                VAR_DIR . "composer/composer.json"
-            );
+        if ($Composer->getMode() == Composer::MODE_WEB) {
+            chdir($composerDir);
+            system('COMPOSER_HOME="' . $composerDir . '" php composer.phar clear-cache');
+            system('COMPOSER_HOME="' . $composerDir . '" php composer.phar require "quiqqer/quiqqer" "' . $this->data['version'] . '" -v --prefer-dist >> ' . VAR_DIR . 'log/setup.log 2>&1');
         }
 
-        if (file_exists(CMS_DIR . "composer.lock")) {
-            copy(
-                CMS_DIR . "composer.lock",
-                VAR_DIR . "composer/composer.lock"
-            );
-        }
-
+        #########################################################
+        # Cleanup: Move composer.json and phar to var/composer/
+        #########################################################
 
         $this->Step = Setup::STEP_SETUP_COMPOSER;
     }
@@ -1365,6 +1412,7 @@ class Setup
             'active' => true
         ));
         QUI::getPackageManager()->setServerStatus("https://npm.quiqqer.com/", true);
+        QUI::getPackageManager()->setServerStatus("packagist", false);
 
         // Adjust Loglevel
         QUI\Log\Logger::$logLevels = array(
@@ -1456,10 +1504,14 @@ LOGETC;
     /**
      * Deletes all setup files
      */
-    private function deleteSetupFiles()
+    public function deleteSetupFiles()
     {
         # Contraint to ensure correct setup order.
-        if ($this->Step != Setup::STEP_SETUP_CHECKS) {
+        if (
+            $this->Step != Setup::STEP_SETUP_CHECKS &&
+            $this->Step != Setup::STEP_DATA_COMPLETE &&
+            $this->Step != Setup::STEP_SETUP_PRESET
+        ) {
             $this->Output->writeLnLang("setup.exception.step.order", Output::LEVEL_CRITICAL);
             exit;
         }

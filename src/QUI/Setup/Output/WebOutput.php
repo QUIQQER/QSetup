@@ -3,6 +3,7 @@
 namespace QUI\Setup\Output;
 
 use QUI\Setup\Locale\Locale;
+use QUI\Setup\Log\Log;
 use QUI\Setup\Output\Interfaces\Output;
 
 class WebOutput implements Output
@@ -12,9 +13,10 @@ class WebOutput implements Output
     /** @var  Locale $Locale */
     private $Locale;
 
+
     public function __construct($lang = "de_DE")
     {
-        $this->lang = $lang;
+        $this->lang   = $lang;
         $this->Locale = new Locale($lang);
     }
 
@@ -27,7 +29,47 @@ class WebOutput implements Output
      */
     public function writeLn($txt, $level = null, $color = null)
     {
-        // TODO: Implement writeLn() method.
+        $msg = $txt;
+        if ($level !== null) {
+            switch ($level) {
+                case Output::LEVEL_DEBUG:
+                    $msg = "[DEBUG] - " . $txt;
+                    $msg = $this->getColoredString($msg, Output::COLOR_INFO);
+                    break;
+
+                case Output::LEVEL_INFO:
+                    $msg = "[INFO] - " . $txt;
+                    $msg = $this->getColoredString($msg, Output::COLOR_INFO);
+                    break;
+
+                case Output::LEVEL_WARNING:
+                    $msg = "[WARNING] - " . $txt;
+                    $msg = $this->getColoredString($msg, Output::COLOR_WARNING);
+                    break;
+
+                case Output::LEVEL_ERROR:
+                    $msg = "[ERROR] - " . $txt;
+                    $msg = $this->getColoredString($msg, Output::COLOR_ERROR);
+                    Log::appendError(strip_tags($msg));
+                    break;
+
+                case Output::LEVEL_CRITICAL:
+                    $msg = "[!CRITICAL!] - " . $txt;
+                    $msg = $this->getColoredString($msg, Output::COLOR_ERROR);
+                    Log::appendError(strip_tags($msg));
+                    break;
+            }
+        }
+
+
+        Log::append(strip_tags($msg));
+
+        if ($color != null) {
+            $msg = $this->getColoredString($msg, $color);
+        }
+
+        echo $msg . " <br />";
+        $this->flush();
     }
 
     /**
@@ -39,7 +81,49 @@ class WebOutput implements Output
      */
     public function writeLnLang($key, $level = null, $color = null)
     {
-        // TODO: Implement writeLnLang() method.
+        $msg = $this->Locale->getStringLang($key, $key);
+
+        if ($level !== null) {
+            switch ($level) {
+                case Output::LEVEL_DEBUG:
+                    $msg = "[DEBUG] - " . $msg;
+                    $msg = $this->getColoredString($msg, Output::COLOR_INFO);
+                    break;
+
+                case Output::LEVEL_INFO:
+                    $msg = "[INFO] - " . $msg;
+                    $msg = $this->getColoredString($msg, Output::COLOR_INFO);
+                    break;
+
+                case Output::LEVEL_WARNING:
+                    $msg = "[WARNING] - " . $msg;
+                    $msg = $this->getColoredString($msg, Output::COLOR_WARNING);
+                    break;
+
+                case Output::LEVEL_ERROR:
+                    $msg = "[ERROR] - " . $msg;
+                    $msg = $this->getColoredString($msg, Output::COLOR_ERROR);
+                    Log::appendError(strip_tags($msg));
+                    break;
+
+                case Output::LEVEL_CRITICAL:
+                    $msg = "[!CRITICAL!] - " . $msg;
+                    $msg = $this->getColoredString($msg, Output::COLOR_ERROR);
+                    Log::appendError(strip_tags($msg));
+                    break;
+            }
+        }
+
+
+        Log::append(strip_tags($msg));
+
+        if ($color != null) {
+            $msg = $this->getColoredString($msg, $color);
+        }
+
+        echo $msg . " <br />";
+        $this->flush();
+
     }
 
     /**
@@ -53,11 +137,51 @@ class WebOutput implements Output
     /**
      * Surrounsds a string with color codes
      * @param $string - The String that should be colored
-     * @param int $color - The color that should be used
+     * @param string $color - The color that should be used
      * @return string
      */
     public function getColoredString($string, $color)
     {
-        // TODO: Implement getColoredString() method.
+
+        switch ($color) {
+            case Output::COLOR_DEBUG:
+                $colorCode = "#2E64FE";
+                break;
+            case Output::COLOR_INFO:
+                $colorCode = "#0080FF";
+                break;
+            case Output::COLOR_SUCCESS:
+                $colorCode = "#3ADF00";
+                break;
+            case Output::COLOR_SEVERE_WARNING:
+                $colorCode = "#FE2E2E";
+                break;
+            case Output::COLOR_ERROR:
+                $colorCode = "#FF0000";
+                break;
+            case Output::COLOR_WARNING:
+                $colorCode = "#FE642E";
+                break;
+            default:
+                $colorCode = "#000000";
+                break;
+        }
+
+        $string = "<span style='color:{$colorCode}'>" . $string . "</span>";
+
+        return $string;
+    }
+
+    protected function flush()
+    {
+        echo '<script>window.scrollTo(0, document.body.scrollHeight);</script>';
+
+        if (ob_get_level() > 0) {
+            ob_end_flush();
+            ob_flush();
+        }
+
+        flush();
+        ob_start();
     }
 }

@@ -10,6 +10,8 @@ use QUI\Projects\Project;
 use QUI\Projects\Site\Edit;
 use QUI\Setup\Locale\Locale;
 use QUI\Setup\Log\Log;
+use QUI\Setup\Output\Interfaces\Output;
+use QUI\Setup\Output\NullOutput;
 use QUI\Setup\Utils\Validator;
 use QUI\Translator;
 
@@ -20,7 +22,8 @@ use QUI\Translator;
  */
 class Preset
 {
-
+    /** @var  Output */
+    protected $Output;
     /** @var  Composer */
     protected $Composer;
     /** @var  Locale $Locale */
@@ -49,14 +52,21 @@ class Preset
     /**
      * Preset constructor.
      * @param $presetName
-     * @param $Locale
+     * @param Locale $Locale
+     * @param $Output $Output
      * @throws SetupException
      */
-    public function __construct($presetName, $Locale)
+    public function __construct($presetName, $Locale, $Output = null)
     {
         $this->presetName = $presetName;
+        $this->Locale     = $Locale;
 
-        $this->Locale = $Locale;
+        if (is_null($Output)) {
+            $this->Output = new NullOutput($Locale->getCurrent());
+        } else {
+            $this->Output = $Output;
+        }
+
 
         $this->presets = Preset::getPresets();
         try {
@@ -81,7 +91,7 @@ class Preset
      */
     public function apply($cmsDir)
     {
-        Log::info("Applying preset: " . $this->presetName);
+        $this->Output->writeLn("Applying preset: " . $this->presetName, Output::COLOR_INFO);
 
         $cmsDir        = rtrim($cmsDir, '/');
         $quiqqerConfig = parse_ini_file($cmsDir . '/etc/conf.ini.php', true);
@@ -126,15 +136,18 @@ class Preset
 
 
         # Execute Quiqqersetup to activate new Plugins/translations etc.
-        Log::info($this->Locale->getStringLang("applypreset.quiqqer.setup", "Executing Quiqqer Setup. "));
+        $this->Output->writeLn(
+            $this->Locale->getStringLang("applypreset.quiqqer.setup", "Executing Quiqqer Setup. "),
+            Output::COLOR_INFO
+        );
         \QUI\Setup::all();
 
-
-        Log::info($this->Locale->getStringLang("applypreset.done", "Preset applied."));
+        $this->Output->writeLn($this->Locale->getStringLang("applypreset.done", "Preset applied."), Output::COLOR_INFO);
     }
 
     /**
      * Retrieves the data from the preset to the class
+     *
      * @param $presetName
      */
     protected function readPreset($presetName)
@@ -167,6 +180,7 @@ class Preset
 
     /**
      * Creates the project of the preset
+     *
      * @throws SetupException
      */
     protected function createProject()
@@ -188,8 +202,9 @@ class Preset
         }
 
 
-        Log::info(
-            $this->Locale->getStringLang("applypreset.creating.project", "Created Project :") . $this->projectName
+        $this->Output->writeLn(
+            $this->Locale->getStringLang("applypreset.creating.project", "Created Project :") . $this->projectName,
+            Output::COLOR_INFO
         );
 
         $this->refreshNamespaces($this->Composer);
@@ -200,7 +215,11 @@ class Preset
             $Config->setValue($this->projectName, 'langs', implode(',', $this->languages));
             $Config->save();
 
-            Log::info("Installed Languages '" . implode(',', $this->languages) . "' for Project {$this->projectName}");
+
+            $this->Output->writeLn(
+                "Installed Languages '" . implode(',', $this->languages) . "' for Project {$this->projectName}",
+                Output::COLOR_INFO
+            );
         }
 
 
@@ -225,7 +244,10 @@ class Preset
         try {
             \QUI\Utils\Project::createDefaultStructure(new Project($this->projectName));
         } catch (\Exception $Exception) {
-            Log::warning($Exception->getMessage());
+            $this->Output->writeLn(
+                $Exception->getMessage(),
+                Output::LEVEL_WARNING
+            );
         }
     }
 
@@ -240,8 +262,9 @@ class Preset
                 'type' => $repo['type']
             );
 
-            Log::info(
-                $this->Locale->getStringLang("applypreset.adding.repository", "Adding Repository :") . $repo['url']
+            $this->Output->writeLn(
+                $this->Locale->getStringLang("applypreset.adding.repository", "Adding Repository :") . $repo['url'],
+                Output::LEVEL_INFO
             );
 
             \QUI::getPackageManager()->addServer($repo['url'], array(
@@ -287,14 +310,17 @@ class Preset
                 $Edit->save();
                 $Edit->activate();
 
-                Log::info(
-                    $this->Locale->getStringLang("applypreset.set.layout", "Set layout for language : ") . $lang
+                $this->Output->writeLn(
+                    $this->Locale->getStringLang("applypreset.set.layout", "Set layout for language : ") . $lang,
+                    Output::LEVEL_INFO
                 );
             }
         }
 
-        Log::info(
-            $this->Locale->getStringLang("applypreset.require.package", "Require Package :") . $this->templateName
+
+        $this->Output->writeLn(
+            $this->Locale->getStringLang("applypreset.require.package", "Require Package :") . $this->templateName,
+            Output::LEVEL_INFO
         );
     }
 
@@ -306,8 +332,9 @@ class Preset
         foreach ($this->packages as $name => $version) {
             $this->Composer->requirePackage($name, $version);
 
-            Log::info(
-                $this->Locale->getStringLang("applypreset.require.package", "Require Package :") . $name
+            $this->Output->writeLn(
+                $this->Locale->getStringLang("applypreset.require.package", "Require Package :") . $name,
+                Output::LEVEL_INFO
             );
         }
     }
@@ -361,6 +388,7 @@ class Preset
 
     /**
      * Reads the data from the composer.json file
+     *
      * @return array
      * @throws SetupException
      */

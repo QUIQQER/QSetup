@@ -2,20 +2,22 @@
 
 namespace QUI\Setup\Output;
 
+
 use QUI\Setup\Locale\Locale;
-use QUI\Setup\Locale\LocaleException;
 use QUI\Setup\Log\Log;
 use QUI\Setup\Output\Interfaces\Output;
-use QUI\Setup\SetupException;
 
-class ConsoleOutput implements Output
+class NullOutput implements Output
 {
-
     private $lang;
     /** @var  Locale $Locale */
     private $Locale;
 
 
+    /**
+     * NullOutput constructor.
+     * @param string $lang
+     */
     public function __construct($lang = "de_DE")
     {
         $this->logDir = dirname(dirname(dirname(dirname(dirname(__FILE__))))) . '/logs/';
@@ -28,56 +30,50 @@ class ConsoleOutput implements Output
         $this->Locale = new Locale($lang);
     }
 
+
+
     /**
      * Writes a line to the output.
      *
-     * @param $txt - The message that should be written
+     * @param $msg - The message that should be written
      * @param int $level - The level it should use
      * @param string $color - The color of the message
      */
-    public function writeLn($txt, $level = null, $color = null)
+    public function writeLn($msg, $level = null, $color = null)
     {
-        $msg = $txt;
-        if ($level !== null) {
+        if ($level != null) {
             switch ($level) {
                 case self::LEVEL_DEBUG:
-                    $msg = "[DEBUG] - " . $txt;
+                    $msg = "[DEBUG] - " . $msg;
                     $msg = $this->getColoredString($msg, Output::COLOR_INFO);
                     break;
 
                 case self::LEVEL_INFO:
-                    $msg = "[INFO] - " . $txt;
+                    $msg = "[INFO] - " . $msg;
                     $msg = $this->getColoredString($msg, Output::COLOR_INFO);
                     break;
 
                 case self::LEVEL_WARNING:
-                    $msg = "[WARNING] - " . $txt;
+                    $msg = "[WARNING] - " . $msg;
                     $msg = $this->getColoredString($msg, Output::COLOR_WARNING);
                     break;
 
                 case self::LEVEL_ERROR:
-                    $msg = "[ERROR] - " . $txt;
-                    $msg = $this->getColoredString($msg, Output::COLOR_ERROR);
+                    $msg = "[ERROR] - " . $msg;
                     Log::appendError($msg);
+                    $msg = $this->getColoredString($msg, Output::COLOR_ERROR);
                     break;
 
                 case self::LEVEL_CRITICAL:
-                    $msg = "[!CRITICAL!] - " . $txt;
-                    $msg = $this->getColoredString($msg, Output::COLOR_ERROR);
+                    $msg = "[!CRITICAL!] - " . $msg;
                     Log::appendError($msg);
+                    $msg = $this->getColoredString($msg, Output::COLOR_ERROR);
+
                     break;
             }
         }
 
         Log::append($msg);
-
-        if ($color !== null) {
-            $msg = $this->getColoredString($msg, $color);
-        }
-
-        echo $msg . PHP_EOL;
-
-        return;
     }
 
     /**
@@ -95,32 +91,27 @@ class ConsoleOutput implements Output
             switch ($level) {
                 case self::LEVEL_DEBUG:
                     $msg = "[DEBUG] - " . $msg;
-                    Log::append($msg);
                     $msg = $this->getColoredString($msg, Output::COLOR_INFO);
                     break;
 
                 case self::LEVEL_INFO:
                     $msg = "[INFO] - " . $msg;
-                    Log::append($msg);
                     $msg = $this->getColoredString($msg, Output::COLOR_INFO);
                     break;
 
                 case self::LEVEL_WARNING:
                     $msg = "[WARNING] - " . $msg;
-                    Log::append($msg);
                     $msg = $this->getColoredString($msg, Output::COLOR_WARNING);
                     break;
 
                 case self::LEVEL_ERROR:
                     $msg = "[ERROR] - " . $msg;
-                    Log::append($msg);
                     Log::appendError($msg);
                     $msg = $this->getColoredString($msg, Output::COLOR_ERROR);
                     break;
 
                 case self::LEVEL_CRITICAL:
                     $msg = "[!CRITICAL!] - " . $msg;
-                    Log::append($msg);
                     Log::appendError($msg);
                     $msg = $this->getColoredString($msg, Output::COLOR_ERROR);
 
@@ -128,11 +119,7 @@ class ConsoleOutput implements Output
             }
         }
 
-        if ($color != null) {
-            $msg = $this->getColoredString($msg, $color);
-        }
-
-        echo $msg . PHP_EOL;
+        Log::append($msg);
     }
 
     /**
@@ -141,6 +128,7 @@ class ConsoleOutput implements Output
      */
     public function changeLang($lang)
     {
+
         $this->lang = $lang;
         try {
             $Locale       = new Locale($lang);
@@ -150,7 +138,6 @@ class ConsoleOutput implements Output
         }
     }
 
-
     /**
      * Surrounsds a string with color codes
      * @param $string - The String that should be colored
@@ -159,28 +146,8 @@ class ConsoleOutput implements Output
      */
     public function getColoredString($string, $color)
     {
-        $result = $string;
-        switch ($color) {
-            case Output::COLOR_INFO:
-                $result = "\033[1;36m " . $string . "\033[0m";
-                break;
-            case Output::COLOR_ERROR:
-                $result = "\033[1;31m " . $string . "\033[0m";
-                break;
-            case Output::COLOR_DEBUG:
-                $result = "\033[1;35m " . $string . "\033[0m";
-                break;
-            case Output::COLOR_WARNING:
-                $result = "\033[1;33m " . $string . "\033[0m";
-                break;
-            case Output::COLOR_SUCCESS:
-                $result = "\033[1;32m " . $string . "\033[0m";
-                break;
-            case Output::COLOR_SEVERE_WARNING:
-                $result = "\033[1;34m " . $string . "\033[0m";
-                break;
-        }
-
-        return $result;
+        return $string;
     }
+
+
 }

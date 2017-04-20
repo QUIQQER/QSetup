@@ -10,12 +10,12 @@ interface Output
     const LEVEL_INFO = 3;
     const LEVEL_DEBUG = 4;
 
-    const COLOR_RED = 0;
-    const COLOR_GREEN = 1;
-    const COLOR_YELLOW = 2;
-    const COLOR_CYAN = 3;
-    const COLOR_ORANGE = 4;
-    const COLOR_BLUE = 5;
+    const COLOR_ERROR = 0;
+    const COLOR_SUCCESS = 1;
+    const COLOR_WARNING = 2;
+    const COLOR_INFO = 3;
+    const COLOR_SEVERE_WARNING = 4;
+    const COLOR_DEBUG = 5;
 
     /**
      * Output constructor.

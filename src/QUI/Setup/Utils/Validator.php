@@ -116,6 +116,7 @@ class Validator
     /**
      * Checks the given database credentials for correctness
      * If an PDO Error happens it will throw a setupException with the PODException message and code.
+     *
      * @param $dbDriver
      * @param $dbHost
      * @param $dbName
@@ -152,6 +153,7 @@ class Validator
     /**
      * Validates a given preset.
      * Checks for existence and for syntax errors
+     *
      * @param $name - The preset name
      * @return bool - return true on success
      * @throws SetupException
@@ -162,15 +164,92 @@ class Validator
 
 
         if (empty($name) || key_exists($name, $presets)) {
+            throw new SetupException("setup.exception.validation.preset.not.exist");
+        }
+
+        $presetData = $presets[$name];
+        self::validatePresetData($presetData);
+
+        return true;
+    }
+
+    /**
+     * Checks wether or not the given preset exists
+     * Returns true if it exists or throws an exception otherwise
+     *
+     * @param $name
+     * @return bool
+     * @throws SetupException
+     */
+    public static function validatePresetExists($name)
+    {
+        $presets = Preset::getPresets();
+
+        if (!empty($name) && key_exists($name, $presets)) {
             return true;
         }
 
         throw new SetupException("setup.exception.validation.preset.not.exist");
     }
 
+    /**
+     * Validates the preset data
+     *
+     * @param $data
+     * @return bool
+     * @throws SetupException
+     */
+    public static function validatePresetData($data)
+    {
+        if (empty($data)) {
+            throw new SetupException("setup.exception.validation.preset.empty");
+        }
+
+        if (!is_array($data)) {
+            throw new SetupException("setup.exception.validation.preset.format.invalid");
+        }
+
+        ####################
+        # Project
+        ####################
+        if (!isset($data['project']) || empty($data['project'])) {
+            throw new SetupException("setup.exception.validation.preset.project.missing");
+        }
+
+        if (!isset($data['project']['name']) || empty($data['project']['name'])) {
+            throw new SetupException("setup.exception.validation.preset.project.name.missing");
+        }
+
+        if (!isset($data['project']['languages']) || empty($data['project']['languages'])) {
+            throw new SetupException("setup.exception.validation.preset.project.languages.missing");
+        }
+
+        if (!is_array($data['project']['languages']) || empty($data['project']['languages'])) {
+            throw new SetupException("setup.exception.validation.preset.project.languages.format.invalid");
+        }
+
+        ####################
+        # Template
+        ####################
+        if (!isset($data['template']) || empty($data['template'])) {
+            throw new SetupException("setup.exception.validation.preset.template.missing");
+        }
+
+        if (!isset($data['template']['name']) || empty($data['template']['name'])) {
+            throw new SetupException("setup.exception.validation.preset.template.name.missing");
+        }
+
+        if (!isset($data['template']['version']) || $data['template']['version']) {
+            throw new SetupException("setup.exception.validation.preset.template.version.missing");
+        }
+
+        return true;
+    }
+
 
     /**
      * Checks if a single filesystem-path to a directory is valid
+     *
      * @param $path - Filesystem path to a directory
      * @return bool - true if valid directory
      * @throws SetupException
@@ -192,6 +271,7 @@ class Validator
 
     /**
      * Validates the given paths.
+     *
      * @param array $paths
      * @throws SetupException
      */
@@ -271,6 +351,7 @@ class Validator
 
     /**
      * Counts the number of uppercase letters in the given string
+     *
      * @param $string
      * @return int - Number of uppercase letters
      */
@@ -281,6 +362,7 @@ class Validator
 
     /**
      * Counts the number of special characters in the given string
+     *
      * @param $string
      * @return int - Number of special charcaters
      */
@@ -291,6 +373,7 @@ class Validator
 
     /**
      * Counts the numeric characters in the given string
+     *
      * @param $string
      * @return int - Number of numeric characters
      */
@@ -302,6 +385,7 @@ class Validator
 
     /**
      * Checks the integrity of the data array.
+     *
      * @return bool - true, if all required fields are set
      * @throws SetupException
      */

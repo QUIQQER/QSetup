@@ -75,9 +75,6 @@ define('QUIQQER_SETUP', true);
 require_once dirname(__FILE__) . "/bootstrap.php";
 ini_set("display_errors", "on");
 
-echo "Starting <br />";
-ob_flush();
-flush();
 
 try {
     $Config = parse_ini_file(ETC_DIR . 'conf.ini.php', true);
@@ -107,6 +104,6 @@ try {
 }
 
 
-echo "Done <br />";
+
 ob_flush();
 flush();

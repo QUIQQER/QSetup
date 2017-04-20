@@ -144,10 +144,10 @@ class WebOutput implements Output
 
         switch ($color) {
             case Output::COLOR_DEBUG:
-                $colorCode = "#2E64FE";
+                $colorCode = "#9F9F9F";
                 break;
             case Output::COLOR_INFO:
-                $colorCode = "#0080FF";
+                $colorCode = "#FFFFFF";
                 break;
             case Output::COLOR_SUCCESS:
                 $colorCode = "#3ADF00";

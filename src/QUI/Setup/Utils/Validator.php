@@ -239,7 +239,7 @@ class Validator
             throw new SetupException("setup.exception.validation.preset.template.name.missing");
         }
 
-        if (!isset($data['template']['version']) || $data['template']['version']) {
+        if (!isset($data['template']['version']) || empty($data['template']['version'])) {
             throw new SetupException("setup.exception.validation.preset.template.version.missing");
         }
 

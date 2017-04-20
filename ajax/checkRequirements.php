@@ -2,6 +2,11 @@
 
 require 'header.php';
 
+/**
+ * This will check the QUIQQER Requirements and return an array with all failed testnames or an empty array if all tests succeeded
+ *
+ * @return array
+ */
 
 $failedTests = array();
 

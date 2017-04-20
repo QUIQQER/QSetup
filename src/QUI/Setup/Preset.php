@@ -348,16 +348,7 @@ class Preset
     {
         $presets = array();
 
-        if (file_exists(dirname(__FILE__) . '/presets.json')) {
-            $json = file_get_contents(dirname(__FILE__) . '/presets.json');
-            $data = json_decode($json, true);
-            if (json_last_error() == JSON_ERROR_NONE && is_array($data)) {
-                foreach ($data as $name => $preset) {
-                    $presets[$name] = $preset;
-                }
-            }
-        }
-
+        
         # Read all userdefined presets from templates/presets
         $presetDir = dirname(dirname(dirname(dirname(__FILE__)))) . '/templates/presets';
         if (is_dir($presetDir)) {

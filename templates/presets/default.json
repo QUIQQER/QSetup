@@ -1,0 +1,22 @@
+{
+  "project": {
+    "name": "Mainproject",
+    "languages": [
+      "de",
+      "en"
+    ]
+  },
+  "template": {
+    "name": "quiqqer/template-businesspro",
+    "version": "dev-master",
+    "start_layout": "layout/startPage",
+    "default_layout": "layout/startPage"
+  },
+  "meta": {
+    "name": {
+      "en_EN": "Standard site",
+      "de_DE": "Standardseite"
+    },
+    "icon": "fa-file-text-o"
+  }
+}

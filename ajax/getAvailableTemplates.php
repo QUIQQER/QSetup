@@ -1,8 +1,11 @@
 <?php
 
+require 'header.php';
+
 /**
  * Reads all available templates from the official QUIQQER-Updateserver
  *
+ * @returns Array of template names with namespace  i.e. : quiqqer/template-businesspro
  */
 
 $templates = array();

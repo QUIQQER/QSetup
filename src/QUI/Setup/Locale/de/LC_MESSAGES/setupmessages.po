@@ -576,3 +576,6 @@ msgstr "Das Passwort enthält keine Sonderzeichen."
 
 msgid "exception.validation.password.numbercount"
 msgstr "Bitte verwenden Sie auch Zahlen."
+
+msgid "applypreset.done"
+msgstr "Die Vorlage wurde angewendet."

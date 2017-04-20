@@ -574,3 +574,6 @@ msgstr "The password does not contain a special character."
 
 msgid "exception.validation.password.numbercount"
 msgstr "The password does not contain a number."
+
+msgid "applypreset.done"
+msgstr "The preset has been applied"

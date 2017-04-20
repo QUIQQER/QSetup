@@ -159,7 +159,6 @@ p {
     top: 0;
 }
 
-
 /**************************/
 /******** inputs **********/
 /**************************/
@@ -328,13 +327,17 @@ input:focus,
 }
 
 .button-icon-right {
+    background-color: #fafafa;
     color: #eee;
     transition: all 0.3s;
     font-size: 26px;
-    float: right;
+    position: absolute;
     line-height: 50px;
-    padding-left: 14px;
+    padding: 0 10px;
     border-left: 1px solid #e5e5e5;
+    right: 0;
+    width: 50px;
+    text-align: center;
 }
 
 .button-icon-left {
@@ -378,6 +381,137 @@ input:focus,
     white-space: nowrap;
 }
 
+/* button checkbox */
+input[type=checkbox].button-checkbox + label {
+    background-color: #f8f8f8;
+    margin: 20px 0;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #e5e5e5;
+    transition: 0.3s all ease-in-out;
+    display: inline-block;
+    width: 100%;
+}
+
+.license-checkbox-wrapper {
+    display: flex;
+    justify-content: center;
+}
+
+input[type=checkbox].button-checkbox {
+    display: none; /* to hide the checkbox itself */
+}
+
+input[type=checkbox] + label:before {
+    font-family: FontAwesome;
+    display: inline-block;
+    color: #aaa;
+    transition: all 0.3s ease-in-out;
+}
+
+input[type=checkbox] + label:hover:before,
+input[type=checkbox] + label:focus:before {
+    color: inherit;
+}
+
+/*input[type=checkbox].button-checkbox + label {
+    width: auto;
+    background-color: #f8f8f8;
+    margin: 20px 0;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #e5e5e5;
+    transition: 0.3s all ease-in-out;
+}*/
+
+input[type=checkbox].button-checkbox + label:hover {
+    box-shadow: 0 3px 10px #bbb;
+}
+
+/* unchecked icon */
+input[type=checkbox].button-checkbox + label:before {
+    content: "\f096";
+    width: 50px;
+    font-size: 26px;
+    vertical-align: middle;
+}
+
+/* checked icon */
+input[type=checkbox].button-checkbox:checked + label:before {
+    content: "\f046";
+    color: #75b947;
+}
+
+input[type=checkbox].button-checkbox:checked + label {
+    border-color: #75b947;
+}
+
+
+/**************************/
+/******** Vorlage *********/
+/**************************/
+.step-3-settings-button {
+    border: none;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    position: absolute;
+    right: 30px;
+    font-size: 20px;
+}
+
+.input-radio:checked + .label-div .step-3-settings-button {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    right: 50px;
+}
+
+.template-form .project-language {
+    display: block;
+}
+
+.template-form .input-wrapper,
+.template-form .select-wrapper {
+    width: 100%;
+    margin: 0 0 20px 0;
+}
+
+.template-form .input-text:hover,
+.template-form .input-text:active,
+.template-form .input-text:focus {
+    border: 1px solid #ccc;
+    box-shadow: 0 3px 10px #bbb;
+}
+
+.form-input-wrapper {
+    margin-bottom: 20px;
+}
+
+.template-form .input-title {
+    margin-bottom: 10px;
+}
+
+.template-form input[type=checkbox].button-checkbox + label {
+    margin: 0 0 20px 0;
+}
+
+.template-form .button-checkbox-wrapper {
+    width: calc(50% - 20px);
+    display: inline-block;
+}
+.template-form .button-checkbox-wrapper:nth-child(2n-1) {
+    margin-left: 10px;
+}
+.template-form .button-checkbox-wrapper:nth-child(2n) {
+    margin-right: 10px;
+}
+
+.template-form .button-checkbox-wrapper-label {
+    width: 100%;
+}
 
 /**************************/
 /*** step user password ***/
@@ -398,7 +532,6 @@ input:focus,
 .fa-eye-slash {
     color: #ddd;
 }
-
 
 /**************************/
 /***** Host und Pfade *****/
@@ -542,6 +675,7 @@ input:focus,
     /*background: #eee;*/
     /*box-shadow: inset 0 0 10px #ccc;*/
 }
+
 .license-box {
     width: 100%;
     height: 240px;
@@ -565,7 +699,6 @@ input:focus,
     font-size: 200%;
 }
 
-
 .license-box h2 {
     font-size: 150%;
 }
@@ -587,58 +720,16 @@ input:focus,
     justify-content: center;
 }
 
-input[type=checkbox].license-checkbox {
-    display:none; /* to hide the checkbox itself */
-}
-
-input[type=checkbox] + label:before {
-    font-family: FontAwesome;
-    display: inline-block;
-    color: #aaa;
-    transition: all 0.3s ease-in-out;
-}
-
-input[type=checkbox] + label:hover:before,
-input[type=checkbox] + label:focus:before {
-    color: inherit;
-}
-
-input[type=checkbox].license-checkbox + label {
+.license-checkbox-wrapper input[type=checkbox].button-checkbox + label {
     width: auto;
-    background-color: #f8f8f8;
-    margin: 20px 0;
-    cursor: pointer;
-    padding: 10px;
-    border-radius: 6px;
-    border: 1px solid #e5e5e5;
-    transition: 0.3s all ease-in-out;
 }
 
-input[type=checkbox].license-checkbox + label:hover {
-    box-shadow: 0 3px 10px #bbb;
-}
 
-/* unchecked icon */
-input[type=checkbox].license-checkbox + label:before {
-    content: "\f096";
-    width: 50px;
-    font-size: 26px;
-    vertical-align: middle;
-}
-
-/* checked icon */
-input[type=checkbox].license-checkbox:checked + label:before {
-    content: "\f046";
-    color: #75b947;
-}
-input[type=checkbox].license-checkbox:checked + label {
-    border-color: #75b947;
-}
 /* if checkbox not checked */
+/* error for license step */
 .error input[type=checkbox].license-checkbox + label {
     border-color: #cc0000;
 }
-
 
 /**************************/
 /** specific setup style **/
@@ -655,8 +746,8 @@ input[type=checkbox].license-checkbox:checked + label {
 
 .header-left,
 .nav {
-    padding-left: 2em;
-    padding-right: 2em;
+    padding-left: 1.2em;
+    padding-right: 1.2em;
     border-left: 2px solid #fff;
     border-right: 2px solid #fff;
 }
@@ -682,9 +773,7 @@ input[type=checkbox].license-checkbox:checked + label {
 }
 
 .page {
-    /*background: #f5f5f5;*/
-    /*max-height: 320px;
-    min-height: 320px;*/
+    margin-bottom: 5em;
     overflow: visible;
 }
 
@@ -700,7 +789,7 @@ ul {
 }
 
 ul.nav-list li {
-    padding: 1em 2em;
+    padding: 1em 1.2em;
     background: #f5f5f5;
     border-bottom: 1px solid #fff;
     color: #bbb;
@@ -731,14 +820,9 @@ ul.nav-list li:last-child {
 }
 
 .page-main {
-    /*padding-top: 3em;*/
     padding-left: 3em;
     position: relative;
-    /*padding-bottom: 3em;*/
-    /*overflow: hidden;*/
     overflow-y: auto;
-    /*height: 300px;*/
-    margin-bottom: 3em;
 }
 
 .steps-list-container {
@@ -780,7 +864,7 @@ li.step {
 }
 
 .test:after,
-.test-nav-buttons:after{
+.test-nav-buttons:after {
     background: rgba(0, 0, 0, 0) linear-gradient(to bottom, rgba(0, 0, 0, 0.65) 0px, rgba(0, 0, 0, 0) 100%) repeat scroll 0 0;
     content: "";
     height: 5px;
@@ -808,7 +892,6 @@ li.step-left-align {
     text-align: left;
 }
 
-
 /**************************/
 /****** nav buttons *******/
 /**************************/
@@ -816,6 +899,7 @@ li.step-left-align {
     background-color: #f2f2f2;
     z-index: 10;
 }
+
 .nav-buttons {
     padding: 1em 0 1em calc(3em + 10px);
     float: right;
@@ -865,7 +949,6 @@ li.step-left-align {
 .next-button:hover .fa {
 
 }
-
 
 /**************************/
 /****** media query *******/
@@ -925,7 +1008,6 @@ li.step-left-align {
         padding: 16px 6px;
         position: relative;
     }
-
 
     .header-logo-container {
         height: auto !important;

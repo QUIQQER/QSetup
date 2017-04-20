@@ -554,6 +554,16 @@ msgid "setup.web.content.button.install"
 msgstr "install"
 
 
+msgid "setup.web.popup.project-title"
+msgstr "Project name"
+
+msgid "setup.web.popup.project-language"
+msgstr "Project language"
+
+msgid "setup.web.popup.project-template"
+msgstr "Template"
+
+
 msgid "exception.validation.database.connection"
 msgstr "Error on establishing data base connection"
 

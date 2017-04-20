@@ -25,7 +25,6 @@ ini_set('display_errors', 1);
 
 use \QUI\Setup\Setup;
 
-
 require_once dirname(__FILE__) . '/vendor/autoload.php';
 
 ob_start();
@@ -111,10 +110,3 @@ try {
 echo "Done <br />";
 ob_flush();
 flush();
-
-
-
-
-
-
-

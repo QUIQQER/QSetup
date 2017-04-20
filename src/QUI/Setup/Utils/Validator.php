@@ -163,7 +163,7 @@ class Validator
         $presets = Preset::getPresets();
 
 
-        if (empty($name) || key_exists($name, $presets)) {
+        if (empty($name) || !key_exists($name, $presets)) {
             throw new SetupException("setup.exception.validation.preset.not.exist");
         }
 

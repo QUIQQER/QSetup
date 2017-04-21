@@ -1,59 +1,59 @@
 {
-  "name": "quiqqer\/setup",
-  "type": "quiqqer-library",
-  "description": "Load essential packages for quiqqer setup",
-  "version": "2.0.0-dev",
-  "license": "",
-  "minimum-stability": "dev",
-  "authors": [
-    {
-      "name": "PCSG OHG",
-      "email": "support@pcsg.de",
-      "homepage": "http:\/\/www.pcsg.de",
-      "role": "Developer"
-    }
-  ],
-  "support": {
-    "email": "support@pcsg.de"
-  },
-  "repositories": [
-    {
-      "packagist": false
+    "name": "quiqqer\/setup",
+    "type": "quiqqer-library",
+    "description": "Load essential packages for quiqqer setup",
+    "version": "dev-master",
+    "license": "",
+    "minimum-stability": "dev",
+    "authors": [
+        {
+            "name": "PCSG OHG",
+            "email": "support@pcsg.de",
+            "homepage": "http:\/\/www.pcsg.de",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "email": "support@pcsg.de"
     },
-    {
-      "type": "composer",
-      "url": "https:\/\/update.quiqqer.com\/"
+    "repositories": [
+        {
+            "packagist": false
+        },
+        {
+            "type": "composer",
+            "url": "https:\/\/update.quiqqer.com\/"
+        },
+        {
+            "type": "composer",
+            "url": "https:\/\/composer.quiqqer.com\/"
+        }
+    ],
+    "require": {
+        "quiqqer\/composer": "dev-dev",
+        "quiqqer\/utils": "dev-dev",
+        "quiqqer\/qui-php": "dev-dev",
+        "quiqqer\/requirements": "dev-dev",
+        "quiqqer\/qui": "dev-dev",
+        "pcsg\/composer-assets": "dev-master"
     },
-    {
-      "type": "composer",
-      "url": "https:\/\/composer.quiqqer.com\/"
-    }
-  ],
-  "require": {
-    "quiqqer\/composer": "dev-dev",
-    "quiqqer\/utils": "dev-dev",
-    "quiqqer\/qui-php": "dev-dev",
-    "quiqqer\/requirements": "dev-dev",
-    "quiqqer\/qui": "dev-dev",
-    "pcsg/composer-assets":"dev-master"
-  },
-  "extra": {
-    "asset-registry-options": {
-      "npm": false,
-      "bower": false,
-      "npm-searchable": false,
-      "bower-searchable": false
+    "extra": {
+        "asset-registry-options": {
+            "npm": false,
+            "bower": false,
+            "npm-searchable": false,
+            "bower-searchable": false
+        },
+        "asset-custom-npm-registries": {
+            "npm.quiqqer.com": "https:\/\/npm.quiqqer.com\/"
+        }
     },
-    "asset-custom-npm-registries": {
-      "npm.quiqqer.com": "https:\/\/npm.quiqqer.com\/"
+    "autoload": {
+        "psr-4": {
+            "QUI\\Setup\\": "src\/QUI\/Setup",
+            "QUI\\ConsoleSetup\\": "src\/QUI\/ConsoleSetup",
+            "QUI\\Setup\\Locale\\": "src\/QUI\/Setup\/Locale",
+            "QUI\\Setup\\Database\\": "src\/QUI\/Setup\/Database"
+        }
     }
-  },
-  "autoload": {
-    "psr-4": {
-      "QUI\\Setup\\": "src\/QUI\/Setup",
-      "QUI\\ConsoleSetup\\": "src\/QUI\/ConsoleSetup",
-      "QUI\\Setup\\Locale\\": "src\/QUI\/Setup\/Locale",
-      "QUI\\Setup\\Database\\": "src\/QUI\/Setup\/Database"
-    }
-  }
 }

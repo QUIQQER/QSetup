@@ -302,7 +302,8 @@ $language = require_once "languageDetection.php";
                                             $output .= '
                                         <span class="fa fa-check button-icon-right"></span>
                                         <span class="fa fa-cogs step-3-settings-button button-icon-right" 
-                                        data-attr="'. $value['meta']['name'][$lang] .'"></span>
+                                        data-attr-name="'. $value['meta']['name'][$lang] .'" 
+                                        data-attr-preset="' . $key . '"></span>
                                     </div>
                                 </label>';
                                             echo $output;

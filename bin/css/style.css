@@ -492,6 +492,7 @@ input[type=checkbox].button-checkbox:checked + label {
 
 .template-form .input-title {
     margin-bottom: 10px;
+    display: block;
 }
 
 .template-form input[type=checkbox].button-checkbox + label {
@@ -499,8 +500,8 @@ input[type=checkbox].button-checkbox:checked + label {
 }
 
 .template-form .button-checkbox-wrapper {
-    width: calc(50% - 20px);
-    display: inline-block;
+    width: calc(50% - 10px);
+    float: left;
 }
 .template-form .button-checkbox-wrapper:nth-child(2n-1) {
     margin-left: 10px;

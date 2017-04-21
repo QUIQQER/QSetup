@@ -179,16 +179,20 @@ define('bin/js/Setup', [
                 var Target = event.target;
 
                 new QUIConfirm({
-                    maxWidth : 440,
-                    maxHeight: 520,
+                    maxWidth : 460,
+                    maxHeight: 540,
                     titleicon: false,
                     icon     : false,
-                    title    : Target.getAttribute('data-attr'),
+                    title    : Target.getAttribute('data-attr-name'),
+                    preset   : Target.getAttribute('data-attr-preset'),
                     events   : {
-                        onOpen: self.openPopup,
+                        onOpen : function (Win) {
+                            var preset = Target.getAttribute('data-attr-preset');
+                            self.openPopup(Win, preset);
 
+                        },
                         onClose: function () {
-                            // chrome render bug
+                            // needed because of chrome render bug
                             document.body.setStyle('transform', 'translateZ(0)');
                             (function () {
                                 document.body.setStyle('transform', null);
@@ -792,9 +796,9 @@ define('bin/js/Setup', [
          *
          * @param Win
          */
-        openPopup: function(Win) {
-
+        openPopup: function (Win, preset) {
             var Content = Win.getContent();
+
 
             Content.set('html', templateForm);
 
@@ -813,11 +817,19 @@ define('bin/js/Setup', [
 
             Win.Loader.show();
 
-            this.getPreset().then(function(response){
-               console.log(response);
+            this.getPreset(preset).then(function (response) {
+                console.log(response);
+                console.log(response.project['name']);
+                Content.getElement('input[name="project-title"]').set(
+                    'placeholder', response.project['name']
+                );
+                Content.getElement('input[name="project-title"]').set(
+                    'value', response.project['name']
+                )
+
             });
 
-            this.getAvailableTemplates(Content).then(function() {
+            this.getAvailableTemplates(Content).then(function () {
                 Win.Loader.hide();
             })
 
@@ -825,17 +837,18 @@ define('bin/js/Setup', [
         },
 
         /**
-         * get preset
+         * get the given preset
          *
          * @returns {Promise}
          */
-        getPreset: function() {
-            return new Promise(function(resolve, reject) {
+        getPreset: function (preset) {
+            var presetName = preset.toLowerCase();
+            return new Promise(function (resolve, reject) {
                 new Request({
-                    url      : '/ajax/getPreset.php',
-                    noCache  : true,
-                    data : {
-                        presetName : 'blog'
+                    url    : '/ajax/getPreset.php',
+                    noCache: true,
+                    data   : {
+                        presetName: presetName
                     },
 
                     onSuccess: function (response) {
@@ -853,16 +866,16 @@ define('bin/js/Setup', [
          *
          * @returns {Promise}
          */
-        getAvailableTemplates: function(Content) {
+        getAvailableTemplates: function (Content) {
             return new Promise(function (resolve, reject) {
                 // check user and password
                 new Request({
-                    url      : '/ajax/getAvailableTemplates.php',
-                    noCache  : true,
+                    url    : '/ajax/getAvailableTemplates.php',
+                    noCache: true,
 
                     onSuccess: function (response) {
                         var output;
-                        JSON.decode(response).forEach(function(Elm) {
+                        JSON.decode(response).forEach(function (Elm) {
                             output += '<option value=' + Elm + '>' + Elm + '</option>';
                         });
                         Content.getElement('#project-template').set(

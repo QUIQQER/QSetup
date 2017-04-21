@@ -153,31 +153,31 @@ $language = require_once "languageDetection.php";
                 <div class="nav left-sidebar grid-20 mobile-grid-100 hide-on-mobile">
                     <ul class="nav-list">
                         <li class="step-active">
-                            <i class="fa fa-fw fa-check"></i>
+                            <span class="fa fa-fw fa-check"></span>
                             <!--Sprache-->
                             <?php echo $Locale->getStringLang('setup.web.nav.siteLang') ?>
                         </li>
-                        <li><i class="fa fa-fw fa-check"></i>
+                        <li><span class="fa fa-fw fa-check"></span>
                             <!--Version-->
                             <?php echo $Locale->getStringLang('setup.web.nav.version') ?>
                         </li>
-                        <li><i class="fa fa-fw fa-check"></i>
+                        <li><span class="fa fa-fw fa-check"></span>
                             <!--Vorlage-->
                             <?php echo $Locale->getStringLang('setup.web.nav.template') ?>
                         </li>
-                        <li><i class="fa fa-fw fa-check"></i>
+                        <li><span class="fa fa-fw fa-check"></span>
                             <!--Datenbank-->
                             <?php echo $Locale->getStringLang('setup.web.nav.dataBase') ?>
                         </li>
-                        <li><i class="fa fa-fw fa-check"></i>
+                        <li><span class="fa fa-fw fa-check"></span>
                             <!--Root Benutzer-->
                             <?php echo $Locale->getStringLang('setup.web.nav.user') ?>
                         </li>
-                        <li><i class="fa fa-fw fa-check"></i>
+                        <li><span class="fa fa-fw fa-check"></span>
                             <!--Host und Pfade-->
                             <?php echo $Locale->getStringLang('setup.web.nav.hostAndDirectory') ?>
                         </li>
-                        <li><i class="fa fa-fw fa-check"></i>
+                        <li><span class="fa fa-fw fa-check"></span>
                             <!--Lizenz-->
                             <?php echo $Locale->getStringLang('setup.web.nav.license') ?>
                         </li>
@@ -215,7 +215,7 @@ $language = require_once "languageDetection.php";
                                                         <img class="" src="/bin/img/flags/' . $lang . '.png" 
                                                             title="' . $language . ' Flag" alt="' . $language . '"/>';
                                                 $output .= $language;
-                                                $output .= '<i class="fa fa-check button-icon-right"></i>
+                                                $output .= '<span class="fa fa-check button-icon-right"></span>
                                                     </div>
                                                 </label>';
 
@@ -239,13 +239,13 @@ $language = require_once "languageDetection.php";
                                         for ($i = 0; $i < count($versions); $i++) {
                                             switch ($versions[$i]) {
                                                 case 'dev-dev':
-                                                    $icon = '<i class="fa fa-cubes button-icon-left"></i>';
+                                                    $icon = '<span class="fa fa-cubes button-icon-left"></span>';
                                                     break;
                                                 case 'dev-master':
-                                                    $icon = '<i class="fa fa-cube button-icon-left"></i>';
+                                                    $icon = '<span class="fa fa-cube button-icon-left"></span>';
                                                     break;
                                                 default:
-                                                    $icon = '<i class="fa fa-star-o button-icon-left"></i>';
+                                                    $icon = '<span class="fa fa-star-o button-icon-left"></span>';
                                             }
 
                                             $output = '<label class="input-wrapper">
@@ -253,7 +253,7 @@ $language = require_once "languageDetection.php";
                                                type="radio" value="' . $versions[$i] . '"' . $checked . ' />';
                                             $output .= '<div class="label-div">' . $icon;
                                             $output .= $versions[$i];
-                                            $output .= '<i class="fa fa-check button-icon-right"></i>
+                                            $output .= '<span class="fa fa-check button-icon-right"></span>
                                         </div>
                                     </label>';
                                             $checked = '';
@@ -269,6 +269,7 @@ $language = require_once "languageDetection.php";
                                         <?php
                                         $presets = \QUI\Setup\Preset::getPresets();
                                         $lang    = $Locale->getCurrent();
+
 
                                         $checked = '';
                                         //                            $checked = 'checked="checked"';
@@ -294,12 +295,15 @@ $language = require_once "languageDetection.php";
                                             $output = '<label class="input-wrapper">
                                     <input class="input-radio" name="vorlage" tabindex="-1" 
                                            type="radio" value="' . $key . '"' . $checked . '/>
-                                    <div class="label-div">
-                                        <i class="fa ' . $icon . ' button-icon-left"></i>';
+                                    <div class="label-div" title="'. $name . '">
+                                        <span class="fa ' . $icon . ' button-icon-left"></span>';
 
                                             $output .= $name;
                                             $output .= '
-                                        <i class="fa fa-check button-icon-right"></i>
+                                        <span class="fa fa-check button-icon-right"></span>
+                                        <span class="fa fa-cogs step-3-settings-button button-icon-right" 
+                                        data-attr-name="'. $value['meta']['name'][$lang] .'" 
+                                        data-attr-preset="' . $key . '"></span>
                                     </div>
                                 </label>';
                                             echo $output;
@@ -383,7 +387,7 @@ $language = require_once "languageDetection.php";
                                             </label>
 
                                             <!-- Root Benutzer -->
-                                            <i class="fa fa-user input-text-icon"></i>
+                                            <span class="fa fa-user input-text-icon"></span>
                                             <input class="input-text input-text-user" type="text"
                                                    name="userName" value="" required tabindex="-1"
                                                    placeholder="<?php echo $Locale->getStringLang('setup.web.content.rootUser') ?>"
@@ -396,14 +400,14 @@ $language = require_once "languageDetection.php";
                                                 <?php echo $Locale->getStringLang('setup.web.content.rootPassword') ?>:
                                             </label>
                                             <!-- Root Passwort -->
-                                            <i class="fa fa-lock input-text-icon"></i>
+                                            <span class="fa fa-lock input-text-icon"></span>
                                             <input class="input-text input-text-password" type="password"
                                                    name="userPassword" value="" required tabindex="-1"
                                                    placeholder="<?php echo $Locale->getStringLang('setup.web.content.rootPassword') ?>"
                                             />
 
-                                            <i class="fa fa-eye-slash show-password"
-                                               title="<?php echo $Locale->getStringLang('setup.web.content.password.show'); ?>"></i>
+                                            <span class="fa fa-eye-slash show-password"
+                                               title="<?php echo $Locale->getStringLang('setup.web.content.password.show'); ?>"></span>
 
                                         </div>
                                         <div class="input-wrapper user-password-step-float-right">
@@ -411,7 +415,7 @@ $language = require_once "languageDetection.php";
                                                 <?php echo $Locale->getStringLang('setup.web.content.rootPasswordRepeat') ?>:
                                             </label>
                                             <!-- Root Passwort wiederholen -->
-                                            <i class="fa fa-lock input-text-icon"></i>
+                                            <span class="fa fa-lock input-text-icon"></span>
                                             <input class="input-text input-text-password" type="password"
                                                    name="userPasswordRepeat" value="" required="required"
                                                    placeholder="<?php echo $Locale->getStringLang('setup.web.content.rootPasswordRepeat') ?>"
@@ -428,15 +432,15 @@ $language = require_once "languageDetection.php";
                                             <label class="animated-label">
                                                 <?php echo $Locale->getStringLang('setup.web.content.domain') ?>:
                                             </label>
-                                            <i class="fa fa-pencil-square-o auto-fill-test"
+                                            <span class="fa fa-pencil-square-o auto-fill-test"
                                                data-attr="domain"
-                                               title="<?php echo $Locale->getStringLang('setup.web.content.autoFill'); ?>"></i>
+                                               title="<?php echo $Locale->getStringLang('setup.web.content.autoFill'); ?>"></span>
                                             <input class="input-text input-host-step" type="text" name="domain" value=""
                                                    placeholder="<?php echo $Locale->getStringLang('setup.web.content.domain') ?>"
                                             />
-                                            <i class="fa fa-info-circle host-and-url-info"
+                                            <span class="fa fa-info-circle host-and-url-info"
                                                data-attr="<?php echo nl2br($Locale->getStringLang('help.prompt.host')); ?>"
-                                               title="<?php echo $Locale->getStringLang('setup.web.content.domain.help'); ?>"></i>
+                                               title="<?php echo $Locale->getStringLang('setup.web.content.domain.help'); ?>"></span>
                                         </div>
 
                                         <div class="input-wrapper">
@@ -444,16 +448,16 @@ $language = require_once "languageDetection.php";
                                             <label class="animated-label">
                                                 <?php echo $Locale->getStringLang('setup.web.content.rootDirectory') ?>:
                                             </label>
-                                            <i class="fa fa-pencil-square-o auto-fill-test"
+                                            <span class="fa fa-pencil-square-o auto-fill-test"
                                                data-attr="rootPath"
-                                               title="<?php echo $Locale->getStringLang('setup.web.content.autoFill'); ?>"></i>
+                                               title="<?php echo $Locale->getStringLang('setup.web.content.autoFill'); ?>"></span>
                                             <input class="input-text input-host-step" type="text" name="rootPath"
                                                    value=""
                                                    placeholder="<?php echo $Locale->getStringLang('setup.web.content.rootDirectory') ?>"
                                             />
-                                            <i class="fa fa-info-circle host-and-url-info"
+                                            <span class="fa fa-info-circle host-and-url-info"
                                                data-attr="<?php echo nl2br($Locale->getStringLang('help.prompt.cms')); ?>"
-                                               title="<?php echo $Locale->getStringLang('setup.web.content.autoFill'); ?>"></i>
+                                               title="<?php echo $Locale->getStringLang('setup.web.content.autoFill'); ?>"></span>
                                         </div>
 
                                         <div class="input-wrapper">
@@ -461,16 +465,16 @@ $language = require_once "languageDetection.php";
                                             <label class="animated-label">
                                                 <?php echo $Locale->getStringLang('setup.web.content.urlDirectory') ?>:
                                             </label>
-                                            <i class="fa fa-pencil-square-o auto-fill-test"
+                                            <span class="fa fa-pencil-square-o auto-fill-test"
                                                data-attr="urlSubPath"
-                                               title="<?php echo $Locale->getStringLang('setup.web.content.domain.help'); ?>"></i>
+                                               title="<?php echo $Locale->getStringLang('setup.web.content.domain.help'); ?>"></span>
                                             <input class="input-text input-host-step" type="text" name="URLsubPath"
                                                    value=""
                                                    placeholder="<?php echo $Locale->getStringLang('setup.web.content.urlDirectory') ?>"
                                             />
-                                            <i class="fa fa-info-circle host-and-url-info"
+                                            <span class="fa fa-info-circle host-and-url-info"
                                                data-attr="<?php echo nl2br($Locale->getStringLang('help.prompt.url')); ?>"
-                                               title="<?php echo $Locale->getStringLang('setup.web.content.urlSubPath.help'); ?>"></i>
+                                               title="<?php echo $Locale->getStringLang('setup.web.content.urlSubPath.help'); ?>"></span>
                                         </div>
                                         <!--<div class="input-wrapper-button">
 
@@ -489,12 +493,12 @@ $language = require_once "languageDetection.php";
                                             </div>
                                         </div>
                                         <div class="license-checkbox-wrapper">
-                                            <input id="license-checkbox" class="license-checkbox"
+                                            <input id="license-checkbox" class="license-checkbox button-checkbox"
                                                    name="license" type="checkbox" required="required"/>
                                             <label for="license-checkbox">
-                                        <span class="license-label">
-                                            <?php echo $Locale->getStringLang('setup.web.content.license.checkbox'); ?>
-                                        </span>
+                                                <span class="button-checkbox license-label">
+                                                    <?php echo $Locale->getStringLang('setup.web.content.license.checkbox'); ?>
+                                                </span>
                                             </label>
                                         </div>
                                     </li>

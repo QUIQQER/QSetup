@@ -11,9 +11,12 @@ define('bin/js/Setup', [
     'qui/utils/Functions',
     'qui/utils/Form',
     'qui/Locale',
-    'qui/controls/windows/Popup'
+    'qui/controls/windows/Popup',
+    'qui/controls/windows/Confirm',
+
+    'text!bin/js/Setup.TemplateForm.html'
     // 'qui/controls/Control'
-], function (QUI, QUIFunctionUtils, QUIFormUtils, QUILocale, QUIPopup) {
+], function (QUI, QUIFunctionUtils, QUIFormUtils, QUILocale, QUIPopup, QUIConfirm, templateForm) {
     "use strict";
 
     QUILocale.setCurrent(CURRENT_LOCALE);
@@ -42,9 +45,11 @@ define('bin/js/Setup', [
             'checkUserAndPassword',
             'disableAllTab',
             'activeTabForThisStep',
+            'getPreset',
+            'openPopup',
+            '$getAvailableTemplates',
             '$exeInstall',
-            'showPassword',
-            'showInfoPopup'
+            'showPassword'
         ],
 
         initialize: function () {
@@ -77,7 +82,6 @@ define('bin/js/Setup', [
             this.activeHeader = null;
 
             this.step = 1;
-
         },
 
         /**
@@ -133,7 +137,6 @@ define('bin/js/Setup', [
             });
 
 
-
             this.setHeaderHeight(this.getHeaderHeight());
 
             // check progress erst nach NEXT click
@@ -168,6 +171,42 @@ define('bin/js/Setup', [
                 opacity: 1
             }, {
                 duration: 500
+            });
+
+            var self = this;
+            // step 3 template settings button
+            document.getElements('.step-3-settings-button').addEvent('click', function (event) {
+                var Target = event.target;
+
+                new QUIConfirm({
+                    maxWidth : 460,
+                    maxHeight: 540,
+                    titleicon: false,
+                    icon     : false,
+                    title    : Target.getAttribute('data-attr-name'),
+                    preset   : Target.getAttribute('data-attr-preset'),
+                    events   : {
+                        onOpen : function (Win) {
+                            var preset = Target.getAttribute('data-attr-preset');
+                            self.openPopup(Win, preset);
+
+                        },
+                        onClose: function () {
+                            // needed because of chrome render bug
+                            document.body.setStyle('transform', 'translateZ(0)');
+                            (function () {
+                                document.body.setStyle('transform', null);
+                            }).delay(100);
+                        },
+
+                        onSubmit: function (Win) {
+                            var Content = Win.getContent(),
+                                Form    = Content.getElement('form');
+
+                            console.log(QUIFormUtils.getFormData(Form));
+                        }
+                    }
+                }).open();
             });
 
             // change icon in input field (user step)
@@ -215,20 +254,18 @@ define('bin/js/Setup', [
                 });
             }.bind(this));
 
-            // show host and url popup help
-            document.getElements('.host-and-url-info').forEach(function (Elm) {
-                Elm.addEvent('click', function (event) {
-                    event.stop();
+            document.getElements('.host-and-url-info').addEvent('click', function (event) {
+                event.stop();
+                var Target = event.target;
 
-                    var Popup = new QUIPopup({
-                        maxWidth       : 420,
-                        maxHeight      : 340,
-                        title          : Elm.getAttribute('title'),
-                        closeButtonText: 'schließen',
-                        content        : Elm.getAttribute('data-attr')
-                    });
-                    Popup.open();
-                }.bind(this));
+                var Popup = new QUIPopup({
+                    maxWidth       : 420,
+                    maxHeight      : 340,
+                    title          : Target.getAttribute('title'),
+                    closeButtonText: 'schließen',
+                    content        : Target.getAttribute('data-attr')
+                });
+                Popup.open();
             });
 
             // licence checkbox
@@ -751,6 +788,106 @@ define('bin/js/Setup', [
             var cssClass = '.step-' + step;
             document.getElement(cssClass).getElements('input, select').forEach(function (Elm) {
                 Elm.setAttribute('tabindex', '2');
+            });
+        },
+
+        /**
+         * opens the popup in step template
+         *
+         * @param Win
+         */
+        openPopup: function (Win, preset) {
+            var Content = Win.getContent();
+
+
+            Content.set('html', templateForm);
+
+            Content.getElement('.project-title').set(
+                'html',
+                LOCALE_TRANSLATIONS['setup.web.popup.project-title']
+            );
+            Content.getElement('.project-language').set(
+                'html',
+                LOCALE_TRANSLATIONS['setup.web.popup.project-language']
+            );
+            Content.getElement('.project-template').set(
+                'html',
+                LOCALE_TRANSLATIONS['setup.web.popup.project-template']
+            );
+
+            Win.Loader.show();
+
+            this.getPreset(preset).then(function (response) {
+                console.log(response);
+                console.log(response.project['name']);
+                Content.getElement('input[name="project-title"]').set(
+                    'placeholder', response.project['name']
+                );
+                Content.getElement('input[name="project-title"]').set(
+                    'value', response.project['name']
+                )
+
+            });
+
+            this.getAvailableTemplates(Content).then(function () {
+                Win.Loader.hide();
+            })
+
+
+        },
+
+        /**
+         * get the given preset
+         *
+         * @returns {Promise}
+         */
+        getPreset: function (preset) {
+            var presetName = preset.toLowerCase();
+            return new Promise(function (resolve, reject) {
+                new Request({
+                    url    : '/ajax/getPreset.php',
+                    noCache: true,
+                    data   : {
+                        presetName: presetName
+                    },
+
+                    onSuccess: function (response) {
+                        resolve(JSON.decode(response));
+                    },
+                    onFailure: function (response) {
+                        reject(response);
+                    }
+                }).send();
+            })
+        },
+
+        /**
+         * get all available templates
+         *
+         * @returns {Promise}
+         */
+        getAvailableTemplates: function (Content) {
+            return new Promise(function (resolve, reject) {
+                // check user and password
+                new Request({
+                    url    : '/ajax/getAvailableTemplates.php',
+                    noCache: true,
+
+                    onSuccess: function (response) {
+                        var output;
+                        JSON.decode(response).forEach(function (Elm) {
+                            output += '<option value=' + Elm + '>' + Elm + '</option>';
+                        });
+                        Content.getElement('#project-template').set(
+                            'html',
+                            output
+                        );
+                        resolve();
+                    },
+                    onFailure: function (response) {
+                        reject(response);
+                    }
+                }).send();
             });
         },
 

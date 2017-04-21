@@ -490,4 +490,52 @@ class Validator
 
         return true;
     }
+
+    /**
+     * Validates the projectname.
+     * Throws exception with reason, if the validation fails
+     *
+     * @param $name
+     * @return bool
+     * @throws SetupException
+     */
+    public static function validateProjectName($name)
+    {
+        $name = trim($name);
+
+        $forbiddenCharacters = array(
+            '-',
+            '.',
+            ',',
+            ':',
+            ';',
+            '#',
+            '`',
+            '!',
+            '§',
+            '$',
+            '%',
+            '&',
+            '/',
+            '?',
+            '<',
+            '>',
+            '=',
+            '\'',
+            '"',
+            " "
+        );
+
+        if (strlen($name) <= 2) {
+            throw new SetupException("exception.invalid.too.short");
+        }
+
+        foreach ($forbiddenCharacters as $character) {
+            if (strpos($name, $character) !== false) {
+                throw new SetupException("exception.invalid.character", 0, array("character" => $character));
+            }
+        }
+
+        return true;
+    }
 }

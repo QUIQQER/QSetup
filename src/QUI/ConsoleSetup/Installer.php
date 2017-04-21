@@ -6,6 +6,7 @@ error_reporting(E_ALL);
 ini_set("display_errors", 1);
 
 
+use QUI\Control\Manager;
 use QUI\Exception;
 use QUI\Requirements\Requirements;
 use QUI\Requirements\TestResult;
@@ -447,7 +448,120 @@ class Installer
         );
 
         $this->Setup->setPreset($preset);
+
+
+        #######################
+        # Preset customization
+        #######################
+        $presetData = $presets[$preset];
+
+        $customize = $this->prompt(
+            $this->Locale->getStringLang("prompt.preset.customize", "Do you want to customize the preset?"),
+            "n",
+            null,
+            false,
+            true
+        );
+
+        if ($customize != "y") {
+            # Do not customize preset
+            $this->Setup->storeSetupState();
+
+            return;
+        }
+
+        ## Projectname  ##########
+        $presetDataProjectName = isset($presetData['project']['name']) ? $presetData['project']['name'] : false;
+        $projectName           = $this->prompt(
+            $this->Locale->getStringLang("prompt.preset.customize.projectname", "Projectname: "),
+            $presetDataProjectName
+        );
+
+        try {
+            Validator::validateProjectName($projectName);
+        } catch (\Exception $Exception) {
+            if ($Exception->getMessage() == "exception.invalid.character") {
+                $this->writeLn(
+                    $this->Locale->getStringLang("exception.preset.customization.projectname.forbidden.characters"),
+                    Installer::LEVEL_WARNING
+                );
+
+                $this->writeLn(
+                    $this->Locale->getStringLang(
+                        "setup.preset.customization.projectname.fixed",
+                        "QUIQQER attempted to fix the projectname: "
+                    ) .
+                    Utils::sanitizeProjectName($projectName),
+                    Installer::LEVEL_INFO
+                );
+
+                $useSanitized = $this->prompt(
+                    $this->Locale->getStringLang(
+                        "prompt.preset.customization.projectname.fixed.accept",
+                        "Do you want to use the  fixed name instead? (y/n) "
+                    ),
+                    false,
+                    null,
+                    false,
+                    true
+                );
+
+                if ($useSanitized != "y") {
+                    return $this->stepPreset();
+                }
+
+                $projectName = Utils::sanitizeProjectName($projectName);
+            }
+        }
+
+        ## Languages #############
+        $presetDataLanguages = isset($presetData['project']['languages']) ? $presetData['project']['languages'] : false;
+        $languages           = $this->prompt(
+            $this->Locale->getStringLang("prompt.preset.customize.languages", "Project languages (comma separated): "),
+            $presetDataLanguages !== false ? implode(",", $presetDataLanguages) : false
+        );
+
+        ## Template ##############
+        $presetDataTemplate = isset($presetData['template']['name']) ? $presetData['template']['name'] : false;
+        $templateName       = $this->prompt(
+            $this->Locale->getStringLang("prompt.preset.customize.template", "Templatename: "),
+            $presetDataTemplate
+        );
+
+
+        if (!empty($projectName)) {
+            $presetData['project']['name'] = $projectName;
+        }
+        if (!empty($languages)) {
+            $presetData['project']['languages'] = explode(",", $languages);
+        }
+        if (!empty($templateName)) {
+            $presetData['template']['name'] = $templateName;
+        }
+
+        # Validate the entered data
+        try {
+            Validator::validatePresetData($presetData);
+        } catch (\Exception $Exception) {
+            $this->writeLn(
+                $this->Locale->getStringLang("exception.preset.customization.data", "The entered data is not valid") .
+                $Exception->getMessage()
+            );
+
+            return $this->stepPreset();
+        }
+
+        ## Save presetdata to preset file
+        $presetFile = dirname(dirname(dirname(dirname(__FILE__)))) . "/templates/presets/" . $preset . ".json";
+        if (!file_exists($presetFile)) {
+            throw new SetupException("Presetfile not found!");
+        }
+
+        file_put_contents($presetFile, json_encode($presetData, JSON_PRETTY_PRINT));
+
         $this->Setup->storeSetupState();
+
+        return true;
     }
 
     /**

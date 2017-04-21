@@ -29,10 +29,10 @@ const SETUP_BRANCH = '2.0.0-dev';
 
 /** @var array $exclude - Patterns which should be excluded in the zip */
 $exclude = array('/.git/*', 'create.php', 'tests/*', 'quiqqer.zip', 'quiqqer.tar');
+
 // ****************************************************************
 // *********************   EXECUTE  *******************************
 // ****************************************************************
-
 #region Execute
 
 $workingDir = "/tmp/setup-create/" . time();
@@ -149,6 +149,12 @@ function createZip($target)
     return $zipLocation;
 }
 
+/**
+ * Creates a tar file of the setup
+ *
+ * @param $targetDir
+ * @return string - The tar archives name
+ */
 function createTar($targetDir)
 {
     global $exclude;
@@ -190,7 +196,11 @@ function createChecksums($zipLocation)
     return "checksum-{$zipLocation}.md5";
 }
 
-
+/**
+ * Downloads the database.xml for the given version
+ *
+ * @param $version
+ */
 function downloadXMLForVersion($version)
 {
     $url = 'https://dev.quiqqer.com/quiqqer/quiqqer/raw/' . $version . '/database.xml';

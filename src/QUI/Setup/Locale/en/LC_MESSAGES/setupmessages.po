@@ -587,3 +587,27 @@ msgstr "The password does not contain a number."
 
 msgid "applypreset.done"
 msgstr "The preset has been applied"
+
+msgid "prompt.preset.customize"
+msgstr "Do you want to customize the preset? (y/n)  "
+
+msgid "prompt.preset.customize.projectname"
+msgstr "Projectname: "
+
+msgid "prompt.preset.customize.languages"
+msgstr "Languages (comma-separated): "
+
+msgid "prompt.preset.customize.template"
+msgstr "Templatename"
+
+msgid "exception.preset.customization.data"
+msgstr "The entered data is not valid!"
+
+msgid "exception.preset.customization.projectname.forbidden.characters"
+msgstr "The projectname contains invalid characters."
+
+msgid "setup.preset.customization.projectname.fixed"
+msgstr "QUIQQER has tried to fix the projectname: "
+
+msgid "prompt.preset.customization.projectname.fixed.accept"
+msgstr "Do you want tu use the fixed projectname instead? (y/n) "

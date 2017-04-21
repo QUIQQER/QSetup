@@ -83,4 +83,41 @@ class Utils
 
         return md5(implode('', $fileHashes));
     }
+
+    /**
+     * Sanitizes the given projectname
+     *
+     * @param $name
+     * @return mixed|string
+     */
+    public static function sanitizeProjectName($name)
+    {
+        $forbiddenCharacters = array(
+            '-',
+            '.',
+            ',',
+            ':',
+            ';',
+            '#',
+            '`',
+            '!',
+            '§',
+            '$',
+            '%',
+            '&',
+            '/',
+            '?',
+            '<',
+            '>',
+            '=',
+            '\'',
+            '"',
+            " "
+        );
+
+        $name = str_replace($forbiddenCharacters, "", $name);
+        $name = trim($name);
+
+        return $name;
+    }
 }

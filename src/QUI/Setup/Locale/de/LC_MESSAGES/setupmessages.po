@@ -589,3 +589,27 @@ msgstr "Bitte verwenden Sie auch Zahlen."
 
 msgid "applypreset.done"
 msgstr "Die Vorlage wurde angewendet."
+
+msgid "prompt.preset.customize"
+msgstr "Möchten Sie die Vorlage anpassen? (y/n) "
+
+msgid "prompt.preset.customize.projectname"
+msgstr "Projektname"
+
+msgid "prompt.preset.customize.languages"
+msgstr "Sprachen (komma-separiert): "
+
+msgid "prompt.preset.customize.template"
+msgstr "Templatename"
+
+msgid "exception.preset.customization.data"
+msgstr "Die angegeben Daten sind nicht gültig!"
+
+msgid "exception.preset.customization.projectname.forbidden.characters"
+msgstr "Der Projektname enthält ungültige Zeichen."
+
+msgid "setup.preset.customization.projectname.fixed"
+msgstr "QUIQQER hat versucht den Projektnamen zu reinigen: "
+
+msgid "prompt.preset.customization.projectname.fixed.accept"
+msgstr "Möchten Sie den bereinigten Projektnamen verwenden? (y/n) "

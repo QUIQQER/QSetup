@@ -28,7 +28,7 @@ const SETUP_REPO   = 'git@dev.quiqqer.com:quiqqer/qsetup.git';
 const SETUP_BRANCH = '2.0.0-dev';
 
 /** @var array $exclude - Patterns which should be excluded in the zip */
-$exclude = array('/.git/*','create.php', 'tests/*');
+$exclude = array('/.git/*', 'create.php', 'tests/*', 'quiqqer.zip', 'quiqqer.tar');
 // ****************************************************************
 // *********************   EXECUTE  *******************************
 // ****************************************************************
@@ -81,18 +81,30 @@ foreach ($versions as $version) {
 
 # Create the zip file
 $zipLocation = createZip($workingDir . '/setup/');
+$tarLocation = createTar($workingDir . '/setup/');
 
 # Create a md5 file
-createChecksums($zipLocation);
+$zipChecksumFilename = createChecksums($zipLocation);
+$tarChecksumFilename = createChecksums($tarLocation);
 
 # Upload zip file to updateserver
 $upload = prompt("Do you want to upload the File to the updateserver? (y/n)", false);
 if ($upload == 'y') {
+    # Upload zip file
     if (file_exists($zipLocation)) {
         executeShellCommand('scp ' . $zipLocation . ' root@qui1.pcsg-server.de:/var/www/vhosts/update.quiqqer.com/quiqqer.zip');
         # Upload file with checksum for quiqqer.zip
-        if (file_exists(dirname($zipLocation) . '/checksum.md5')) {
-            executeShellCommand('scp ' . dirname($zipLocation) . '/checksum.md5' . ' root@qui1.pcsg-server.de:/var/www/vhosts/update.quiqqer.com/checksum.md5');
+        if (file_exists($zipChecksumFilename)) {
+            executeShellCommand('scp ' . $zipChecksumFilename . ' root@qui1.pcsg-server.de:/var/www/vhosts/update.quiqqer.com/' . $zipChecksumFilename);
+        }
+    }
+
+    # Upload tar file
+    if (file_exists($tarLocation)) {
+        executeShellCommand('scp ' . $tarLocation . ' root@qui1.pcsg-server.de:/var/www/vhosts/update.quiqqer.com/quiqqer.tar');
+        # Upload file with checksum for quiqqer.zip
+        if (file_exists($tarChecksumFilename)) {
+            executeShellCommand('scp ' . $tarChecksumFilename . ' root@qui1.pcsg-server.de:/var/www/vhosts/update.quiqqer.com/' . $tarChecksumFilename);
         }
     }
 }
@@ -137,14 +149,47 @@ function createZip($target)
     return $zipLocation;
 }
 
+function createTar($targetDir)
+{
+    global $exclude;
+
+    $cwd = getcwd();
+    chdir($targetDir);
+    $archiveName = 'quiqqer.tar';
+
+    $tarCommand = "tar -cvf {$archiveName} ./* ";
+    foreach ($exclude as $excl) {
+        $tarCommand .= " --exclude='" . $excl . "'";
+    }
+    executeShellCommand($tarCommand);
+
+    if (!file_exists($archiveName)) {
+        exitWithError("Could not create tar file!");
+    }
+
+    chdir($cwd);
+
+    return $archiveName;
+}
+
+/**
+ * Creates the checksums for the given archive
+ *
+ * @param $zipLocation
+ * @return string - The filename of the checksum file.
+ */
 function createChecksums($zipLocation)
 {
     $md5 = md5_file($zipLocation);
 
-    file_put_contents(dirname($zipLocation) . '/checksum.md5', $md5);
+    file_put_contents(dirname($zipLocation) . "/checksum-{$zipLocation}.md5", $md5);
 
     writeLn("Calculated Checksum for : " . $zipLocation . " : " . $md5);
+
+
+    return "checksum-{$zipLocation}.md5";
 }
+
 
 function downloadXMLForVersion($version)
 {

@@ -48,6 +48,7 @@ class Setup
     const STEP_SETUP_DELETE = 8192;
     const STEP_SETUP_CHECKS = 16384;
     const STEP_SETUP_PRESET = 32768;
+    const STEP_SETUP_INSTALL_QUIQQER = 65536;
 
     const MODE_WEB = 0;
     const MODE_CLI = 1;
@@ -538,18 +539,25 @@ class Setup
     #endregion
 
     /**
-     *  Starts the Setup-process
+     * Starts the Setup-process
+     *
+     * @param int $step - step to start
      * @throws SetupException
      */
-    public function runSetup()
+    public function runSetup($step = Setup::STEP_SETUP_DATABASE)
     {
+
+
         # Constraint to ensure that all Datasteps have been taken or that the Set Data method has been called
-        if ($this->stepSum != Setup::STEP_DATA_COMPLETE && !$this->canDoStep(self::STEP_DATA_COMPLETE)) {
+        if ($this->stepSum != self::STEP_DATA_COMPLETE && !$this->canDoStep(self::STEP_DATA_COMPLETE)) {
             $this->Output->writeLnLang("setup.exception.runsetup.missing.data.step", Output::LEVEL_CRITICAL);
             exit;
         }
 
-        $this->Step = Setup::STEP_DATA_COMPLETE;
+
+        if ($this->Step == self::STEP_DATA_PATHS) {
+            $this->Step = self::STEP_DATA_COMPLETE;
+        }
 
         $this->Output->writeLnLang("setup.message.step.start", Output::LEVEL_INFO);
         # Check if all neccessary data is set; throws exception if fails
@@ -569,25 +577,46 @@ class Setup
 
 
         # Execute setup steps
-        $this->setupDatabase();
-        $this->setupUser();
-        $this->setupPaths();
-        $this->setupComposer();
-        $this->setupBootstrapFiles();
-        $this->executeQuiqqerSetups();
+        switch ($step) {
+            case self::STEP_SETUP_DATABASE:
+                $this->setupDatabase();
+            //no break
+            case self::STEP_SETUP_USER:
+                $this->setupUser();
+            //no break
+            case self::STEP_SETUP_PATHS:
+                $this->setupPaths();
+            // no break
+            case self::STEP_SETUP_COMPOSER:
+                $this->setupComposer();
 
-        $this->executeQuiqqerChecks();
+                return;
+
+            case self::STEP_SETUP_INSTALL_QUIQQER:
+                $this->setupInstallComposerViaWeb();
+            //no break
+            case self::STEP_SETUP_BOOTSTRAP:
+                $this->setupBootstrapFiles();
+            //no break
+            case self::STEP_SETUP_QUIQQERSETUP:
+                $this->executeQuiqqerSetups();
+            //no break
+            case self::STEP_SETUP_CHECKS:
+                $this->executeQuiqqerChecks();
+            //no break
+        }
+
         $this->storeSetupState();
 
         # Execute the applyPresetScript in new instance to make sure quiqqer has been initialized correctly.
         # CLI only, the Websetup has to make a new ajax call
-        if ($this->mode == Setup::MODE_CLI && isset($this->data['preset']) && !empty($this->data['preset'])) {
+        if ($this->mode == self::MODE_CLI && isset($this->data['preset']) && !empty($this->data['preset'])) {
             $this->cliCallApplyPreset();
         }
 
 
         # Workaround for the preset application
-        if ($this->mode !== Setup::MODE_WEB) {
+        if ($this->mode !== self::MODE_WEB) {
             $this->deleteSetupFiles();
         }
     }
@@ -603,18 +632,18 @@ class Setup
         QUI\Setup\Log\Log::info("Applying preset: " . $presetName);
 
         $Output = null;
-        if ($this->mode == Setup::MODE_WEB) {
+        if ($this->mode == self::MODE_WEB) {
             $Output = new WebOutput($this->setupLang);
         }
 
-        if ($this->mode == Setup::MODE_CLI) {
+        if ($this->mode == self::MODE_CLI) {
             $Output = new ConsoleOutput($this->setupLang);
         }
 
         $Preset = new \QUI\Setup\Preset($presetName, $this->Locale, $Output);
         $Preset->apply(CMS_DIR);
 
-        $this->Step = Setup::STEP_SETUP_PRESET;
+        $this->Step = self::STEP_SETUP_PRESET;
     }
 
 
@@ -864,7 +893,7 @@ class Setup
      */
     private function setupDatabase()
     {
-        if ($this->Step != Setup::STEP_DATA_COMPLETE) {
+        if ($this->Step != self::STEP_DATA_COMPLETE) {
             $this->Output->writeLnLang("setup.exception.step.order", Output::LEVEL_CRITICAL);
             exit;
         }
@@ -939,7 +968,7 @@ class Setup
         }
 
 
-        $this->Step = Setup::STEP_SETUP_DATABASE;
+        $this->Step = self::STEP_SETUP_DATABASE;
     }
 
     /**
@@ -949,7 +978,7 @@ class Setup
     private function setupUser()
     {
         # Contraint to ensure correct setup order.
-        if ($this->Step != Setup::STEP_SETUP_DATABASE) {
+        if ($this->Step != self::STEP_SETUP_DATABASE) {
             $this->Output->writeLnLang("setup.exception.step.order", Output::LEVEL_CRITICAL);
             exit;
         }
@@ -1043,7 +1072,7 @@ class Setup
             )
         );
 
-        $this->Step = Setup::STEP_SETUP_USER;
+        $this->Step = self::STEP_SETUP_USER;
     }
 
     /**
@@ -1054,7 +1083,7 @@ class Setup
     private function setupPaths()
     {
         # Contraint to ensure correct setup order.
-        if ($this->Step != Setup::STEP_SETUP_USER) {
+        if ($this->Step != self::STEP_SETUP_USER) {
             $this->Output->writeLnLang("setup.exception.step.order", Output::LEVEL_CRITICAL);
             exit;
         }
@@ -1062,60 +1091,14 @@ class Setup
         $this->Output->writeLnLang("setup.message.step.paths", Output::LEVEL_INFO);
         $paths = $this->data['paths'];
 
-        $cmsDir = $this->cleanPath($paths['cms_dir']);
-        $varDir = $this->cleanPath($paths['var_dir']);
-        $optDir = $this->cleanPath($paths['opt_dir']);
+        $this->loadEnvironment();
+
+        $cmsDir = CMS_DIR;
+        $etcDir = ETC_DIR;
+        $tmpDir = VAR_DIR . "temp/";
+        $optDir = OPT_DIR;
         $usrDir = $this->cleanPath($paths['usr_dir']);
-        $urlDir = $this->cleanPath($paths['url_dir']);
-        $etcDir = $cmsDir . "etc/";
-        $tmpDir = $varDir . "temp/";
-
-        $urlLibDir = $this->cleanPath($paths['url_lib_dir']);
-
-        # Create Constants
-        if (!defined('CMS_DIR')) {
-            define('CMS_DIR', $cmsDir);
-        }
-
-        if (!defined('VAR_DIR')) {
-            define('VAR_DIR', $varDir);
-        }
-
-        if (!defined('OPT_DIR')) {
-            define('OPT_DIR', $optDir);
-        }
-
-        if (!defined('ETC_DIR')) {
-            define('ETC_DIR', $etcDir);
-        }
-
-        if (!defined('URL_DIR')) {
-            define('URL_DIR', $urlDir);
-        }
-
-        if (!defined('URL_LIB_DIR')) {
-            define('URL_LIB_DIR', $urlLibDir);
-        }
-
-        if (!defined('URL_USR_DIR')) {
-            define('URL_USR_DIR', $urlDir . str_replace($cmsDir, '', $usrDir));
-        }
-
-        if (!defined('URL_OPT_DIR')) {
-            define('URL_OPT_DIR', $urlDir . str_replace($cmsDir, '', $optDir));
-        }
-
-        if (!defined('URL_VAR_DIR')) {
-            define('URL_VAR_DIR', $urlDir . str_replace($cmsDir, '', $varDir));
-        }
-
-        if (!defined('URL_BIN_DIR')) {
-            define('URL_BIN_DIR', $this->cleanPath($this->data['paths']['url_bin_dir']));
-        }
-
-        if (!defined('URL_SYS_DIR')) {
-            define('URL_SYS_DIR', $this->cleanPath(URL_DIR . "admin/"));
-        }
+        $varDir = VAR_DIR;
 
         # -------------------
         # Validation
@@ -1205,7 +1188,71 @@ class Setup
 
         #endregion
 
-        $this->Step = Setup::STEP_SETUP_PATHS;
+        $this->Step = self::STEP_SETUP_PATHS;
+    }
+
+    /**
+     * Load the enviromanet
+     * define the contants
+     */
+    private function loadEnvironment()
+    {
+        $paths = $this->data['paths'];
+
+        $cmsDir = $this->cleanPath($paths['cms_dir']);
+        $varDir = $this->cleanPath($paths['var_dir']);
+        $optDir = $this->cleanPath($paths['opt_dir']);
+        $usrDir = $this->cleanPath($paths['usr_dir']);
+        $urlDir = $this->cleanPath($paths['url_dir']);
+        $etcDir = $cmsDir . "etc/";
+        $tmpDir = $varDir . "temp/";
+
+        $urlLibDir = $this->cleanPath($paths['url_lib_dir']);
+
+        # Create Constants
+        if (!defined('CMS_DIR')) {
+            define('CMS_DIR', $cmsDir);
+        }
+
+        if (!defined('VAR_DIR')) {
+            define('VAR_DIR', $varDir);
+        }
+
+        if (!defined('OPT_DIR')) {
+            define('OPT_DIR', $optDir);
+        }
+
+        if (!defined('ETC_DIR')) {
+            define('ETC_DIR', $etcDir);
+        }
+
+        if (!defined('URL_DIR')) {
+            define('URL_DIR', $urlDir);
+        }
+
+        if (!defined('URL_LIB_DIR')) {
+            define('URL_LIB_DIR', $urlLibDir);
+        }
+
+        if (!defined('URL_USR_DIR')) {
+            define('URL_USR_DIR', $urlDir . str_replace($cmsDir, '', $usrDir));
+        }
+
+        if (!defined('URL_OPT_DIR')) {
+            define('URL_OPT_DIR', $urlDir . str_replace($cmsDir, '', $optDir));
+        }
+
+        if (!defined('URL_VAR_DIR')) {
+            define('URL_VAR_DIR', $urlDir . str_replace($cmsDir, '', $varDir));
+        }
+
+        if (!defined('URL_BIN_DIR')) {
+            define('URL_BIN_DIR', $this->cleanPath($this->data['paths']['url_bin_dir']));
+        }
+
+        if (!defined('URL_SYS_DIR')) {
+            define('URL_SYS_DIR', $this->cleanPath(URL_DIR . "admin/"));
+        }
     }
 
     /**
@@ -1215,7 +1262,7 @@ class Setup
     private function setupComposer()
     {
         # Contraint to ensure correct setup order.
-        if ($this->Step != Setup::STEP_SETUP_PATHS) {
+        if ($this->Step != self::STEP_SETUP_PATHS) {
             $this->Output->writeLnLang("setup.exception.step.order", Output::LEVEL_CRITICAL);
             exit;
         }
@@ -1242,6 +1289,7 @@ class Setup
 
         # Create the Composer.json with default values.
         $this->createComposerJson();
+
         if (!file_exists(CMS_DIR . "composer.json")) {
             throw new SetupException(
                 "setup.missing.composerjson",
@@ -1274,38 +1322,56 @@ class Setup
         ######################################
         # Execute composer to install QUIQQER
         ######################################
-
-        # Rebuild the composer instance to load freshly installed plugins
-        chdir($composerDir);
-        $Composer = new Composer($composerDir, $composerDir);
-
-        # Workaround to reload plugins in the web version
-        /* @var $Application Application */
-        if ($Composer->getMode() == Composer::MODE_WEB) {
-            $Application = $Composer->getRunner()->getApplication();
-            $Comp        = $Application->getComposer();
-            $Comp->getPluginManager()->loadInstalledPlugins();
+        if ($this->mode == self::MODE_WEB) {
+            return;
         }
 
         # Execute composer again
-
-
         $res = $Composer->requirePackage('quiqqer/quiqqer', $this->data['version']);
+
         if ($res === false) {
             $this->exitWithError("setup.unknown.error");
         }
 
-        if ($Composer->getMode() == Composer::MODE_WEB) {
-            chdir($composerDir);
-            system('COMPOSER_HOME="' . $composerDir . '" php composer.phar clear-cache');
-            system('COMPOSER_HOME="' . $composerDir . '" php composer.phar require "quiqqer/quiqqer" "' . $this->data['version'] . '" -v --prefer-dist >> ' . VAR_DIR . 'log/setup.log 2>&1');
-        }
 
         #########################################################
         # Cleanup: Move composer.json and phar to var/composer/
         #########################################################
 
-        $this->Step = Setup::STEP_SETUP_COMPOSER;
+        $this->Step = self::STEP_SETUP_COMPOSER;
+    }
+
+    /**
+     * Install QUIQQER via the web setup
+     */
+    private function setupInstallComposerViaWeb()
+    {
+        $this->loadEnvironment();
+        $composerDir = VAR_DIR . 'composer/';
+
+        # Rebuild the composer instance to load freshly installed plugins
+        chdir($composerDir);
+
+        $Composer = new Composer($composerDir, $composerDir);
+        $Composer->dumpAutoload();
+
+        # Workaround to reload plugins in the web version
+        if ($Composer->getMode() == Composer::MODE_WEB) {
+            /* @var $Application Application */
+            $Application = $Composer->getRunner()->getApplication();
+            $Comp        = $Application->getComposer();
+            $Comp->getPluginManager()->loadInstalledPlugins();
+        }
+
+        chdir($composerDir);
+
+        $res = $Composer->requirePackage('quiqqer/quiqqer', $this->data['version']);
+
+        if ($res === false) {
+            $this->exitWithError("setup.unknown.error");
+        }
+
+        $this->Step = self::STEP_SETUP_COMPOSER;
     }
 
     /**
@@ -1314,7 +1380,7 @@ class Setup
     private function setupBootstrapFiles()
     {
         # Contraint to ensure correct setup order.
-        if ($this->Step != Setup::STEP_SETUP_COMPOSER) {
+        if ($this->Step != self::STEP_SETUP_COMPOSER) {
             $this->Output->writeLnLang("setup.exception.step.order", Output::LEVEL_CRITICAL);
             exit;
         }
@@ -1371,7 +1437,7 @@ class Setup
         );
 
 
-        $this->Step = Setup::STEP_SETUP_BOOTSTRAP;
+        $this->Step = self::STEP_SETUP_BOOTSTRAP;
     }
 
     /**
@@ -1380,7 +1446,7 @@ class Setup
     private function executeQuiqqerSetups()
     {
         # Contraint to ensure correct setup order.
-        if ($this->Step != Setup::STEP_SETUP_BOOTSTRAP) {
+        if ($this->Step != self::STEP_SETUP_BOOTSTRAP) {
             $this->Output->writeLnLang("setup.exception.step.order", Output::LEVEL_CRITICAL);
             exit;
         }
@@ -1498,7 +1564,7 @@ LOGETC;
         $Defaults->execute();
 
 
-        $this->Step = Setup::STEP_SETUP_QUIQQERSETUP;
+        $this->Step = self::STEP_SETUP_QUIQQERSETUP;
     }
 
     /**
@@ -1507,9 +1573,9 @@ LOGETC;
     public function deleteSetupFiles()
     {
         # Contraint to ensure correct setup order.
-        if ($this->Step != Setup::STEP_SETUP_CHECKS &&
-            $this->Step != Setup::STEP_DATA_COMPLETE &&
-            $this->Step != Setup::STEP_SETUP_PRESET
+        if ($this->Step != self::STEP_SETUP_CHECKS &&
+            $this->Step != self::STEP_DATA_COMPLETE &&
+            $this->Step != self::STEP_SETUP_PRESET
         ) {
             $this->Output->writeLnLang("setup.exception.step.order", Output::LEVEL_CRITICAL);
             exit;
@@ -1588,7 +1654,7 @@ LOGETC;
         # Make sure that stored data
         $this->removeStoredData();
 
-        $this->Step = Setup::STEP_SETUP_DELETE;
+        $this->Step = self::STEP_SETUP_DELETE;
     }
 
     /**
@@ -1597,7 +1663,7 @@ LOGETC;
     private function executeQuiqqerChecks()
     {
         # Contraint to ensure correct setup order.
-        if ($this->Step != Setup::STEP_SETUP_QUIQQERSETUP) {
+        if ($this->Step != self::STEP_SETUP_QUIQQERSETUP) {
             $this->Output->writeLnLang("setup.exception.step.order", Output::LEVEL_CRITICAL);
             exit;
         }
@@ -1609,7 +1675,7 @@ LOGETC;
         # Execute quiqqer tests
         // TODO Quiqqer tests
 
-        $this->Step = Setup::STEP_SETUP_CHECKS;
+        $this->Step = self::STEP_SETUP_CHECKS;
     }
 
 #endregion

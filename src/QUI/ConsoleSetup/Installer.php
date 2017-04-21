@@ -882,6 +882,7 @@ class Installer
 
 
         $this->Setup->runSetup();
+        $this->Setup->runSetup(Setup::STEP_SETUP_BOOTSTRAP);
     }
 
     /**

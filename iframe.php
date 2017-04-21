@@ -1,27 +1,32 @@
-<html>
-<head>
-    <style>
-        body {
-            background : #000;
-            color      : #fff;
-            padding    : 20px;
-        }
+<?php
 
-        pre {
-            margin  : 0;
-            padding : 0;
-        }
-    </style>
-</head>
-<body>
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+
+?>
+    <html>
+    <head>
+        <style>
+            body {
+                background : #000;
+                color      : #fff;
+                padding    : 20px;
+            }
+
+            pre {
+                margin  : 0;
+                padding : 0;
+            }
+        </style>
+    </head>
+    <body>
 <pre>
 
 <?php
 
-#ini_set("display_errors", "on");
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+#ini_set("display_errors", "on");
 
 use \QUI\Setup\Setup;
 
@@ -53,6 +58,25 @@ if (empty($_GET['step'])) {
     $Setup->setData($data);
     $Setup->runSetup();
     $Setup->storeSetupState();
+
+    echo "<script>window.location='?step=installquiqqer'</script>";
+    ob_flush();
+    flush();
+    exit;
+}
+
+if ($_GET['step'] === 'installquiqqer') {
+    $Setup->restoreData();
+
+    $data['salt'] = $Setup->getData()['salt'];
+    $data['saltlength'] = $Setup->getData()['saltlength'];
+    $data['rootGID'] = $Setup->getData()['rootGID'];
+    $data['rootUID'] = $Setup->getData()['rootUID'];
+
+    $Setup->setData($data);
+    $Setup->runSetup(Setup::STEP_SETUP_INSTALL_QUIQQER);
+    $Setup->storeSetupState();
+
     echo "<script>window.location='?step=preset'</script>";
     ob_flush();
     flush();
@@ -102,7 +126,6 @@ try {
     ob_flush();
     flush();
 }
-
 
 
 ob_flush();

@@ -32,4 +32,4 @@ try {
 }
 
 
-\QUI\Setup\Utils\Ajax::output(true, 500);
+\QUI\Setup\Utils\Ajax::output(true, 200);

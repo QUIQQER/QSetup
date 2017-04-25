@@ -1,26 +1,29 @@
 {
-  "project": {
-    "name" : "Blog",
-    "languages" : ["de","en"]
-  },
-  "template": {
-    "name" :"quiqqer/template-helios",
-    "version": "dev-master"
-  },
-  "repositories":[
-    {
-      "type":"vcs",
-      "url":"git@dev.quiqqer.com:quiqqer/gitlab.git"
-    }
-  ],
-  "packages": {
-    "quiqqer/gitlab": "dev-dev"
-  },
-  "meta": {
-      "name": {
-          "en_EN": "Blog",
-          "de_DE": "Blog"
+    "project": {
+        "name": "Blog",
+        "languages": [
+            "de",
+            "en"
+        ]
+    },
+    "template": {
+        "name": "quiqqer\/template-helios",
+        "version": "dev-master"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@dev.quiqqer.com:quiqqer\/gitlab.git"
+        }
+    ],
+    "packages": {
+        "quiqqer\/gitlab": "dev-dev"
+    },
+    "meta": {
+        "name": {
+            "en_EN": "Blog",
+            "de_DE": "Blog"
         },
-      "icon": "fa-book"
+        "icon": "fa-book"
     }
 }

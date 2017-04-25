@@ -53,14 +53,6 @@ $language = require_once "languageDetection.php";
             </p>
         </div>
     </noscript>
-    <script>
-        /*new Request({
-         url      : '/ajax/getDatabaseDrivers.php',
-         onSuccess: function () {
-         console.log(arguments);
-         }
-         }).send();*/
-    </script>
 
     <div class="script-is-on">
         <div class="progress-bar">
@@ -74,8 +66,8 @@ $language = require_once "languageDetection.php";
                     <img class="header-logo" src="/bin/img/logo.png" title="QUIQQER Logo" alt="Q-Logo"/>
                     <h4 style="font-weight: bold;">QUIQQER</h4>
                     <span style="font-size: 13px; color: #555;">
-                <?php echo $Locale->getStringLang('setup.web.subTitle') ?>
-            </span>
+                        <?php echo $Locale->getStringLang('setup.web.subTitle') ?>
+                    </span>
                 </div>
             </div>
             <div class="header-right grid-80 push-200 mobile-grid-100">
@@ -293,7 +285,7 @@ $language = require_once "languageDetection.php";
                                             }
 
                                             $output = '<label class="input-wrapper">
-                                    <input class="input-radio" name="vorlage" tabindex="-1" 
+                                    <input class="input-radio" name="template" tabindex="-1" 
                                            type="radio" value="' . $key . '"' . $checked . '/>
                                     <div class="label-div" title="'. $name . '">
                                         <span class="fa ' . $icon . ' button-icon-left"></span>';
@@ -539,6 +531,3 @@ $language = require_once "languageDetection.php";
     </div>
     </body>
     </html>
-
-<?php
-

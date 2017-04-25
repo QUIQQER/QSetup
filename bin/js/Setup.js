@@ -45,9 +45,13 @@ define('bin/js/Setup', [
             'checkUserAndPassword',
             'disableAllTab',
             'activeTabForThisStep',
-            'getPreset',
             'openPopup',
-            '$getAvailableTemplates',
+            'getPreset',
+            'setPresetDataLang',
+            'getAvailableTemplates',
+            'setPresetDataTemplate',
+            'validatePresetData',
+            'updatePreset',
             '$exeInstall',
             'showPassword'
         ],
@@ -178,6 +182,7 @@ define('bin/js/Setup', [
             document.getElements('.step-3-settings-button').addEvent('click', function (event) {
                 var Target = event.target;
 
+
                 new QUIConfirm({
                     maxWidth : 460,
                     maxHeight: 540,
@@ -200,9 +205,43 @@ define('bin/js/Setup', [
                         },
 
                         onSubmit: function (Win) {
-                            var Content = Win.getContent(),
-                                Form    = Content.getElement('form');
+                            //todo save preset
+                            var Content    = Win.getContent(),
+                                Form       = Content.getElement('form'),
+                                data       = QUIFormUtils.getFormData(Form),
+                                presetName = data['preset-name'],
+                                de = '',
+                                en = '',
+                                lang = '';
 
+                            if(data['de']) { de = 'de'};
+                            if(data['en']) { de = 'en'};
+
+                            var presetData = {
+                                "project" : {
+                                    "name"     : data['project-title'],
+                                    "languages": [de, en]
+                                },
+                                "template": {
+                                    "name"   : data['project-template'],
+                                    "version": "dev-master"
+                                }
+                            };
+
+                            console.log(presetData);
+
+
+
+                            self.validatePresetData(presetData).then(function () {
+                                    self.updatePreset(presetData, presetName).catch(function (response) {
+                                        console.log("update preset ginge nicht");
+                                        console.log(response);
+                                    });
+                                }
+                            ).catch(function (response) {
+                                console.log("validate preset ist gescheitert");
+                                console.log(response);
+                            });
                             console.log(QUIFormUtils.getFormData(Form));
                         }
                     }
@@ -650,8 +689,8 @@ define('bin/js/Setup', [
                     }
                     break;
                 case 3:
-                    if (!document.getElements('[name="vorlage"]:checked').length) {
-                        document.getElements('[name="vorlage"]')[0].checked = true;
+                    if (!document.getElements('[name="template"]:checked').length) {
+                        document.getElements('[name="template"]')[0].checked = true;
                     }
                     break;
                 case 4: // only test
@@ -795,10 +834,12 @@ define('bin/js/Setup', [
          * opens the popup in step template
          *
          * @param Win
+         * @param preset - the template (preset) for witch the window pops up
          */
         openPopup: function (Win, preset) {
-            var Content = Win.getContent();
-
+            var Content    = Win.getContent(),
+                self       = this,
+                presetName = preset;
 
             Content.set('html', templateForm);
 
@@ -817,29 +858,26 @@ define('bin/js/Setup', [
 
             Win.Loader.show();
 
+
             this.getPreset(preset).then(function (response) {
-                console.log(response);
-                console.log(response.project['name']);
-                Content.getElement('input[name="project-title"]').set(
-                    'placeholder', response.project['name']
-                );
-                Content.getElement('input[name="project-title"]').set(
-                    'value', response.project['name']
-                )
+                var templateName = response.template.name;
 
+                self.setPresetDataLang(Content, response, presetName);
+
+                self.getAvailableTemplates().then(function (templates) {
+                    self.setPresetDataTemplates(Content, templates, templateName)
+                }).then(function () {
+                    Win.Loader.hide();
+                });
             });
-
-            this.getAvailableTemplates(Content).then(function () {
-                Win.Loader.hide();
-            })
-
-
         },
 
         /**
-         * get the given preset
+         * get the given preset data
          *
-         * @returns {Promise}
+         * @param preset - the template (preset) for witch the window pops up
+         *
+         * @returns {*}
          */
         getPreset: function (preset) {
             var presetName = preset.toLowerCase();
@@ -861,27 +899,111 @@ define('bin/js/Setup', [
             })
         },
 
+        setPresetDataLang: function (Content, preset, presetName) {
+            Content.getElement('input[name="project-title"]').set(
+                'placeholder', preset.project['name']
+            );
+            Content.getElement('input[name="project-title"]').set(
+                'value', preset.project['name']
+            );
+            Content.getElement('input[name="preset-name"]').set(
+                'value', presetName
+            );
+
+            var langs    = preset.project.languages,
+                htmlLang = '';
+
+            // set lang checkboxes
+            langs.forEach(function (Elm) {
+                var langVar = 'setup.web.content.lang.' + Elm,
+                    lang    = LOCALE_TRANSLATIONS[langVar];
+
+                htmlLang +=
+                    '<div class="button-checkbox-wrapper">' +
+                    '<input id="project-lang-' + Elm + '" class="button-checkbox" checked ' +
+                    'name="project-lang-' + Elm + '" type="checkbox" required="required"/>' +
+                    '<label for="project-lang-' + Elm + '" class="button-checkbox-wrapper-label">' +
+                    '<span class="license-label">' + lang + '</span>' +
+                    '</label>' +
+                    '</div>';
+            });
+
+            Content.getElement('.form-input-checkbox-container').set(
+                'html', htmlLang
+            );
+
+        },
+
         /**
          * get all available templates
          *
          * @returns {Promise}
          */
-        getAvailableTemplates: function (Content) {
+        getAvailableTemplates: function () {
             return new Promise(function (resolve, reject) {
-                // check user and password
                 new Request({
                     url    : '/ajax/getAvailableTemplates.php',
                     noCache: true,
 
                     onSuccess: function (response) {
-                        var output;
-                        JSON.decode(response).forEach(function (Elm) {
-                            output += '<option value=' + Elm + '>' + Elm + '</option>';
-                        });
-                        Content.getElement('#project-template').set(
-                            'html',
-                            output
-                        );
+                        resolve(response);
+                    },
+                    onFailure: function (response) {
+                        reject(response);
+                    }
+                }).send();
+            });
+        },
+
+        setPresetDataTemplates: function (Content, templates, templateName) {
+            var output,
+                selected = '';
+            JSON.decode(templates).forEach(function (Elm) {
+
+                if (Elm == templateName) {
+                    selected = 'selected';
+                }
+                output += '<option value=' + Elm + ' ' + selected + '>' + Elm + '</option>';
+                selected = '';
+            });
+
+            Content.getElement('#project-template').set(
+                'html',
+                output
+            );
+        },
+
+        validatePresetData: function (data) {
+            return new Promise(function (resolve, reject) {
+                new Request({
+                    url      : '/ajax/validatePresetData.php',
+                    noCache  : true,
+                    data     : {
+                        data: data
+                    },
+                    onSuccess: function () {
+                        resolve();
+                    },
+                    onFailure: function (response) {
+                        reject(response);
+                    }
+                }).send();
+            });
+        },
+
+        updatePreset: function (data, presetName) {
+            console.log(data.languages);
+            return new Promise(function (resolve, reject) {
+                new Request({
+                    url      : '/ajax/updatePreset.php',
+                    noCache  : true,
+                    data     : {
+                        presetname  : presetName,
+                        projectname : data.project.name,
+                        templatename: data.template.name
+
+                    },
+                    onSuccess: function () {
                         resolve();
                     },
                     onFailure: function (response) {
@@ -897,7 +1019,15 @@ define('bin/js/Setup', [
          */
         $exeInstall: function () {
 
-            console.info(QUIFormUtils.getFormData(this.FormSetup))
+            console.info(QUIFormUtils.getFormData(this.FormSetup));
+
+            // daten setzen in "/setupdata.json";
+            // daten prüfen
+            // wenn alles ok, dann weiterleitung auf web-install
+
+            /*
+             window.location = window.location.origin + '/web-install.php';
+             */
         },
 
         /**

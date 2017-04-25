@@ -448,6 +448,25 @@ input[type=checkbox].button-checkbox:checked + label {
     border-color: #75b947;
 }
 
+/* qui popup window button styling */
+.qui-window-popup-buttons button.qui-button:nth-child(odd) {
+    background: #75b947;
+    color: #fff;
+    box-shadow: none;
+}
+.qui-window-popup-buttons button.qui-button:nth-child(odd):hover {
+    box-shadow: 0 3px 10px #bbb;
+}
+
+.qui-window-popup-buttons button.qui-button:nth-child(even) {
+    background: #e8e8e8;
+    color: #888;
+    box-shadow: none;
+}
+
+.qui-window-popup-buttons button.qui-button:nth-child(even):hover {
+    box-shadow: 0 3px 10px -4px #999;
+}
 
 /**************************/
 /******** Vorlage *********/
@@ -499,19 +518,23 @@ input[type=checkbox].button-checkbox:checked + label {
     margin: 0 0 20px 0;
 }
 
-.template-form .button-checkbox-wrapper {
+.template-form .form-input-checkbox-container .button-checkbox-wrapper {
     width: calc(50% - 10px);
     float: left;
 }
-.template-form .button-checkbox-wrapper:nth-child(2n-1) {
-    margin-left: 10px;
-}
-.template-form .button-checkbox-wrapper:nth-child(2n) {
+.template-form .form-input-checkbox-container .button-checkbox-wrapper:nth-child(2n-1) {
     margin-right: 10px;
 }
+.template-form .form-input-checkbox-container .button-checkbox-wrapper:nth-child(2n) {
+    margin-left: 10px;
+}
 
-.template-form .button-checkbox-wrapper-label {
+.template-form .form-input-checkbox-container .button-checkbox-wrapper-label {
     width: 100%;
+}
+
+.template-form input[type=checkbox].button-checkbox:checked + label {
+    border-color: #e5e5e5;
 }
 
 /**************************/
@@ -949,6 +972,70 @@ li.step-left-align {
 
 .next-button:hover .fa {
 
+}
+
+/*******************************/
+/****** web install page *******/
+/*******************************/
+.install-page {
+    max-width: 900px;
+}
+
+.install-page-header {
+    padding: 40px 0;
+    background: #fff;
+    text-align: center;
+}
+
+.install-page-header header {
+    margin-bottom: 20px;
+}
+
+.install-page .header-logo {
+    max-width: 180px;
+    margin-bottom: 40px;
+}
+
+.install-page-header h1 {
+    color: #666;
+    font-size: 36px;
+}
+
+.install-page-header span {
+    font-size: 20px;
+    line-height: 40px;
+    color: #444;
+    margin-bottom: 30px;
+}
+
+/* progress bar */
+.install-page .progress-bar-done {
+    box-shadow: none;
+}
+
+/* details - iframe container */
+.install-page-details {
+    margin: 40px 0;
+}
+
+button.install-page-more-button {
+    min-width: 0;
+    padding: 10px 0;
+    background: none;
+    float: right;
+}
+
+button.install-page-more-button .fa {
+    margin-left: 10px;
+}
+
+
+.install-page-details iframe {
+    width: 100%;
+    height: 0;
+    border: none;
+    box-shadow: 0 0 10px #aaa;
+    transition: 0.3s ease-in-out all;
 }
 
 /**************************/

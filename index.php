@@ -54,7 +54,11 @@ $language = require_once "languageDetection.php";
         </div>
     </noscript>
 
-    <div class="script-is-on">
+    <div class="check-requirements-error" style="display: none;">
+        es gab Probleme
+    </div>
+
+    <div class="script-is-on check-requirements-noError">
         <div class="progress-bar">
             <div class="progress-bar-done"></div>
             <span class="progress-bar-text">0%</span>

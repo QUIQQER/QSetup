@@ -565,6 +565,12 @@ msgstr "Projektsprache"
 msgid "setup.web.popup.project-template"
 msgstr "Template"
 
+msgid "setup.web.popup.cancel-button"
+msgstr "Abbrechen"
+
+msgid "setup.web.popup.save-button"
+msgstr "Speichern"
+
 
 msgid "exception.validation.database.connection"
 msgstr "Fehler beim Aufbau der Datenbankverbindung"

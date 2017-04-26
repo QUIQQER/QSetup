@@ -4,7 +4,7 @@
         <label for="project-title">
             <span class="project-title input-title"></span>
         </label>
-        <input type="text" id="project-title" name="project-title" class="input-text"/>
+        <input type="text" id="project-title" name="project-title" class="input-text" required/>
     </div>
 
     <div class="form-input-wrapper clearfix" style="margin-bottom: 0;">
@@ -13,17 +13,17 @@
 
         <div class="form-input-checkbox-container">
             <div class="button-checkbox-wrapper">
-                <input id="projekt-language-german" class="button-checkbox"
-                       name="projekt-language-german" type="checkbox" required="required"/>
-                <label for="projekt-language-german" class="button-checkbox-wrapper-label">
+                <input id="project-lang-de" class="button-checkbox"
+                       name="project-lang-de" type="checkbox" required="required"/>
+                <label for="project-lang-de" class="button-checkbox-wrapper-label">
                     <span class="license-label">Deutsch</span>
                 </label>
             </div>
 
             <div class="button-checkbox-wrapper">
-                <input id="projekt-language-english" class="button-checkbox"
-                       name="projekt-language-english" type="checkbox" required="required"/>
-                <label for="projekt-language-english" class="button-checkbox-wrapper-label">
+                <input id="project-lang-en" class="button-checkbox"
+                       name="project-lang-en" type="checkbox" required="required"/>
+                <label for="project-lang-en" class="button-checkbox-wrapper-label">
                     <span class="license-label">Englisch</span>
                 </label>
             </div>
@@ -36,7 +36,7 @@
             <span class="project-template input-title"></span>
         </label>
         <div class="select-wrapper">
-            <select id="project-template" name="project-template">
+            <select id="project-template" name="project-template" required>
             </select>
         </div>
     </div>

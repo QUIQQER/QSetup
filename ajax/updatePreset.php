@@ -31,8 +31,9 @@ if (!empty($projectName)) {
 }
 
 if (!empty($languages)) {
-    $langs                              = explode(",", $languages);
-    $presetData['project']['languages'] = $langs;
+//    $langs                              = explode(",", $languages);
+//    $presetData['project']['languages'] = $langs;
+    $presetData['project']['languages'] = $languages;
 }
 
 if (!empty($templateName)) {

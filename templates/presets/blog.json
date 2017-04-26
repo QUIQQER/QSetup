@@ -1,10 +1,10 @@
 {
     "project": {
         "name": "Blog",
-        "languages": [
-            "de",
-            "en"
-        ]
+        "languages": {
+            "de": "true",
+            "en": "false"
+        }
     },
     "template": {
         "name": "quiqqer\/template-helios",

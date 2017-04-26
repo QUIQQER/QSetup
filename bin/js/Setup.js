@@ -50,6 +50,7 @@ define('bin/js/Setup', [
             'setPresetDataLang',
             'getAvailableTemplates',
             'setPresetDataTemplate',
+            'checkPopupForm',
             'validatePresetData',
             'updatePreset',
             '$exeInstall',
@@ -184,17 +185,25 @@ define('bin/js/Setup', [
 
 
                 new QUIConfirm({
-                    maxWidth : 460,
-                    maxHeight: 540,
-                    titleicon: false,
-                    icon     : false,
-                    title    : Target.getAttribute('data-attr-name'),
-                    preset   : Target.getAttribute('data-attr-preset'),
-                    events   : {
+                    maxWidth     : 460,
+                    maxHeight    : 540,
+                    titleicon    : false,
+                    icon         : false,
+                    title        : Target.getAttribute('data-attr-name'),
+                    preset       : Target.getAttribute('data-attr-preset'),
+                    autoclose    : false,
+                    cancel_button: {
+                        text     : LOCALE_TRANSLATIONS['setup.web.popup.cancel-button'],
+                        textimage: 'icon-remove fa fa-remove'
+                    },
+                    ok_button    : {
+                        text     : LOCALE_TRANSLATIONS['setup.web.popup.save-button'],
+                        textimage: 'icon-ok fa fa-check'
+                    },
+                    events       : {
                         onOpen : function (Win) {
                             var preset = Target.getAttribute('data-attr-preset');
                             self.openPopup(Win, preset);
-
                         },
                         onClose: function () {
                             // needed because of chrome render bug
@@ -205,22 +214,22 @@ define('bin/js/Setup', [
                         },
 
                         onSubmit: function (Win) {
-                            //todo save preset
-                            var Content    = Win.getContent(),
-                                Form       = Content.getElement('form'),
-                                data       = QUIFormUtils.getFormData(Form),
-                                presetName = data['preset-name'],
-                                de = '',
-                                en = '',
-                                lang = '';
-
-                            if(data['de']) { de = 'de'};
-                            if(data['en']) { de = 'en'};
+                            var Content     = Win.getContent(),
+                                Form        = Content.getElement('form'),
+                                data        = QUIFormUtils.getFormData(Form),
+                                presetName  = data['preset-name'],
+                                de          = '',
+                                en          = '',
+                                lang        = [],
+                                defaultLang = QUIFormUtils.getFormData(self.FormSetup)['project-language'];
 
                             var presetData = {
                                 "project" : {
                                     "name"     : data['project-title'],
-                                    "languages": [de, en]
+                                    "languages": {
+                                        "de": data['project-lang-de'],
+                                        "en": data['project-lang-en']
+                                    }
                                 },
                                 "template": {
                                     "name"   : data['project-template'],
@@ -228,21 +237,34 @@ define('bin/js/Setup', [
                                 }
                             };
 
-                            console.log(presetData);
+                            self.checkPopupForm(Form, data, defaultLang).then(function () {
+                                // take form inputs again
+                                data = QUIFormUtils.getFormData(Form);
 
+                                // new preset data
+                                presetData = {
+                                    "project" : {
+                                        "name"     : data['project-title'],
+                                        "languages": {
+                                            "de": data['project-lang-de'],
+                                            "en": data['project-lang-en']
+                                        }
+                                    },
+                                    "template": {
+                                        "name"   : data['project-template'],
+                                        "version": "dev-master"
+                                    }
+                                };
 
-
-                            self.validatePresetData(presetData).then(function () {
-                                    self.updatePreset(presetData, presetName).catch(function (response) {
-                                        console.log("update preset ginge nicht");
-                                        console.log(response);
-                                    });
-                                }
-                            ).catch(function (response) {
-                                console.log("validate preset ist gescheitert");
-                                console.log(response);
+                                return self.validatePresetData(presetData);
+                            }).then(function () {
+                                return self.updatePreset(presetData, presetName)
+                            }).then(function () {
+                                Win.close();
+                            }).catch(function (error) {
+                                Form.getElement(error).setStyle('borderColor', 'red');
                             });
-                            console.log(QUIFormUtils.getFormData(Form));
+
                         }
                     }
                 }).open();
@@ -910,23 +932,29 @@ define('bin/js/Setup', [
                 'value', presetName
             );
 
-            var langs    = preset.project.languages,
+
+            var Langs    = preset.project.languages,
                 htmlLang = '';
 
-            // set lang checkboxes
-            langs.forEach(function (Elm) {
-                var langVar = 'setup.web.content.lang.' + Elm,
-                    lang    = LOCALE_TRANSLATIONS[langVar];
 
+            // loop through the object
+            for (var prop in Langs) {
+                var langVar = 'setup.web.content.lang.' + prop,
+                    lang    = LOCALE_TRANSLATIONS[langVar],
+                    checked = '';
+
+                if (Langs[prop] == "true") {
+                    checked = 'checked="checked"';
+                }
                 htmlLang +=
                     '<div class="button-checkbox-wrapper">' +
-                    '<input id="project-lang-' + Elm + '" class="button-checkbox" checked ' +
-                    'name="project-lang-' + Elm + '" type="checkbox" required="required"/>' +
-                    '<label for="project-lang-' + Elm + '" class="button-checkbox-wrapper-label">' +
+                    '<input id="project-lang-' + prop + '" class="button-checkbox" ' + checked +
+                    'name="project-lang-' + prop + '" type="checkbox" required="required"/>' +
+                    '<label for="project-lang-' + prop + '" class="button-checkbox-wrapper-label">' +
                     '<span class="license-label">' + lang + '</span>' +
                     '</label>' +
                     '</div>';
-            });
+            }
 
             Content.getElement('.form-input-checkbox-container').set(
                 'html', htmlLang
@@ -973,6 +1001,45 @@ define('bin/js/Setup', [
             );
         },
 
+        checkPopupForm: function (Form, formData, defaultLang) {
+            return new Promise(function (resolve, reject) {
+
+                // project name
+                if (!formData['project-title'] || formData['project-title'] == '') {
+                    reject('input[name="project-title"]');
+                    return;
+                }
+
+                // lang
+                var checked    = false,
+                    noChecked  = false,
+                    Checkboxes = Form.getElements('input[type="checkbox"'),
+                    lang       = 'en';
+
+                switch (defaultLang) {
+                    case 'en':
+                    case 'de':
+                        lang = defaultLang;
+                        break;
+                }
+
+                Checkboxes.forEach(function (Elm) {
+                    if (Elm.checked) {
+                        checked = true;
+                        return;
+                    }
+                    noChecked = true;
+                });
+
+                // if no checkbox is checked --> check the default
+                if (!checked && noChecked) {
+                    var name                      = 'input[name="project-lang-' + lang + '"]';
+                    Form.getElement(name).checked = true;
+                }
+                resolve();
+            })
+        },
+
         validatePresetData: function (data) {
             return new Promise(function (resolve, reject) {
                 new Request({
@@ -991,16 +1058,19 @@ define('bin/js/Setup', [
             });
         },
 
-        updatePreset: function (data, presetName) {
-            console.log(data.languages);
+        updatePreset: function (presetData, presetName) {
+
+            // comma separated string from a lang array - needet for updatePreset.php
+            //var lang = presetData.project.languages.join(',');
             return new Promise(function (resolve, reject) {
                 new Request({
                     url      : '/ajax/updatePreset.php',
                     noCache  : true,
                     data     : {
                         presetname  : presetName,
-                        projectname : data.project.name,
-                        templatename: data.template.name
+                        projectname : presetData.project.name,
+                        languages   : presetData.project.languages,
+                        templatename: presetData.template.name
 
                     },
                     onSuccess: function () {

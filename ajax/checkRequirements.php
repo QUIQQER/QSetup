@@ -22,4 +22,8 @@ foreach ($Requirements as $Requirement) {
     }
 }
 
+if (empty($failedTests)) {
+    $failedTests = true;
+}
+
 \QUI\Setup\Utils\Ajax::output($failedTests, 200);

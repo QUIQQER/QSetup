@@ -1,10 +1,10 @@
 {
     "project": {
-        "name": "Mainprojecta",
-        "languages": [
-            "de",
-            "en"
-        ]
+        "name": "Mainproject",
+        "languages": {
+            "de": "true",
+            "en": "false"
+        }
     },
     "template": {
         "name": "quiqqer\/template-businesspro",

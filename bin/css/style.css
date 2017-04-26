@@ -449,6 +449,10 @@ input[type=checkbox].button-checkbox:checked + label {
 }
 
 /* qui popup window button styling */
+.qui-window-popup-buttons button.qui-button {
+    margin: 0 10px;
+}
+
 .qui-window-popup-buttons button.qui-button:nth-child(odd) {
     background: #75b947;
     color: #fff;
@@ -486,6 +490,10 @@ input[type=checkbox].button-checkbox:checked + label {
     visibility: visible;
     pointer-events: auto;
     right: 50px;
+}
+
+.input-radio:checked + .label-div .step-3-settings-button:hover {
+    background: rgba(0,0,0,0.04);
 }
 
 .template-form .project-language {
@@ -1037,6 +1045,28 @@ button.install-page-more-button .fa {
     box-shadow: 0 0 10px #aaa;
     transition: 0.3s ease-in-out all;
 }
+
+
+/**************************/
+/****** media query *******/
+/**************************/
+.check-requirements-error {
+    max-width: 600px;
+    margin: 40px auto;
+}
+
+.check-requirements-error h1 {
+    font-size: 30px;
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: 40px;
+}
+
+.check-requirements-error p {
+
+    margin-bottom: 40px;
+}
+
 
 /**************************/
 /****** media query *******/

@@ -23,8 +23,8 @@ class WebOutput implements Output
     /**
      * Writes a line to the output.
      *
-     * @param $txt - The message that should be written
-     * @param int $level - The level it should use
+     * @param        $txt   - The message that should be written
+     * @param int    $level - The level it should use
      * @param string $color - The color of the message
      */
     public function writeLn($txt, $level = null, $color = null)
@@ -75,7 +75,7 @@ class WebOutput implements Output
     /**
      * Writes a line to the output and tries to translate the given key
      *
-     * @param $key - The lang-key.
+     * @param     $key   - The lang-key.
      * @param int $level - The loglevel
      * @param int $color - The wanted color
      */
@@ -127,6 +127,7 @@ class WebOutput implements Output
 
     /**
      * Changes the used culturecode for translations
+     *
      * @param $lang - Culturecode. Example : 'de_DE', 'en_GB'
      */
     public function changeLang($lang)
@@ -134,9 +135,40 @@ class WebOutput implements Output
     }
 
     /**
+     * Executes a function in the parent
+     *
+     * @param       $function - Function name without parenthesis. i.e.: "finish"
+     * @param array $params
+     */
+    public function executeParentJSFunction($function, $params = array())
+    {
+
+        # Prepare paramter string
+        $paramString = "";
+        foreach ($params as $param) {
+            $paramString .= $param . ",";
+        }
+        $paramString = rtrim(",", $paramString);
+
+
+        $script = <<<SCRIPT
+<script>
+    if (typeof window.parent !== 'undefined' &&
+        typeof window.parent.{$function} !== 'undefined') {
+        window.parent.{$function}({$paramString});
+    }
+</script>
+SCRIPT;
+
+        $this->writeLn($script);
+    }
+
+    /**
      * Surrounsds a string with color codes
-     * @param $string - The String that should be colored
-     * @param string $color - The color that should be used
+     *
+     * @param        $string - The String that should be colored
+     * @param string $color  - The color that should be used
+     *
      * @return string
      */
     public function getColoredString($string, $color)

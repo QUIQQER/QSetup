@@ -134,7 +134,9 @@ class Setup
 
     /**
      * Setup constructor.
+     *
      * @param int $mode - The Setup mode; Will decide the way output is handled
+     *
      * @throws LocaleException
      */
     public function __construct($mode)
@@ -176,113 +178,178 @@ class Setup
     }
 
     // ************************************************** //
-    // Public Functions
+    // Core - Public Functions
     // ************************************************** //
 
+    #region Core functions
     /**
-     * Checks whether or not the given step has been completed already.
-     * @param $step
-     * @return bool
-     */
-    public function isStepCompleted($step)
-    {
-        if (($this->stepSum & $step) == $step) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Gets the current Setup step
-     * @see Setup::STEP_BEGIN
+     * Starts the Setup-process
      *
-     * @return int
+     * @param int $step - step to start
+     *
+     * @throws SetupException
      */
-    public function getStep()
+    public function runSetup($step = Setup::STEP_SETUP_DATABASE)
     {
-        return $this->Step;
-    }
 
-    /**
-     * Gets the availalbe presets.
-     * @return array - array Key : Presetname ; value = array(option:string=>value:string|array)
-     */
-    public static function getPresets()
-    {
-        $presets = array();
 
-        if (file_exists(dirname(__FILE__) . '/presets.json')) {
-            $json = file_get_contents(dirname(__FILE__) . '/presets.json');
-            $data = json_decode($json, true);
-            if (json_last_error() == JSON_ERROR_NONE && is_array($data)) {
-                foreach ($data as $name => $preset) {
-                    $presets[$name] = $preset;
-                }
-            }
-        }
-
-        # Read all userdefined presets from templates/presets
-        $presetDir = dirname(dirname(dirname(dirname(__FILE__)))) . '/templates/presets';
-        if (is_dir($presetDir)) {
-            $content = scandir($presetDir);
-
-            if (is_array($content) && !empty($content)) {
-                foreach ($content as $file) {
-                    $name   = explode('.', $file, 2)[0];
-                    $ending = explode('.', $file, 2)[1];
-
-                    if ($file != '.' && $file != '..' && $ending == 'json') {
-                        $json = file_get_contents($presetDir . "/" . $file);
-                        $data = json_decode($json, true);
-
-                        $presets[$name] = $data;
-                    }
-                }
-            }
+        # Constraint to ensure that all Datasteps have been taken or that the Set Data method has been called
+        if ($this->stepSum != self::STEP_DATA_COMPLETE && !$this->canDoStep(self::STEP_DATA_COMPLETE)) {
+            $this->Output->writeLnLang("setup.exception.runsetup.missing.data.step", Output::LEVEL_CRITICAL);
+            exit;
         }
 
 
-        return $presets;
+        if ($this->Step == self::STEP_DATA_PATHS) {
+            $this->Step = self::STEP_DATA_COMPLETE;
+        }
+
+        $this->Output->writeLnLang("setup.message.step.start", Output::LEVEL_INFO);
+        # Check if all neccessary data is set; throws exception if fails
+        try {
+            Validator::checkData($this->data);
+        } catch (SetupException $Exception) {
+            $this->Output->writeLnLang($Exception->getMessage(), Output::LEVEL_ERROR);
+            exit;
+        }
+
+        # Set Tablenames
+        $this->tableUser               = $this->data['database']['prefix'] . "users";
+        $this->tableGroups             = $this->data['database']['prefix'] . "groups";
+        $this->tablePermissions        = $this->data['database']['prefix'] . "permissions";
+        $this->tablePermissions2Groups = $this->data['database']['prefix'] . "permissions2groups";
+        $this->tableUsersWorkspaces    = $this->data['database']['prefix'] . "users_workspaces";
+
+
+        # Execute setup steps
+        switch ($step) {
+            case self::STEP_SETUP_DATABASE:
+                $this->setupDatabase();
+            //no break
+            case self::STEP_SETUP_USER:
+                $this->setupUser();
+            //no break
+            case self::STEP_SETUP_PATHS:
+                $this->setupPaths();
+            // no break
+            case self::STEP_SETUP_COMPOSER:
+                $this->setupComposer();
+
+                return;
+
+            case self::STEP_SETUP_INSTALL_QUIQQER:
+                $this->setupComposerInstallQuiqqer();
+            //no break
+            case self::STEP_SETUP_BOOTSTRAP:
+                $this->setupBootstrapFiles();
+            //no break
+            case self::STEP_SETUP_QUIQQERSETUP:
+                $this->executeQuiqqerSetups();
+            //no break
+            case self::STEP_SETUP_CHECKS:
+                $this->executeQuiqqerChecks();
+            //no break
+        }
+
+        $this->storeSetupState();
+
+        # Execute the applyPresetScript in new instance to make sure quiqqer has been initialized correctly.
+        # CLI only, the Websetup has to make a new ajax call
+        if ($this->mode == self::MODE_CLI && isset($this->data['preset']) && !empty($this->data['preset'])) {
+            $this->cliCallApplyPreset();
+        }
+
+
+        # Workaround for the preset application
+        if ($this->mode !== self::MODE_WEB) {
+            $this->deleteSetupFiles();
+        }
     }
 
     /**
-     * Gets all available versions for quiqqer/quiqqer
-     * @return array
+     * Applies a preset to an already setup Quiqqer installation
+     *
+     * @param $presetName - The name of the preset
+     *
+     * @throws SetupException
      */
-    public static function getVersions()
+    public function applyPreset($presetName)
     {
-        $validVersions = array(
-            'dev-dev',
-            'dev-master'
+
+        QUI\Setup\Log\Log::info("Applying preset: " . $presetName);
+
+        $Output = null;
+        if ($this->mode == self::MODE_WEB) {
+            $Output = new WebOutput($this->setupLang);
+        }
+
+        if ($this->mode == self::MODE_CLI) {
+            $Output = new ConsoleOutput($this->setupLang);
+        }
+
+        $Preset = new \QUI\Setup\Preset($presetName, $this->Locale, $Output);
+        $Preset->apply(CMS_DIR);
+
+        $this->Step = self::STEP_SETUP_PRESET;
+    }
+
+    /**
+     * Calls the applyPresetCLI.php file.
+     * This is neccessary to get a new php instance in the cli version.
+     * Without it QUIQQER is not initialized and we can not make changes to QUIQQER.
+     */
+    protected function cliCallApplyPreset()
+    {
+        $this->Output->writeLnLang("setup.message.step.preset", Output::LEVEL_INFO);
+        $applyPresetFile = dirname(dirname(__FILE__)) . '/ConsoleSetup/applyPresetCLI.php';
+        $cmsDir          = CMS_DIR;
+
+        $phpPath = defined('PHP_BINARY') ? PHP_BINARY : "php";
+
+        // Store user details in temporary password file
+        file_put_contents(CMS_DIR . "var/tmp/.preset_pwd", $this->data['user']['pw']);
+
+        exec(
+            $phpPath . " {$applyPresetFile} {$cmsDir} {$this->data['preset']} {$this->setupLang}",
+            $cmdOutput,
+            $cmdStatus
         );
 
-        $url  = Setup::getConfig()['general']['url_updateserver'] . "/packages.json";
-        $json = file_get_contents($url);
-        if (!empty($json)) {
-            $packages = json_decode($json, true);
-            $packages = $packages['packages'];
-
-            $quiqqer = $packages['quiqqer/quiqqer'];
-            foreach ($quiqqer as $v => $branch) {
-                $v = explode('.', $v);
-                if (isset($v[0]) && isset($v[1])) {
-                    $v = $v[0] . "." . $v[1];
-                    if (!in_array($v, $validVersions)) {
-                        $validVersions[] = $v;
-                    }
-                }
-            }
+        QUI\Setup\Log\Log::append(implode(PHP_EOL, $cmdOutput));
+        if ($cmdStatus == 0) {
+            return;
         }
 
-        return $validVersions;
+        # An error happened
+
+        # IF Apply preset script did write its error message into the tmp/applypreset.json file.
+        # Output its error
+        if (!file_exists(VAR_DIR . 'tmp/applypreset.json')) {
+            $this->exitWithError("setup.unknown.error");
+        }
+
+        $json = file_get_contents(VAR_DIR . 'tmp/applypreset.json');
+        $data = json_decode($json, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $this->exitWithError("setup.unknown.error");
+        }
+
+        if (isset($data['message']) && !empty($data['message'])) {
+            $this->exitWithError($data['message']);
+        }
+
+
+        $this->publishSetupState();
     }
+    #endregion
 
     #region Getter/Setter
 
     /**
      * Sets the Language, that the setup should use.
+     *
      * @param string $lang - Culture Code. E.G : de_DE
+     *
      * @throws LocaleException
      */
     public function setSetupLanguage($lang)
@@ -316,6 +383,7 @@ class Setup
 
     /**
      * Sets the Language to install for Quiqqer
+     *
      * @param string $lang - The language to use
      */
     public function setLanguage($lang)
@@ -328,7 +396,9 @@ class Setup
 
     /**
      * Sets the version to install
+     *
      * @param string $version - The version
+     *
      * @throws SetupException
      */
     public function setVersion($version)
@@ -348,6 +418,7 @@ class Setup
     /**
      * Sets the preset that should be installed.
      * E.g. : Shopsystem
+     *
      * @param string $preset
      */
     public function setPreset($preset)
@@ -405,8 +476,10 @@ class Setup
 
     /**
      * Sets the userdetails
+     *
      * @param string $user - Username
-     * @param string $pw - Password
+     * @param string $pw   - Password
+     *
      * @return bool - true on success, false on failure
      */
     public function setUser($user, $pw)
@@ -432,14 +505,16 @@ class Setup
 
     /**
      * Sets the paths to use. Optional params will be generated.
-     * @param $host
-     * @param $cmsDir
-     * @param $urlDir
+     *
+     * @param        $host
+     * @param        $cmsDir
+     * @param        $urlDir
      * @param string $libDir
      * @param string $usrDir
      * @param string $binDir
      * @param string $optDir
      * @param string $varDir
+     *
      * @throws SetupException
      */
     public function setPaths(
@@ -513,6 +588,7 @@ class Setup
 
     /**
      * Returns the collected Data
+     *
      * @return array - Array with all parameters
      */
     public function getData()
@@ -522,6 +598,7 @@ class Setup
 
     /**
      * Setzt die Daten, die vom Setup verwendet werden sollen
+     *
      * @param $data
      */
     public function setData($data)
@@ -537,161 +614,6 @@ class Setup
     }
 
     #endregion
-
-    /**
-     * Starts the Setup-process
-     *
-     * @param int $step - step to start
-     * @throws SetupException
-     */
-    public function runSetup($step = Setup::STEP_SETUP_DATABASE)
-    {
-
-
-        # Constraint to ensure that all Datasteps have been taken or that the Set Data method has been called
-        if ($this->stepSum != self::STEP_DATA_COMPLETE && !$this->canDoStep(self::STEP_DATA_COMPLETE)) {
-            $this->Output->writeLnLang("setup.exception.runsetup.missing.data.step", Output::LEVEL_CRITICAL);
-            exit;
-        }
-
-
-        if ($this->Step == self::STEP_DATA_PATHS) {
-            $this->Step = self::STEP_DATA_COMPLETE;
-        }
-
-        $this->Output->writeLnLang("setup.message.step.start", Output::LEVEL_INFO);
-        # Check if all neccessary data is set; throws exception if fails
-        try {
-            Validator::checkData($this->data);
-        } catch (SetupException $Exception) {
-            $this->Output->writeLnLang($Exception->getMessage(), Output::LEVEL_ERROR);
-            exit;
-        }
-
-        # Set Tablenames
-        $this->tableUser               = $this->data['database']['prefix'] . "users";
-        $this->tableGroups             = $this->data['database']['prefix'] . "groups";
-        $this->tablePermissions        = $this->data['database']['prefix'] . "permissions";
-        $this->tablePermissions2Groups = $this->data['database']['prefix'] . "permissions2groups";
-        $this->tableUsersWorkspaces    = $this->data['database']['prefix'] . "users_workspaces";
-
-
-        # Execute setup steps
-        switch ($step) {
-            case self::STEP_SETUP_DATABASE:
-                $this->setupDatabase();
-            //no break
-            case self::STEP_SETUP_USER:
-                $this->setupUser();
-            //no break
-            case self::STEP_SETUP_PATHS:
-                $this->setupPaths();
-            // no break
-            case self::STEP_SETUP_COMPOSER:
-                $this->setupComposer();
-
-                return;
-
-            case self::STEP_SETUP_INSTALL_QUIQQER:
-                $this->setupInstallComposerViaWeb();
-            //no break
-            case self::STEP_SETUP_BOOTSTRAP:
-                $this->setupBootstrapFiles();
-            //no break
-            case self::STEP_SETUP_QUIQQERSETUP:
-                $this->executeQuiqqerSetups();
-            //no break
-            case self::STEP_SETUP_CHECKS:
-                $this->executeQuiqqerChecks();
-            //no break
-        }
-
-        $this->storeSetupState();
-
-        # Execute the applyPresetScript in new instance to make sure quiqqer has been initialized correctly.
-        # CLI only, the Websetup has to make a new ajax call
-        if ($this->mode == self::MODE_CLI && isset($this->data['preset']) && !empty($this->data['preset'])) {
-            $this->cliCallApplyPreset();
-        }
-
-
-        # Workaround for the preset application
-        if ($this->mode !== self::MODE_WEB) {
-            $this->deleteSetupFiles();
-        }
-    }
-
-    /**
-     * Applies a preset to an already setup Quiqqer installation
-     * @param $presetName - The name of the preset
-     * @throws SetupException
-     */
-    public function applyPreset($presetName)
-    {
-
-        QUI\Setup\Log\Log::info("Applying preset: " . $presetName);
-
-        $Output = null;
-        if ($this->mode == self::MODE_WEB) {
-            $Output = new WebOutput($this->setupLang);
-        }
-
-        if ($this->mode == self::MODE_CLI) {
-            $Output = new ConsoleOutput($this->setupLang);
-        }
-
-        $Preset = new \QUI\Setup\Preset($presetName, $this->Locale, $Output);
-        $Preset->apply(CMS_DIR);
-
-        $this->Step = self::STEP_SETUP_PRESET;
-    }
-
-
-    /**
-     * Calls the applyPresetCLI.php file.
-     * This is neccessary to get a new php instance in the cli version.
-     * Without it QUIQQER is not initialized and we can not make changes to QUIQQER.
-     */
-    protected function cliCallApplyPreset()
-    {
-        $this->Output->writeLnLang("setup.message.step.preset", Output::LEVEL_INFO);
-        $applyPresetFile = dirname(dirname(__FILE__)) . '/ConsoleSetup/applyPresetCLI.php';
-        $cmsDir          = CMS_DIR;
-
-        $phpPath = defined('PHP_BINARY') ? PHP_BINARY : "php";
-
-        // Store user details in temporary password file
-        file_put_contents(CMS_DIR . "var/tmp/.preset_pwd", $this->data['user']['pw']);
-
-        exec(
-            $phpPath . " {$applyPresetFile} {$cmsDir} {$this->data['preset']} {$this->setupLang}",
-            $cmdOutput,
-            $cmdStatus
-        );
-
-        QUI\Setup\Log\Log::append(implode(PHP_EOL, $cmdOutput));
-        if ($cmdStatus == 0) {
-            return;
-        }
-
-        # An error happened
-
-        # IF Apply preset script did write its error message into the tmp/applypreset.json file.
-        # Output its error
-        if (!file_exists(VAR_DIR . 'tmp/applypreset.json')) {
-            $this->exitWithError("setup.unknown.error");
-        }
-
-        $json = file_get_contents(VAR_DIR . 'tmp/applypreset.json');
-        $data = json_decode($json, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            $this->exitWithError("setup.unknown.error");
-        }
-
-        if (isset($data['message']) && !empty($data['message'])) {
-            $this->exitWithError($data['message']);
-        }
-    }
 
     # region Datarestoration
 
@@ -752,11 +674,11 @@ class Setup
         file_put_contents($this->tmpDir . "setup.json", $json);
     }
 
-
     /**
      * This will try to retrieve the data stored by the setup.
      * It is used to continue the setup after an unexpected error.
      * Returns an array with all neccessary data or null if no data could be restored
+     *
      * @return array|null
      */
     public function getRestorableData()
@@ -776,6 +698,7 @@ class Setup
 
     /**
      * Checks if restorable data exists.
+     *
      * @return bool - True if data exists and false if no data has been found
      */
     public function checkRestorableData()
@@ -789,6 +712,7 @@ class Setup
 
     /**
      * Sets the users password after data restoration
+     *
      * @param $password - Desired password.
      */
     public function restoreUserPassword($password)
@@ -800,6 +724,7 @@ class Setup
 
     /**
      * Sets the database password after data restoration
+     *
      * @param $password - Desired password.
      */
     public function restoreDatabasePassword($password)
@@ -879,9 +804,8 @@ class Setup
     }
     #endregion
 
-
     // ************************************************** //
-    // Private - Setup Functions
+    // Core - Setup Setps
     // ************************************************** //
 
     #region Steps
@@ -967,8 +891,9 @@ class Setup
             );
         }
 
-
         $this->Step = self::STEP_SETUP_DATABASE;
+
+        $this->publishSetupState();
     }
 
     /**
@@ -1073,11 +998,14 @@ class Setup
         );
 
         $this->Step = self::STEP_SETUP_USER;
+
+        $this->publishSetupState();
     }
 
     /**
      * This will create all neccessary paths and config files.
      * Will also define PATH constants
+     *
      * @throws SetupException
      */
     private function setupPaths()
@@ -1189,74 +1117,13 @@ class Setup
         #endregion
 
         $this->Step = self::STEP_SETUP_PATHS;
-    }
 
-    /**
-     * Load the enviromanet
-     * define the contants
-     */
-    private function loadEnvironment()
-    {
-        $paths = $this->data['paths'];
-
-        $cmsDir = $this->cleanPath($paths['cms_dir']);
-        $varDir = $this->cleanPath($paths['var_dir']);
-        $optDir = $this->cleanPath($paths['opt_dir']);
-        $usrDir = $this->cleanPath($paths['usr_dir']);
-        $urlDir = $this->cleanPath($paths['url_dir']);
-        $etcDir = $cmsDir . "etc/";
-        $tmpDir = $varDir . "temp/";
-
-        $urlLibDir = $this->cleanPath($paths['url_lib_dir']);
-
-        # Create Constants
-        if (!defined('CMS_DIR')) {
-            define('CMS_DIR', $cmsDir);
-        }
-
-        if (!defined('VAR_DIR')) {
-            define('VAR_DIR', $varDir);
-        }
-
-        if (!defined('OPT_DIR')) {
-            define('OPT_DIR', $optDir);
-        }
-
-        if (!defined('ETC_DIR')) {
-            define('ETC_DIR', $etcDir);
-        }
-
-        if (!defined('URL_DIR')) {
-            define('URL_DIR', $urlDir);
-        }
-
-        if (!defined('URL_LIB_DIR')) {
-            define('URL_LIB_DIR', $urlLibDir);
-        }
-
-        if (!defined('URL_USR_DIR')) {
-            define('URL_USR_DIR', $urlDir . str_replace($cmsDir, '', $usrDir));
-        }
-
-        if (!defined('URL_OPT_DIR')) {
-            define('URL_OPT_DIR', $urlDir . str_replace($cmsDir, '', $optDir));
-        }
-
-        if (!defined('URL_VAR_DIR')) {
-            define('URL_VAR_DIR', $urlDir . str_replace($cmsDir, '', $varDir));
-        }
-
-        if (!defined('URL_BIN_DIR')) {
-            define('URL_BIN_DIR', $this->cleanPath($this->data['paths']['url_bin_dir']));
-        }
-
-        if (!defined('URL_SYS_DIR')) {
-            define('URL_SYS_DIR', $this->cleanPath(URL_DIR . "admin/"));
-        }
+        $this->publishSetupState();
     }
 
     /**
      * Will spawn Composer and require  quiqqer/quiqqer
+     *
      * @throws SetupException
      */
     private function setupComposer()
@@ -1339,12 +1206,14 @@ class Setup
         #########################################################
 
         $this->Step = self::STEP_SETUP_COMPOSER;
+
+        $this->publishSetupState();
     }
 
     /**
      * Install QUIQQER via the web setup
      */
-    private function setupInstallComposerViaWeb()
+    private function setupComposerInstallQuiqqer()
     {
         $this->loadEnvironment();
         $composerDir = VAR_DIR . 'composer/';
@@ -1372,6 +1241,8 @@ class Setup
         }
 
         $this->Step = self::STEP_SETUP_COMPOSER;
+
+        $this->publishSetupState();
     }
 
     /**
@@ -1438,6 +1309,8 @@ class Setup
 
 
         $this->Step = self::STEP_SETUP_BOOTSTRAP;
+
+        $this->publishSetupState();
     }
 
     /**
@@ -1565,6 +1438,31 @@ LOGETC;
 
 
         $this->Step = self::STEP_SETUP_QUIQQERSETUP;
+
+        $this->publishSetupState();
+    }
+
+    /**
+     * This will execute the Checks provided by the system
+     */
+    private function executeQuiqqerChecks()
+    {
+        # Contraint to ensure correct setup order.
+        if ($this->Step != self::STEP_SETUP_QUIQQERSETUP) {
+            $this->Output->writeLnLang("setup.exception.step.order", Output::LEVEL_CRITICAL);
+            exit;
+        }
+
+        $this->Output->writeLnLang("setup.message.step.checks", Output::LEVEL_INFO);
+        # Execute quiqqer health
+        // TODO Quiqqer Healthchecks
+
+        # Execute quiqqer tests
+        // TODO Quiqqer tests
+
+        $this->Step = self::STEP_SETUP_CHECKS;
+
+        $this->publishSetupState();
     }
 
     /**
@@ -1580,7 +1478,7 @@ LOGETC;
             $this->Output->writeLnLang("setup.exception.step.order", Output::LEVEL_CRITICAL);
             exit;
         }
-
+        
         $this->Output->writeLnLang("setup.message.step.delete", Output::LEVEL_INFO);
         # Remove quiqqer.zip
         if (file_exists($this->baseDir . "/quiqqer.zip")) {
@@ -1642,6 +1540,7 @@ LOGETC;
             'logs',
             'setup'
         );
+
         foreach ($dirs as $dir) {
             if (is_dir(CMS_DIR . $dir)) {
                 rename(
@@ -1654,42 +1553,136 @@ LOGETC;
         # Make sure that stored data
         $this->removeStoredData();
 
+        if ($this->mode == self::MODE_WEB) {
+            /** @var WebOutput $Output */
+            $Output = $this->Output;
+            $Output->executeParentJSFunction("finish");
+        }
+
         $this->Step = self::STEP_SETUP_DELETE;
+
+        $this->publishSetupState();
+    }
+
+
+
+    #endregion
+
+    // ************************************************** //
+    // Public - Helper Functions
+    // ************************************************** //
+
+    #region Public Helper
+
+    /**
+     * Checks whether or not the given step has been completed already.
+     *
+     * @param $step
+     *
+     * @return bool
+     */
+    public function isStepCompleted($step)
+    {
+        if (($this->stepSum & $step) == $step) {
+            return true;
+        }
+
+        return false;
+    }
+
+
+    /**
+     * Gets the current Setup step
+     *
+     * @see Setup::STEP_BEGIN
+     *
+     * @return int
+     */
+    public function getStep()
+    {
+        return $this->Step;
     }
 
     /**
-     * This will execute the Checks provided by the system
+     * Gets the availalbe presets.
+     *
+     * @return array - array Key : Presetname ; value = array(option:string=>value:string|array)
      */
-    private function executeQuiqqerChecks()
+    public static function getPresets()
     {
-        # Contraint to ensure correct setup order.
-        if ($this->Step != self::STEP_SETUP_QUIQQERSETUP) {
-            $this->Output->writeLnLang("setup.exception.step.order", Output::LEVEL_CRITICAL);
-            exit;
+        $presets = array();
+
+        if (file_exists(dirname(__FILE__) . '/presets.json')) {
+            $json = file_get_contents(dirname(__FILE__) . '/presets.json');
+            $data = json_decode($json, true);
+            if (json_last_error() == JSON_ERROR_NONE && is_array($data)) {
+                foreach ($data as $name => $preset) {
+                    $presets[$name] = $preset;
+                }
+            }
         }
 
-        $this->Output->writeLnLang("setup.message.step.checks", Output::LEVEL_INFO);
-        # Execute quiqqer health
-        // TODO Quiqqer Healthchecks
+        # Read all userdefined presets from templates/presets
+        $presetDir = dirname(dirname(dirname(dirname(__FILE__)))) . '/templates/presets';
+        if (is_dir($presetDir)) {
+            $content = scandir($presetDir);
 
-        # Execute quiqqer tests
-        // TODO Quiqqer tests
+            if (is_array($content) && !empty($content)) {
+                foreach ($content as $file) {
+                    $name   = explode('.', $file, 2)[0];
+                    $ending = explode('.', $file, 2)[1];
 
-        $this->Step = self::STEP_SETUP_CHECKS;
+                    if ($file != '.' && $file != '..' && $ending == 'json') {
+                        $json = file_get_contents($presetDir . "/" . $file);
+                        $data = json_decode($json, true);
+
+                        $presets[$name] = $data;
+                    }
+                }
+            }
+        }
+
+
+        return $presets;
     }
 
-#endregion
+    /**
+     * Gets all available versions for quiqqer/quiqqer
+     *
+     * @return array
+     */
+    public static function getVersions()
+    {
+        $validVersions = array(
+            'dev-dev',
+            'dev-master'
+        );
 
+        $url  = Setup::getConfig()['general']['url_updateserver'] . "/packages.json";
+        $json = file_get_contents($url);
+        if (!empty($json)) {
+            $packages = json_decode($json, true);
+            $packages = $packages['packages'];
 
-    // ************************************************** //
-    // Private - Helper Functions
-    // ************************************************** //
+            $quiqqer = $packages['quiqqer/quiqqer'];
+            foreach ($quiqqer as $v => $branch) {
+                $v = explode('.', $v);
+                if (isset($v[0]) && isset($v[1])) {
+                    $v = $v[0] . "." . $v[1];
+                    if (!in_array($v, $validVersions)) {
+                        $validVersions[] = $v;
+                    }
+                }
+            }
+        }
 
-    #region Helper Functions
+        return $validVersions;
+    }
 
     /**
      * Returns the parsed configfile in an assoc. array.
      * Usage : $config[<section>][<setting]
+     *
      * @return array
      */
     public static function getConfig()
@@ -1702,17 +1695,39 @@ LOGETC;
     }
 
     /**
-     * This will make sure that a path will end with a trailing slash.
-     * @param $path - The path that should be modified
-     * @return string - the path with a trailing slash
+     * Tries to fetch the stored database state.
+     * Will throw an eception if no stored data was found.
+     *
+     * @return array
+     * @throws \Exception
      */
-    private function cleanPath($path)
+    public function getSavedDatabaseState()
     {
-        return rtrim($path, '/') . '/';
+        if (!file_exists($this->tmpDir . 'databaseState.json')) {
+            throw new \Exception("No DatabaseState saved");
+        }
+
+        $json = file_get_contents($this->tmpDir . 'databaseState.json');
+        $data = json_decode($json, true);
+
+        if (json_last_error() != JSON_ERROR_NONE) {
+            throw new \Exception("JSON Error: " . json_last_error_msg());
+        }
+
+        return $data;
     }
 
+    #endregion
+
+    // ************************************************** //
+    // Private - Helper Functions
+    // ************************************************** //
+
+    #region Private helper
+    # --> Config
     /**
      * This will generate an array with config directives for quiqqer using the current setup variables
+     *
      * @return array - Config array for quiqqer
      */
     private function createConfigArray()
@@ -1772,7 +1787,48 @@ LOGETC;
     }
 
     /**
+     * Translates an array into a string in .ini format and wites the string into the given file
+     *
+     * @param $file       - The ini file that should be written
+     * @param $directives - The array with the .ini directives
+     *
+     * @throws SetupException
+     */
+    private function writeIni($file, $directives)
+    {
+        if (!is_writeable($file)) {
+            throw new SetupException(
+                "setup.filesystem.file.notwriteable",
+                SetupException::ERROR_PERMISSION_DENIED
+            );
+        }
+
+        $tmp = '';
+
+        foreach ($directives as $section => $values) {
+            $tmp .= "[$section]\n";
+
+            foreach ($values as $key => $val) {
+                if (is_array($val)) {
+                    foreach ($val as $k => $v) {
+                        $tmp .= "{$key}[$k] = \"$v\"\n";
+                    }
+                } else {
+                    $tmp .= "$key = \"$val\"\n";
+                }
+            }
+
+            $tmp .= "\n";
+        }
+
+        file_put_contents($file, $tmp);
+    }
+
+    # --> Composer
+
+    /**
      * Generates a composer.json file and fills its contents with the modified composer.json.tpl
+     *
      * @throws SetupException
      */
     private function createComposerJson()
@@ -1810,46 +1866,115 @@ LOGETC;
     }
 
     /**
-     * Translates an array into a string in .ini format and wites the string into the given file
-     * @param $file - The ini file that should be written
-     * @param $directives - The array with the .ini directives
-     * @throws SetupException
+     * Refreshes the namespaces in the current composer instance
+     *
+     * @param QUI\Composer\Interfaces\ComposerInterface $Composer
      */
-    private function writeIni($file, $directives)
+    protected function refreshNamespaces(QUI\Composer\Interfaces\ComposerInterface $Composer)
     {
-        if (!is_writeable($file)) {
-            throw new SetupException(
-                "setup.filesystem.file.notwriteable",
-                SetupException::ERROR_PERMISSION_DENIED
-            );
+        $Composer->dumpAutoload();
+        // namespaces
+        $map      = require OPT_DIR . 'composer/autoload_namespaces.php';
+        $classMap = require OPT_DIR . 'composer/autoload_classmap.php';
+        $psr4     = require OPT_DIR . 'composer/autoload_psr4.php';
+
+        foreach ($map as $namespace => $path) {
+            QUI\Autoloader::$ComposerLoader->add($namespace, $path);
         }
 
-        $tmp = '';
-
-        foreach ($directives as $section => $values) {
-            $tmp .= "[$section]\n";
-
-            foreach ($values as $key => $val) {
-                if (is_array($val)) {
-                    foreach ($val as $k => $v) {
-                        $tmp .= "{$key}[$k] = \"$v\"\n";
-                    }
-                } else {
-                    $tmp .= "$key = \"$val\"\n";
-                }
-            }
-
-            $tmp .= "\n";
+        foreach ($psr4 as $namespace => $path) {
+            QUI\Autoloader::$ComposerLoader->addPsr4($namespace, $path);
         }
 
-        file_put_contents($file, $tmp);
+        if ($classMap) {
+            QUI\Autoloader::$ComposerLoader->addClassMap($classMap);
+        }
     }
 
+    # --> Other
+
+    /**
+     * Load the enviromanet
+     * define the contants
+     */
+    private function loadEnvironment()
+    {
+        $paths = $this->data['paths'];
+
+        $cmsDir = $this->cleanPath($paths['cms_dir']);
+        $varDir = $this->cleanPath($paths['var_dir']);
+        $optDir = $this->cleanPath($paths['opt_dir']);
+        $usrDir = $this->cleanPath($paths['usr_dir']);
+        $urlDir = $this->cleanPath($paths['url_dir']);
+        $etcDir = $cmsDir . "etc/";
+        $tmpDir = $varDir . "temp/";
+
+        $urlLibDir = $this->cleanPath($paths['url_lib_dir']);
+
+        # Create Constants
+        if (!defined('CMS_DIR')) {
+            define('CMS_DIR', $cmsDir);
+        }
+
+        if (!defined('VAR_DIR')) {
+            define('VAR_DIR', $varDir);
+        }
+
+        if (!defined('OPT_DIR')) {
+            define('OPT_DIR', $optDir);
+        }
+
+        if (!defined('ETC_DIR')) {
+            define('ETC_DIR', $etcDir);
+        }
+
+        if (!defined('URL_DIR')) {
+            define('URL_DIR', $urlDir);
+        }
+
+        if (!defined('URL_LIB_DIR')) {
+            define('URL_LIB_DIR', $urlLibDir);
+        }
+
+        if (!defined('URL_USR_DIR')) {
+            define('URL_USR_DIR', $urlDir . str_replace($cmsDir, '', $usrDir));
+        }
+
+        if (!defined('URL_OPT_DIR')) {
+            define('URL_OPT_DIR', $urlDir . str_replace($cmsDir, '', $optDir));
+        }
+
+        if (!defined('URL_VAR_DIR')) {
+            define('URL_VAR_DIR', $urlDir . str_replace($cmsDir, '', $varDir));
+        }
+
+        if (!defined('URL_BIN_DIR')) {
+            define('URL_BIN_DIR', $this->cleanPath($this->data['paths']['url_bin_dir']));
+        }
+
+        if (!defined('URL_SYS_DIR')) {
+            define('URL_SYS_DIR', $this->cleanPath(URL_DIR . "admin/"));
+        }
+    }
+
+    /**
+     * This will make sure that a path will end with a trailing slash.
+     *
+     * @param $path - The path that should be modified
+     *
+     * @return string - the path with a trailing slash
+     */
+    private function cleanPath($path)
+    {
+        return rtrim($path, '/') . '/';
+    }
 
     /**
      * Returns the content of a given template file.
      * Templatefiles should be located in the templates directory of the package root.
+     *
      * @param $name - The filename of the template
+     *
      * @return null|string - The content or null if template does not exist.
      */
     private function getTemplateContent($name)
@@ -1907,37 +2032,13 @@ LOGETC;
 
     /**
      * Exits the Setup and will write an error to the output
+     *
      * @param $msg
      */
     private function exitWithError($msg)
     {
         $this->Output->writeLnLang($msg, Output::LEVEL_ERROR);
         exit(1);
-    }
-
-    /**
-     * Refreshes the namespaces in the current composer instance
-     * @param QUI\Composer\Interfaces\ComposerInterface $Composer
-     */
-    protected function refreshNamespaces(QUI\Composer\Interfaces\ComposerInterface $Composer)
-    {
-        $Composer->dumpAutoload();
-        // namespaces
-        $map      = require OPT_DIR . 'composer/autoload_namespaces.php';
-        $classMap = require OPT_DIR . 'composer/autoload_classmap.php';
-        $psr4     = require OPT_DIR . 'composer/autoload_psr4.php';
-
-        foreach ($map as $namespace => $path) {
-            QUI\Autoloader::$ComposerLoader->add($namespace, $path);
-        }
-
-        foreach ($psr4 as $namespace => $path) {
-            QUI\Autoloader::$ComposerLoader->addPsr4($namespace, $path);
-        }
-
-        if ($classMap) {
-            QUI\Autoloader::$ComposerLoader->addClassMap($classMap);
-        }
     }
 
     /**
@@ -1968,25 +2069,54 @@ LOGETC;
     }
 
     /**
-     * Tries to fetch the stored database state.
-     * Will throw an eception if no stored data was found.
-     *
-     * @return array
-     * @throws \Exception
+     * Publishes the setup state for different views
      */
-    public function getSavedDatabaseState()
+    protected function publishSetupState($forceStep = 0)
     {
-        if (!file_exists($this->tmpDir . 'databaseState.json')) {
-            throw new \Exception("No DatabaseState saved");
+        $step = $forceStep == 0 ? $this->Step : $forceStep;
+
+        $stepNo   = 0;
+        $maxSteps = 10;
+
+        switch ($step) {
+            case self::STEP_SETUP_DATABASE:
+                $stepNo = 1;
+                break;
+            case self::STEP_SETUP_USER:
+                $stepNo = 2;
+                break;
+            case self::STEP_SETUP_PATHS:
+                $stepNo = 3;
+                break;
+            case self::STEP_SETUP_COMPOSER:
+                $stepNo = 4;
+                break;
+
+            case self::STEP_SETUP_BOOTSTRAP:
+                $stepNo = 6;
+                break;
+            case self::STEP_SETUP_QUIQQERSETUP:
+                $stepNo = 7;
+                break;
+            case self::STEP_SETUP_CHECKS:
+                $stepNo = 8;
+                break;
+            case self::STEP_SETUP_PRESET:
+                $stepNo = 9;
+                break;
+            case self::STEP_SETUP_DELETE:
+                $stepNo = 10;
+                break;
         }
 
-        $json = file_get_contents($this->tmpDir . 'databaseState.json');
-        $data = json_decode($json, true);
-
-        if (json_last_error() != JSON_ERROR_NONE) {
-            throw new \Exception("JSON Error: " . json_last_error_msg());
+        switch ($this->mode) {
+            case self::MODE_WEB:
+                /** @var WebOutput $Output */
+                $Output = $this->Output;
+                $Output->executeParentJSFunction("setSetupStatus", array($stepNo, $maxSteps));
+                break;
         }
-
-        return $data;
     }
+
+    #endregion
 }

@@ -68,10 +68,10 @@ if (empty($_GET['step'])) {
 if ($_GET['step'] === 'installquiqqer') {
     $Setup->restoreData();
 
-    $data['salt'] = $Setup->getData()['salt'];
+    $data['salt']       = $Setup->getData()['salt'];
     $data['saltlength'] = $Setup->getData()['saltlength'];
-    $data['rootGID'] = $Setup->getData()['rootGID'];
-    $data['rootUID'] = $Setup->getData()['rootUID'];
+    $data['rootGID']    = $Setup->getData()['rootGID'];
+    $data['rootUID']    = $Setup->getData()['rootUID'];
 
     $Setup->setData($data);
     $Setup->runSetup(Setup::STEP_SETUP_INSTALL_QUIQQER);
@@ -130,3 +130,7 @@ try {
 
 ob_flush();
 flush();
+
+if (file_exists($dataFile)) {
+    unlink($dataFile);
+}

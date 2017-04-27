@@ -585,6 +585,16 @@ msgid "setup.web.system.check.button"
 msgstr "Neu laden"
 
 
+msgid "setup.web.webInstall.more-button"
+msgstr "Details anzeigen"
+
+msgid "setup.web.webInstall.text"
+msgstr "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sit amet augue vitae mauris elementu suscipit."
+
+msgid "setup.web.webInstall.finishText"
+msgstr "Die Installation ist abgeschlossen. Sie können sich jetzt in Admin-Panel einloggen."
+
+
 msgid "exception.validation.database.connection"
 msgstr "Fehler beim Aufbau der Datenbankverbindung"
 

@@ -582,6 +582,16 @@ msgid "setup.web.system.check.button"
 msgstr "Refresh"
 
 
+msgid "setup.web.webInstall.more-button"
+msgstr "Show details"
+
+msgid "setup.web.webInstall.text"
+msgstr "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sit amet augue vitae mauris elementu suscipit."
+
+msgid "setup.web.webInstall.finishText"
+msgstr "The installation is complete. You can now log into your admin panel."
+
+
 msgid "exception.validation.database.connection"
 msgstr "Error on establishing data base connection"
 

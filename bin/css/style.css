@@ -1051,6 +1051,39 @@ button.install-page-more-button .fa {
 }
 
 
+.header-text h1 {
+    font-size: 30px;
+}
+
+.header-text h1 .fa {
+    margin-right: 20px;
+    color: #75b947;
+    font-size: 30px;
+}
+
+.header-text h1 .fa.fa-times {
+    margin-right: 20px;
+    color: #cc6666;
+}
+
+.header-text .button-container {
+    margin: 40px 0;
+}
+
+.header-text button {
+    background: #75b947;
+    color: #fff;
+    box-shadow: none;
+}
+
+.header-text .button-container {
+    margin: 50px 0;
+}
+
+.header-text button:hover {
+    box-shadow: 0 3px 10px #ddd;
+}
+
 /*********************************/
 /****** check requirements *******/
 /*********************************/

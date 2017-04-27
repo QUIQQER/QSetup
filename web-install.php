@@ -78,11 +78,34 @@ $language = require_once "languageDetection.php";
         };
 
         window.finish = function () {
-            console.log('Huh, alles erledigt!');
+            var header = document.getElement('.header-text'),
+                html = '';
+
+            document.getElement('.install-page-details').destroy();
+            document.getElement('.progress-bar').destroy();
+
+            html += '<h1><span class="fa fa-check"></span>Installation ist abgeschlossen</h1>';
+            html += '<p>' + LOCALE_TRANSLATIONS['setup.web.webInstall.finishText'] + '</p>';
+
+            html += '<div class="button-container">';
+            html += '<a href="' + window.location.origin + '/admin" ' + ' class="button"><button>Admin-Panel</button></a>';
+            html += '<a href="' + window.location.origin + '" class="button"><button>Ihre Seite</button></a>';
+
+            header.set('html', html);
         };
 
         window.onError = function (message, code) {
+            var header = document.getElement('.header-text'),
+                html = '';
 
+            document.getElement('.install-page-details').destroy();
+            document.getElement('.progress-bar').destroy();
+
+            html += '<h1><span class="fa fa-times"></span>Fehler bei der Installation</h1>';
+            html += '<p>Error code: ' + code + '</p>';
+            html += '<p>Error message: '  + message + '</p>';
+
+            header.set('html', html);
         };
     </script>
 </head>
@@ -102,15 +125,17 @@ $language = require_once "languageDetection.php";
         <div class="install-page-header">
             <header>
                 <img class="header-logo" src="/bin/img/logo.png" title="QUIQQER Logo" alt="Q-Logo"/>
-                <h1 style="font-weight: normal;">QUIQQER</h1>
-                <span>
-                    <?php echo $Locale->getStringLang('setup.web.subTitle') ?>
-                </span>
+                <div class="header-text">
+                    <h1 style="font-weight: normal;">QUIQQER</h1>
+                    <span>
+                        <?php echo $Locale->getStringLang('setup.web.subTitle') ?>
+                    </span>
+                </div>
             </header>
-            <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sit amet augue vitae mauris elementum
-                suscipit.
-            </p>
+            <!--<p>
+                <?php /*echo $Locale->getStringLang('setup.web.webInstall.text') */?>
+            </p>-->
+
         </div>
 
         <div class="progress-bar">
@@ -119,11 +144,12 @@ $language = require_once "languageDetection.php";
 
         <div class="install-page-details clearfix">
             <button class="install-page-more-button">
-                Setup Details
+                <?php echo $Locale->getStringLang('setup.web.webInstall.more-button') ?>
                 <span class="fa fa-angle-double-down"></span>
             </button>
             <div class="install-page-iframe-container"></div>
         </div>
+
     </div>
 </div>
 

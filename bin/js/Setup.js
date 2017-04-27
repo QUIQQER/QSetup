@@ -22,9 +22,6 @@ define('bin/js/Setup', [
 
     QUILocale.setCurrent(CURRENT_LOCALE);
 
-// console.log(CURRENT_LOCALE);
-//     console.log(LOCALE_TRANSLATIONS);
-
     return new Class({
 
         // Extends: QUIControl,
@@ -99,15 +96,13 @@ define('bin/js/Setup', [
         },
 
         /**
-         * switch between install and errors div,
+         * switch between install and error div,
          * if the checkRequirements return an array with failed test names
          */
         systemCheck: function () {
             var self = this;
 
             this.checkRequirements().then(function (response) {
-
-                console.warn(response);
 
                 var systemCheck    = document.getElement('.system-check'),
                     stepsContainer = document.getElement('.steps-container');
@@ -127,7 +122,6 @@ define('bin/js/Setup', [
                     self.load();
                     return;
                 }
-                console.log('es geht nicht');
 
                 var htmlContent = '',
                     htmlHeader  = '',
@@ -192,9 +186,6 @@ define('bin/js/Setup', [
         load: function () {
 
             this.FormSetup = document.getElement('#form-setup');
-
-            // console.log(this.FormSetup);
-            // console.log(QUIFormUtils.getFormData(this.FormSetup));
 
             this.NextStep         = document.getElement('#next-button');
             this.BackStep         = document.getElement('#back-button');
@@ -478,7 +469,6 @@ define('bin/js/Setup', [
             rootPath.placeholder   = ROOT_PATH + '/';
             urlSubPath.placeholder = subPath;
 
-            console.log(QUIFormUtils.getFormData(this.FormSetup));
         },
 
         /**
@@ -743,8 +733,6 @@ define('bin/js/Setup', [
                 }
             }
 
-            // console.log(names.length);
-            // console.log(Object.getLength(QUIFormUtils.getFormData(this.FormSetup)));
 
             return names.length;
         }
@@ -809,11 +797,11 @@ define('bin/js/Setup', [
                         document.getElements('[name="template"]')[0].checked = true;
                     }
                     break;
-                case 4: // only test
-                    this.fillTestData(4);
+                case 4: // test only
+                    // this.fillTestData(4);
                     break;
-                case 5: //only test
-                    this.fillTestData(5);
+                case 5: // test only
+                    // this.fillTestData(5);
                     break;
             }
         },
@@ -1185,10 +1173,8 @@ define('bin/js/Setup', [
             Loader.inject(document.getElement('body'));
             Loader.show();
 
-            console.info(QUIFormUtils.getFormData(this.FormSetup));
 
             var data = this.parseFormData(QUIFormUtils.getFormData(this.FormSetup));
-            console.log(data);
 
             new Request({
                 url      : '/ajax/createSetupDataJson.php',

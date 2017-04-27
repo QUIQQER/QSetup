@@ -29,6 +29,7 @@ $language = require_once "languageDetection.php";
             });
 
             ROOT_DIR = "<?php echo dirname(__FILE__); ?>";
+
         </script>
 
         <?php
@@ -54,11 +55,7 @@ $language = require_once "languageDetection.php";
         </div>
     </noscript>
 
-    <div class="check-requirements-error" style="display: none;">
-        es gab Probleme
-    </div>
-
-    <div class="script-is-on check-requirements-noError">
+    <div class="script-is-on">
         <div class="progress-bar">
             <div class="progress-bar-done"></div>
             <span class="progress-bar-text">0%</span>
@@ -74,7 +71,7 @@ $language = require_once "languageDetection.php";
                     </span>
                 </div>
             </div>
-            <div class="header-right grid-80 push-200 mobile-grid-100">
+            <div class="header-right grid-80 push-200 mobile-grid-100 grid-parent">
                 <img class="hide-on-desktop header-logo" src="/bin/img/logo.png" title="QUIQQER Logo" alt="Q-Logo"/>
                 <ul class="header-list">
                     <li>
@@ -148,7 +145,7 @@ $language = require_once "languageDetection.php";
             <div class="grid-container">
                 <div class="nav left-sidebar grid-20 mobile-grid-100 hide-on-mobile">
                     <ul class="nav-list">
-                        <li class="step-active">
+                        <li class="first-step-menu">
                             <span class="fa fa-fw fa-check"></span>
                             <!--Sprache-->
                             <?php echo $Locale->getStringLang('setup.web.nav.siteLang') ?>
@@ -179,7 +176,10 @@ $language = require_once "languageDetection.php";
                         </li>
                     </ul>
                 </div>
-                <div class="grid-80 mobile-grid-100">
+                <div class="system-check grid-80 mobile-grid-100 grid-parent">
+                    <div class="page-main system-check-error-wrapper"></div>
+                </div>
+                <div class="grid-80 mobile-grid-100 grid-parent steps-container" style="display: none; visibility: hidden; opacity: 0;">
                     <div class="page-main">
                         <form name="form-setup" id="form-setup" action="" method="post">
 
@@ -521,7 +521,8 @@ $language = require_once "languageDetection.php";
                 <!--<div class="grid-20 hide-on-mobile">
                 </div>-->
                 <div class="nav-buttons grid-80 mobile-grid-100">
-                    <button id="back-button" class="button back-button" disabled tabindex="1">
+                    <button id="back-button" class="button back-button" disabled tabindex="1"
+                            style="display: none;">
                         <span class="fa fa-angle-left" style="margin-right: 10px;"></span>
                         <?php echo $Locale->getStringLang('setup.web.content.button.back'); ?>
                     </button>

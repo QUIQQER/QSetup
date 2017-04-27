@@ -13,10 +13,11 @@ define('bin/js/Setup', [
     'qui/Locale',
     'qui/controls/windows/Popup',
     'qui/controls/windows/Confirm',
+    'qui/controls/loader/Loader',
 
     'text!bin/js/Setup.TemplateForm.html'
     // 'qui/controls/Control'
-], function (QUI, QUIFunctionUtils, QUIFormUtils, QUILocale, QUIPopup, QUIConfirm, templateForm) {
+], function (QUI, QUIFunctionUtils, QUIFormUtils, QUILocale, QUIPopup, QUIConfirm, QUILoader, templateForm) {
     "use strict";
 
     QUILocale.setCurrent(CURRENT_LOCALE);
@@ -30,7 +31,9 @@ define('bin/js/Setup', [
 
         Type : 'bin/js/Setup',
         Binds: [
+            'systemCheck',
             'load',
+            'checkRequirements',
             'next',
             'nextExecute',
             'back',
@@ -54,6 +57,7 @@ define('bin/js/Setup', [
             'validatePresetData',
             'updatePreset',
             '$exeInstall',
+            'parseFormData',
             'showPassword'
         ],
 
@@ -87,15 +91,105 @@ define('bin/js/Setup', [
             this.activeHeader = null;
 
             this.step = 1;
+
+            // javascript is active
+            document.getElement('.script-is-on').setStyle('display', 'block');
+
+
+        },
+
+        /**
+         * switch between install and errors div,
+         * if the checkRequirements return an array with failed test names
+         */
+        systemCheck: function () {
+            var self = this;
+
+            this.checkRequirements().then(function (response) {
+
+                console.warn(response);
+
+                var systemCheck    = document.getElement('.system-check'),
+                    stepsContainer = document.getElement('.steps-container');
+
+                if (response == "true" || response == true) {
+                    document.getElement('#back-button').setStyle('display', 'inline-block');
+                    systemCheck.setStyle('display', 'none');
+                    stepsContainer.setStyles({
+                        display   : 'block',
+                        visibility: 'visible',
+                        opacity   : 1
+                    });
+
+                    systemCheck.destroy();
+
+                    document.getElement('.first-step-menu').addClass('step-active');
+                    self.load();
+                    return;
+                }
+                console.log('es geht nicht');
+
+                var htmlContent = '',
+                    htmlHeader  = '',
+                    nextButton  = document.getElement('#next-button');
+
+                htmlHeader += '<h1>' + LOCALE_TRANSLATIONS['setup.web.system.check.header'] + '</h1>';
+                htmlHeader += '<p>' + LOCALE_TRANSLATIONS['setup.web.system.check.header.desc'] + '</p>';
+
+                htmlContent += '<div class="system-check-error-container">';
+                htmlContent += '<p>' + LOCALE_TRANSLATIONS['setup.web.system.check.desc'] + '</p>';
+
+                htmlContent += '<ul>';
+                JSON.decode(response).forEach(function (Elm) {
+                    htmlContent += '<li><span class="fa fa-times"></span>' + Elm + '</li>';
+                });
+                htmlContent += '</ul>';
+                htmlContent += '</div>';
+
+                document.getElement('.system-check-error-wrapper').set(
+                    'html', htmlContent
+                );
+
+                document.getElement('.header-right').set(
+                    'html', htmlHeader
+                );
+
+                nextButton.set(
+                    'html', LOCALE_TRANSLATIONS['setup.web.system.check.button']
+                );
+
+                var reload = function () {
+                    window.location.reload();
+                };
+
+                nextButton.addEvent('click', reload);
+            });
+        },
+
+        /**
+         * Check the system --> ajax
+         *
+         * @returns {Promise}
+         */
+        checkRequirements: function () {
+            return new Promise(function (resolve, reject) {
+                new Request({
+                    url      : '/ajax/checkRequirements.php',
+                    noCache  : true,
+                    onSuccess: function (response) {
+                        resolve(response);
+                    },
+                    onFailure: function () {
+                        reject()
+                    }
+                }).send();
+            });
         },
 
         /**
          * event : on load
          */
         load: function () {
-
-            // javascript is active
-            document.getElement('.script-is-on').setStyle('display', 'block');
 
             this.FormSetup = document.getElement('#form-setup');
 
@@ -1084,20 +1178,72 @@ define('bin/js/Setup', [
         },
 
         /**
-         * install -> send data
-         * (test)
+         * execute the setup
          */
         $exeInstall: function () {
+            var Loader = new QUILoader({type : 'line-scale'});
+            Loader.inject(document.getElement('body'));
+            Loader.show();
 
             console.info(QUIFormUtils.getFormData(this.FormSetup));
 
-            // daten setzen in "/setupdata.json";
-            // daten prüfen
-            // wenn alles ok, dann weiterleitung auf web-install
+            var data = this.parseFormData(QUIFormUtils.getFormData(this.FormSetup));
+            console.log(data);
 
-            /*
-             window.location = window.location.origin + '/web-install.php';
-             */
+            new Request({
+                url      : '/ajax/createSetupDataJson.php',
+                noCache  : true,
+                data     : {
+                    data: data
+                },
+                onSuccess: function () {
+                    window.location = window.location.origin + '/web-install.php';
+                },
+                onFailure: function (error) {
+                    Loader.hide();
+                    QUI.getMessageHandler(error).then(function (MH) {
+
+                        MH.setAttribute('displayTimeMessages', 8000);
+                        MH.addError(error['responseText']);
+                    });
+                }
+            }).send();
+        },
+
+        /**
+         * parse the form data to an JSON object
+         *
+         * @param formData
+         * @returns object
+         */
+        parseFormData: function (formData) {
+            return {
+                lang    : formData['project-language'],
+                version : formData['version'],
+                preset  : formData['template'],
+                database: {
+                    driver: formData['databaseDriver'],
+                    host  : formData['databaseHost'],
+                    user  : formData['databaseUser'],
+                    pw    : formData['databasePassword'],
+                    name  : formData['databaseName'],
+                    prefix: formData['databasePrefix']
+                },
+                user    : {
+                    name: formData['userName'],
+                    pw  : formData['userPassword']
+                },
+                paths   : {
+                    host       : formData['domain'],
+                    cms_dir    : formData['rootPath'],
+                    url_lib_dir: formData['rootPath'] + 'lib/',
+                    usr_dir    : formData['rootPath'] + 'usr/',
+                    url_dir    : formData['URLsubPath'],
+                    url_bin_dir: formData['rootPath'] + 'bin/',
+                    opt_dir    : formData['rootPath'] + 'packages/',
+                    var_dir    : formData['rootPath'] + 'var/'
+                }
+            };
         },
 
         /**
@@ -1116,8 +1262,8 @@ define('bin/js/Setup', [
                     break;
                 case 5:
                     document.getElement('input[name="userName"]').value           = 'admin';
-                    document.getElement('input[name="userPassword"]').value       = 'admin';
-                    document.getElement('input[name="userPasswordRepeat"]').value = 'admin';
+                    document.getElement('input[name="userPassword"]').value       = 'superPassword';
+                    document.getElement('input[name="userPasswordRepeat"]').value = 'superPassword';
 
             }
         }.bind(this)

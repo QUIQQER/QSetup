@@ -572,6 +572,19 @@ msgid "setup.web.popup.save-button"
 msgstr "Speichern"
 
 
+msgid "setup.web.system.check.header"
+msgstr "System check fehlgeschlagen"
+
+msgid "setup.web.system.check.header.desc"
+msgstr "Die Server Einstellungen entsprechen nicht den Mindestanforderungen von QUIQQER"
+
+msgid "setup.web.system.check.desc"
+msgstr "Folgende Fehler sind aufgetreten. Bitte beheben Sie diese und dann klicken Sie auf <em>Refresh-Button</em> oder laden Sie die Seite neu."
+
+msgid "setup.web.system.check.button"
+msgstr "Neu laden"
+
+
 msgid "exception.validation.database.connection"
 msgstr "Fehler beim Aufbau der Datenbankverbindung"
 

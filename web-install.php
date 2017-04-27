@@ -44,13 +44,14 @@ $language = require_once "languageDetection.php";
 
             new Element('iframe', {
                 'class': 'my-frame',
-                src    : '/test.php'
+                src    : '/iframe.php'
             }).inject(document.getElement('.install-page-iframe-container'));
 
             var iframe = document.getElement('.my-frame');
-            document.getElement('.install-page-more-button').addEvent('click', function() {
+
+            document.getElement('.install-page-more-button').addEvent('click', function () {
                 var height = parseInt(iframe.getStyle('height')),
-                    icon = this.getElement('.fa');
+                    icon   = this.getElement('.fa');
                 if (height == 0) {
                     iframe.setStyle('height', "250px");
                     moofx(icon).animate({
@@ -74,7 +75,15 @@ $language = require_once "languageDetection.php";
 
             console.log(status, from);
             Progress.setStyle('width', parseInt((status / from) * 100) + '%');
-        }
+        };
+
+        window.finish = function () {
+            console.log('Huh, alles erledigt!');
+        };
+
+        window.onError = function (message, code) {
+
+        };
     </script>
 </head>
 <body>

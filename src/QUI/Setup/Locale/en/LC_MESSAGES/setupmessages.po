@@ -569,6 +569,18 @@ msgstr "Cancel"
 msgid "setup.web.popup.save-button"
 msgstr "Save"
 
+msgid "setup.web.system.check.header"
+msgstr "System check failed"
+
+msgid "setup.web.system.check.header.desc"
+msgstr "The server settings do not meet the minimum requirements of QUICKER"
+
+msgid "setup.web.system.check.desc"
+msgstr "The following errors occurred. Please correct them and then click <em>Refresh button</em> or reload the page."
+
+msgid "setup.web.system.check.button"
+msgstr "Refresh"
+
 
 msgid "exception.validation.database.connection"
 msgstr "Error on establishing data base connection"

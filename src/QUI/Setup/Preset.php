@@ -18,6 +18,7 @@ use QUI\Translator;
 /**
  * Class Preset
  * This class represents a quiqqer preset.
+ *
  * @package QUI\Setup
  */
 class Preset
@@ -33,7 +34,9 @@ class Preset
     protected $presetData;
 
     protected $projectName;
-    protected $languages;
+    protected $availableLanguages;
+
+    protected $activeLanguages;
 
     protected $templateName;
     protected $templateVersion;
@@ -51,9 +54,11 @@ class Preset
 
     /**
      * Preset constructor.
-     * @param $presetName
+     *
+     * @param        $presetName
      * @param Locale $Locale
-     * @param $Output $Output
+     * @param        $Output $Output
+     *
      * @throws SetupException
      */
     public function __construct($presetName, $Locale, $Output = null)
@@ -87,6 +92,7 @@ class Preset
 
     /**
      * Applies the preset to the QUIQQER installation located in $cmsDir
+     *
      * @param $cmsDir - The QUIQQER root directory
      */
     public function apply($cmsDir)
@@ -155,9 +161,11 @@ class Preset
         $presetData = $this->presets[$presetName];
 
         # Project
-        $this->projectName = isset($presetData['project']['name']) ? $presetData['project']['name'] : "";
-        $this->languages   = isset($presetData['project']['languages']) ? $presetData['project']['languages'] : array();
-        $this->languages   = array_unique($this->languages);
+        $this->projectName        = isset($presetData['project']['name']) ? $presetData['project']['name'] : "";
+        $this->availableLanguages = isset($presetData['project']['languages']) ? $presetData['project']['languages'] : array();
+        $this->availableLanguages = array_unique($this->availableLanguages);
+
+        $this->activeLanguages = $this->getActiveLanguages();
 
         #Template
         $this->templateName    = isset($presetData['template']['name']) ? $presetData['template']['name'] : "";
@@ -191,7 +199,7 @@ class Preset
         }
 
         try {
-            \QUI::getProjectManager()->createProject($this->projectName, $this->languages[0]);
+            \QUI::getProjectManager()->createProject($this->projectName, $this->activeLanguages[0]);
         } catch (Exception $Exception) {
             $exceptionMsg = $this->Locale->getStringLang(
                 "setup.error.project.creation.failed",
@@ -212,19 +220,19 @@ class Preset
         # Add new languages if neccessary
         if (!empty($this->projectName)) {
             $Config = \QUI::getProjectManager()->getConfig();
-            $Config->setValue($this->projectName, 'langs', implode(',', $this->languages));
+            $Config->setValue($this->projectName, 'langs', implode(',', $this->activeLanguages));
             $Config->save();
 
 
             $this->Output->writeLn(
-                "Installed Languages '" . implode(',', $this->languages) . "' for Project {$this->projectName}",
+                "Installed Languages '" . implode(',', $this->activeLanguages) . "' for Project {$this->projectName}",
                 Output::COLOR_INFO
             );
         }
 
 
         # Add the languages and execute the project setup
-        foreach ($this->languages as $lang) {
+        foreach ($this->activeLanguages as $lang) {
             $Project = new Project($this->projectName, $lang);
             $Project->setup();
         }
@@ -303,7 +311,7 @@ class Preset
 
         # Set the Mainpage Layout
         if (!empty($this->templateName) && !empty($this->projectName) && !empty($this->startLayout)) {
-            foreach ($this->languages as $lang) {
+            foreach ($this->activeLanguages as $lang) {
                 $Project = new Project($this->projectName, $lang);
                 $Edit    = new Edit($Project, 1);
                 $Edit->setAttribute('layout', $this->startLayout);
@@ -342,13 +350,14 @@ class Preset
 
     /**
      * Gets the available presets.
+     *
      * @return array - array Key : Presetname ; value = array(option:string=>value:string|array)
      */
     public static function getPresets()
     {
         $presets = array();
 
-        
+
         # Read all userdefined presets from templates/presets
         $presetDir = dirname(dirname(dirname(dirname(__FILE__)))) . '/templates/presets';
         if (is_dir($presetDir)) {
@@ -403,6 +412,7 @@ class Preset
      * Write the given data to the compsoer json file
      *
      * @param array $data
+     *
      * @throws SetupException
      */
     protected function writeComposerJsonContent($data)
@@ -416,6 +426,7 @@ class Preset
 
     /**
      * Refreshes the namespaces in the current composer instance
+     *
      * @param ComposerInterface $Composer
      */
     protected function refreshNamespaces(ComposerInterface $Composer)
@@ -437,5 +448,35 @@ class Preset
         if ($classMap) {
             Autoloader::$ComposerLoader->addClassMap($classMap);
         }
+    }
+
+    /**
+     * Loads all languages that should be installed for the preset.
+     * Returns an array of language codes
+     *
+     * @throws SetupException
+     * @return string []
+     */
+    protected function getActiveLanguages()
+    {
+        $result = array();
+
+        foreach ($this->availableLanguages as $lang => $active) {
+            if ($active) {
+                $result[] = $lang;
+                continue;
+            }
+
+            if ($active == "true") {
+                $result[] = $lang;
+                continue;
+            }
+        }
+
+        if (empty($result)) {
+            throw new SetupException("exception.preset.no.langs.active");
+        }
+
+        return $result;
     }
 }

@@ -876,10 +876,6 @@ class Installer
         $this->echoSectionHeader($this->Locale->getStringLang("message.step.setup", "Executing Setup : "));
         $this->echoDecorationCoffe();
 
-        // TODO REMOVE
-        $json = json_encode($this->Setup->getData());
-        file_put_contents("/tmp/setupdata.txt", $json);
-
 
         $this->Setup->runSetup();
         $this->Setup->runSetup(Setup::STEP_SETUP_BOOTSTRAP);

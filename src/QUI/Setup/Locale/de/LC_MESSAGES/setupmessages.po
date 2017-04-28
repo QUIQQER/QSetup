@@ -29,7 +29,7 @@ msgid "setup.message.step.files"
 msgstr "Erstelle die Bootstrap Dateien"
 
 msgid "setup.message.step.setup"
-msgstr "Starte die QUIQQER Setup routinen"
+msgstr "Starte die QUIQQER Setup Routinen"
 
 msgid "setup.message.step.delete"
 msgstr "Lösche die nicht mehr benötigten Dateien des Setups"
@@ -642,3 +642,9 @@ msgstr "QUIQQER hat versucht den Projektnamen zu reinigen: "
 
 msgid "prompt.preset.customization.projectname.fixed.accept"
 msgstr "Möchten Sie den bereinigten Projektnamen verwenden? (y/n) "
+
+msgid "applypreset.applying.preset"
+msgstr "Wende Vorlage an: "
+
+msgid "applypreset.installed.languages"
+msgstr "Sprachen '%LANGS%' erfolgreich für das Projekt %PROJECT% installiert"

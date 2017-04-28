@@ -275,9 +275,7 @@ class Setup
      */
     public function applyPreset($presetName)
     {
-
-        QUI\Setup\Log\Log::info("Applying preset: " . $presetName);
-
+        
         $Output = null;
         if ($this->mode == self::MODE_WEB) {
             $Output = new WebOutput($this->setupLang);
@@ -824,6 +822,10 @@ class Setup
 
         $this->Output->writeLnLang("setup.message.step.database", Output::LEVEL_INFO);
 
+        if (!isset($this->data['database']['create_new'])) {
+            $this->data['database']['create_new'] = false;
+        }
+
         $this->Database = new Database(
             $this->data['database']['driver'],
             $this->data['database']['host'],
@@ -836,7 +838,7 @@ class Setup
 
 
         # Create Database if wanted
-        if ($this->data['database']['create_new']) {
+        if ($this->data['database']['create_new'] === true) {
             $success = $this->Database->createDatabase($this->data['database']['name']);
             if (!$success) {
                 throw new SetupException(
@@ -1478,7 +1480,7 @@ LOGETC;
             $this->Output->writeLnLang("setup.exception.step.order", Output::LEVEL_CRITICAL);
             exit;
         }
-        
+
         $this->Output->writeLnLang("setup.message.step.delete", Output::LEVEL_INFO);
         # Remove quiqqer.zip
         if (file_exists($this->baseDir . "/quiqqer.zip")) {

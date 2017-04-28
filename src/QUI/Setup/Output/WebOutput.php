@@ -3,6 +3,7 @@
 namespace QUI\Setup\Output;
 
 use QUI\Setup\Locale\Locale;
+use QUI\Setup\Locale\LocaleException;
 use QUI\Setup\Log\Log;
 use QUI\Setup\Output\Interfaces\Output;
 
@@ -132,6 +133,13 @@ class WebOutput implements Output
      */
     public function changeLang($lang)
     {
+        $this->lang = $lang;
+        try {
+            $Locale       = new Locale($lang);
+            $this->Locale = $Locale;
+        } catch (LocaleException $Exception) {
+            echo $this->Locale->getStringLang($Exception->getMessage());
+        }
     }
 
     /**
@@ -148,7 +156,7 @@ class WebOutput implements Output
         foreach ($params as $param) {
             $paramString .= $param . ",";
         }
-        $paramString = rtrim(",", $paramString);
+        $paramString = rtrim($paramString, ",");
 
 
         $script = <<<SCRIPT

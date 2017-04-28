@@ -639,3 +639,9 @@ msgstr "QUIQQER has tried to fix the projectname: "
 
 msgid "prompt.preset.customization.projectname.fixed.accept"
 msgstr "Do you want tu use the fixed projectname instead? (y/n) "
+
+msgid "applypreset.applying.preset"
+msgstr "Applying preset: "
+
+msgid "applypreset.installed.languages"
+msgstr "Successfully installed languages '%LANGS%' for project %PROJECT%"

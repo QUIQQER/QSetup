@@ -1,7 +1,7 @@
 <?php
 
 $detection = function () {
-    if ($_REQUEST['language']) {
+    if (isset($_REQUEST['language'])) {
         switch ($_REQUEST['language']) {
             case 'de':
             case 'en':

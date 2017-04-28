@@ -2,6 +2,7 @@
 
 // setup language
 $language = require_once "languageDetection.php";
+
 //
 //if (!file_exists(dirname(__FILE__) . "/setupdata.json")) {
 //    header('Location: index.php');
@@ -34,6 +35,8 @@ $language = require_once "languageDetection.php";
 
     $Locale = new \QUI\Setup\Locale\Locale($language);
 
+
+
     ?>
     <script>
         var CURRENT_LOCALE      = '<?php echo $Locale->getCurrent(); ?>',
@@ -44,7 +47,7 @@ $language = require_once "languageDetection.php";
 
             new Element('iframe', {
                 'class': 'my-frame',
-                src    : '/iframe.php'
+                src    : '/iframe.php?language=<?php echo $language; ?>'
             }).inject(document.getElement('.install-page-iframe-container'));
 
             var iframe = document.getElement('.my-frame');
@@ -79,7 +82,7 @@ $language = require_once "languageDetection.php";
 
         window.finish = function () {
             var header = document.getElement('.header-text'),
-                html = '';
+                html   = '';
 
             document.getElement('.install-page-details').destroy();
             document.getElement('.progress-bar').destroy();
@@ -96,14 +99,14 @@ $language = require_once "languageDetection.php";
 
         window.onError = function (message, code) {
             var header = document.getElement('.header-text'),
-                html = '';
+                html   = '';
 
             document.getElement('.install-page-details').destroy();
             document.getElement('.progress-bar').destroy();
 
             html += '<h1><span class="fa fa-times"></span>Fehler bei der Installation</h1>';
             html += '<p>Error code: ' + code + '</p>';
-            html += '<p>Error message: '  + message + '</p>';
+            html += '<p>Error message: ' + message + '</p>';
 
             header.set('html', html);
         };
@@ -133,7 +136,7 @@ $language = require_once "languageDetection.php";
                 </div>
             </header>
             <!--<p>
-                <?php /*echo $Locale->getStringLang('setup.web.webInstall.text') */?>
+                <?php /*echo $Locale->getStringLang('setup.web.webInstall.text') */ ?>
             </p>-->
 
         </div>

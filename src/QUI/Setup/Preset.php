@@ -12,6 +12,7 @@ use QUI\Setup\Locale\Locale;
 use QUI\Setup\Log\Log;
 use QUI\Setup\Output\Interfaces\Output;
 use QUI\Setup\Output\NullOutput;
+use QUI\Setup\Utils\Utils;
 use QUI\Setup\Utils\Validator;
 use QUI\Translator;
 
@@ -97,7 +98,10 @@ class Preset
      */
     public function apply($cmsDir)
     {
-        $this->Output->writeLn("Applying preset: " . $this->presetName, Output::COLOR_INFO);
+        $this->Output->writeLn(
+            $this->Locale->getStringLang("applypreset.applying.preset", "Applying preset: ") . $this->presetName,
+            Output::COLOR_INFO
+        );
 
         $cmsDir        = rtrim($cmsDir, '/');
         $quiqqerConfig = parse_ini_file($cmsDir . '/etc/conf.ini.php', true);
@@ -199,6 +203,12 @@ class Preset
         }
 
         try {
+            Validator::validateProjectName($this->projectName);
+        } catch (\Exception $Exception) {
+            $this->projectName = Utils::sanitizeProjectName($this->projectName);
+        }
+
+        try {
             \QUI::getProjectManager()->createProject($this->projectName, $this->activeLanguages[0]);
         } catch (Exception $Exception) {
             $exceptionMsg = $this->Locale->getStringLang(
@@ -224,8 +234,15 @@ class Preset
             $Config->save();
 
 
+            $installedLangsMsg = $this->Locale->getStringLang(
+                "applypreset.installed.languages",
+                "Installed languages %LANGS% for project %PROJECT%"
+            );
+            $installedLangsMsg = str_replace("%LANGS%", implode(',', $this->activeLanguages), $installedLangsMsg);
+            $installedLangsMsg = str_replace("%PROJECT%", $this->projectName, $installedLangsMsg);
+
             $this->Output->writeLn(
-                "Installed Languages '" . implode(',', $this->activeLanguages) . "' for Project {$this->projectName}",
+                $installedLangsMsg,
                 Output::COLOR_INFO
             );
         }

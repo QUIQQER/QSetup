@@ -3,6 +3,8 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+// setup language
+#$language = require_once "languageDetection.php";
 
 ?>
     <html>
@@ -32,6 +34,7 @@ use \QUI\Setup\Setup;
 
 require_once dirname(__FILE__) . '/vendor/autoload.php';
 
+
 ob_start();
 
 $dataFile = dirname(__FILE__) . "/setupdata.json";
@@ -44,6 +47,12 @@ $data = json_decode(file_get_contents($dataFile), true);
 
 $Setup = new Setup(Setup::MODE_WEB);
 
+if (isset($_REQUEST['language'])) {
+    try {
+        $Setup->setSetupLanguage($_REQUEST['language']);
+    } catch (\Exception $Exception) {
+    }
+}
 
 ##############################################################################
 # Setup
@@ -59,7 +68,13 @@ if (empty($_GET['step'])) {
     $Setup->runSetup();
     $Setup->storeSetupState();
 
-    echo "<script>window.location='?step=installquiqqer'</script>";
+    if (isset($_REQUEST['language'])) {
+        echo "<script>window.location='?step=installquiqqer&language=" . $_REQUEST['language'] . "'</script>";
+    } else {
+        echo "<script>window.location='?step=installquiqqer'</script>";
+    }
+
+
     ob_flush();
     flush();
     exit;
@@ -77,7 +92,14 @@ if ($_GET['step'] === 'installquiqqer') {
     $Setup->runSetup(Setup::STEP_SETUP_INSTALL_QUIQQER);
     $Setup->storeSetupState();
 
-    echo "<script>window.location='?step=preset'</script>";
+
+    if (isset($_REQUEST['language'])) {
+        echo "<script>window.location='?step=preset&language=" . $_REQUEST['language'] . "'</script>";
+    } else {
+        echo "<script>window.location='?step=preset'</script>";
+    }
+
+
     ob_flush();
     flush();
     exit;

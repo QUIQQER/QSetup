@@ -3,16 +3,12 @@
 
 namespace QUI\Setup\Locale;
 
-class Locale
+class IniLocale implements LocaleInterface
 {
 
-    protected $Locale = null;
+    protected $translations = array();
 
-    protected $mode = null;
-
-
-    const MODE_GET_TEXT = 0;
-    const MODE_INI_FILES = 1;
+    protected $lang;
 
     /**
      * Constructor.
@@ -23,17 +19,7 @@ class Locale
      */
     public function __construct($lang)
     {
-        $this->mode = $this->detectMode();
-
-        switch ($this->mode) {
-            case self::MODE_GET_TEXT:
-                $this->Locale = new GetTextLocale($lang);
-                break;
-            case self::MODE_INI_FILES:
-                $this->Locale = new IniLocale($lang);
-                break;
-        }
-
+        $this->setLanguage($lang);
     }
 
     /**
@@ -46,7 +32,11 @@ class Locale
      */
     public function getStringLang($string, $fallback = "")
     {
-        return $this->Locale->getStringLang($string, $fallback);
+        if (!isset($this->translations[$string])) {
+            return empty($fallback) ? $string : $fallback;
+        }
+
+        return $this->translations[$string];
     }
 
     /**
@@ -58,7 +48,23 @@ class Locale
      */
     public function setLanguage($langCode)
     {
-        $this->Locale->setLanguage($langCode);
+        echo "LANGCODE: ". $langCode. PHP_EOL;
+        if (strpos($langCode, "_") !== false) {
+            $langCode = substr($langCode, 0, strpos($langCode, "_"));
+        }
+        echo "LANGCODE: ". $langCode. PHP_EOL;
+
+        $this->lang = $langCode;
+
+        if (!file_exists(dirname(__FILE__) . "/" . $this->lang . "/translations.ini")) {
+            throw new LocaleException("Language translations not found! " . dirname(__FILE__) . "/" . $this->lang . "/translations.ini");
+        }
+
+        $this->translations = parse_ini_file(dirname(__FILE__) . "/" . $this->lang . "/translations.ini");
+
+        if ($this->translations === false) {
+            throw new LocaleException("Could not read language translations!");
+        }
     }
 
     /**
@@ -66,7 +72,7 @@ class Locale
      */
     public function getCurrent()
     {
-        return $this->Locale->getCurrent();
+        return $this->lang;
     }
 
     /**
@@ -77,21 +83,7 @@ class Locale
      */
     public function getAll()
     {
-        return $this->Locale->getAll();
-    }
-
-    /**
-     * Detects the appropriate mode, which the Locale should use.
-     *
-     * @return int
-     */
-    protected function detectMode()
-    {
-        if (!extension_loaded("gettext")) {
-            return self::MODE_INI_FILES;
-        }
-
-        return self::MODE_GET_TEXT;
+        return $this->translations;
     }
 
 

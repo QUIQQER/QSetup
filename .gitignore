@@ -13,3 +13,4 @@
 /var/
 /setupdata.json
 /test.php
+/createLocaleIniFiles.php

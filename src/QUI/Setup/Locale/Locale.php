@@ -33,7 +33,6 @@ class Locale
                 $this->Locale = new IniLocale($lang);
                 break;
         }
-
     }
 
     /**
@@ -93,6 +92,4 @@ class Locale
 
         return self::MODE_GET_TEXT;
     }
-
-
 }

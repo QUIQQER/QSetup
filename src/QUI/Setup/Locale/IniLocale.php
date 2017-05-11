@@ -85,6 +85,4 @@ class IniLocale implements LocaleInterface
     {
         return $this->translations;
     }
-
-
 }

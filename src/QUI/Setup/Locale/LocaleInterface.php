@@ -2,7 +2,8 @@
 
 namespace QUI\Setup\Locale;
 
-interface LocaleInterface{
+interface LocaleInterface
+{
 
     /**
      * Constructor.
@@ -17,7 +18,7 @@ interface LocaleInterface{
      * @param string $fallback - The fallback to use, if the key was not found
      * @return string - A translated String.
      */
-    public function getStringLang($string,$fallback="");
+    public function getStringLang($string, $fallback = "");
 
     /**
      * Sets the language to use for translations
@@ -38,5 +39,4 @@ interface LocaleInterface{
      * @throws LocaleException
      */
     public function getAll();
-
 }

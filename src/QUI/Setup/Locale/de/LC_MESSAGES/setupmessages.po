@@ -648,3 +648,12 @@ msgstr "Wende Vorlage an: "
 
 msgid "applypreset.installed.languages"
 msgstr "Sprachen '%LANGS%' erfolgreich für das Projekt %PROJECT% installiert"
+
+msgid "message.webserver.detected.nginx"
+msgstr "QUIQQER hat NGINX als Webserver erkannt."
+
+msgid "message.webserver.detected.apache22"
+msgstr "QUIQQER hat Apache in Version 2.2 oder niedriger als Webserver erkannt."
+
+msgid "message.webserver.detected.apache24"
+msgstr "QUIQQER hat Apache in Version 2.3 oder höher als Webserver erkannt."

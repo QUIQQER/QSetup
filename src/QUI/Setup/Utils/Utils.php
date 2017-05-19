@@ -2,6 +2,8 @@
 
 namespace QUI\Setup\Utils;
 
+use QUI\Utils\System;
+
 class Utils
 {
 
@@ -24,6 +26,7 @@ class Utils
      * Makes sure , that the path ends with a trailing slash.
      *
      * @param $path - Raw Path
+     *
      * @return string - Path with trailing slash.
      */
     public static function normalizePath($path)
@@ -34,7 +37,9 @@ class Utils
 
     /**
      * Checks if a directory is empty.
+     *
      * @param $dir - Path to the directory.
+     *
      * @return bool|null - Null, if an error occured. True if dir is empty, false if it is not.
      */
     public static function isDirEmpty($dir)
@@ -55,7 +60,9 @@ class Utils
 
     /**
      * Calculates the MD5 sum of the given directory
+     *
      * @param $dir
+     *
      * @return bool|string
      */
     public static function getDirMD5($dir)
@@ -88,6 +95,7 @@ class Utils
      * Sanitizes the given projectname
      *
      * @param $name
+     *
      * @return mixed|string
      */
     public static function sanitizeProjectName($name)
@@ -119,5 +127,90 @@ class Utils
         $name = trim($name);
 
         return $name;
+    }
+
+    /**
+     * Detects the installed webservers
+     * Returns a bitmask of webserver combinations
+     * Apache 2.2 = 1
+     * Apache 2.4 = 2
+     * Nginx = 4
+     *
+     * Apache2.4 + Nginx = 6
+     *
+     * @return int
+     */
+    public static function detectWebserver()
+    {
+        $apache24 = false;
+        $apache22 = false;
+        $nginx    = false;
+
+        ##############
+        #   Apache   #
+        ##############
+
+        # With shell access
+        if (System::isShellFunctionEnabled("shell_exec")) {
+            $version = shell_exec("apache2 -v 2> /dev/null");
+            $regex   = "/Apache\\/([0-9\\.]*)/i";
+            $res     = preg_match($regex, $version, $matches);
+            if ($res && isset($matches[1])) {
+                $version = $matches[1];
+
+                $versionParts = explode(".", $version);
+
+                if ($versionParts[1] <= 2) {
+                    $apache22 = true;
+                }
+
+                if ($versionParts[1] >= 3) {
+                    $apache24 = true;
+                }
+            }
+        }
+
+        # Attempt detection by apache2 module
+        if (function_exists('apache_get_version')) {
+            $version = apache_get_version();
+            $regex   = "/Apache\\/([0-9\\.]*)/i";
+            $res     = preg_match($regex, $version, $matches);
+
+            if ($res && isset($matches[1])) {
+                $version      = $matches[1];
+                $versionParts = explode(".", $version);
+
+                if ($versionParts[1] <= 2) {
+                    $apache22 = true;
+                }
+
+                if ($versionParts[1] >= 3) {
+                    $apache24 = true;
+                }
+            }
+        }
+
+
+        ##############
+        #   Nginx   #
+        ##############
+
+        # With shell access
+        if (System::isShellFunctionEnabled("shell_exec")) {
+            $version = shell_exec("nginx -v 2>&1 ");
+            $regex   = '~nginx/([0-9]+\.[0-9]+\.[0-9])+~i';
+            $res     = preg_match($regex, $version, $matches);
+            if ($res && isset($matches[1])) {
+                $nginx = true;
+            }
+        }
+
+        $result = 0;
+
+        $result = $apache22 ? $result + 1 : $result;
+        $result = $apache24 ? $result + 2 : $result;
+        $result = $nginx ? $result + 4 : $result;
+
+        return $result;
     }
 }

@@ -645,3 +645,12 @@ msgstr "Applying preset: "
 
 msgid "applypreset.installed.languages"
 msgstr "Successfully installed languages '%LANGS%' for project %PROJECT%"
+
+msgid "message.webserver.detected.nginx"
+msgstr "QUIQQER detected NGINX as webserver."
+
+msgid "message.webserver.detected.apache22"
+msgstr "QUIQQER detected Apache (2.2 or less) as webserver."
+
+msgid "message.webserver.detected.apache24"
+msgstr "QUIQQER detected Apache (2.3 or higher) as webserver."

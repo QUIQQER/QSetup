@@ -275,7 +275,7 @@ class Setup
      */
     public function applyPreset($presetName)
     {
-        
+
         $Output = null;
         if ($this->mode == self::MODE_WEB) {
             $Output = new WebOutput($this->setupLang);
@@ -1416,13 +1416,31 @@ LOGETC;
         QUI\Setup::all();
 
         # Execute Htaccess if we detect an apache installation
+        $Config = QUI::getConfig("etc/conf.ini.php");
         try {
-            if (QUI\Utils\System\Webserver::detectInstalledWebserver() == QUI\Utils\System\Webserver::WEBSERVER_APACHE) {
-                $Htaccess = new QUI\System\Console\Tools\Htaccess();
-                $Htaccess->execute();
+            $webserver = Utils::detectWebserver();
+
+            if ($webserver == 4) {
+                $Config->set("webserver", "type", "nginx");
+                $this->Output->writeLnLang("message.webserver.detected.nginx", Output::LEVEL_INFO);
+                $Config->save();
+            }
+
+            if ($webserver == 2 || $webserver == 6) {
+                $Config->set("webserver", "type", "apache24");
+                $this->Output->writeLnLang("message.webserver.detected.apache24", Output::LEVEL_INFO);
+                $Config->save();
+            }
+
+            if ($webserver == 1 || $webserver == 5) {
+                $Config->set("webserver", "type", "apache22");
+                $this->Output->writeLnLang("message.webserver.detected.apache22", Output::LEVEL_INFO);
+                $Config->save();
             }
         } catch (\Exception $Exception) {
+            $this->Output->writeLn("Could not detect and configure the used webserver.");
         }
+
 
         # Add Setup languages
         QUI\Translator::addLang($this->data['lang']);

@@ -1420,22 +1420,30 @@ LOGETC;
         try {
             $webserver = Utils::detectWebserver();
 
+            $Htaccess = new QUI\System\Console\Tools\Htaccess();
+            # NGINX
             if ($webserver == 4) {
                 $Config->set("webserver", "type", "nginx");
                 $this->Output->writeLnLang("message.webserver.detected.nginx", Output::LEVEL_INFO);
                 $Config->save();
             }
 
+            # Apache2.4 (behind NGINX)
             if ($webserver == 2 || $webserver == 6) {
                 $Config->set("webserver", "type", "apache24");
                 $this->Output->writeLnLang("message.webserver.detected.apache24", Output::LEVEL_INFO);
                 $Config->save();
+
+                $Htaccess->execute();
             }
 
+            # Apache2.2 (behind NGINX)
             if ($webserver == 1 || $webserver == 5) {
                 $Config->set("webserver", "type", "apache22");
                 $this->Output->writeLnLang("message.webserver.detected.apache22", Output::LEVEL_INFO);
                 $Config->save();
+
+                $Htaccess->execute();
             }
         } catch (\Exception $Exception) {
             $this->Output->writeLn("Could not detect and configure the used webserver.");

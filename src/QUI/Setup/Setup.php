@@ -483,7 +483,7 @@ class Setup
     public function setUser($user, $pw)
     {
         try {
-            Validator::validateName($user);
+            Validator::validateUsername($user);
 
             Validator::validatePassword($pw);
         } catch (SetupException $Exception) {

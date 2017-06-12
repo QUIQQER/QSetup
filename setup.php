@@ -9,5 +9,6 @@ if (php_sapi_name() !== 'cli') {
     header("Location: /index.php");
 }
 
+
 $Setup = new Installer();
 $Setup->execute();

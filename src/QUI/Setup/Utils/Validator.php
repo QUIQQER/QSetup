@@ -21,6 +21,7 @@ class Validator
      * Validates the given Version.
      *
      * @param string $version
+     *
      * @return bool
      * @throws SetupException
      */
@@ -35,28 +36,32 @@ class Validator
 
         $url  = Setup::getConfig()['general']['url_updateserver'] . "/packages.json";
         $json = file_get_contents($url);
-        if (!empty($json)) {
-            $validVersions = Setup::getVersions();
 
-            if (!in_array($version, $validVersions)) {
-                throw new SetupException("exception.validation.version.invalid");
-            }
-
-            return true;
+        if (empty($json)) {
+            throw new SetupException(
+                "exception.validation.missing.packagesjson",
+                SetupException::ERROR_MISSING_RESSOURCE
+            );
         }
 
-        throw new SetupException(
-            "exception.validation.missing.packagesjson",
-            SetupException::ERROR_MISSING_RESSOURCE
-        );
+
+        $validVersions = Setup::getVersions();
+
+        if (!in_array($version, $validVersions)) {
+            throw new SetupException("exception.validation.version.invalid");
+        }
+
+        return true;
     }
 
     /**
      * Validates a given string as name
+     *
      * @param $string - A string
+     *
      * @return bool - true if valid name
      */
-    public static function validateName($string)
+    public static function validateUsername($string)
     {
         if (empty($string)) {
             return false;
@@ -67,7 +72,9 @@ class Validator
 
     /**
      * Validates a passwordstring
+     *
      * @param $string
+     *
      * @return bool - true when valid
      * @throws SetupException
      */
@@ -117,12 +124,13 @@ class Validator
      * Checks the given database credentials for correctness
      * If an PDO Error happens it will throw a setupException with the PODException message and code.
      *
-     * @param $dbDriver
-     * @param $dbHost
-     * @param $dbName
-     * @param $dbUser
-     * @param $dbPw
+     * @param        $dbDriver
+     * @param        $dbHost
+     * @param        $dbName
+     * @param        $dbUser
+     * @param        $dbPw
      * @param string $dbPort
+     *
      * @return bool
      * @throws SetupException
      */
@@ -155,6 +163,7 @@ class Validator
      * Checks for existence and for syntax errors
      *
      * @param $name - The preset name
+     *
      * @return bool - return true on success
      * @throws SetupException
      */
@@ -178,6 +187,7 @@ class Validator
      * Returns true if it exists or throws an exception otherwise
      *
      * @param $name
+     *
      * @return bool
      * @throws SetupException
      */
@@ -196,6 +206,7 @@ class Validator
      * Validates the preset data
      *
      * @param $data
+     *
      * @return bool
      * @throws SetupException
      */
@@ -246,11 +257,11 @@ class Validator
         return true;
     }
 
-
     /**
      * Checks if a single filesystem-path to a directory is valid
      *
      * @param $path - Filesystem path to a directory
+     *
      * @return bool - true if valid directory
      * @throws SetupException
      */
@@ -273,6 +284,7 @@ class Validator
      * Validates the given paths.
      *
      * @param array $paths
+     *
      * @throws SetupException
      */
     public static function validatePaths(array $paths)
@@ -353,6 +365,7 @@ class Validator
      * Counts the number of uppercase letters in the given string
      *
      * @param $string
+     *
      * @return int - Number of uppercase letters
      */
     private static function getUppercaseCount($string)
@@ -364,6 +377,7 @@ class Validator
      * Counts the number of special characters in the given string
      *
      * @param $string
+     *
      * @return int - Number of special charcaters
      */
     private static function getSpecialcharCount($string)
@@ -375,13 +389,13 @@ class Validator
      * Counts the numeric characters in the given string
      *
      * @param $string
+     *
      * @return int - Number of numeric characters
      */
     private static function getNumberCount($string)
     {
         return strlen(preg_replace('/[^0-9]+/', '', $string));
     }
-
 
     /**
      * Checks the integrity of the data array.
@@ -496,6 +510,7 @@ class Validator
      * Throws exception with reason, if the validation fails
      *
      * @param $name
+     *
      * @return bool
      * @throws SetupException
      */

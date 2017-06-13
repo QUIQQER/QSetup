@@ -552,8 +552,9 @@ input[type=checkbox].button-checkbox:checked + label {
 /**************************/
 /*** step user password ***/
 /**************************/
-.user-password-step-float-right {
-    float: right;
+
+.user-input {
+    width: calc(100% - 30px);
 }
 
 .show-password {
@@ -563,6 +564,7 @@ input[type=checkbox].button-checkbox:checked + label {
     padding: 0 20px;
     font-size: 24px;
     color: #75b947;
+    cursor: pointer;
 }
 
 .fa-eye-slash {
@@ -714,7 +716,7 @@ input[type=checkbox].button-checkbox:checked + label {
 
 .license-box {
     width: 100%;
-    height: 240px;
+    height: 220px;
     overflow-y: auto;
     overflow-x: hidden;
     font-size: 0.9em;
@@ -770,6 +772,42 @@ input[type=checkbox].button-checkbox:checked + label {
 /**************************/
 /** specific setup style **/
 /**************************/
+
+.header {
+    position: relative;
+}
+
+.header p {
+    margin-bottom: 0.5em;
+}
+
+.change-language {
+    position: absolute;
+    right: 0;
+    top: 0;
+    display: flex;
+    flex-direction: row;
+}
+
+.change-language span {
+    /*margin: 3px;*/
+    padding: 6px;
+    color: #ddd;
+    transition: 0.2s all ease-in-out;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.change-language span:hover {
+    background: rgba(0,0,0,0.1);
+    color: #666;
+
+}
+
+.change-language span.active-lang {
+    color: #666;
+}
+
 .header-left {
     background: #f5f5f5;
     text-align: center;
@@ -889,6 +927,10 @@ li.step {
     opacity: 1; /* todo: opacity 0 */
     /*text-align: center;*/
     flex-shrink: 0;
+}
+
+.smallFont  {
+    font-size: 0.8em;
 }
 
 .test {
@@ -1187,10 +1229,6 @@ button.install-page-more-button .fa {
     .label-div {
         margin: 0 auto;
         width: 90%;
-    }
-
-    .user-password-step-float-right {
-        float: none;
     }
 
     .input-text-user,

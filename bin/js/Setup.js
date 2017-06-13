@@ -53,6 +53,7 @@ define('bin/js/Setup', [
             'checkPopupForm',
             'validatePresetData',
             'updatePreset',
+            'checkPassword',
             '$exeInstall',
             'parseFormData',
             'showPassword'
@@ -83,6 +84,8 @@ define('bin/js/Setup', [
             this.licenseLabel       = null;
 
             this.userInputs    = null;
+            this.pass1         = null;
+            this.pass2         = null;
             this.buttonInstall = false;
 
             this.activeHeader = null;
@@ -108,6 +111,7 @@ define('bin/js/Setup', [
                     stepsContainer = document.getElement('.steps-container');
 
                 if (response == "true" || response == true) {
+                    console.log(111111);
                     document.getElement('#back-button').setStyle('display', 'inline-block');
                     systemCheck.setStyle('display', 'none');
                     stepsContainer.setStyles({
@@ -173,8 +177,8 @@ define('bin/js/Setup', [
                     onSuccess: function (response) {
                         resolve(response);
                     },
-                    onFailure: function () {
-                        reject()
+                    onFailure: function (response) {
+                        reject(response)
                     }
                 }).send();
             });
@@ -211,6 +215,8 @@ define('bin/js/Setup', [
             this.licenseLabel       = document.getElement('.license-label');
 
             this.userInputs = document.getElements('.input-text-user, .input-text-password');
+            this.pass1      = document.getElement('input[name="userPassword"]');
+            this.pass2      = document.getElement('input[name="userPasswordRepeat"]');
 
             this.activeHeader = document.getElements('.header-list li');
 
@@ -219,6 +225,33 @@ define('bin/js/Setup', [
 
             // diasble all TAB key
             this.disableAllTab();
+
+            // language button
+            var url    = window.location.search.substr(1),
+                Params = {};
+
+            url = url.split('&');
+
+            for (var i = 0, len = url.length; i < len; i++) {
+                var parts        = url[i].split('=');
+                Params[parts[0]] = parts[1];
+            }
+
+            if (Params.hasOwnProperty("language")) {
+                var Elms = document.getElement('.change-language').getChildren();
+                Elms.forEach(function (Elm) {
+                    var lang = Elm.getAttribute('data-attr-lang');
+                    if (lang == Params['language']) {
+                        Elm.addClass('active-lang')
+                    }
+
+                    Elm.addEvent('click', function () {
+                        var link        = window.location.origin + '/?language=' + lang;
+                        window.location = link;
+                    })
+                })
+            }
+
 
             window.addEvents({
                 resize: function () {
@@ -376,6 +409,20 @@ define('bin/js/Setup', [
                 });
             });
 
+            // check password
+            this.pass2Filled = false;
+            this.pass1.addEvent('keyup', function () {
+                this.checkPassword();
+            }.bind(this));
+
+            this.pass2.addEvent('keyup', function () {
+                if (self.pass2.value != '') {
+                    self.pass2Filled = true;
+                    self.checkPassword();
+                }
+            });
+
+
             // show password (user step)
             this.showPasswordIcon = document.getElement('.show-password');
             this.showPasswordIcon.addEvent('click', function (event) {
@@ -482,6 +529,14 @@ define('bin/js/Setup', [
 
             // data base check
             if (this.step == 4) {
+                var Form = QUIFormUtils.getFormData(this.FormSetup);
+                /*console.log(Form.databaseDriver)
+                 console.log(Form.databaseDriver.val)*/
+                /* if (Form.databaseDriver.value == '') {
+                 alert(1);
+                 return;
+                 };*/
+
                 this.checkDataBase().then(function () {
                     self.nextExecute();
                 }, function (error) {
@@ -591,8 +646,7 @@ define('bin/js/Setup', [
             }
 
             this.checkProgress();
-        }
-        ,
+        },
 
         /**
          * back step
@@ -642,8 +696,7 @@ define('bin/js/Setup', [
             }
 
             this.checkProgress();
-        }
-        ,
+        },
 
         /**
          * recalc the ListElement width
@@ -670,9 +723,10 @@ define('bin/js/Setup', [
          * @returns {*}
          */
         getHeaderHeight: function () {
-            var arr   = [];
-            var liElm = this.headerList.getElements('li');
-            for (var i = 0; i < this.liElm.length; i++) {
+            var arr   = [],
+                liElm = this.headerList.getElements('li'),
+                i, len;
+            for (i = 0, len = this.liElm.length; i < len; i++) {
                 arr[i] = liElm[i].getSize().y;
             }
 
@@ -722,21 +776,21 @@ define('bin/js/Setup', [
          * @returns {Number}
          */
         countInputs: function () {
-            for (var i = 0; i < this.inputSelect.length; i++) {
+            var i, len;
+
+            for (i = 0, len = this.inputSelect.length; i < len; i++) {
                 this.allInputs.push(+this.inputSelect[i]);
             }
             var names = [];
 
-            for (var j = 0; j < this.allInputs.length; j++) {
-                if (!names.include(this.allInputs[j].name)) {
-                    names.push(this.allInputs[j].name);
+            for (i = 0, len = this.allInputs.length; i < len; i++) {
+                if (!names.include(this.allInputs[i].name)) {
+                    names.push(this.allInputs[i].name);
                 }
             }
 
-
             return names.length;
-        }
-        ,
+        },
 
         /**
          * check the progress
@@ -745,25 +799,26 @@ define('bin/js/Setup', [
          */
         checkProgress: function () {
 
-            var progress;
-            var inputsDone = 0;
+            var progress,
+                inputsDone = 0,
+                i, len;
 
             // check radio and checkbox
-            for (var i = 0; i < this.inputRadioCheckbox.length; i++) {
+            for (i = 0, len = this.inputRadioCheckbox.length; i < len; i++) {
                 if (this.inputRadioCheckbox[i].checked) {
                     inputsDone++;
                 }
             }
 
             // check select
-            for (var i = 0; i < this.inputSelect.length; i++) {
+            for (i = 0, len = this.inputSelect.length; i < len; i++) {
                 if (this.inputSelect[i].value) {
                     inputsDone++;
                 }
             }
 
             // check text, password and number input
-            for (var i = 0; i < this.inputText.length; i++) {
+            for (i = 0, len = this.inputText.length; i < len; i++) {
                 if (this.inputText[i].value) {
                     inputsDone++;
                 }
@@ -1166,10 +1221,35 @@ define('bin/js/Setup', [
         },
 
         /**
+         * check password (equal? not to short?)
+         */
+        checkPassword: function () {
+            console.log(1);
+            console.log(this.pass2Filled);
+            if (!this.pass2Filled) {
+                return;
+            }
+            console.log(2);
+
+            var labels = document.getElements('.animated-label-error');
+
+            if (this.pass1.value != this.pass2.value) {
+                labels.forEach(function (Elm) {
+                    Elm.setStyle('color', 'red');
+                });
+                return;
+            }
+
+            labels.forEach(function (Elm) {
+                Elm.setStyle('color', '');
+            })
+        },
+
+        /**
          * execute the setup
          */
         $exeInstall: function () {
-            var Loader = new QUILoader({type : 'line-scale'});
+            var Loader = new QUILoader({type: 'line-scale'});
             Loader.inject(document.getElement('body'));
             Loader.show();
 
@@ -1230,28 +1310,6 @@ define('bin/js/Setup', [
                     var_dir    : formData['rootPath'] + 'var/'
                 }
             };
-        },
-
-        /**
-         * inputs ausfüllen mit beispiel Daten
-         * (test)
-         */
-        fillTestData: function (step) {
-
-            switch (step) {
-                case 4:
-                    document.getElement('select[name="databaseDriver"]').options[1].selected = true;
-                    document.getElement('input[name="databaseHost"]').value                  = 'localhost';
-                    document.getElement('input[name="databaseName"]').value                  = 'QUIQQERTest';
-                    document.getElement('input[name="databaseUser"]').value                  = 'root';
-                    document.getElement('input[name="databasePassword"]').value              = '548?Q_Xggg-v$';
-                    break;
-                case 5:
-                    document.getElement('input[name="userName"]').value           = 'admin';
-                    document.getElement('input[name="userPassword"]').value       = 'superPassword';
-                    document.getElement('input[name="userPasswordRepeat"]').value = 'superPassword';
-
-            }
-        }.bind(this)
+        }
     });
 });

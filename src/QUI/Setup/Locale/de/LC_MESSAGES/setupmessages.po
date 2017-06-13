@@ -411,13 +411,13 @@ msgid "setup.web.header.version"
 msgstr "Version"
 
 msgid "setup.web.header.version.text"
-msgstr "Für den produktiven Einsatz wird die neueste stabiele Version empfohlen. Entwickler oder expirimentierfreudiege können auch zwischen den dev-dev und dev-master Versionen wählen, diese Versionen sind zwar immer auf dem neusten Stand, können jedoch unter Umständen instabil laufen.  "
+msgstr "Für den produktiven Einsatz wird die neueste stabile Version empfohlen. Entwickler oder expirimentierfreudiege können auch zwischen den dev-dev und dev-master Versionen wählen. Diese Versionen sind zwar immer auf dem neusten Stand, können jedoch unter Umständen instabil laufen.  "
 
 msgid "setup.web.header.template"
 msgstr "Vorlage"
 
 msgid "setup.web.header.template.text"
-msgstr "Wählen Sie den Typ Ihres Projektes aus einer Vorlage. Sie können den Projektnamen und Projekteinstellungen ändern wenn Sie auf das Icon mit den Zahnrädern klicken.  <p class=\"smalFont \">Mit den Vorlagen können Sie schnell und einfach auf vorkonfiguriete Pakte zugreifen und so z.B. ein Blog, eine Firmenpressetation, eine Landingpage oder komplette Applikationen zur Installation auswählen. Sie können auch eigene Vorlagen in den Ordner /templates/presets hochladen (eine genaue Anleitung dazu finden Sie in den FAQ auf der QUIQQER-Webseite).</p>"
+msgstr "Wählen Sie den Typ Ihres Projektes aus einer Vorlage. Sie können den Projektnamen und Projekteinstellungen ändern wenn Sie auf das Icon mit den Zahnrädern klicken.  <p class=\"smallFont \">Mit den Vorlagen können Sie schnell und einfach auf vorkonfiguriete Pakte zugreifen und so z.B. ein Blog, eine Firmenpressetation, eine Landingpage oder komplette Applikationen zur Installation auswählen. Sie können auch eigene Vorlagen in den Ordner /templates/presets hochladen (eine genaue Anleitung dazu finden Sie in den FAQ auf der QUIQQER-Webseite).</p>"
 
 msgid "setup.web.header.dataBase"
 msgstr "Datenbank"
@@ -429,13 +429,13 @@ msgid "setup.web.header.user"
 msgstr "Administrator Benutzer"
 
 msgid "setup.web.header.user.text"
-msgstr "Die Zugangsdaten, mit denen Sie sich in Backend-Panel als <i>Administrator</i> einloggen möchten. Bewahren Sie Ihre Zugangsdaten an einem sicheren Ort auf<p class=\"smalFont \"> Das Passwort muss mindestens aus 8 Zeichen bestehen, es muss Groß- und Kleinbuchstaben sowie mindetens eine Zahl enthalten.</p>"
+msgstr "Die Zugangsdaten, mit denen Sie sich in Backend-Panel als <i>Administrator</i> einloggen möchten. Bewahren Sie Ihre Zugangsdaten an einem sicheren Ort auf. <p class=\"smallFont \"> Das Passwort muss mindestens aus 8 Zeichen bestehen, es muss Groß- und Kleinbuchstaben sowie mindetens eine Zahl enthalten.</p>"
 
 msgid "setup.web.header.hostAndDirectory"
 msgstr "Host und Pfade"
 
 msgid "setup.web.header.hostAndDirectory.text"
-msgstr "Sie können hier die Hauptdomain und die Pfade Ihrer Installation anpassen. Die benötigte Daten wurden automatisch ermittelt, Sie bracuhen nur änderungen vornehmen wenn Sie sich sicher sind das die Daten nicht korrekt sind.  <p class=\"smalFont \">Mehr Informationen erfahren Sie, wenn Sie auf die <i>Info-Icon</i> clicken.</p>"
+msgstr "Sie können hier die Hauptdomain und die Pfade Ihrer Installation anpassen. Die benötigte Daten wurden automatisch ermittelt, Sie brauchen nur Änderungen vornehmen, wenn Sie sich sicher sind, dass die Daten nicht korrekt sind.  <p class=\"smallFont \">Mehr Informationen erfahren Sie, wenn Sie auf die <i>Info-Icon</i> clicken.</p>"
 
 msgid "setup.web.header.license"
 msgstr "Lizenz"
@@ -539,7 +539,7 @@ msgstr "Automatisch ermitteln"
 
 
 msgid "setup.web.content.license.text"
-msgstr "<h1>QUIQQER - Lizenzvereinbahrung</h1><p> Alle Linzenzinformationen liegen den QUIQQER finden Sie bei den Installationsdateien oder unter <a href=\"https://www.quiqqer.com/Lizenz\" target=\"_blank\">https://www.quiqqer.com/Lizenz</a></p><p>Bitte lesen Sie die Lizenzvereinbahrungen Sorgfältig duch und stimmen Sie diesen zu um QUIQQER zu Informieren</p><p class=\"smallFont\"> Durch die installation von Erweiterungen, Templates oder Vorlagen können Lizenzvereinbahrungen von Drittanbietern hinzukommen, bitte Informieren Sie sich vor der Installation über mögliche Lizenzbedingungen und einschränkungen durch Erqeiterungen.</p>"
+msgstr "<h1>QUIQQER - Lizenzvereinbahrung</h1><p> Alle Linzenzinformationen zu QUIQQER finden Sie bei den Installationsdateien oder unter <a href=\"https://www.quiqqer.com/Lizenz\" target=\"_blank\">https://www.quiqqer.com/Lizenz</a></p><p>Bitte lesen Sie die Lizenzvereinbarungen Sorgfältig durch und stimmen Sie diesen zu um QUIQQER zu instalieren</p><p class=\"smallFont\"> Durch die installation von Erweiterungen, Templates oder Vorlagen können Lizenzvereinbahrungen von Drittanbietern hinzukommen, bitte Informieren Sie sich vor der Installation über mögliche Lizenzbedingungen und Einschränkungen durch Erweiterungen.</p>"
 
 msgid "setup.web.content.license.checkbox"
 msgstr "Ja, ich habe die Lizenzinformationen gelesen und bin damit einverstanden"
@@ -547,7 +547,7 @@ msgstr "Ja, ich habe die Lizenzinformationen gelesen und bin damit einverstanden
 
 
 msgid "setup.web.content.button.next"
-msgstr "Fortfahren"
+msgstr "Fortfahrenmnnnnnnnnn"
 
 msgid "setup.web.content.button.back"
 msgstr "Zurück"

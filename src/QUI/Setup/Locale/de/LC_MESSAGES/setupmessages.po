@@ -405,19 +405,19 @@ msgid "setup.web.header.siteLang"
 msgstr "Sprache"
 
 msgid "setup.web.header.siteLang.text"
-msgstr "Wählen Sie die Sprache für Ihre Installation aus. Sie können die Sprache jederzeit in QUIQQER Einstellungen ändern."
+msgstr "Wählen Sie die Standardsprache für Ihr Projekt aus. Sie können die Projektsprache später in den Projekt-Einstellungen ändern oder weitere Sprachen hinzufügen."
 
 msgid "setup.web.header.version"
 msgstr "Version"
 
 msgid "setup.web.header.version.text"
-msgstr "Für produktiver Einsatz wird die neueste Version (höchste Nummer) empfohlen. Entwickler können auch zwischen dev-dev und dev-master Versionen wählen. Die Developer-Versionen sind zwar auf dem neusten Stand, können aber unter Umständen instabil sein."
+msgstr "Für den produktiven Einsatz wird die neueste stabiele Version empfohlen. Entwickler oder expirimentierfreudiege können auch zwischen den dev-dev und dev-master Versionen wählen, diese Versionen sind zwar immer auf dem neusten Stand, können jedoch unter Umständen instabil laufen.  "
 
 msgid "setup.web.header.template"
 msgstr "Vorlage"
 
 msgid "setup.web.header.template.text"
-msgstr "Ein vorgefertigtes Template für Ihren Webauftritt. Sie können nachher andere Vorlagen installieren oder auch eigene erstellen."
+msgstr "Wählen Sie den Typ Ihres Projektes aus einer Vorlage. Sie können den Projektnamen und Projekteinstellungen ändern wenn Sie auf das Icon mit den Zahnrädern klicken.  <p class=\"smalFont \">Mit den Vorlagen können Sie schnell und einfach auf vorkonfiguriete Pakte zugreifen und so z.B. ein Blog, eine Firmenpressetation, eine Landingpage oder komplette Applikationen zur Installation auswählen. Sie können auch eigene Vorlagen in den Ordner /templates/presets hochladen (eine genaue Anleitung dazu finden Sie in den FAQ auf der QUIQQER-Webseite).</p>"
 
 msgid "setup.web.header.dataBase"
 msgstr "Datenbank"
@@ -426,22 +426,22 @@ msgid "setup.web.header.dataBase.text"
 msgstr "Geben Sie alle Daten ein, die benötigt werden um sich mit Ihrer Datenbank zu verbinden. Verwenden Sie <i>\"Tabellen-Prefix\"</i>, wenn Sie eine bereits existierende und benutze Datenbank verwenden wollen bzw. müssen."
 
 msgid "setup.web.header.user"
-msgstr "Root Benutzer"
+msgstr "Administrator Benutzer"
 
 msgid "setup.web.header.user.text"
-msgstr "Die Zugangsdaten, mit denen Sie sich in Backend-Panel als <i>Administrator</i> einloggen können. Aus Sicherheitsgründen empfiehlt sich ein starkes Passwort zu verwenden."
+msgstr "Die Zugangsdaten, mit denen Sie sich in Backend-Panel als <i>Administrator</i> einloggen möchten. Bewahren Sie Ihre Zugangsdaten an einem sicheren Ort auf<p class=\"smalFont \"> Das Passwort muss mindestens aus 8 Zeichen bestehen, es muss Groß- und Kleinbuchstaben sowie mindetens eine Zahl enthalten.</p>"
 
 msgid "setup.web.header.hostAndDirectory"
 msgstr "Host und Pfade"
 
 msgid "setup.web.header.hostAndDirectory.text"
-msgstr "Wenn Sie die Felder leer lassen, werden die benötigte Daten automatisch ermittelt und übernommen. Bitte nur dann ändern, wenn Sie explizit wissen, was sie machen. Mehr Informationen erfahren Sie, wenn Sie auf die <i>Info-Icon</i> clicken."
+msgstr "Sie können hier die Hauptdomain und die Pfade Ihrer Installation anpassen. Die benötigte Daten wurden automatisch ermittelt, Sie bracuhen nur änderungen vornehmen wenn Sie sich sicher sind das die Daten nicht korrekt sind.  <p class=\"smalFont \">Mehr Informationen erfahren Sie, wenn Sie auf die <i>Info-Icon</i> clicken.</p>"
 
 msgid "setup.web.header.license"
 msgstr "Lizenz"
 
 msgid "setup.web.header.license.text"
-msgstr "Bitte lesen Sie folgende Lizenzvereinbarung sorgfältig durch und akzeptieren Sie diese, um mit der QUIQQER Installation anfangen zu können."
+msgstr "Bitte lesen Sie folgende Lizenzvereinbarung sorgfältig durch und akzeptieren Sie diese, um mit der QUIQQER Installation fortzufahren."
 
 
 msgid "setup.web.nav.siteLang"
@@ -457,7 +457,7 @@ msgid "setup.web.nav.dataBase"
 msgstr "Datenbank"
 
 msgid "setup.web.nav.user"
-msgstr "Root Benutzer"
+msgstr "Login / Benutzer"
 
 msgid "setup.web.nav.hostAndDirectory"
 msgstr "Host und Pfade"
@@ -539,10 +539,10 @@ msgstr "Automatisch ermitteln"
 
 
 msgid "setup.web.content.license.text"
-msgstr "<h1>Lorem ipsum license</h1><p>Lorem ipsum dolor sit amet, pellentesque nulla eu, hendrerit est. Integer ut venenatis nulla, vel iaculis lacus. Vestibulum mollis dolor id nisl suscipit aliquam id ac sapien. Praesent urna turpis.</p><h2>Ipsum section</h2><p>Tincidunt id pellentesque nec, porttitor in erat. Duis tempor velit cursus ante bibendum, sit amet finibus arcu ultrices. Nullam tempus eu augue quis sodales. Donec eget pharetra ex, sed sodales enim. Etiam tincidunt lacus vitae massa suscipit eleifend. Quisque sagittis laoreet dolor at scelerisque. Duis viverra libero tortor</p><h2>Heading 2</h2><p>quis semper purus condimentum ac. Phasellus id rhoncus ligula. Nullam vitae pulvinar</p><h3>Heading 3</h3><p>Vestibulum at finibus ipsum. Ut nec orci sagittis, ultrices metus non, eleifend ex. Integer vitae turpis vel augue aliquet suscipit. habitasse platea dictumst. Fusce eu scelerisque augue. Aliquam sagittis tortor vitae diam euismod, eget mollis est sagittis. Nullam scelerisque velit non leo pharetra egestas. Vestibulum a eleifend risus, quis ultricies nibh.</p><p>Nunc egestas tempus eros. Etiam pellentesque mi vel molestie euismod. Nam sed ligula elementum, auctor risus ut, eleifend urna. Class aptent taciti sociosqu ad litora torquent.</p><p>Anisi at efficitur facilisis, quam ipsum imperdiet urna, quis semper eros arcu vel arcu. Nunc egestas tempus eros. Etiam pellentesque mi vel molestie euismod.</p><h3>Headign 3</h3><p>Nisi at efficitur facilisis, quam ipsum imperdiet urna, quis semper eros arcu vel arcu. Nunc egestas tempus eros. Etiam pellentesque mi vel molestie euismod.</p><h2></h2><p>Nam sed ligula elementum, auctor risus ut, eleifend urna. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nulla vulputate rhoncus nisl, tempor facilisis nunc accumsan non. Quisque eget turpis vitae libero iaculis porta non sed orci.</p><p>Vestibulum vitae gravida enim. Etiamvenenatis eget ante ut pharetra.</p>"
+msgstr "<h1>QUIQQER - Lizenzvereinbahrung</h1><p> Alle Linzenzinformationen liegen den QUIQQER finden Sie bei den Installationsdateien oder unter <a href=\"https://www.quiqqer.com/Lizenz\" target=\"_blank\">https://www.quiqqer.com/Lizenz</a></p><p>Bitte lesen Sie die Lizenzvereinbahrungen Sorgfältig duch und stimmen Sie diesen zu um QUIQQER zu Informieren</p><p class=\"smallFont\"> Durch die installation von Erweiterungen, Templates oder Vorlagen können Lizenzvereinbahrungen von Drittanbietern hinzukommen, bitte Informieren Sie sich vor der Installation über mögliche Lizenzbedingungen und einschränkungen durch Erqeiterungen.</p>"
 
 msgid "setup.web.content.license.checkbox"
-msgstr "Ja, ich stimme zu"
+msgstr "Ja, ich habe die Lizenzinformationen gelesen und bin damit einverstanden"
 
 
 
@@ -579,7 +579,7 @@ msgid "setup.web.system.check.header.desc"
 msgstr "Die Server Einstellungen entsprechen nicht den Mindestanforderungen von QUIQQER"
 
 msgid "setup.web.system.check.desc"
-msgstr "Folgende Fehler sind aufgetreten. Bitte beheben Sie diese und dann klicken Sie auf <em>Refresh-Button</em> oder laden Sie die Seite neu."
+msgstr "Folgende Fehler sind aufgetreten. Bitte beheben Sie diese und dann klicken Sie auf den <em>Neu laden-Button</em> oder laden Sie die Seite neu."
 
 msgid "setup.web.system.check.button"
 msgstr "Neu laden"
@@ -589,7 +589,7 @@ msgid "setup.web.webInstall.more-button"
 msgstr "Details anzeigen"
 
 msgid "setup.web.webInstall.text"
-msgstr "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sit amet augue vitae mauris elementu suscipit."
+msgstr "wird nicht genutzt!!!!"
 
 msgid "setup.web.webInstall.finishText"
 msgstr "Die Installation ist abgeschlossen. Sie können sich jetzt in Admin-Panel einloggen."
@@ -605,16 +605,16 @@ msgid "exception.validation.passwords.empty"
 msgstr "Das Passwordfeld darf nicht leer sein"
 
 msgid "exception.validation.password.minlength"
-msgstr "Das eingegebene Passwort ist zu kurz."
+msgstr "Das eingegebene Passwort muss mindestens 8 Zeichen enthalten"
 
 msgid "exception.validation.password.uppercasecount"
 msgstr "Bitte verwenden Sie Groß- und Kleinbuchstaben."
 
 msgid "exception.validation.password.specialcount"
-msgstr "Das Passwort enthält keine Sonderzeichen."
+msgstr "Das Passwort muss mindestens ein Sonderzeichen enthalten."
 
 msgid "exception.validation.password.numbercount"
-msgstr "Bitte verwenden Sie auch Zahlen."
+msgstr "Bitte verwenden Sie minestens eine Zahl in Ihrem Passwort."
 
 msgid "applypreset.done"
 msgstr "Die Vorlage wurde angewendet."

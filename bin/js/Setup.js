@@ -54,6 +54,7 @@ define('bin/js/Setup', [
             'validatePresetData',
             'updatePreset',
             'checkPassword',
+            'languageButtons',
             '$exeInstall',
             'parseFormData',
             'showPassword'
@@ -104,6 +105,7 @@ define('bin/js/Setup', [
          */
         systemCheck: function () {
             var self = this;
+            this.languageButtons();
 
             this.checkRequirements().then(function (response) {
 
@@ -111,7 +113,6 @@ define('bin/js/Setup', [
                     stepsContainer = document.getElement('.steps-container');
 
                 if (response == "true" || response == true) {
-                    console.log(111111);
                     document.getElement('#back-button').setStyle('display', 'inline-block');
                     systemCheck.setStyle('display', 'none');
                     stepsContainer.setStyles({
@@ -225,32 +226,6 @@ define('bin/js/Setup', [
 
             // diasble all TAB key
             this.disableAllTab();
-
-            // language button
-            var url    = window.location.search.substr(1),
-                Params = {};
-
-            url = url.split('&');
-
-            for (var i = 0, len = url.length; i < len; i++) {
-                var parts        = url[i].split('=');
-                Params[parts[0]] = parts[1];
-            }
-
-            if (Params.hasOwnProperty("language")) {
-                var Elms = document.getElement('.change-language').getChildren();
-                Elms.forEach(function (Elm) {
-                    var lang = Elm.getAttribute('data-attr-lang');
-                    if (lang == Params['language']) {
-                        Elm.addClass('active-lang')
-                    }
-
-                    Elm.addEvent('click', function () {
-                        var link        = window.location.origin + '/?language=' + lang;
-                        window.location = link;
-                    })
-                })
-            }
 
 
             window.addEvents({
@@ -1245,6 +1220,38 @@ define('bin/js/Setup', [
             })
         },
 
+        /**
+         *
+         */
+        languageButtons: function()
+        {
+            // language button
+            var url    = window.location.search.substr(1),
+                Params = {};
+
+            url = url.split('&');
+
+            for (var i = 0, len = url.length; i < len; i++) {
+                var parts        = url[i].split('=');
+                Params[parts[0]] = parts[1];
+            }
+
+            if (Params.hasOwnProperty("language")) {
+                var langButtons = document.getElement('.change-language').getChildren();
+
+                langButtons.forEach(function (button) {
+                    var lang = button.getAttribute('data-attr-lang');
+                    if (lang == Params['language']) {
+                        button.addClass('active-lang')
+                    }
+
+                    button.addEvent('click', function () {
+                        var link        = window.location.origin + '/?language=' + lang;
+                        window.location = link;
+                    })
+                })
+            }
+        },
         /**
          * execute the setup
          */

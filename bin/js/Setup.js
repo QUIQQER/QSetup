@@ -384,6 +384,25 @@ define('bin/js/Setup', [
                 });
             });
 
+            /**
+             * check password strength
+             */
+            require(['bin/js/StrongPass'], function(StrongPass){
+                new StrongPass("userPassword",{
+                    injectTarget: document.getElement('.strong-pass-meter'),
+                    injectPlacement: 'bottom',
+                    minChar: 3,
+                    colors: [
+                        '#ccc',
+                        '#aa0033',
+                        '#ffcc33',
+                        '#6699cc',
+                        '#008000',
+                        '#40e240'
+                    ]
+                });
+            });
+
             // check password
             this.pass2Filled = false;
             this.pass1.addEvent('keyup', function () {
@@ -1199,8 +1218,8 @@ define('bin/js/Setup', [
          * check password (equal? not to short?)
          */
         checkPassword: function () {
-            console.log(1);
-            console.log(this.pass2Filled);
+            // console.log(1);
+            // console.log(this.pass2Filled);
             if (!this.pass2Filled) {
                 return;
             }
@@ -1221,7 +1240,7 @@ define('bin/js/Setup', [
         },
 
         /**
-         *
+         * buttons to change the language
          */
         languageButtons: function()
         {

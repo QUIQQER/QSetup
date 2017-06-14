@@ -406,14 +406,15 @@ $language = require_once "languageDetection.php";
 
 
                                     </div>
-                                    <div class="input-wrapper">
+                                    <div class="input-wrapper strong-pass-meter">
                                         <label class="animated-label animated-label-error">
-                                            <?php echo $Locale->getStringLang('setup.web.content.rootPassword') ?>:
+                                            <?php echo $Locale->getStringLang('setup.web.content.rootPassword') ?>
                                         </label>
                                         <!-- Root Passwort -->
                                         <span class="fa fa-lock input-text-icon"></span>
                                         <input class="input-text input-text-password" type="password"
                                                name="userPassword" value="" required tabindex="-1"
+                                               id="userPassword"
                                                placeholder="<?php echo $Locale->getStringLang('setup.web.content.rootPassword') ?>"
                                         />
 
@@ -424,7 +425,6 @@ $language = require_once "languageDetection.php";
                                     <div class="input-wrapper">
                                         <label class="animated-label animated-label-error">
                                             <?php echo $Locale->getStringLang('setup.web.content.rootPasswordRepeat') ?>
-                                            :
                                         </label>
                                         <!-- Root Passwort wiederholen -->
                                         <span class="fa fa-lock input-text-icon"></span>
@@ -432,6 +432,10 @@ $language = require_once "languageDetection.php";
                                                name="userPasswordRepeat" value="" required="required"
                                                placeholder="<?php echo $Locale->getStringLang('setup.web.content.rootPasswordRepeat') ?>"
                                         />
+
+                                    </div>
+
+                                    <div class="strong-pass-meter-label">
 
                                     </div>
 
@@ -520,14 +524,6 @@ $language = require_once "languageDetection.php";
 
                     </form>
                 </div>
-                <!--<div class="nav-buttons test-nav-buttons">
-                    <button id="back-button" class="button back-button" disabled>
-                        <?php /*echo $Locale->getStringLang('setup.web.content.button.back'); */ ?>
-                    </button>
-                    <button id="next-button" class="next-button">
-                        <?php /*echo $Locale->getStringLang('setup.web.content.button.next'); */ ?>
-                    </button>
-                </div>-->
             </div>
         </div>
 

@@ -234,6 +234,26 @@ input.input-text-password {
     z-index: 10;
 }
 
+/* password strength meter */
+.pass-container {
+    position: absolute;
+    bottom: 0;
+    width: calc(100% - 2px) !important;
+    margin: 0 1px;
+    border-radius: 6px;
+}
+
+.pass-hint {
+    display: none;
+}
+
+.pass-bar {
+    height: 4px;
+    border-radius: 6px;
+    opacity: 0.8;
+    transition: 0.3s all ease-in-out;
+}
+
 /* select box */
 .select-wrapper {
     border: 1px solid #e5e5e5;
@@ -462,6 +482,7 @@ input[type=checkbox].button-checkbox:checked + label {
     color: #fff;
     box-shadow: none;
 }
+
 .qui-window-popup-buttons button.qui-button:nth-child(odd):hover {
     box-shadow: 0 3px 10px #bbb;
 }
@@ -497,7 +518,7 @@ input[type=checkbox].button-checkbox:checked + label {
 }
 
 .input-radio:checked + .label-div .step-3-settings-button:hover {
-    background: rgba(0,0,0,0.04);
+    background: rgba(0, 0, 0, 0.04);
 }
 
 .template-form .project-language {
@@ -534,9 +555,11 @@ input[type=checkbox].button-checkbox:checked + label {
     width: calc(50% - 10px);
     float: left;
 }
+
 .template-form .form-input-checkbox-container .button-checkbox-wrapper:nth-child(2n-1) {
     margin-right: 10px;
 }
+
 .template-form .form-input-checkbox-container .button-checkbox-wrapper:nth-child(2n) {
     margin-left: 10px;
 }
@@ -762,7 +785,6 @@ input[type=checkbox].button-checkbox:checked + label {
     width: auto;
 }
 
-
 /* if checkbox not checked */
 /* error for license step */
 .error input[type=checkbox].license-checkbox + label {
@@ -799,7 +821,7 @@ input[type=checkbox].button-checkbox:checked + label {
 }
 
 .change-language span:hover {
-    background: rgba(0,0,0,0.1);
+    background: rgba(0, 0, 0, 0.1);
     color: #666;
 
 }
@@ -929,7 +951,7 @@ li.step {
     flex-shrink: 0;
 }
 
-.smallFont  {
+.smallFont {
     font-size: 0.8em;
 }
 
@@ -1083,7 +1105,6 @@ button.install-page-more-button .fa {
     margin-left: 10px;
 }
 
-
 .install-page-details iframe {
     width: 100%;
     height: 0;
@@ -1091,7 +1112,6 @@ button.install-page-more-button .fa {
     box-shadow: 0 0 10px #aaa;
     transition: 0.3s ease-in-out all;
 }
-
 
 .header-text h1 {
     font-size: 30px;
@@ -1138,6 +1158,7 @@ button.install-page-more-button .fa {
     line-height: 2em;
 
 }
+
 .system-check-error-container .fa {
     color: #cc6666;
     margin-right: 10px;
@@ -1250,8 +1271,6 @@ button.install-page-more-button .fa {
         font-size: 18px;
     }
 }
-
-
 
 /*********************/
 /****** Loader *******/

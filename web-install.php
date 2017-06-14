@@ -135,10 +135,6 @@ $language = require_once "languageDetection.php";
                     </span>
                 </div>
             </header>
-            <!--<p>
-                <?php /*echo $Locale->getStringLang('setup.web.webInstall.text') */ ?>
-            </p>-->
-
         </div>
 
         <div class="progress-bar">

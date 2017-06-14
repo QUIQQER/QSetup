@@ -417,7 +417,7 @@ msgid "setup.web.header.template"
 msgstr "Vorlage"
 
 msgid "setup.web.header.template.text"
-msgstr "Wählen Sie den Typ Ihres Projektes aus einer Vorlage. Sie können den Projektnamen und die Projekteinstellungen ändern wenn Sie auf das Icon mit den Zahnrädern klicken.  <p class=\"smallFont \">Mit den Vorlagen können Sie schnell und einfach auf vorkonfiguriete Pakte zugreifen und so z.B. einen Blog, eine Firmenpresentation, eine Landingpage oder komplette Applikationen zur Installation auswählen. Sie können auch eigene Vorlagen in den Ordner /templates/presets hochladen (eine genaue Anleitung dazu finden Sie in den FAQ auf der QUIQQER-Webseite).</p>"
+msgstr "Wählen Sie den Typ Ihres Projektes aus einer Vorlage. Sie können den Projektnamen und die Projekteinstellungen ändern wenn Sie auf das Icon mit den Zahnrädern klicken.  <p class=\"smallFont \">Mit den Vorlagen können Sie schnell und einfach auf vorkonfiguriete Pakte zugreifen und z.B. einen Blog, eine Firmenpresentation, eine Landingpage oder komplette Applikationen zur Installation auswählen. Sie können auch eigene Vorlagen in den Ordner /templates/presets hochladen (eine genaue Anleitung dazu finden Sie in den FAQ auf der QUIQQER-Webseite).</p>"
 
 msgid "setup.web.header.dataBase"
 msgstr "Datenbank"
@@ -536,6 +536,8 @@ msgstr "Alle Felder müssen ausgefüllt sein."
 msgid "setup.web.content.autoFill"
 msgstr "Automatisch ermitteln"
 
+msgid "setup.web.error.fill.all.fields"
+msgstr "Bitte alle Felder ausfüllen."
 
 
 msgid "setup.web.content.license.text"
@@ -588,8 +590,6 @@ msgstr "Neu laden"
 msgid "setup.web.webInstall.more-button"
 msgstr "Details anzeigen"
 
-msgid "setup.web.webInstall.text"
-msgstr "wird nicht genutzt!!!!"
 
 msgid "setup.web.webInstall.finishText"
 msgstr "Die Installation ist abgeschlossen. Sie können sich jetzt im Admin-Panel einloggen."

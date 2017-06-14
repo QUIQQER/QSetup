@@ -104,6 +104,7 @@ define('bin/js/Setup', [
          * if the checkRequirements return an array with failed test names
          */
         systemCheck: function () {
+            console.log(LOCALE_TRANSLATIONS['validation.database.driver.notfound']);
             var self = this;
             this.languageButtons();
 
@@ -387,12 +388,12 @@ define('bin/js/Setup', [
             /**
              * check password strength
              */
-            require(['bin/js/StrongPass'], function(StrongPass){
-                new StrongPass("userPassword",{
-                    injectTarget: document.getElement('.strong-pass-meter'),
+            require(['bin/js/StrongPass'], function (StrongPass) {
+                new StrongPass("userPassword", {
+                    injectTarget   : document.getElement('.strong-pass-meter'),
                     injectPlacement: 'bottom',
-                    minChar: 3,
-                    colors: [
+                    minChar        : 3,
+                    colors         : [
                         '#ccc',
                         '#aa0033',
                         '#ffcc33',
@@ -507,8 +508,11 @@ define('bin/js/Setup', [
                 subPath = window.location.pathname + '/';
             }
             domain.placeholder     = window.location.origin;
+            domain.value     = window.location.origin;
             rootPath.placeholder   = ROOT_PATH + '/';
+            rootPath.value   = ROOT_PATH + '/';
             urlSubPath.placeholder = subPath;
+            urlSubPath.value = subPath;
 
         },
 
@@ -523,13 +527,22 @@ define('bin/js/Setup', [
 
             // data base check
             if (this.step == 4) {
+
                 var Form = QUIFormUtils.getFormData(this.FormSetup);
-                /*console.log(Form.databaseDriver)
-                 console.log(Form.databaseDriver.val)*/
-                /* if (Form.databaseDriver.value == '') {
-                 alert(1);
-                 return;
-                 };*/
+
+                if (Form.databaseDriver == '' ||
+                    Form.databaseHost == '' ||
+                    Form.databaseUser == '' ||
+                    Form.databasePassword == '' ||
+                    Form.databaseName == '') {
+                    QUI.getMessageHandler().then(function (MH) {
+                        var message = LOCALE_TRANSLATIONS['setup.web.error.fill.all.fields'];
+
+                        MH.setAttribute('displayTimeMessages', 8000);
+                        MH.addError(message);
+                    });
+                    return;
+                }
 
                 this.checkDataBase().then(function () {
                     self.nextExecute();
@@ -1242,8 +1255,7 @@ define('bin/js/Setup', [
         /**
          * buttons to change the language
          */
-        languageButtons: function()
-        {
+        languageButtons: function () {
             // language button
             var url    = window.location.search.substr(1),
                 Params = {};
@@ -1274,7 +1286,7 @@ define('bin/js/Setup', [
         /**
          * execute the setup
          */
-        $exeInstall: function () {
+        $exeInstall    : function () {
             var Loader = new QUILoader({type: 'line-scale'});
             Loader.inject(document.getElement('body'));
             Loader.show();

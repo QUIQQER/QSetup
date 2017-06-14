@@ -452,7 +452,7 @@ $language = require_once "languageDetection.php";
                                               data-attr="domain"
                                               title="<?php echo $Locale->getStringLang('setup.web.content.autoFill'); ?>"></span>
                                         <input class="input-text input-host-step" type="text" name="domain"
-                                               value="<?php echo $Locale->getStringLang('setup.web.content.domain') ?>"
+                                               value=""
                                                placeholder="<?php echo $Locale->getStringLang('setup.web.content.domain') ?>"
                                         />
                                         <span class="fa fa-info-circle host-and-url-info"
@@ -469,7 +469,7 @@ $language = require_once "languageDetection.php";
                                               data-attr="rootPath"
                                               title="<?php echo $Locale->getStringLang('setup.web.content.autoFill'); ?>"></span>
                                         <input class="input-text input-host-step" type="text" name="rootPath"
-                                               value="<?php echo $Locale->getStringLang('setup.web.content.rootDirectory') ?>"
+                                               value=""
                                                placeholder="<?php echo $Locale->getStringLang('setup.web.content.rootDirectory') ?>"
                                         />
                                         <span class="fa fa-info-circle host-and-url-info"
@@ -486,7 +486,7 @@ $language = require_once "languageDetection.php";
                                               data-attr="urlSubPath"
                                               title="<?php echo $Locale->getStringLang('setup.web.content.domain.help'); ?>"></span>
                                         <input class="input-text input-host-step" type="text" name="URLsubPath"
-                                               value="<?php echo $Locale->getStringLang('setup.web.content.urlDirectory') ?>"
+                                               value=""
                                                placeholder="<?php echo $Locale->getStringLang('setup.web.content.urlDirectory') ?>"
                                         />
                                         <span class="fa fa-info-circle host-and-url-info"

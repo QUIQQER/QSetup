@@ -402,46 +402,46 @@ msgid "setup.web.subTitle"
 msgstr "Installation"
 
 msgid "setup.web.header.siteLang"
-msgstr "Website language"
+msgstr "Language"
 
 msgid "setup.web.header.siteLang.text"
-msgstr "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat.Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy tempor invidunt ut labore et."
+msgstr "Select the default language for your project. You can change the project language later in the project settings or add more languages."
 
 msgid "setup.web.header.version"
 msgstr "Version"
 
 msgid "setup.web.header.version.text"
-msgstr "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor"
+msgstr "The latest stable version is recommended for productive use. Developers can also choose between the dev-dev and dev-master versions. These versions are always up-to-date, but may be unstable."
 
 msgid "setup.web.header.template"
 msgstr "Template"
 
 msgid "setup.web.header.template.text"
-msgstr "Sodf olore magna aliquyam erat, sed diam voluptua. At vero"
+msgstr "Select the type of your project from a template. You can change the project name and the project settings by clicking on the settings icon. <p class=\"smallFont \">The templates allow you to quickly and easily access pre-configured packages, e.g. a blog, a company presentation, a landing page or complete applications. You can also upload your own templates to the /templates/presets directory (for detailed instructions, see the QUIQQER FAQ).</p>"
 
 msgid "setup.web.header.dataBase"
-msgstr "Data base"
+msgstr "Database"
 
 msgid "setup.web.header.dataBase.text"
-msgstr "Consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et"
+msgstr "Enter all the data needed to connect to your database. Use \"<i>table prefix\"</i> if you want to use an existing database."
 
 msgid "setup.web.header.user"
-msgstr "Root user"
+msgstr "Admin account"
 
 msgid "setup.web.header.user.text"
-msgstr "Ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et"
+msgstr "The access data to log in to your backend panel. Keep your data in a safe place. <p class=\"smallFont \"> The password must contain at least 8 characters one number. It also must contain uppercase and lowercase.</p>"
 
 msgid "setup.web.header.hostAndDirectory"
 msgstr "Host and directories"
 
 msgid "setup.web.header.hostAndDirectory.text"
-msgstr "Ipsum dolor sit amet, consetetur"
+msgstr "Here you can customize the main domain and the paths of your installation. The required data were determined automatically. You only need to make changes if you are sure that the data are not correct. <p class=\"smallFont\"> For more information, click the <i>Info Icon</i> </p>"
 
 msgid "setup.web.header.license"
 msgstr "License"
 
 msgid "setup.web.header.license.text"
-msgstr "Lorem license ipsum endu"
+msgstr "Please read the following license agreement carefully and accept it to proceed with the QUIQQER installation."
 
 
 msgid "setup.web.nav.siteLang"
@@ -454,10 +454,10 @@ msgid "setup.web.nav.template"
 msgstr "Template"
 
 msgid "setup.web.nav.dataBase"
-msgstr "Data base"
+msgstr "Database"
 
 msgid "setup.web.nav.user"
-msgstr "Root user"
+msgstr "Admin account"
 
 msgid "setup.web.nav.hostAndDirectory"
 msgstr "Host and directories"
@@ -480,7 +480,7 @@ msgid "setup.web.content.dbHost"
 msgstr "Database host"
 
 msgid "setup.web.content.dbPort"
-msgstr "Databse port"
+msgstr "Database port"
 
 msgid "setup.web.content.dbName"
 msgstr "Database name"
@@ -537,12 +537,15 @@ msgstr "All fields are required."
 msgid "setup.web.content.autoFill"
 msgstr "Detect automatically"
 
+msgid "setup.web.error.fill.all.fields"
+msgstr "Please fill all fields."
+
 
 msgid "setup.web.content.license.text"
-msgstr "<h1>Lorem ipsum license</h1><p>Lorem ipsum dolor sit amet, pellentesque nulla eu, hendrerit est. Integer ut venenatis nulla, vel iaculis lacus. Vestibulum mollis dolor id nisl suscipit aliquam id ac sapien. Praesent urna turpis.</p><h2>Ipsum section</h2><p>Tincidunt id pellentesque nec, porttitor in erat. Duis tempor velit cursus ante bibendum, sit amet finibus arcu ultrices. Nullam tempus eu augue quis sodales. Donec eget pharetra ex, sed sodales enim. Etiam tincidunt lacus vitae massa suscipit eleifend. Quisque sagittis laoreet dolor at scelerisque. Duis viverra libero tortor</p><h2>Heading 2</h2><p>quis semper purus condimentum ac. Phasellus id rhoncus ligula. Nullam vitae pulvinar</p><h3>Heading 3</h3><p>Vestibulum at finibus ipsum. Ut nec orci sagittis, ultrices metus non, eleifend ex. Integer vitae turpis vel augue aliquet suscipit. habitasse platea dictumst. Fusce eu scelerisque augue. Aliquam sagittis tortor vitae diam euismod, eget mollis est sagittis. Nullam scelerisque velit non leo pharetra egestas. Vestibulum a eleifend risus, quis ultricies nibh.</p><p>Nunc egestas tempus eros. Etiam pellentesque mi vel molestie euismod. Nam sed ligula elementum, auctor risus ut, eleifend urna. Class aptent taciti sociosqu ad litora torquent.</p><p>Anisi at efficitur facilisis, quam ipsum imperdiet urna, quis semper eros arcu vel arcu. Nunc egestas tempus eros. Etiam pellentesque mi vel molestie euismod.</p><h3>Headign 3</h3><p>Nisi at efficitur facilisis, quam ipsum imperdiet urna, quis semper eros arcu vel arcu. Nunc egestas tempus eros. Etiam pellentesque mi vel molestie euismod.</p><h2></h2><p>Nam sed ligula elementum, auctor risus ut, eleifend urna. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nulla vulputate rhoncus nisl, tempor facilisis nunc accumsan non. Quisque eget turpis vitae libero iaculis porta non sed orci.</p><p>Vestibulum vitae gravida enim. Etiamvenenatis eget ante ut pharetra.</p>"
+msgstr "<h1>QUICKER license agreement</h1><p>All license information on QUIQQER can be found in the installation files or at <a href=\"https://www.quiqqer.com/License=\" target=\"_blank\">https://www.quiqqer.com/Lizenz</a></p><p> Please read the license agreement carefully and agree to install it.</p><p class=\"smallFont\">By installing extensions or templates, license agreements can be added by third parties. Please inform yourself about possible licensing conditions and limitations due to extensions before the installation.</p>"
 
 msgid "setup.web.content.license.checkbox"
-msgstr "Yes, I agree to terms"
+msgstr "Yes, I have read the license terms and agree to them"
 
 msgid "setup.web.content.button.next"
 msgstr "next"
@@ -569,11 +572,12 @@ msgstr "Cancel"
 msgid "setup.web.popup.save-button"
 msgstr "Save"
 
+
 msgid "setup.web.system.check.header"
 msgstr "System check failed"
 
 msgid "setup.web.system.check.header.desc"
-msgstr "The server settings do not meet the minimum requirements of QUICKER"
+msgstr "The server settings do not meet the minimum requirements of QUIQQER"
 
 msgid "setup.web.system.check.desc"
 msgstr "The following errors occurred. Please correct them and then click <em>Refresh button</em> or reload the page."
@@ -585,11 +589,9 @@ msgstr "Refresh"
 msgid "setup.web.webInstall.more-button"
 msgstr "Show details"
 
-msgid "setup.web.webInstall.text"
-msgstr "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sit amet augue vitae mauris elementu suscipit."
 
 msgid "setup.web.webInstall.finishText"
-msgstr "The installation is complete. You can now log into your admin panel."
+msgstr "The installation is complete. You can now log in to the admin panel."
 
 
 msgid "exception.validation.database.connection"

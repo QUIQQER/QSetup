@@ -1508,29 +1508,22 @@ LOGETC;
         }
 
         $this->Output->writeLnLang("setup.message.step.delete", Output::LEVEL_INFO);
-        # Remove quiqqer.zip
-        if (file_exists($this->baseDir . "/quiqqer.zip")) {
-            unlink($this->baseDir . "/quiqqer.zip");
-        }
 
-        # Remove quiqqer.setup
-        if (file_exists($this->baseDir . "/quiqqer.setup")) {
-            unlink($this->baseDir . "/quiqqer.setup");
-        }
+        $files = array(
+            $this->baseDir . "/quiqqer.zip",
+            $this->baseDir . "/quiqqer.setup",
+            $this->baseDir . "/setup.php",
+            $this->baseDir . "/README.md",
+            CMS_DIR . "composer.json",
+            CMS_DIR . "languageDetection.php",
+            CMS_DIR . "web-install.php",
+            CMS_DIR . "iframe.php"
+        );
 
-        # Remove setup.php
-        if (file_exists($this->baseDir . "/setup.php")) {
-            unlink($this->baseDir . "/setup.php");
-        }
-
-        # Remove README.md
-        if (file_exists($this->baseDir . "/README.md")) {
-            unlink($this->baseDir . "/README.md");
-        }
-
-        # Remove composer.json & composer.lock in doc-root
-        if (file_exists(CMS_DIR . "composer.json")) {
-            unlink(CMS_DIR . "composer.json");
+        foreach ($files as $file) {
+            if (file_exists($file)) {
+                unlink($file);
+            }
         }
 
 

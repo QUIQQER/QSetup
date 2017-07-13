@@ -29,6 +29,7 @@ define('COLOR_GREY', '0;37');
 
 /**
  * Class Installer
+ *
  * @package QUI\ConsoleSetup
  */
 class Installer
@@ -244,6 +245,7 @@ class Installer
 
     /**
      * Continues the Setup after the given step.
+     *
      * @param $lastExecutedStep
      */
     protected function continueAfterStep($lastExecutedStep)
@@ -958,12 +960,14 @@ SMILEY;
     #region I/O
 
     /** Prompts the user for data.
+     *
      * @param $text - The prompt Text
      * @param bool $default - The defaultvalue
      * @param null $color - The Color to use. Constats defined in QUI\ConsoleSetup\Installer
      * @param bool $hidden - Hides the user input. Very usefull for passwords.
      * @param bool $toLower - Will conert the input to all lowercases
      * @param bool $allowEmpty - If this is true it will allow empty strings.
+     *
      * @return string - The (modified) input by the user.
      */
     private function prompt(
@@ -1092,8 +1096,10 @@ SMILEY;
 
     /**
      * This will sourround the given text with ANSI colortags
+     *
      * @param $text - The Input string
      * @param $color - The Color to be used. Colors are defined in QUI\ConsoleSetup\Installer
+     *
      * @return string - The String with surrounding color tags
      */
     private function getColoredString($text, $color)
@@ -1108,6 +1114,7 @@ SMILEY;
     /**
      * Echoes a fancy Header for each section.
      * Purely decorative.
+     *
      * @param $sectionName
      */
     private function echoSectionHeader($sectionName)
@@ -1334,6 +1341,7 @@ HEADER;
     /**
      * Checks if the given database is empty or not.
      * If the Database is not empty it will try to clear the database to avoid conflicting tablenames.
+     *
      * @param $driver
      * @param $host
      * @param $user
@@ -1341,6 +1349,7 @@ HEADER;
      * @param $db
      * @param $prefix
      * @param $port
+     *
      * @return bool
      */
     protected function clearDatabaseIfNotEmpty($driver, $host, $user, $pw, $db, $prefix, $port)

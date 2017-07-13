@@ -1430,7 +1430,7 @@ LOGETC;
 
             # Apache2.4 (behind NGINX)
             if ($webserver == 2 || $webserver == 6) {
-                $Config->set("webserver", "type", "apache24");
+                $Config->set("webserver", "type", "apache2.4");
                 $this->Output->writeLnLang("message.webserver.detected.apache24", Output::LEVEL_INFO);
                 $Config->save();
 
@@ -1439,7 +1439,7 @@ LOGETC;
 
             # Apache2.2 (behind NGINX)
             if ($webserver == 1 || $webserver == 5) {
-                $Config->set("webserver", "type", "apache22");
+                $Config->set("webserver", "type", "apache2.2");
                 $this->Output->writeLnLang("message.webserver.detected.apache22", Output::LEVEL_INFO);
                 $Config->save();
 

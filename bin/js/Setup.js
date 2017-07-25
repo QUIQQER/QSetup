@@ -231,7 +231,7 @@ define('bin/js/Setup', [
 
             window.addEvents({
                 resize: function () {
-                    QUIFunctionUtils.debounce(this.recalc, 2000);
+                    QUIFunctionUtils.debounce(this.recalc, 20);
                 }
             });
 

@@ -25,7 +25,7 @@ const COLOR_PURPLE = '1;35';
 const COLOR_WHITE  = '1;37';
 
 const SETUP_REPO   = 'git@dev.quiqqer.com:quiqqer/qsetup.git';
-const SETUP_BRANCH = '2.0.0-dev';
+const SETUP_BRANCH = 'master';
 
 /** @var array $exclude - Patterns which should be excluded in the zip */
 $exclude = array('/.git/*', 'create.php', 'tests/*', 'quiqqer.zip', 'quiqqer.tar');

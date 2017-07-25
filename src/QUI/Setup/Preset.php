@@ -479,12 +479,12 @@ class Preset
         $result = array();
 
         foreach ($this->availableLanguages as $lang => $active) {
-            if ($active) {
+            if ($active === true) {
                 $result[] = $lang;
                 continue;
             }
 
-            if ($active == "true") {
+            if ($active === "true") {
                 $result[] = $lang;
                 continue;
             }

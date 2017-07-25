@@ -518,10 +518,28 @@ class Installer
 
         ## Languages #############
         $presetDataLanguages = isset($presetData['project']['languages']) ? $presetData['project']['languages'] : false;
-        $languages           = $this->prompt(
+
+        $languagesString = false;
+        if ($presetDataLanguages !== false) {
+            foreach ($presetDataLanguages as $langCode => $active) {
+                if (!$active) {
+                    continue;
+                }
+                $languagesString .= $langCode . ",";
+            }
+            $languagesString = rtrim($languagesString, ",");
+        }
+
+
+        $languageInput = $this->prompt(
             $this->Locale->getStringLang("prompt.preset.customize.languages", "Project languages (comma separated): "),
-            $presetDataLanguages !== false ? implode(",", $presetDataLanguages) : false
+            $languagesString
         );
+
+        $languages = array();
+        foreach (explode(",", $languageInput) as $langCode) {
+            $languages[$langCode] = true;
+        }
 
         ## Template ##############
         $presetDataTemplate = isset($presetData['template']['name']) ? $presetData['template']['name'] : false;
@@ -531,11 +549,12 @@ class Installer
         );
 
 
+        // Compile the presetfile again
         if (!empty($projectName)) {
             $presetData['project']['name'] = $projectName;
         }
         if (!empty($languages)) {
-            $presetData['project']['languages'] = explode(",", $languages);
+            $presetData['project']['languages'] = $languages;
         }
         if (!empty($templateName)) {
             $presetData['template']['name'] = $templateName;
@@ -961,11 +980,11 @@ SMILEY;
 
     /** Prompts the user for data.
      *
-     * @param $text - The prompt Text
-     * @param bool $default - The defaultvalue
-     * @param null $color - The Color to use. Constats defined in QUI\ConsoleSetup\Installer
-     * @param bool $hidden - Hides the user input. Very usefull for passwords.
-     * @param bool $toLower - Will conert the input to all lowercases
+     * @param      $text       - The prompt Text
+     * @param bool $default    - The defaultvalue
+     * @param null $color      - The Color to use. Constats defined in QUI\ConsoleSetup\Installer
+     * @param bool $hidden     - Hides the user input. Very usefull for passwords.
+     * @param bool $toLower    - Will conert the input to all lowercases
      * @param bool $allowEmpty - If this is true it will allow empty strings.
      *
      * @return string - The (modified) input by the user.
@@ -1035,9 +1054,9 @@ SMILEY;
     }
 
     /**
-     * @param string $msg
+     * @param string   $msg
      * @param int|null $level - Loglevel, constants found in QUI\ConsoleSetup\Installer
-     * @param string $color - Constants are defined in QUI/ConsoleSetup/Installer.php
+     * @param string   $color - Constants are defined in QUI/ConsoleSetup/Installer.php
      */
     private function writeLn($msg, $level = null, $color = null)
     {
@@ -1097,7 +1116,7 @@ SMILEY;
     /**
      * This will sourround the given text with ANSI colortags
      *
-     * @param $text - The Input string
+     * @param $text  - The Input string
      * @param $color - The Color to be used. Colors are defined in QUI\ConsoleSetup\Installer
      *
      * @return string - The String with surrounding color tags

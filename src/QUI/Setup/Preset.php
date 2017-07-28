@@ -46,6 +46,8 @@ class Preset
     protected $startLayout;
 
 
+    protected $forceWebMode;
+
     protected $packages = array();
     protected $repositories = array();
 
@@ -58,14 +60,18 @@ class Preset
      *
      * @param        $presetName
      * @param Locale $Locale
-     * @param        $Output $Output
+     * @param        $Output       $Output
+     * @param bool   $forceWebMode - (optional) if this is set to true all components will be run n the web mode (without system functions)
      *
      * @throws SetupException
      */
-    public function __construct($presetName, $Locale, $Output = null)
+    public function __construct($presetName, $Locale, $Output = null, $forceWebMode = false)
     {
         $this->presetName = $presetName;
         $this->Locale     = $Locale;
+
+        $this->forceWebMode = $forceWebMode;
+
 
         if (is_null($Output)) {
             $this->Output = new NullOutput($Locale->getCurrent());
@@ -120,6 +126,10 @@ class Preset
         }
         # Require Template and packages
         $this->Composer = new Composer(VAR_DIR . "composer/", VAR_DIR . "composer/");
+        if ($this->forceWebMode) {
+            $this->Composer->setMode(Composer::MODE_WEB);
+        }
+
 
         # Add Repositories to composer.json
         if (!empty($this->repositories)) {

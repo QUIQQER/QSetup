@@ -285,7 +285,9 @@ class Setup
             $Output = new ConsoleOutput($this->setupLang);
         }
 
-        $Preset = new \QUI\Setup\Preset($presetName, $this->Locale, $Output);
+
+        $webMode = ($this->mode == self::MODE_WEB) ? true : false;
+        $Preset  = new \QUI\Setup\Preset($presetName, $this->Locale, $Output, $webMode);
         $Preset->apply(CMS_DIR);
 
         $this->Step = self::STEP_SETUP_PRESET;
@@ -1182,7 +1184,11 @@ class Setup
 
         # Execute Composer
         $Composer = new Composer($composerDir, $composerDir);
-        $res      = $Composer->update();
+        if ($this->mode == SETUP::MODE_WEB) {
+            $Composer->setMode(Composer::MODE_WEB);
+        }
+
+        $res = $Composer->update();
         if ($res === false) {
             $this->exitWithError("setup.unknown.error");
         }
@@ -1224,6 +1230,9 @@ class Setup
         chdir($composerDir);
 
         $Composer = new Composer($composerDir, $composerDir);
+        if ($this->mode == SETUP::MODE_WEB) {
+            $Composer->setMode(Composer::MODE_WEB);
+        }
         $Composer->dumpAutoload();
 
         # Workaround to reload plugins in the web version

@@ -41,4 +41,4 @@ Primarily aimed at __websetups__ , where the setup has to be executed in one req
 - xml - Contains xml files needed for the setup
 
 ## Setup Guide
-- [Installation](https://dev.quiqqer.com/quiqqer/quiqqer/wikis/setup-guide)
+- [Installation](https://dev.quiqqer.com/quiqqer/quiqqer/wikis/setup/installation)

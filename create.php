@@ -79,6 +79,10 @@ foreach ($versions as $version) {
     downloadXMLForVersion($version);
 }
 
+
+# Prepare the readme
+createReadme();
+
 # Create the zip file
 $zipLocation = createZip($workingDir . '/setup/');
 $tarLocation = createTar($workingDir . '/setup/');
@@ -120,9 +124,37 @@ writeLn("The quiqqer.zip has been created successfully!", null, COLOR_GREEN);
 
 #region Functions
 
+function createReadme()
+{
+    $baseDir = CLONE_DIR;
+
+    if (!file_exists($baseDir . "/INSTALL.stub.md")) {
+        return;
+    }
+
+    $stub = file_get_contents($baseDir . "/INSTALL.stub.md");
+
+    $webSetup     = file_get_contents("https://dev.quiqqer.com/quiqqer/quiqqer/wikis/setup/websetup.md");
+    $consoleSetup = file_get_contents("https://dev.quiqqer.com/quiqqer/quiqqer/wikis/setup/konsolensetup.md");
+
+    $stub = str_replace("{{websetup}}", $webSetup, $stub);
+    $stub = str_replace("{{consolesetup}}", $consoleSetup, $stub);
+
+    unlink($baseDir . "/README.md");
+    unlink($baseDir . "/INSTALL.stub.md");
+
+    file_put_contents($baseDir . "/README.md", $stub);
+
+    echo "Readme created: " . $baseDir . "/README.md";
+
+    exit;
+}
+
 /**
  * Creates the zip file and returns its path.
+ *
  * @param $target - The folder that should be zipped.
+ *
  * @return string
  */
 function createZip($target)
@@ -153,6 +185,7 @@ function createZip($target)
  * Creates a tar file of the setup
  *
  * @param $targetDir
+ *
  * @return string - The tar archives name
  */
 function createTar($targetDir)
@@ -182,6 +215,7 @@ function createTar($targetDir)
  * Creates the checksums for the given archive
  *
  * @param $zipLocation
+ *
  * @return string - The filename of the checksum file.
  */
 function createChecksums($zipLocation)
@@ -221,6 +255,7 @@ function downloadXMLForVersion($version)
 
 /**
  * Retrieves all available quiqqer versions from the update server
+ *
  * @return array - array with version names
  */
 function getVersions()
@@ -271,7 +306,9 @@ function getVersions()
 
 /**
  * Executes the given command on the shell.
+ *
  * @param string $cmd - A Shellcommand
+ *
  * @return int - Returns the exitcode of the command
  */
 function executeShellCommand($cmd)
@@ -285,6 +322,7 @@ function executeShellCommand($cmd)
 
 /**
  * Exits the script with error code and the given message
+ *
  * @param $msg - Error message that should be printed
  */
 function exitWithError($msg)
@@ -294,9 +332,9 @@ function exitWithError($msg)
 }
 
 /**
- * @param string $msg
+ * @param string   $msg
  * @param int|null $level - Loglevel, constants found in QUI\ConsoleSetup\Installer
- * @param string $color - Constants are defined in QUI/ConsoleSetup/Installer.php
+ * @param string   $color - Constants are defined in QUI/ConsoleSetup/Installer.php
  */
 function writeLn($msg, $level = LEVEL_INFO, $color = null)
 {
@@ -340,12 +378,14 @@ function writeLn($msg, $level = LEVEL_INFO, $color = null)
 }
 
 /** Prompts the user for data.
- * @param $text - The prompt Text
- * @param bool $default - The defaultvalue
- * @param null $color - The Color to use. Constats defined in QUI\ConsoleSetup\Installer
- * @param bool $hidden - Hides the user input. Very usefull for passwords.
- * @param bool $toLower - Will conert the input to all lowercases
+ *
+ * @param      $text       - The prompt Text
+ * @param bool $default    - The defaultvalue
+ * @param null $color      - The Color to use. Constats defined in QUI\ConsoleSetup\Installer
+ * @param bool $hidden     - Hides the user input. Very usefull for passwords.
+ * @param bool $toLower    - Will conert the input to all lowercases
  * @param bool $allowEmpty - If this is true it will allow empty strings.
+ *
  * @return string - The (modified) input by the user.
  */
 function prompt(
@@ -409,8 +449,10 @@ function prompt(
 
 /**
  * This will sourround the given text with ANSI colortags
- * @param $text - The Input string
+ *
+ * @param $text  - The Input string
  * @param $color - The Color to be used. Colors are defined in QUI\ConsoleSetup\Installer
+ *
  * @return string - The String with surrounding color tags
  */
 function getColoredString($text, $color)

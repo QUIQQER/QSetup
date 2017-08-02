@@ -113,7 +113,7 @@ define('bin/js/Setup', [
                 var systemCheck    = document.getElement('.system-check'),
                     stepsContainer = document.getElement('.steps-container');
 
-                if (response == "true" || response == true) {
+                if (response == "true" || response === true) {
                     document.getElement('#back-button').setStyle('display', 'inline-block');
                     systemCheck.setStyle('display', 'none');
                     stepsContainer.setStyles({
@@ -856,7 +856,12 @@ define('bin/js/Setup', [
                     break;
                 case 3:
                     if (!document.getElements('[name="template"]:checked').length) {
-                        document.getElements('[name="template"]')[0].checked = true;
+                        document.getElements('[name="template"]').each(function(Input){
+                            if (Input.value === "default") {
+                                Input.checked = true;
+                            }
+                        })
+                        // document.getElements('[name="template"]')[0].checked = true;
                     }
                     break;
                 case 4: // test only

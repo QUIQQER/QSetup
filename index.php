@@ -1,5 +1,7 @@
 <?php
 
+require "vendor/autoload.php";
+
 // setup language
 $language = require_once "languageDetection.php";
 
@@ -33,7 +35,6 @@ $language = require_once "languageDetection.php";
     </script>
 
     <?php
-    require "vendor/autoload.php";
 
     $Locale = new \QUI\Setup\Locale\Locale($language);
 
@@ -256,12 +257,12 @@ $language = require_once "languageDetection.php";
                                                 $icon = '<span class="fa fa-star-o button-icon-left"></span>';
                                         }
 
-                                        $output = '<label class="input-wrapper">
+                                        $output  = '<label class="input-wrapper">
                                         <input class="input-radio" name="version" tabindex="-1" 
                                                type="radio" value="' . $versions[$i] . '"' . $checked . ' />';
-                                        $output .= '<div class="label-div">' . $icon;
-                                        $output .= $versions[$i];
-                                        $output .= '<span class="fa fa-check button-icon-right"></span>
+                                        $output  .= '<div class="label-div">' . $icon;
+                                        $output  .= $versions[$i];
+                                        $output  .= '<span class="fa fa-check button-icon-right"></span>
                                         </div>
                                     </label>';
                                         $checked = '';
@@ -278,9 +279,8 @@ $language = require_once "languageDetection.php";
                                     $presets = \QUI\Setup\Preset::getPresets();
                                     $lang    = $Locale->getCurrent();
 
-
                                     $checked = '';
-                                    //                            $checked = 'checked="checked"';
+                                    // $checked = 'checked="checked"';
                                     foreach ($presets as $key => $value) {
                                         if (!isset($value['meta'])) {
                                             continue;

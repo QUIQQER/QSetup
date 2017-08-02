@@ -1322,7 +1322,7 @@ define('bin/js/Setup', [
         },
 
         /**
-         * parse the form data to an JSON object
+         * parse the form data to a JSON object
          *
          * @param formData
          * @returns object

@@ -104,7 +104,6 @@ define('bin/js/Setup', [
          * if the checkRequirements return an array with failed test names
          */
         systemCheck: function () {
-            console.log(LOCALE_TRANSLATIONS['validation.database.driver.notfound']);
             var self = this;
             this.languageButtons();
 
@@ -508,11 +507,11 @@ define('bin/js/Setup', [
                 subPath = window.location.pathname + '/';
             }
             domain.placeholder     = window.location.origin;
-            domain.value     = window.location.origin;
+            domain.value           = window.location.origin;
             rootPath.placeholder   = ROOT_PATH + '/';
-            rootPath.value   = ROOT_PATH + '/';
+            rootPath.value         = ROOT_PATH + '/';
             urlSubPath.placeholder = subPath;
-            urlSubPath.value = subPath;
+            urlSubPath.value       = subPath;
 
         },
 
@@ -856,12 +855,15 @@ define('bin/js/Setup', [
                     break;
                 case 3:
                     if (!document.getElements('[name="template"]:checked').length) {
-                        document.getElements('[name="template"]').each(function(Input){
+                        document.getElements('[name="template"]').each(function (Input) {
                             if (Input.value === "default") {
                                 Input.checked = true;
                             }
-                        })
-                        // document.getElements('[name="template"]')[0].checked = true;
+                        });
+
+                        if (!document.getElements('[name="template"]:checked').length) {
+                            document.getElements('[name="template"]')[0].checked = true;
+                        }
                     }
                     break;
                 case 4: // test only

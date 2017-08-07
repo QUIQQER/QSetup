@@ -144,10 +144,6 @@ function createReadme()
     unlink($baseDir . "/INSTALL.stub.md");
 
     file_put_contents($baseDir . "/README.md", $stub);
-
-    echo "Readme created: " . $baseDir . "/README.md";
-
-    exit;
 }
 
 /**

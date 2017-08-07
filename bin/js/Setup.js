@@ -104,7 +104,6 @@ define('bin/js/Setup', [
          * if the checkRequirements return an array with failed test names
          */
         systemCheck: function () {
-            console.log(LOCALE_TRANSLATIONS['validation.database.driver.notfound']);
             var self = this;
             this.languageButtons();
 
@@ -113,7 +112,7 @@ define('bin/js/Setup', [
                 var systemCheck    = document.getElement('.system-check'),
                     stepsContainer = document.getElement('.steps-container');
 
-                if (response == "true" || response == true) {
+                if (response == "true" || response === true) {
                     document.getElement('#back-button').setStyle('display', 'inline-block');
                     systemCheck.setStyle('display', 'none');
                     stepsContainer.setStyles({
@@ -508,11 +507,11 @@ define('bin/js/Setup', [
                 subPath = window.location.pathname + '/';
             }
             domain.placeholder     = window.location.origin;
-            domain.value     = window.location.origin;
+            domain.value           = window.location.origin;
             rootPath.placeholder   = ROOT_PATH + '/';
-            rootPath.value   = ROOT_PATH + '/';
+            rootPath.value         = ROOT_PATH + '/';
             urlSubPath.placeholder = subPath;
-            urlSubPath.value = subPath;
+            urlSubPath.value       = subPath;
 
         },
 
@@ -856,7 +855,15 @@ define('bin/js/Setup', [
                     break;
                 case 3:
                     if (!document.getElements('[name="template"]:checked').length) {
-                        document.getElements('[name="template"]')[0].checked = true;
+                        document.getElements('[name="template"]').each(function (Input) {
+                            if (Input.value === "default") {
+                                Input.checked = true;
+                            }
+                        });
+
+                        if (!document.getElements('[name="template"]:checked').length) {
+                            document.getElements('[name="template"]')[0].checked = true;
+                        }
                     }
                     break;
                 case 4: // test only
@@ -1315,7 +1322,7 @@ define('bin/js/Setup', [
         },
 
         /**
-         * parse the form data to an JSON object
+         * parse the form data to a JSON object
          *
          * @param formData
          * @returns object

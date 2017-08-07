@@ -3,11 +3,11 @@
 // setup language
 $language = require_once "languageDetection.php";
 
-//
-//if (!file_exists(dirname(__FILE__) . "/setupdata.json")) {
-//    header('Location: index.php');
-//    exit;
-//}
+
+if (!file_exists(dirname(__FILE__) . "/setupdata.json")) {
+    header('Location: index.php');
+    exit;
+}
 
 ?>
 <!DOCTYPE>
@@ -34,7 +34,6 @@ $language = require_once "languageDetection.php";
     require "vendor/autoload.php";
 
     $Locale = new \QUI\Setup\Locale\Locale($language);
-
 
 
     ?>
@@ -82,27 +81,31 @@ $language = require_once "languageDetection.php";
 
         window.finish = function () {
             var header = document.getElement('.header-text'),
+                loader = document.getElement('.three-bounce'),
                 html   = '';
 
             document.getElement('.install-page-details').destroy();
             document.getElement('.progress-bar').destroy();
+            loader.destroy();
 
             html += '<h1><span class="fa fa-check"></span>Installation ist abgeschlossen</h1>';
             html += '<p>' + LOCALE_TRANSLATIONS['setup.web.webInstall.finishText'] + '</p>';
 
             html += '<div class="button-container">';
-            html += '<a href="' + window.location.origin + '/admin" ' + ' class="button"><button>Admin-Panel</button></a>';
-            html += '<a href="' + window.location.origin + '" class="button"><button>Ihre Seite</button></a>';
+            html += '<a href="' + window.location.origin + '/admin" ' + ' class="button" target="_blank"><button>Admin-Panel</button></a>';
+            html += '<a href="' + window.location.origin + '" class="button" target="_blank"><button>Ihre Seite</button></a>';
 
             header.set('html', html);
         };
 
         window.onError = function (message, code) {
             var header = document.getElement('.header-text'),
+                loader = document.getElement('.three-bounce'),
                 html   = '';
 
             document.getElement('.install-page-details').destroy();
             document.getElement('.progress-bar').destroy();
+            loader.destroy();
 
             html += '<h1><span class="fa fa-times"></span>Fehler bei der Installation</h1>';
             html += '<p>Error code: ' + code + '</p>';
@@ -135,6 +138,12 @@ $language = require_once "languageDetection.php";
                     </span>
                 </div>
             </header>
+        </div>
+
+        <div class="three-bounce selected">
+            <div class="one"></div>
+            <div class="two"></div>
+            <div class="three"></div>
         </div>
 
         <div class="progress-bar">

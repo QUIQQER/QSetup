@@ -8,6 +8,7 @@ ini_set("display_errors", 1);
 
 use QUI\Control\Manager;
 use QUI\Exception;
+use QUI\Output;
 use QUI\Requirements\Requirements;
 use QUI\Requirements\TestResult;
 use QUI\Setup\Database\Database;
@@ -736,6 +737,19 @@ class Installer
                 true
             );
 
+            try {
+                Validator::validatePassword($pw);
+            } catch (\Exception $Exception) {
+                $this->writeLn(
+                    $this->Locale->getStringLang(
+                        $Exception->getMessage(),
+                        \QUI\Setup\Output\Interfaces\Output::LEVEL_ERROR
+                    ),
+                    \QUI\Setup\Output\Interfaces\Output::LEVEL_ERROR
+                );
+                continue;
+            }
+
             $pw2 = $this->prompt(
                 $this->Locale->getStringLang("prompt.password.again", "Please enter your password again :"),
                 false,
@@ -980,11 +994,11 @@ SMILEY;
 
     /** Prompts the user for data.
      *
-     * @param      $text       - The prompt Text
-     * @param bool $default    - The defaultvalue
-     * @param null $color      - The Color to use. Constats defined in QUI\ConsoleSetup\Installer
-     * @param bool $hidden     - Hides the user input. Very usefull for passwords.
-     * @param bool $toLower    - Will conert the input to all lowercases
+     * @param      $text - The prompt Text
+     * @param bool $default - The defaultvalue
+     * @param null $color - The Color to use. Constats defined in QUI\ConsoleSetup\Installer
+     * @param bool $hidden - Hides the user input. Very usefull for passwords.
+     * @param bool $toLower - Will conert the input to all lowercases
      * @param bool $allowEmpty - If this is true it will allow empty strings.
      *
      * @return string - The (modified) input by the user.
@@ -1054,9 +1068,9 @@ SMILEY;
     }
 
     /**
-     * @param string   $msg
+     * @param string $msg
      * @param int|null $level - Loglevel, constants found in QUI\ConsoleSetup\Installer
-     * @param string   $color - Constants are defined in QUI/ConsoleSetup/Installer.php
+     * @param string $color - Constants are defined in QUI/ConsoleSetup/Installer.php
      */
     private function writeLn($msg, $level = null, $color = null)
     {
@@ -1116,7 +1130,7 @@ SMILEY;
     /**
      * This will sourround the given text with ANSI colortags
      *
-     * @param $text  - The Input string
+     * @param $text - The Input string
      * @param $color - The Color to be used. Colors are defined in QUI\ConsoleSetup\Installer
      *
      * @return string - The String with surrounding color tags

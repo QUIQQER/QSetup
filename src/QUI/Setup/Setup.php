@@ -478,7 +478,7 @@ class Setup
      * Sets the userdetails
      *
      * @param string $user - Username
-     * @param string $pw   - Password
+     * @param string $pw - Password
      *
      * @return bool - true on success, false on failure
      */
@@ -926,7 +926,7 @@ class Setup
                 'id'      => $this->data['rootGID'],
                 'name'    => 'Administrator',
                 'active'  => 1,
-                'toolbar' => 'standard.xml'
+                'toolbar' => ''
             )
         );
 
@@ -1101,11 +1101,6 @@ class Setup
             )
         ));
 
-        # Copy default toolbar.xml
-        copy(
-            dirname(dirname(dirname(dirname(__FILE__)))) . "/xml/wysiwyg/toolbars/standard.xml",
-            $etcDir . 'wysiwyg/toolbars/standard.xml'
-        );
 
         # Create /etc/plugins/quiqqer/log.ini.php
         $contentLog = $this->getTemplateContent('log.ini.php');
@@ -1526,7 +1521,10 @@ LOGETC;
             CMS_DIR . "composer.json",
             CMS_DIR . "languageDetection.php",
             CMS_DIR . "web-install.php",
-            CMS_DIR . "iframe.php"
+            CMS_DIR . "iframe.php",
+            CMS_DIR . "INSTALL.stub.md",
+            CMS_DIR . "create.php",
+            CMS_DIR . "compileTranslations.sh"
         );
 
         foreach ($files as $file) {
@@ -1819,7 +1817,7 @@ LOGETC;
     /**
      * Translates an array into a string in .ini format and wites the string into the given file
      *
-     * @param $file       - The ini file that should be written
+     * @param $file - The ini file that should be written
      * @param $directives - The array with the .ini directives
      *
      * @throws SetupException

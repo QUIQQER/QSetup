@@ -486,7 +486,7 @@ msgid "setup.web.content.dbName"
 msgstr "Datenbank Name"
 
 msgid "setup.web.content.dbPrefix"
-msgstr "Tabellen-Prefix"
+msgstr "Tabellen-Prefix (optional)"
 
 msgid "setup.web.content.dbUser"
 msgstr "Datenbank Benutzer"

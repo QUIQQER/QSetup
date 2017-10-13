@@ -362,23 +362,6 @@ $language = require_once "languageDetection.php";
                                     </div>
 
                                     <div class="input-wrapper">
-                                        <!-- Datenbank Name -->
-                                        <label class="animated-label">
-                                            <?php echo $Locale->getStringLang('setup.web.content.dbName') ?>:
-                                        </label>
-                                        <input class="input-text" type="text" name="databaseName" value="" required
-                                               placeholder="<?php echo $Locale->getStringLang('setup.web.content.dbName') ?>"/>
-                                    </div>
-                                    <div class="input-wrapper">
-                                        <!-- Tabellen Prefix -->
-                                        <label class="animated-label">
-                                            <?php echo $Locale->getStringLang('setup.web.content.dbPrefix') ?>:
-                                        </label>
-                                        <input class="input-text" type="text" name="databasePrefix" value="" required
-                                               tabindex="-1"
-                                               placeholder="<?php echo $Locale->getStringLang('setup.web.content.dbPrefix') ?>"/>
-                                    </div>
-                                    <div class="input-wrapper">
                                         <!-- Datenbank Benutzer -->
                                         <label class="animated-label">
                                             <?php echo $Locale->getStringLang('setup.web.content.dbUser') ?>:
@@ -397,6 +380,25 @@ $language = require_once "languageDetection.php";
                                                required
                                                placeholder="<?php echo $Locale->getStringLang('setup.web.content.dbPassword') ?>"/>
                                     </div>
+                                    
+                                    <div class="input-wrapper">
+                                        <!-- Datenbank Name -->
+                                        <label class="animated-label">
+                                            <?php echo $Locale->getStringLang('setup.web.content.dbName') ?>:
+                                        </label>
+                                        <input class="input-text" type="text" name="databaseName" value="" required
+                                               placeholder="<?php echo $Locale->getStringLang('setup.web.content.dbName') ?>"/>
+                                    </div>
+                                    <div class="input-wrapper">
+                                        <!-- Tabellen Prefix -->
+                                        <label class="animated-label">
+                                            <?php echo $Locale->getStringLang('setup.web.content.dbPrefix') ?>:
+                                        </label>
+                                        <input class="input-text" type="text" name="databasePrefix" value="" required
+                                               tabindex="-1"
+                                               placeholder="<?php echo $Locale->getStringLang('setup.web.content.dbPrefix') ?>"/>
+                                    </div>
+                                    
                                 </li>
 
                                 <!-- step 5 -->

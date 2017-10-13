@@ -572,6 +572,19 @@ input[type=checkbox].button-checkbox:checked + label {
     border-color: #e5e5e5;
 }
 
+/***************************/
+/***      Database        **/
+/***************************/
+
+.step-4 .select-wrapper{
+
+    width: 96%;
+    height: 50px;
+    /*margin: 15px auto;*/
+    display: block;
+    clear: both;
+}
+
 /**************************/
 /*** step user password ***/
 /**************************/

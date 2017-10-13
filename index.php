@@ -343,13 +343,22 @@ $language = require_once "languageDetection.php";
                                         </select>
                                     </div>
 
-                                    <div class="input-wrapper">
+                                    <div class="input-wrapper show-label">
                                         <!-- Datenbank Host -->
-                                        <label class="animated-label">
+                                        <label class="animated-label ">
                                             <?php echo $Locale->getStringLang('setup.web.content.dbHost') ?>:
                                         </label>
-                                        <input class="input-text" type="text" name="databaseHost" value="" required
+                                        <input class="input-text" type="text" name="databaseHost" value="localhost" required
                                                placeholder="<?php echo $Locale->getStringLang('setup.web.content.dbHost') ?>"/>
+                                    </div>
+
+                                    <div class="input-wrapper show-label">
+                                        <!-- Datenbank Host -->
+                                        <label class="animated-label">
+                                            <?php echo $Locale->getStringLang('setup.web.content.dbPort') ?>:
+                                        </label>
+                                        <input class="input-text" type="text" name="databasePort" value="3306" required
+                                               placeholder="<?php echo $Locale->getStringLang('setup.web.content.dbPort') ?>"/>
                                     </div>
 
                                     <div class="input-wrapper">

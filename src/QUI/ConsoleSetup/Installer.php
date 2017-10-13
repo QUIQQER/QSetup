@@ -138,60 +138,60 @@ class Installer
              */
 
             # Database
-            if ($this->Setup->isStepCompleted(Setup::STEP_DATA_DATABASE)) {
-                $this->writeLn($this->Locale->getStringLang(
-                    "setup.message.restoration.database.password.prompt",
-                    "Please enter your database password again:"
-                ));
-
-                do {
-                    $continue = false;
-
-                    $dbPassword = $this->prompt(
-                        $this->Locale->getStringLang(
-                            "setup.prompt.restoration.database.password",
-                            "Database password:"
-                        ),
-                        false,
-                        null,
-                        true,
-                        false,
-                        false
-                    );
-
-                    # Validate password
-                    try {
-                        Validator::validateDatabase(
-                            $data['data']['database']['driver'],
-                            $data['data']['database']['host'],
-                            $data['data']['database']['user'],
-                            $dbPassword
-                        );
-                    } catch (\Exception $Exception) {
-                        $this->writeLn(
-                            $this->Locale->getStringLang(
-                                "setup.message.restoration.database.password.invalid",
-                                "The given password seems to be incorrect. Try again!"
-                            ),
-                            self::LEVEL_ERROR
-                        );
-                        $continue = true;
-                    }
-                } while ($continue);
-
-
-                $this->clearDatabaseIfNotEmpty(
-                    $data['data']['database']['driver'],
-                    $data['data']['database']['host'],
-                    $data['data']['database']['user'],
-                    $dbPassword,
-                    $data['data']['database']['name'],
-                    $data['data']['database']['prefix'],
-                    $data['data']['database']['port']
-                );
-
-                $this->Setup->restoreDatabasePassword($dbPassword);
-            }
+//            if ($this->Setup->isStepCompleted(Setup::STEP_DATA_DATABASE)) {
+//                $this->writeLn($this->Locale->getStringLang(
+//                    "setup.message.restoration.database.password.prompt",
+//                    "Please enter your database password again:"
+//                ));
+//
+//                do {
+//                    $continue = false;
+//
+//                    $dbPassword = $this->prompt(
+//                        $this->Locale->getStringLang(
+//                            "setup.prompt.restoration.database.password",
+//                            "Database password:"
+//                        ),
+//                        false,
+//                        null,
+//                        true,
+//                        false,
+//                        false
+//                    );
+//
+//                    # Validate password
+//                    try {
+//                        Validator::validateDatabase(
+//                            $data['data']['database']['driver'],
+//                            $data['data']['database']['host'],
+//                            $data['data']['database']['user'],
+//                            $dbPassword
+//                        );
+//                    } catch (\Exception $Exception) {
+//                        $this->writeLn(
+//                            $this->Locale->getStringLang(
+//                                "setup.message.restoration.database.password.invalid",
+//                                "The given password seems to be incorrect. Try again!"
+//                            ),
+//                            self::LEVEL_ERROR
+//                        );
+//                        $continue = true;
+//                    }
+//                } while ($continue);
+//
+//
+//                $this->clearDatabaseIfNotEmpty(
+//                    $data['data']['database']['driver'],
+//                    $data['data']['database']['host'],
+//                    $data['data']['database']['user'],
+//                    $dbPassword,
+//                    $data['data']['database']['name'],
+//                    $data['data']['database']['prefix'],
+//                    $data['data']['database']['port']
+//                );
+//
+//                $this->Setup->restoreDatabasePassword($dbPassword);
+//            }
 
             # User
             if ($this->Setup->isStepCompleted(Setup::STEP_DATA_USER)) {
@@ -737,18 +737,18 @@ class Installer
                 true
             );
 
-            try {
-                Validator::validatePassword($pw);
-            } catch (\Exception $Exception) {
-                $this->writeLn(
-                    $this->Locale->getStringLang(
-                        $Exception->getMessage(),
-                        \QUI\Setup\Output\Interfaces\Output::LEVEL_ERROR
-                    ),
-                    \QUI\Setup\Output\Interfaces\Output::LEVEL_ERROR
-                );
-                continue;
-            }
+//            try {
+//                Validator::validatePassword($pw);
+//            } catch (\Exception $Exception) {
+//                $this->writeLn(
+//                    $this->Locale->getStringLang(
+//                        $Exception->getMessage(),
+//                        \QUI\Setup\Output\Interfaces\Output::LEVEL_ERROR
+//                    ),
+//                    \QUI\Setup\Output\Interfaces\Output::LEVEL_ERROR
+//                );
+//                continue;
+//            }
 
             $pw2 = $this->prompt(
                 $this->Locale->getStringLang("prompt.password.again", "Please enter your password again :"),
@@ -772,7 +772,7 @@ class Installer
 
 
         try {
-            $this->Setup->setUser($user, $pw);
+            $this->Setup->setUser($user, $pw, true);
         } catch (SetupException $Exception) {
             $this->writeLn(
                 $this->Locale->getStringLang($Exception->getMessage()),

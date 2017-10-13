@@ -479,15 +479,18 @@ class Setup
      *
      * @param string $user - Username
      * @param string $pw - Password
+     * @param bool $ignorePasswordConstraints - (optional) If set to true, the Setup won't check if the password fulfills the contraints like length and special chars
      *
      * @return bool - true on success, false on failure
      */
-    public function setUser($user, $pw)
+    public function setUser($user, $pw, $ignorePasswordConstraints = false)
     {
         try {
             Validator::validateUsername($user);
 
-            Validator::validatePassword($pw);
+            if (!$ignorePasswordConstraints) {
+                Validator::validatePassword($pw);
+            }
         } catch (SetupException $Exception) {
             $this->Output->writeLnLang($Exception->getMessage(), Output::LEVEL_ERROR);
             exit;
@@ -657,9 +660,6 @@ class Setup
         }
 
         $storedData = $this->data;
-        if (isset($storedData['database']['pw'])) {
-            $storedData['database']['pw'] = "";
-        }
 
         if (isset($storedData['user']['pw'])) {
             $storedData['user']['pw'] = "";

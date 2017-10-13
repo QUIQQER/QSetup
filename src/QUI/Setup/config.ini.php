@@ -10,3 +10,6 @@ pw_must_have_numbers=1
 
 [defaults]
 username=admin
+
+[technology]
+database.drivers= "mysql"

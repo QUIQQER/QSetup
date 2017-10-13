@@ -3,11 +3,13 @@
 namespace QUI\Setup\Database;
 
 use QUI\Database\DB;
+use QUI\Setup\Setup;
 use QUI\Setup\SetupException;
 
 /**
  * Class Database
  * Database Wrapper for QUIQQER-Setup
+ *
  * @package QUI\Setup\Database
  */
 class Database
@@ -26,6 +28,7 @@ class Database
 
     /**
      * Database constructor.
+     *
      * @param string $driver -
      * @param string $host
      * @param string $user
@@ -59,11 +62,25 @@ class Database
 
     /**
      * Returns an array of availalbe Databasedrivers.
+     *
      * @return string[]
      */
     public static function getAvailableDrivers()
     {
-        return \PDO::getAvailableDrivers();
+        $result = array();
+
+        $allowedDrivers = Setup::getConfig()['technology']['database.drivers'];
+        $allowedDrivers = explode(",", $allowedDrivers);
+        $systemDrivers = \PDO::getAvailableDrivers();
+
+        foreach ($systemDrivers as $systemDriver) {
+            if (in_array($systemDriver, $allowedDrivers)) {
+                $result[] = $systemDriver;
+            }
+        }
+        
+        
+        return $result;
     }
 
     /**
@@ -75,6 +92,7 @@ class Database
      * @param $pw
      * @param $db
      * @param $port
+     *
      * @return bool - returns true if database exists, retuns false if database could not be found
      * @throws SetupException
      */
@@ -122,6 +140,7 @@ class Database
 
     /**
      * Checks if the given database is empty.
+     *
      * @param $driver
      * @param $host
      * @param $user
@@ -129,6 +148,7 @@ class Database
      * @param $db
      * @param $prefix
      * @param string $port
+     *
      * @return bool
      * @throws SetupException
      */
@@ -211,6 +231,7 @@ class Database
      * @param string $user
      * @param string $pw
      * @param string $db
+     *
      * @return bool - true on success
      * @throws SetupException
      */
@@ -245,12 +266,14 @@ class Database
 
     /**
      * Checks if the user can create and drop Tables in the given database
+     *
      * @param $driver
      * @param $host
      * @param $port
      * @param $user
      * @param $pw
      * @param $db
+     *
      * @return bool - Returns true on success and false if permissions are missing
      */
     public static function checkDatabaseWriteAccess($driver, $host, $user, $pw, $db, $port = "")
@@ -413,6 +436,7 @@ class Database
 
     /**
      * Returns the current PDO object, that is used
+     *
      * @return \PDO
      */
     public function getPDO()
@@ -422,6 +446,7 @@ class Database
 
     /**
      * Gets all tables in the current database
+     *
      * @return array - Array of tablenames
      */
     public function getTables()
@@ -438,6 +463,7 @@ class Database
 
     /**
      * Comapres the current tablenames with the tablenames in the given array and returns an array with table names that have been added in comparison to the given array.
+     *
      * @param array $savedTables
      *
      * @return array
@@ -459,15 +485,18 @@ class Database
 
     /**
      * Creates a valid connection string for PDO
+     *
      * @param string $driver
      * @param string $host
      * @param string string $db
      * @param string $port
+     *
      * @return string - Connectionstring for use with PDO
      */
 
     /**
      * Selects a database that should be used for all operations
+     *
      * @param $dbname - The db that should be used for future queries
      */
     public function useDatabase($dbname)
@@ -484,6 +513,7 @@ class Database
 
     /**
      * @param $dbName - The name of the new database
+     *
      * @return bool - returns true on success
      * @throws SetupException
      */
@@ -512,7 +542,9 @@ class Database
 
     /**
      * Imports the Tables into the current database
+     *
      * @param $tables
+     *
      * @throws SetupException
      */
     public function importTables($tables)
@@ -551,9 +583,11 @@ class Database
 
     /**
      * Executes a select query.
+     *
      * @param $table - The queried table
      * @param array $columns - The columns that should be used. Empty array results in "SELECT *"
      * @param int $fetchStyle - The used fetch style
+     *
      * @throws SetupException
      */
     public function select($table, $columns = array(), $fetchStyle = \PDO::FETCH_ASSOC)
@@ -575,8 +609,10 @@ class Database
 
     /**
      * Inserts data into the current database
+     *
      * @param $table - The table that will be modified
      * @param $data - The data that should be inserted : array('column'=>'value','column2'=>'value2')
+     *
      * @throws SetupException
      */
     public function insert($table, $data)
@@ -591,6 +627,7 @@ class Database
      * Drops the given table
      *
      * @param $tableName
+     *
      * @throws \Exception
      */
     public function dropTable($tableName)

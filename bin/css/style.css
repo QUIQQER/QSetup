@@ -580,7 +580,6 @@ input[type=checkbox].button-checkbox:checked + label {
 
     width: 96%;
     height: 50px;
-    /*margin: 15px auto;*/
     display: block;
     clear: both;
 }

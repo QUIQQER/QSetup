@@ -530,6 +530,7 @@ define('bin/js/Setup', [
                 var Form = QUIFormUtils.getFormData(this.FormSetup);
 
                 if (Form.databaseDriver == '' ||
+                    Form.databasePort == '' ||
                     Form.databaseHost == '' ||
                     Form.databaseUser == '' ||
                     Form.databasePassword == '' ||
@@ -928,7 +929,7 @@ define('bin/js/Setup', [
                     data     : {
                         driver  : Form.databaseDriver,
                         host    : Form.databaseHost,
-                        port    : 3306,
+                        port    : Form.databaseHost,
                         user    : Form.databaseUser,
                         password: Form.databasePassword,
                         name    : Form.databaseName,
@@ -1004,7 +1005,7 @@ define('bin/js/Setup', [
         },
 
         /**
-         * opens the popup in step template
+         * open the popup in step template
          *
          * @param Win
          * @param preset - the template (preset) for witch the window pops up
@@ -1157,7 +1158,7 @@ define('bin/js/Setup', [
 
                 // project name
                 if (!formData['project-title'] || formData['project-title'] == '') {
-                    reject('input[name="project-title"]');
+                    reject("Es fehlt: formData['project-title']");
                     return;
                 }
 
@@ -1238,12 +1239,10 @@ define('bin/js/Setup', [
          * check password (equal? not to short?)
          */
         checkPassword: function () {
-            // console.log(1);
-            // console.log(this.pass2Filled);
+
             if (!this.pass2Filled) {
                 return;
             }
-            console.log(2);
 
             var labels = document.getElements('.animated-label-error');
 
@@ -1338,7 +1337,8 @@ define('bin/js/Setup', [
                     user  : formData['databaseUser'],
                     pw    : formData['databasePassword'],
                     name  : formData['databaseName'],
-                    prefix: formData['databasePrefix']
+                    prefix: formData['databasePrefix'],
+                    port  : formData['databasePort']
                 },
                 user    : {
                     name: formData['userName'],

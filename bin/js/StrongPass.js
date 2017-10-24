@@ -291,16 +291,10 @@
                 len     = pass.length,
                 diff    = len - minChar;
 
-            console.log("minChar => " + minChar);
-            console.log("len => " + len);
-            console.log("dif -> " + diff);
-
             (diff < 0 && (score -= 100)) ||
             (diff >= 5 && (score += 15)) ||
             (diff >= 3 && (score += 8)) ||
             (diff === 2 && (score += 6));
-
-            console.warn("score ->" + score)
 
             Array.each(this.checks, function (check) {
                 pass.match(check.re) && (score += check.score);

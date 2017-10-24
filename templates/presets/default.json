@@ -1,6 +1,6 @@
 {
     "project": {
-        "name": "Mainproject",
+        "name": "",
         "languages": {
             "de": "true",
             "en": "false"
@@ -10,7 +10,7 @@
         "name": "quiqqer\/template-businesspro",
         "version": "dev-master",
         "start_layout": "layout\/startPage",
-        "default_layout": "layout\/startPage"
+        "default_layout": "layout\/noSidebar"
     },
     "meta": {
         "name": {

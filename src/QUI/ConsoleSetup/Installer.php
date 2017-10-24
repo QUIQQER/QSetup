@@ -133,66 +133,10 @@ class Installer
             $this->Setup->rollBack();
 
             /*
-             * We did not store passwords.
+             * We did not store the users passwords.
              * Because of that the user has to re-enter all passwords.
              */
-
-            # Database
-//            if ($this->Setup->isStepCompleted(Setup::STEP_DATA_DATABASE)) {
-//                $this->writeLn($this->Locale->getStringLang(
-//                    "setup.message.restoration.database.password.prompt",
-//                    "Please enter your database password again:"
-//                ));
-//
-//                do {
-//                    $continue = false;
-//
-//                    $dbPassword = $this->prompt(
-//                        $this->Locale->getStringLang(
-//                            "setup.prompt.restoration.database.password",
-//                            "Database password:"
-//                        ),
-//                        false,
-//                        null,
-//                        true,
-//                        false,
-//                        false
-//                    );
-//
-//                    # Validate password
-//                    try {
-//                        Validator::validateDatabase(
-//                            $data['data']['database']['driver'],
-//                            $data['data']['database']['host'],
-//                            $data['data']['database']['user'],
-//                            $dbPassword
-//                        );
-//                    } catch (\Exception $Exception) {
-//                        $this->writeLn(
-//                            $this->Locale->getStringLang(
-//                                "setup.message.restoration.database.password.invalid",
-//                                "The given password seems to be incorrect. Try again!"
-//                            ),
-//                            self::LEVEL_ERROR
-//                        );
-//                        $continue = true;
-//                    }
-//                } while ($continue);
-//
-//
-//                $this->clearDatabaseIfNotEmpty(
-//                    $data['data']['database']['driver'],
-//                    $data['data']['database']['host'],
-//                    $data['data']['database']['user'],
-//                    $dbPassword,
-//                    $data['data']['database']['name'],
-//                    $data['data']['database']['prefix'],
-//                    $data['data']['database']['port']
-//                );
-//
-//                $this->Setup->restoreDatabasePassword($dbPassword);
-//            }
-
+            
             # User
             if ($this->Setup->isStepCompleted(Setup::STEP_DATA_USER)) {
                 $this->writeLn($this->Locale->getStringLang(
@@ -458,28 +402,14 @@ class Installer
         #######################
         $presetData = $presets[$preset];
 
-        $customize = $this->prompt(
-            $this->Locale->getStringLang("prompt.preset.customize", "Do you want to customize the preset?"),
-            "n",
-            null,
-            false,
-            true
-        );
-
-        if ($customize != "y") {
-            # Do not customize preset
-            $this->Setup->storeSetupState();
-
-            return;
-        }
-
-        ## Projectname  ##########
         $presetDataProjectName = isset($presetData['project']['name']) ? $presetData['project']['name'] : false;
         $projectName           = $this->prompt(
             $this->Locale->getStringLang("prompt.preset.customize.projectname", "Projectname: "),
             $presetDataProjectName
         );
 
+        
+        // Projectname
         try {
             Validator::validateProjectName($projectName);
         } catch (\Exception $Exception) {
@@ -516,7 +446,8 @@ class Installer
                 $projectName = Utils::sanitizeProjectName($projectName);
             }
         }
-
+        
+        
         ## Languages #############
         $presetDataLanguages = isset($presetData['project']['languages']) ? $presetData['project']['languages'] : false;
 

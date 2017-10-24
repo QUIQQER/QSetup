@@ -486,7 +486,7 @@ msgid "setup.web.content.dbName"
 msgstr "Database name"
 
 msgid "setup.web.content.dbPrefix"
-msgstr "Database prefix"
+msgstr "Database prefix (optional)"
 
 msgid "setup.web.content.dbUser"
 msgstr "Database user"
@@ -542,7 +542,7 @@ msgstr "Please fill all fields."
 
 
 msgid "setup.web.content.license.text"
-msgstr "<h1>QUICKER license agreement</h1><p>All license information on QUIQQER can be found in the installation files or at <a href=\"https://www.quiqqer.com/License=\" target=\"_blank\">https://www.quiqqer.com/Lizenz</a></p><p> Please read the license agreement carefully and agree to install it.</p><p class=\"smallFont\">By installing extensions or templates, license agreements can be added by third parties. Please inform yourself about possible licensing conditions and limitations due to extensions before the installation.</p>"
+msgstr "<h1>QUIQQER license agreement</h1><p>All license information on QUIQQER can be found in the installation files or at <a href=\"https://www.quiqqer.com/License=\" target=\"_blank\">https://www.quiqqer.com/Lizenz</a></p><p> Please read the license agreement carefully and agree to install it.</p><p class=\"smallFont\">By installing extensions or templates, license agreements can be added by third parties. Please inform yourself about possible licensing conditions and limitations due to extensions before the installation.</p>"
 
 msgid "setup.web.content.license.checkbox"
 msgstr "Yes, I have read the license terms and agree to them"
@@ -556,6 +556,9 @@ msgstr "back"
 msgid "setup.web.content.button.install"
 msgstr "install"
 
+
+msgid "setup.web.popup.title"
+msgstr "Template settings"
 
 msgid "setup.web.popup.project-title"
 msgstr "Project name"

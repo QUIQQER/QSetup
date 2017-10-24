@@ -28,7 +28,7 @@ const SETUP_REPO   = 'git@dev.quiqqer.com:quiqqer/qsetup.git';
 const SETUP_BRANCH = 'master';
 
 /** @var array $exclude - Patterns which should be excluded in the zip */
-$exclude = array('/.git/*', 'create.php', 'tests/*', 'quiqqer.zip', 'quiqqer.tar');
+$exclude = array('/.git/*', 'create.php', 'tests/*', 'quiqqer.zip', 'quiqqer.tar', 'quiqqer.tgz', 'quiqqer.tz2');
 
 // ****************************************************************
 // *********************   EXECUTE  *******************************
@@ -86,10 +86,15 @@ createReadme();
 # Create the zip file
 $zipLocation = createZip($workingDir . '/setup/');
 $tarLocation = createTar($workingDir . '/setup/');
+$tgzLocation = createTarGz($workingDir . '/setup/');
+$tz2Location = createTarBz2($workingDir . '/setup/');
 
 # Create a md5 file
 $zipChecksumFilename = createChecksums($zipLocation);
 $tarChecksumFilename = createChecksums($tarLocation);
+$tgzChecksumFilename = createChecksums($tgzLocation);
+$tz2ChecksumFilename = createChecksums($tz2Location);
+
 
 # Upload zip file to updateserver
 $upload = prompt("Do you want to upload the File to the updateserver? (y/n)", false);
@@ -109,6 +114,24 @@ if ($upload == 'y') {
         # Upload file with checksum for quiqqer.zip
         if (file_exists($tarChecksumFilename)) {
             executeShellCommand('scp ' . $tarChecksumFilename . ' root@qui1.pcsg-server.de:/var/www/vhosts/update.quiqqer.com/' . $tarChecksumFilename);
+        }
+    }
+
+    # Upload tgz file
+    if (file_exists($tgzLocation)) {
+        executeShellCommand('scp ' . $tgzLocation . ' root@qui1.pcsg-server.de:/var/www/vhosts/update.quiqqer.com/quiqqer.tgz');
+        # Upload file with checksum for quiqqer.zip
+        if (file_exists($tgzChecksumFilename)) {
+            executeShellCommand('scp ' . $tgzChecksumFilename . ' root@qui1.pcsg-server.de:/var/www/vhosts/update.quiqqer.com/' . $tgzChecksumFilename);
+        }
+    }
+
+    # Upload tz2 file
+    if (file_exists($tz2Location)) {
+        executeShellCommand('scp ' . $tz2Location . ' root@qui1.pcsg-server.de:/var/www/vhosts/update.quiqqer.com/quiqqer.tz2');
+        # Upload file with checksum for quiqqer.zip
+        if (file_exists($tz2ChecksumFilename)) {
+            executeShellCommand('scp ' . $tz2ChecksumFilename . ' root@qui1.pcsg-server.de:/var/www/vhosts/update.quiqqer.com/' . $tz2ChecksumFilename);
         }
     }
 }
@@ -192,7 +215,67 @@ function createTar($targetDir)
     chdir($targetDir);
     $archiveName = 'quiqqer.tar';
 
-    $tarCommand = "tar -cvf {$archiveName} ./* ";
+    $tarCommand = "tar -cf {$archiveName} ./* ";
+    foreach ($exclude as $excl) {
+        $tarCommand .= " --exclude='" . $excl . "'";
+    }
+    executeShellCommand($tarCommand);
+
+    if (!file_exists($archiveName)) {
+        exitWithError("Could not create tar file!");
+    }
+
+    chdir($cwd);
+
+    return $archiveName;
+}
+
+/**
+ * Creates a tar file of the setup
+ *
+ * @param $targetDir
+ *
+ * @return string - The tar archives name
+ */
+function createTarGz($targetDir)
+{
+    global $exclude;
+
+    $cwd = getcwd();
+    chdir($targetDir);
+    $archiveName = 'quiqqer.tgz';
+
+    $tarCommand = "tar -czf {$archiveName} ./* ";
+    foreach ($exclude as $excl) {
+        $tarCommand .= " --exclude='" . $excl . "'";
+    }
+    executeShellCommand($tarCommand);
+
+    if (!file_exists($archiveName)) {
+        exitWithError("Could not create tar file!");
+    }
+
+    chdir($cwd);
+
+    return $archiveName;
+}
+
+/**
+ * Creates a tar file of the setup
+ *
+ * @param $targetDir
+ *
+ * @return string - The tar archives name
+ */
+function createTarBz2($targetDir)
+{
+    global $exclude;
+
+    $cwd = getcwd();
+    chdir($targetDir);
+    $archiveName = 'quiqqer.tz2';
+
+    $tarCommand = "tar -cjf {$archiveName} ./* ";
     foreach ($exclude as $excl) {
         $tarCommand .= " --exclude='" . $excl . "'";
     }
@@ -328,9 +411,9 @@ function exitWithError($msg)
 }
 
 /**
- * @param string   $msg
+ * @param string $msg
  * @param int|null $level - Loglevel, constants found in QUI\ConsoleSetup\Installer
- * @param string   $color - Constants are defined in QUI/ConsoleSetup/Installer.php
+ * @param string $color - Constants are defined in QUI/ConsoleSetup/Installer.php
  */
 function writeLn($msg, $level = LEVEL_INFO, $color = null)
 {
@@ -375,11 +458,11 @@ function writeLn($msg, $level = LEVEL_INFO, $color = null)
 
 /** Prompts the user for data.
  *
- * @param      $text       - The prompt Text
- * @param bool $default    - The defaultvalue
- * @param null $color      - The Color to use. Constats defined in QUI\ConsoleSetup\Installer
- * @param bool $hidden     - Hides the user input. Very usefull for passwords.
- * @param bool $toLower    - Will conert the input to all lowercases
+ * @param      $text - The prompt Text
+ * @param bool $default - The defaultvalue
+ * @param null $color - The Color to use. Constats defined in QUI\ConsoleSetup\Installer
+ * @param bool $hidden - Hides the user input. Very usefull for passwords.
+ * @param bool $toLower - Will conert the input to all lowercases
  * @param bool $allowEmpty - If this is true it will allow empty strings.
  *
  * @return string - The (modified) input by the user.
@@ -446,7 +529,7 @@ function prompt(
 /**
  * This will sourround the given text with ANSI colortags
  *
- * @param $text  - The Input string
+ * @param $text - The Input string
  * @param $color - The Color to be used. Colors are defined in QUI\ConsoleSetup\Installer
  *
  * @return string - The String with surrounding color tags

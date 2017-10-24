@@ -863,7 +863,7 @@ define('bin/js/Setup', [
                     data     : {
                         driver  : Form.databaseDriver,
                         host    : Form.databaseHost,
-                        port    : Form.databaseHost,
+                        port    : Form.databasePort,
                         user    : Form.databaseUser,
                         password: Form.databasePassword,
                         name    : Form.databaseName,

@@ -1571,8 +1571,6 @@ LOGETC;
 
         foreach ($dirs as $dir) {
             if (is_dir(CMS_DIR . $dir)) {
-                $this->Output->writeLn("Renaming '" . CMS_DIR . $dir . "' to '" . VAR_DIR . 'tmp/' . $dir . "' ");
-
                 QUI\Utils\System\File::dircopy(
                     CMS_DIR . $dir,
                     VAR_DIR . 'tmp/' . $dir
@@ -1594,8 +1592,6 @@ LOGETC;
         $this->Step = self::STEP_SETUP_DELETE;
 
         $this->publishSetupState();
-
-        $this->Output->writeLn("Remove done!");
     }
 
 

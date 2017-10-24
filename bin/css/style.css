@@ -497,6 +497,10 @@ input[type=checkbox].button-checkbox:checked + label {
     box-shadow: 0 3px 10px -4px #999;
 }
 
+.template-settings button[name="cancel"] {
+    display: none !important;
+}
+
 /**************************/
 /******** Vorlage *********/
 /**************************/

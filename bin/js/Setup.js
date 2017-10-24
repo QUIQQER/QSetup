@@ -41,11 +41,14 @@ define('bin/js/Setup', [
             'countInputs',
             'checkProgress',
             'changeProgressBar',
+            'setDefaultValues',
             'checkDatabase',
             'checkUserAndPassword',
             'disableAllTab',
             'activeTabForThisStep',
-            'openPopup',
+            'createTemplatePopup',
+            'openTemplatePopup',
+            'checkProjectName',
             'getPreset',
             'setPresetDataLang',
             'getAvailableTemplates',
@@ -101,7 +104,7 @@ define('bin/js/Setup', [
 
         /**
          * switch between install and error div,
-         * if the checkRequirements return an array with failed test names
+         * if the checkRequirements returns an array with failed test names
          */
         systemCheck: function () {
             var self = this;
@@ -275,92 +278,7 @@ define('bin/js/Setup', [
             // step 3 template settings button
             document.getElements('.step-3-settings-button').addEvent('click', function (event) {
                 var Target = event.target;
-
-
-                new QUIConfirm({
-                    maxWidth     : 460,
-                    maxHeight    : 540,
-                    titleicon    : false,
-                    icon         : false,
-                    title        : Target.getAttribute('data-attr-name'),
-                    preset       : Target.getAttribute('data-attr-preset'),
-                    autoclose    : false,
-                    cancel_button: {
-                        text     : LOCALE_TRANSLATIONS['setup.web.popup.cancel-button'],
-                        textimage: 'icon-remove fa fa-remove'
-                    },
-                    ok_button    : {
-                        text     : LOCALE_TRANSLATIONS['setup.web.popup.save-button'],
-                        textimage: 'icon-ok fa fa-check'
-                    },
-                    events       : {
-                        onOpen : function (Win) {
-                            var preset = Target.getAttribute('data-attr-preset');
-                            self.openPopup(Win, preset);
-                        },
-                        onClose: function () {
-                            // needed because of chrome render bug
-                            document.body.setStyle('transform', 'translateZ(0)');
-                            (function () {
-                                document.body.setStyle('transform', null);
-                            }).delay(100);
-                        },
-
-                        onSubmit: function (Win) {
-                            var Content     = Win.getContent(),
-                                Form        = Content.getElement('form'),
-                                data        = QUIFormUtils.getFormData(Form),
-                                presetName  = data['preset-name'],
-                                de          = '',
-                                en          = '',
-                                lang        = [],
-                                defaultLang = QUIFormUtils.getFormData(self.FormSetup)['project-language'];
-
-                            var presetData = {
-                                "project" : {
-                                    "name"     : data['project-title'],
-                                    "languages": {
-                                        "de": data['project-lang-de'],
-                                        "en": data['project-lang-en']
-                                    }
-                                },
-                                "template": {
-                                    "name"   : data['project-template'],
-                                    "version": "dev-master"
-                                }
-                            };
-
-                            self.checkPopupForm(Form, data, defaultLang).then(function () {
-                                // take form inputs again
-                                data = QUIFormUtils.getFormData(Form);
-
-                                // new preset data
-                                presetData = {
-                                    "project" : {
-                                        "name"     : data['project-title'],
-                                        "languages": {
-                                            "de": data['project-lang-de'],
-                                            "en": data['project-lang-en']
-                                        }
-                                    },
-                                    "template": {
-                                        "name"   : data['project-template'],
-                                        "version": "dev-master"
-                                    }
-                                };
-
-                                return self.validatePresetData(presetData);
-                            }).then(function () {
-                                return self.updatePreset(presetData, presetName)
-                            }).then(function () {
-                                Win.close();
-                            }).catch(function (error) {
-                                Form.getElement(error).setStyle('borderColor', 'red');
-                            });
-
-                        }
-                    }
-                }).open();
+                self.createTemplatePopup(Target);
             });
 
             // change icon in input field (user step)
@@ -524,6 +442,17 @@ define('bin/js/Setup', [
             this.NextStep.blur();
             var self = this;
 
+            // exist the project name?
+            if (this.step == 3) {
+                this.checkProjectName().then(function () {
+                    self.nextExecute();
+                }).catch(function (target) {
+                    self.createTemplatePopup(target);
+                });
+
+                return;
+            }
+
             // data base check
             if (this.step == 4) {
 
@@ -653,6 +582,7 @@ define('bin/js/Setup', [
             }
 
             this.checkProgress();
+            this.setDefaultValues();
         },
 
         /**
@@ -703,6 +633,7 @@ define('bin/js/Setup', [
             }
 
             this.checkProgress();
+            this.setDefaultValues();
         },
 
         /**
@@ -846,34 +777,6 @@ define('bin/js/Setup', [
 
             // animate the progress bar
             this.changeProgressBar(progress);
-
-            // default values for some fields
-            switch (this.step) {
-                case 2:
-                    if (!document.getElements('[name="version"]:checked').length) {
-                        document.getElements('[name="version"]')[0].checked = true;
-                    }
-                    break;
-                case 3:
-                    if (!document.getElements('[name="template"]:checked').length) {
-                        document.getElements('[name="template"]').each(function (Input) {
-                            if (Input.value === "default") {
-                                Input.checked = true;
-                            }
-                        });
-
-                        if (!document.getElements('[name="template"]:checked').length) {
-                            document.getElements('[name="template"]')[0].checked = true;
-                        }
-                    }
-                    break;
-                case 4: // test only
-                    // this.fillTestData(4);
-                    break;
-                case 5: // test only
-                    // this.fillTestData(5);
-                    break;
-            }
         },
 
         /**
@@ -909,8 +812,39 @@ define('bin/js/Setup', [
                 });
                 this.textColorGrey = true;
             }
-        }
-        ,
+        },
+
+        /**
+         * Set default values for some fields
+         */
+        setDefaultValues: function () {
+            switch (this.step) {
+                case 2:
+                    if (!document.getElements('[name="version"]:checked').length) {
+                        document.getElements('[name="version"]')[0].checked = true;
+                    }
+                    break;
+                case 3:
+                    if (!document.getElements('[name="template"]:checked').length) {
+                        document.getElements('[name="template"]').each(function (Input) {
+                            if (Input.value === "default") {
+                                Input.checked = true;
+                            }
+                        });
+
+                        if (!document.getElements('[name="template"]:checked').length) {
+                            document.getElements('[name="template"]')[0].checked = true;
+                        }
+                    }
+                    break;
+                case 4: // test only
+                    // this.fillTestData(4);
+                    break;
+                case 5: // test only
+                    // this.fillTestData(5);
+                    break;
+            }
+        },
 
         /**
          * Check the data base credentials
@@ -1005,12 +939,109 @@ define('bin/js/Setup', [
         },
 
         /**
+         * Create template popup
+         *
+         * @param Target
+         */
+        createTemplatePopup: function (Target) {
+
+            var self = this;
+            new QUIConfirm({
+                class             : 'template-settings',
+                maxWidth          : 460,
+                maxHeight         : 540,
+                titleicon         : false,
+                icon              : false,
+                // title             : Target.getAttribute('data-attr-name'),
+                title             : LOCALE_TRANSLATIONS['setup.web.popup.title'],
+                preset            : Target.getAttribute('data-attr-preset'),
+                autoclose         : false,
+                ok_button         : {
+                    text     : LOCALE_TRANSLATIONS['setup.web.popup.save-button'],
+                    textimage: 'icon-ok fa fa-check'
+                },
+                cancel_button     : false,
+                backgroundClosable: false,
+                closeButt         : false,
+                titleCloseButton  : false,
+                events            : {
+                    onOpen : function (Win) {
+                        var preset = Target.getAttribute('data-attr-preset');
+                        self.openTemplatePopup(Win, preset);
+                    },
+                    onClose: function () {
+                        // needed because of chrome render bug
+                        document.body.setStyle('transform', 'translateZ(0)');
+                        (function () {
+                            document.body.setStyle('transform', null);
+                        }).delay(100);
+                    },
+
+                    onSubmit: function (Win) {
+                        var Content     = Win.getContent(),
+                            Form        = Content.getElement('form'),
+                            data        = QUIFormUtils.getFormData(Form),
+                            presetName  = data['preset-name'],
+                            de          = '',
+                            en          = '',
+                            lang        = [],
+                            defaultLang = QUIFormUtils.getFormData(self.FormSetup)['project-language'];
+                        var presetData  = {
+                            "project" : {
+                                "name"     : data['project-title'],
+                                "languages": {
+                                    "de": data['project-lang-de'],
+                                    "en": data['project-lang-en']
+                                }
+                            },
+                            "template": {
+                                "name"   : data['project-template'],
+                                "version": "dev-master"
+                            }
+                        };
+
+                        self.checkPopupForm(Form, data, defaultLang).then(function () {
+                            // take form inputs again
+                            data = QUIFormUtils.getFormData(Form);
+
+                            // new preset data
+                            presetData = {
+                                "project" : {
+                                    "name"     : data['project-title'],
+                                    "languages": {
+                                        "de": data['project-lang-de'],
+                                        "en": data['project-lang-en']
+                                    }
+                                },
+                                "template": {
+                                    "name"   : data['project-template'],
+                                    "version": "dev-master"
+                                }
+                            };
+
+                            console.log('teraz validate preset')
+                            return self.validatePresetData(presetData);
+                        }).then(function () {
+                            return self.updatePreset(presetData, presetName)
+                        }).then(function () {
+                            Win.close();
+                        }).catch(function (error) {
+                            console.log(error)
+                            Form.getElement(error).setStyle('borderColor', 'red');
+                        });
+
+                    }
+                }
+            }).open();
+        },
+
+        /**
          * open the popup in step template
          *
          * @param Win
          * @param preset - the template (preset) for witch the window pops up
          */
-        openPopup: function (Win, preset) {
+        openTemplatePopup: function (Win, preset) {
             var Content    = Win.getContent(),
                 self       = this,
                 presetName = preset;
@@ -1046,12 +1077,50 @@ define('bin/js/Setup', [
             });
         },
 
+        checkProjectName: function () {
+
+            var self = this;
+
+            return new Promise(function (resolve, reject) {
+                // open popup - the user should give the project name
+                var radios = document.getElements('input[name="template"]'),
+                    parent = null,
+                    target = null,
+                    preset = null;
+
+                radios.each(function (radio) {
+                    if (radio.checked) {
+                        parent = radio.getParent();
+                        preset = radio.value;
+                    }
+                });
+
+                if (!parent) {
+                    parent = radios[0].getParent();
+                    preset = radios[0].value;
+                }
+
+
+                self.getPreset(preset).then(function (presetData) {
+                    if (presetData['project']['name']) {
+                        resolve(true);
+                        return;
+                    }
+
+                    target = parent.getElement('.step-3-settings-button');
+                    reject(target);
+                }).catch(function () {
+                    console.warn("Wrong preset name. Preset with the name '" + preset + "' couldn't be found");
+                })
+            });
+        },
+
         /**
          * get the given preset data
          *
-         * @param preset - the template (preset) for witch the window pops up
+         * @param preset - the template (preset) for witch the window opens
          *
-         * @returns {*}
+         * @returns Promise
          */
         getPreset: function (preset) {
             var presetName = preset.toLowerCase();
@@ -1153,12 +1222,21 @@ define('bin/js/Setup', [
             );
         },
 
+        /**
+         * Popup data check.
+         * If one of the checks failures, return an error.
+         *
+         * @param Form
+         * @param formData
+         * @param defaultLang
+         * @returns {Promise}
+         */
         checkPopupForm: function (Form, formData, defaultLang) {
             return new Promise(function (resolve, reject) {
 
                 // project name
                 if (!formData['project-title'] || formData['project-title'] == '') {
-                    reject("Es fehlt: formData['project-title']");
+                    reject(Form['project-title']);
                     return;
                 }
 

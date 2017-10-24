@@ -1,6 +1,6 @@
 {
     "project": {
-        "name": "Blog",
+        "name": "",
         "languages": {
             "de": "true",
             "en": "false"
@@ -8,16 +8,12 @@
     },
     "template": {
         "name": "quiqqer\/template-helios",
-        "version": "dev-master"
+        "version": "dev-master",
+        "start_layout": "layout\/startPage",
+        "default_layout": "layout\/noSidebar"
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "git@dev.quiqqer.com:quiqqer\/gitlab.git"
-        }
-    ],
     "packages": {
-        "quiqqer\/gitlab": "dev-dev"
+        "quiqqer\/blog" : "dev-master"
     },
     "meta": {
         "name": {

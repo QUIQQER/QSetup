@@ -558,6 +558,9 @@ msgid "setup.web.content.button.install"
 msgstr "Installieren"
 
 
+msgid "setup.web.popup.title"
+msgstr "Template Einstellungen"
+
 msgid "setup.web.popup.project-title"
 msgstr "Projektname"
 

@@ -404,7 +404,7 @@ class Installer
         #######################
         $presetData = $presets[$preset];
 
-        $presetDataProjectName = isset($presetData['project']['name']) ? $presetData['project']['name'] : false;
+        $presetDataProjectName = !empty($presetData['project']['name']) ? $presetData['project']['name'] : false;
         $projectName           = $this->prompt(
             $this->Locale->getStringLang("prompt.preset.customize.projectname", "Projectname: "),
             $presetDataProjectName

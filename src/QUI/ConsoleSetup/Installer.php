@@ -258,6 +258,9 @@ class Installer
         );
         $results = Requirements::runAll();
 
+
+        $errors   = false;
+        $warnings = false;
         foreach ($results as $test) {
             $name = $test['name'];
             /** @var TestResult $result */
@@ -265,8 +268,7 @@ class Installer
             $statusHuman = $result->getStatusHumanReadable();
             $status      = $result->getStatus();
 
-            $errors   = false;
-            $warnings = false;
+          
             switch ($status) {
                 case TestResult::STATUS_FAILED:
                     $errors = true;
@@ -282,34 +284,34 @@ class Installer
                     $warnings = true;
                     break;
             }
+        }
 
-            if ($errors) {
-                $continue = $this->prompt(
-                    $this->Locale->getStringLang(
-                        "prompt.requirements.continue",
-                        "Not all Requirements could be met. If you still want to continue, we can not guaruantee the functionality of QUIQQER. Continue anyway? (y/n)"
-                    ),
-                    "n",
-                    COLOR_YELLOW,
-                    false,
-                    true
-                );
+        if ($errors) {
+            $continue = $this->prompt(
+                $this->Locale->getStringLang(
+                    "prompt.requirements.continue",
+                    "Not all Requirements could be met. If you still want to continue, we can not guaruantee the functionality of QUIQQER. Continue anyway? (y/n)"
+                ),
+                "n",
+                COLOR_RED,
+                false,
+                true
+            );
 
-                if ($continue != "y") {
-                    exit;
-                }
+            if ($continue != "y") {
+                exit;
             }
+        }
 
-            # Echo Warning for unknown requirements.
-            if ($warnings) {
-                $this->writeLn(
-                    $this->Locale->getStringLang(
-                        "warning.requirement.unknown",
-                        "Some Requirements could not be detected. You can ignore this warning, if you know those requirements are met by your system."
-                    ),
-                    self::LEVEL_WARNING
-                );
-            }
+        # Echo Warning for unknown requirements.
+        if (!$errors && $warnings) {
+            $this->writeLn(
+                $this->Locale->getStringLang(
+                    "warning.requirement.unknown",
+                    "Some Requirements could not be detected. You can ignore this warning, if you know those requirements are met by your system."
+                ),
+                self::LEVEL_WARNING
+            );
         }
 
         $this->Setup->storeSetupState();

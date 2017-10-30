@@ -626,7 +626,7 @@ msgid "prompt.preset.customize"
 msgstr "Möchten Sie die Vorlage anpassen? (y/n) "
 
 msgid "prompt.preset.customize.projectname"
-msgstr "Projektname"
+msgstr "Projektname: "
 
 msgid "prompt.preset.customize.languages"
 msgstr "Sprachen (komma-separiert): "

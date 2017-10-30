@@ -176,9 +176,6 @@ class Validator
             throw new SetupException("setup.exception.validation.preset.not.exist");
         }
 
-        $presetData = $presets[$name];
-        self::validatePresetData($presetData);
-
         return true;
     }
 

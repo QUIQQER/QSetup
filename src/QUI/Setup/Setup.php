@@ -430,6 +430,7 @@ class Setup
             $this->Step    = Setup::STEP_DATA_PRESET;
             $this->stepSum += Setup::STEP_DATA_PRESET;
         } catch (SetupException $Exception) {
+            echo $Exception->getMessage();
             $this->Output->writeLn(
                 $this->Locale->getStringLang("setup.exception.validation.preset", "Invalid Preset entered")
             );

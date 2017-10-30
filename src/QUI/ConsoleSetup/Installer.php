@@ -397,8 +397,6 @@ class Installer
         );
 
         $this->Setup->setPreset($preset);
-
-
         #######################
         # Preset customization
         #######################

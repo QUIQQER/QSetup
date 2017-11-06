@@ -153,17 +153,10 @@ class Preset
 
 
         $this->refreshNamespaces($this->Composer);
-
-
-        # Execute Quiqqersetup to activate new Plugins/translations etc.
-        $this->Output->writeLn(
-            $this->Locale->getStringLang("applypreset.quiqqer.setup", "Executing Quiqqer Setup. "),
-            Output::COLOR_INFO
-        );
-        \QUI\Setup::all();
-
-        $this->Output->writeLn($this->Locale->getStringLang("applypreset.done", "Preset applied."), Output::COLOR_INFO);
     }
+
+
+
 
     /**
      * Retrieves the data from the preset to the class

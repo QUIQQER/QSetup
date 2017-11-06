@@ -68,6 +68,9 @@ class Setup
     /** @var Output $Output */
     private $Output;
 
+    /** @var null|Preset  */
+    protected $Preset = null;
+
     /** @var  int $mode - The mode in which the setup is executed. Setup::MODE_CLI or Setup::MODE_WEB */
     private $mode;
 
@@ -182,6 +185,7 @@ class Setup
     // ************************************************** //
 
     #region Core functions
+
     /**
      * Starts the Setup-process
      *
@@ -290,9 +294,35 @@ class Setup
         $Preset  = new \QUI\Setup\Preset($presetName, $this->Locale, $Output, $webMode);
         $Preset->apply(CMS_DIR);
 
+        // Due to timeout restrictions we will call the setup process in another request if the setup gets executed in the web mode
+        if ($this->mode == self::MODE_CLI) {
+            $this->setupPreset();
+        }
+
         $this->Step = self::STEP_SETUP_PRESET;
     }
 
+    #endregion
+
+    /**
+     * Calls the setup methods for the freshly installed preset
+     */
+    public function setupPreset()
+    {
+        $this->Output->writeLn(
+            $this->Locale->getStringLang("applypreset.applying.configure", "Configuring preset: ") . $this->presetName,
+            Output::COLOR_INFO
+        );
+
+        \QUI\Setup::executeEachPackageSetup();
+        \QUI\Setup::executeMainSystemSetup();
+        \QUI\Setup::importPermissions();
+
+        $this->Output->writeLn($this->Locale->getStringLang("applypreset.done", "Preset applied and configured!."), Output::COLOR_INFO);
+    }
+
+
+    #region CLI Only
     /**
      * Calls the applyPresetCLI.php file.
      * This is neccessary to get a new php instance in the cli version.
@@ -342,6 +372,7 @@ class Setup
         $this->publishSetupState();
     }
     #endregion
+
 
     #region Getter/Setter
 
@@ -1418,7 +1449,17 @@ LOGETC;
 
         QUI\Permissions\Permission::setUser($User);
 
-        QUI\Setup::all();
+        //TODO QUI\Setup::all();
+        QUI::getSession()->setup();
+
+        QUI\Setup::makeDirectories();
+        QUI\Setup::generateFileLinks();
+        QUI\Setup::executeMainSystemSetup();
+        QUI\Setup::executeCommunicationSetup();
+        QUI\Setup::makeHeaderFiles();
+        QUI\Setup::importPermissions();
+
+        QUI::getPackage('quiqqer/quiqqer')->setup();
 
         # Execute Htaccess if we detect an apache installation
         $Config = QUI::getConfig("etc/conf.ini.php");
@@ -1463,7 +1504,7 @@ LOGETC;
             unlink(VAR_DIR . 'locale/localefiles');
         }
 
-        QUI\Setup::all();
+        //TODO QUI\Setup::all();
 
 
         $Defaults = new QUI\System\Console\Tools\Defaults();
@@ -1701,7 +1742,6 @@ LOGETC;
 
             $quiqqer = $packages['quiqqer/quiqqer'];
             foreach ($quiqqer as $v => $branch) {
-                QUI\Setup\Log\Log::append($v);
                 $v = explode('.', $v);
                 if (isset($v[0]) && isset($v[1])) {
                     $v = $v[0] . "." . $v[1];

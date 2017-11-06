@@ -648,6 +648,9 @@ msgstr "Do you want tu use the fixed projectname instead? (y/n) "
 msgid "applypreset.applying.preset"
 msgstr "Applying preset: "
 
+msgid "applypreset.applying.configure"
+msgstr "Configuring preset: "
+
 msgid "applypreset.installed.languages"
 msgstr "Successfully installed languages '%LANGS%' for project %PROJECT%"
 

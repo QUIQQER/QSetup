@@ -649,6 +649,9 @@ msgstr "Möchten Sie den bereinigten Projektnamen verwenden? (y/n) "
 msgid "applypreset.applying.preset"
 msgstr "Wende Vorlage an: "
 
+msgid "applypreset.applying.configure"
+msgstr "Konfiguriere Vorlage: "
+
 msgid "applypreset.installed.languages"
 msgstr "Sprachen '%LANGS%' erfolgreich für das Projekt %PROJECT% installiert"
 

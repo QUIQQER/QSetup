@@ -1706,7 +1706,7 @@ LOGETC;
                 if (isset($v[0]) && isset($v[1])) {
                     $v = $v[0] . "." . $v[1];
 
-                    if(in_array($v,$blacklistedVersions)){
+                    if (in_array($v, $blacklistedVersions)) {
                         continue;
                     }
 

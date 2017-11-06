@@ -83,58 +83,57 @@ foreach ($versions as $version) {
 # Prepare the readme
 createReadme();
 
+
+$upload = prompt("Do you want to upload the File to the updateserver? (y/n)", false);
 # Create the zip file
 $zipLocation = createZip($workingDir . '/setup/');
-$tarLocation = createTar($workingDir . '/setup/');
-$tgzLocation = createTarGz($workingDir . '/setup/');
-$tz2Location = createTarBz2($workingDir . '/setup/');
-
-# Create a md5 file
 $zipChecksumFilename = createChecksums($zipLocation);
-$tarChecksumFilename = createChecksums($tarLocation);
-$tgzChecksumFilename = createChecksums($tgzLocation);
-$tz2ChecksumFilename = createChecksums($tz2Location);
-
-
-# Upload zip file to updateserver
-$upload = prompt("Do you want to upload the File to the updateserver? (y/n)", false);
-if ($upload == 'y') {
-    # Upload zip file
-    if (file_exists($zipLocation)) {
-        executeShellCommand('scp ' . $zipLocation . ' root@qui1.pcsg-server.de:/var/www/vhosts/update.quiqqer.com/quiqqer.zip');
-        # Upload file with checksum for quiqqer.zip
-        if (file_exists($zipChecksumFilename)) {
-            executeShellCommand('scp ' . $zipChecksumFilename . ' root@qui1.pcsg-server.de:/var/www/vhosts/update.quiqqer.com/' . $zipChecksumFilename);
-        }
+if ($upload == "y" && file_exists($zipLocation)) {
+    executeShellCommand('scp ' . $zipLocation . ' root@qui1.pcsg-server.de:/var/www/vhosts/update.quiqqer.com/quiqqer.zip');
+    # Upload file with checksum for quiqqer.zip
+    if (file_exists($zipChecksumFilename)) {
+        executeShellCommand('scp ' . $zipChecksumFilename . ' root@qui1.pcsg-server.de:/var/www/vhosts/update.quiqqer.com/' . $zipChecksumFilename);
     }
-
-    # Upload tar file
-    if (file_exists($tarLocation)) {
-        executeShellCommand('scp ' . $tarLocation . ' root@qui1.pcsg-server.de:/var/www/vhosts/update.quiqqer.com/quiqqer.tar');
-        # Upload file with checksum for quiqqer.zip
-        if (file_exists($tarChecksumFilename)) {
-            executeShellCommand('scp ' . $tarChecksumFilename . ' root@qui1.pcsg-server.de:/var/www/vhosts/update.quiqqer.com/' . $tarChecksumFilename);
-        }
-    }
-
-    # Upload tgz file
-    if (file_exists($tgzLocation)) {
-        executeShellCommand('scp ' . $tgzLocation . ' root@qui1.pcsg-server.de:/var/www/vhosts/update.quiqqer.com/quiqqer.tgz');
-        # Upload file with checksum for quiqqer.zip
-        if (file_exists($tgzChecksumFilename)) {
-            executeShellCommand('scp ' . $tgzChecksumFilename . ' root@qui1.pcsg-server.de:/var/www/vhosts/update.quiqqer.com/' . $tgzChecksumFilename);
-        }
-    }
-
-    # Upload tz2 file
-    if (file_exists($tz2Location)) {
-        executeShellCommand('scp ' . $tz2Location . ' root@qui1.pcsg-server.de:/var/www/vhosts/update.quiqqer.com/quiqqer.tz2');
-        # Upload file with checksum for quiqqer.zip
-        if (file_exists($tz2ChecksumFilename)) {
-            executeShellCommand('scp ' . $tz2ChecksumFilename . ' root@qui1.pcsg-server.de:/var/www/vhosts/update.quiqqer.com/' . $tz2ChecksumFilename);
-        }
-    }
+    unlink($zipLocation);
+    unlink($zipChecksumFilename);
 }
+
+$tarLocation = createTar($workingDir . '/setup/');
+$tarChecksumFilename = createChecksums($tarLocation);
+if ($upload == "y" && file_exists($tarLocation)) {
+    executeShellCommand('scp ' . $tarLocation . ' root@qui1.pcsg-server.de:/var/www/vhosts/update.quiqqer.com/quiqqer.tar');
+    # Upload file with checksum for quiqqer.zip
+    if (file_exists($tarChecksumFilename)) {
+        executeShellCommand('scp ' . $tarChecksumFilename . ' root@qui1.pcsg-server.de:/var/www/vhosts/update.quiqqer.com/' . $tarChecksumFilename);
+    }
+    unlink($tarLocation);
+    unlink($tarChecksumFilename);
+}
+
+$tgzLocation = createTarGz($workingDir . '/setup/');
+$tgzChecksumFilename = createChecksums($tgzLocation);
+if ($upload == "y" && file_exists($tgzLocation)) {
+    executeShellCommand('scp ' . $tgzLocation . ' root@qui1.pcsg-server.de:/var/www/vhosts/update.quiqqer.com/quiqqer.tgz');
+    # Upload file with checksum for quiqqer.zip
+    if (file_exists($tgzChecksumFilename)) {
+        executeShellCommand('scp ' . $tgzChecksumFilename . ' root@qui1.pcsg-server.de:/var/www/vhosts/update.quiqqer.com/' . $tgzChecksumFilename);
+    }
+    unlink($tgzLocation);
+    unlink($tgzChecksumFilename);
+}
+
+$tz2Location = createTarBz2($workingDir . '/setup/');
+$tz2ChecksumFilename = createChecksums($tz2Location);
+if ($upload == "y" && file_exists($tz2Location)) {
+    executeShellCommand('scp ' . $tz2Location . ' root@qui1.pcsg-server.de:/var/www/vhosts/update.quiqqer.com/quiqqer.tz2');
+    # Upload file with checksum for quiqqer.zip
+    if (file_exists($tz2ChecksumFilename)) {
+        executeShellCommand('scp ' . $tz2ChecksumFilename . ' root@qui1.pcsg-server.de:/var/www/vhosts/update.quiqqer.com/' . $tz2ChecksumFilename);
+    }
+    unlink($tz2Location);
+    unlink($tz2ChecksumFilename);
+}
+
 
 # End execution
 writeLn("The quiqqer.zip has been created successfully!", null, COLOR_GREEN);

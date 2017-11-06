@@ -1689,6 +1689,10 @@ LOGETC;
             'dev-master'
         );
 
+        $blacklistedVersions = array(
+            '1.0'
+        );
+
         $url  = Setup::getConfig()['general']['url_updateserver'] . "/packages.json";
         $json = file_get_contents($url);
         if (!empty($json)) {
@@ -1697,9 +1701,16 @@ LOGETC;
 
             $quiqqer = $packages['quiqqer/quiqqer'];
             foreach ($quiqqer as $v => $branch) {
+                QUI\Setup\Log\Log::append($v);
                 $v = explode('.', $v);
                 if (isset($v[0]) && isset($v[1])) {
                     $v = $v[0] . "." . $v[1];
+
+                    if(in_array($v,$blacklistedVersions)){
+                        continue;
+                    }
+
+
                     if (!in_array($v, $validVersions)) {
                         $validVersions[] = $v;
                     }

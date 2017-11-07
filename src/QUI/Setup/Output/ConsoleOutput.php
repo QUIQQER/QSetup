@@ -15,16 +15,17 @@ class ConsoleOutput implements Output
     /** @var  Locale $Locale */
     private $Locale;
 
-
     public function __construct($lang = "de_DE")
     {
         $this->logDir = dirname(dirname(dirname(dirname(dirname(__FILE__))))) . '/logs/';
+
         if (!is_dir($this->logDir)) {
             mkdir($this->logDir, 0755, true);
         }
+
         ini_set('error_log', $this->logDir . 'error.log');
 
-        $this->lang   = $lang;
+        $this->lang = $lang;
         $this->Locale = new Locale($lang);
     }
 
@@ -38,6 +39,7 @@ class ConsoleOutput implements Output
     public function writeLn($txt, $level = null, $color = null)
     {
         $msg = $txt;
+
         if ($level !== null) {
             switch ($level) {
                 case self::LEVEL_DEBUG:
@@ -142,14 +144,14 @@ class ConsoleOutput implements Output
     public function changeLang($lang)
     {
         $this->lang = $lang;
+
         try {
-            $Locale       = new Locale($lang);
+            $Locale = new Locale($lang);
             $this->Locale = $Locale;
         } catch (LocaleException $Exception) {
             echo $this->Locale->getStringLang($Exception->getMessage());
         }
     }
-
 
     /**
      * Surrounsds a string with color codes
@@ -160,6 +162,7 @@ class ConsoleOutput implements Output
     public function getColoredString($string, $color)
     {
         $result = $string;
+
         switch ($color) {
             case Output::COLOR_INFO:
                 $result = "\033[1;36m " . $string . "\033[0m";

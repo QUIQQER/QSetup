@@ -124,6 +124,7 @@ class Preset
         if (!defined('HOST')) {
             define('HOST', $quiqqerConfig['globals']['host']);
         }
+
         # Require Template and packages
         $this->Composer = new Composer(VAR_DIR . "composer/", VAR_DIR . "composer/");
         if ($this->forceWebMode) {

@@ -844,7 +844,8 @@ class Installer
 
 
         $this->Setup->runSetup();
-        $this->Setup->runSetup(Setup::STEP_SETUP_BOOTSTRAP);
+        $this->Setup->runSetup(Setup::STEP_SETUP_INSTALL_QUIQQER);
+        $this->Setup->runSetup(Setup::STEP_SETUP_QUIQQERSETUP);
     }
 
     /**

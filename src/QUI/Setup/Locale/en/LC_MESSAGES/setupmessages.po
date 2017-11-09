@@ -583,7 +583,7 @@ msgid "setup.web.system.check.header.desc"
 msgstr "The server settings do not meet the minimum requirements of QUIQQER"
 
 msgid "setup.web.system.check.desc"
-msgstr "The following errors occurred. Please correct them and then click <em>Refresh button</em> or reload the page."
+msgstr "The following errors occurred. Please correct them and reload the page."
 
 msgid "setup.web.system.check.button"
 msgstr "Refresh"

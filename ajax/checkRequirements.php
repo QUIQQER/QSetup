@@ -29,7 +29,6 @@ $html = '<div class="check-table">';
 
 /** @var \QUI\Requirements\Tests\Test $Test */
 foreach ($allTests as $category => $Tests) {
-
     // todo das kann man besser machen
     if ($category == 'Datenbank' || $category == 'Database') {
         continue;
@@ -42,7 +41,6 @@ foreach ($allTests as $category => $Tests) {
     $html .= '<div class="check-table-col check-table-col-message">';
     $html .= '<ul>';
     foreach ($Tests as $Test) {
-
         $test       = array();
         $Result     = $Test->getResult();
         $statusCode = $Result->getStatus();
@@ -77,7 +75,6 @@ foreach ($allTests as $category => $Tests) {
         $html .= $Result->getStatusHumanReadable() . '"></span>';
         $html .= '<span class="test-name">' . $Test->getName() . '</span>';
         $html .= '<div class="test-message">' . $Result->getMessage() . '</div>';
-
     }
     $html .= '</ul>';
     $html .= '</div>';

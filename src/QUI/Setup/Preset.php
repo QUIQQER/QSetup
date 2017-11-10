@@ -45,7 +45,6 @@ class Preset
     protected $defaultLayout;
     protected $startLayout;
 
-
     protected $forceWebMode;
 
     protected $packages = array();
@@ -60,25 +59,23 @@ class Preset
      *
      * @param        $presetName
      * @param Locale $Locale
-     * @param        $Output       $Output
-     * @param bool   $forceWebMode - (optional) if this is set to true all components will be run n the web mode (without system functions)
+     * @param        $Output $Output
+     * @param bool $forceWebMode - (optional) if this is set to true all components will be run n the web mode (without system functions)
      *
      * @throws SetupException
      */
     public function __construct($presetName, $Locale, $Output = null, $forceWebMode = false)
     {
         $this->presetName = $presetName;
-        $this->Locale     = $Locale;
+        $this->Locale = $Locale;
 
         $this->forceWebMode = $forceWebMode;
-
 
         if (is_null($Output)) {
             $this->Output = new NullOutput($Locale->getCurrent());
         } else {
             $this->Output = $Output;
         }
-
 
         $this->presets = Preset::getPresets();
         try {
@@ -101,15 +98,16 @@ class Preset
      * Applies the preset to the QUIQQER installation located in $cmsDir
      *
      * @param $cmsDir - The QUIQQER root directory
+     * @param $step - The step of the preset application process
      */
-    public function apply($cmsDir)
+    public function apply($cmsDir, $step = 1)
     {
         $this->Output->writeLn(
             $this->Locale->getStringLang("applypreset.applying.preset", "Applying preset: ") . $this->presetName,
             Output::COLOR_INFO
         );
 
-        $cmsDir        = rtrim($cmsDir, '/');
+        $cmsDir = rtrim($cmsDir, '/');
         $quiqqerConfig = parse_ini_file($cmsDir . '/etc/conf.ini.php', true);
 
         # Define quiqqer constants
@@ -131,33 +129,40 @@ class Preset
             $this->Composer->setMode(Composer::MODE_WEB);
         }
 
+        // we need to split the process into multiple steps to avoid timeouts
+        if ($step == 1) {
+            Log::append("Repos start - " . date("H:i:s"));
+            # Add Repositories to composer.json
+            if (!empty($this->repositories)) {
+                $this->addRepositories();
+            }
+            Log::append("Repos end - " . date("H:i:s"));
 
-        # Add Repositories to composer.json
-        if (!empty($this->repositories)) {
-            $this->addRepositories();
+            # Create project
+            Log::append("Project start - " . date("H:i:s"));
+            if (!empty($this->projectName)) {
+                $this->createProject();
+            }
+            Log::append("Project end - " . date("H:i:s"));
         }
 
-        # Create project
-        if (!empty($this->projectName)) {
-            $this->createProject();
+        if ($step == 2) {
+            Log::append("Template start - " . date("H:i:s"));
+            if (!empty($this->templateName)) {
+                $this->installTemplate();
+            }
+            Log::append("template end - " . date("H:i:s"));
+
+            # Require additional packages
+            Log::append("Packages start - " . date("H:i:s"));
+            if (!empty($this->packages)) {
+                $this->installPackages();
+            }
+            Log::append("Packages end - " . date("H:i:s"));
+
+            $this->refreshNamespaces($this->Composer);
         }
-
-
-        if (!empty($this->templateName)) {
-            $this->installTemplate();
-        }
-
-        # Require additional packages
-        if (!empty($this->packages)) {
-            $this->installPackages();
-        }
-
-
-        $this->refreshNamespaces($this->Composer);
     }
-
-
-
 
     /**
      * Retrieves the data from the preset to the class
@@ -169,17 +174,17 @@ class Preset
         $presetData = $this->presets[$presetName];
 
         # Project
-        $this->projectName        = isset($presetData['project']['name']) ? $presetData['project']['name'] : "";
+        $this->projectName = isset($presetData['project']['name']) ? $presetData['project']['name'] : "";
         $this->availableLanguages = isset($presetData['project']['languages']) ? $presetData['project']['languages'] : array();
         $this->availableLanguages = array_unique($this->availableLanguages);
 
         $this->activeLanguages = $this->getActiveLanguages();
 
         #Template
-        $this->templateName    = isset($presetData['template']['name']) ? $presetData['template']['name'] : "";
+        $this->templateName = isset($presetData['template']['name']) ? $presetData['template']['name'] : "";
         $this->templateVersion = isset($presetData['template']['version']) ? $presetData['template']['version'] : "";
-        $this->defaultLayout   = isset($presetData['template']['default_layout']) ? $presetData['template']['default_layout'] : "";
-        $this->startLayout     = isset($presetData['template']['start_layout']) ? $presetData['template']['start_layout'] : "";
+        $this->defaultLayout = isset($presetData['template']['default_layout']) ? $presetData['template']['default_layout'] : "";
+        $this->startLayout = isset($presetData['template']['start_layout']) ? $presetData['template']['start_layout'] : "";
 
         # Packages
         $this->packages = isset($presetData['packages']) ? $presetData['packages'] : array();
@@ -213,7 +218,7 @@ class Preset
         }
 
         try {
-            \QUI::getProjectManager()->createProject($this->projectName, $this->activeLanguages[0]);
+            $Project = \QUI::getProjectManager()->createProject($this->projectName, $this->activeLanguages[0]);
         } catch (Exception $Exception) {
             $exceptionMsg = $this->Locale->getStringLang(
                 "setup.error.project.creation.failed",
@@ -222,7 +227,6 @@ class Preset
 
             throw new SetupException($exceptionMsg . ' ' . $Exception->getMessage());
         }
-
 
         $this->Output->writeLn(
             $this->Locale->getStringLang("applypreset.creating.project", "Created Project :") . $this->projectName,
@@ -237,7 +241,6 @@ class Preset
             $Config->setValue($this->projectName, 'langs', implode(',', $this->activeLanguages));
             $Config->save();
 
-
             $installedLangsMsg = $this->Locale->getStringLang(
                 "applypreset.installed.languages",
                 "Installed languages %LANGS% for project %PROJECT%"
@@ -251,12 +254,8 @@ class Preset
             );
         }
 
-
-        # Add the languages and execute the project setup
-        foreach ($this->activeLanguages as $lang) {
-            $Project = new Project($this->projectName, $lang);
-            $Project->setup();
-        }
+        // Perform a project setup to initialize the new languages
+        $Project->setup();
 
         # Remove the cachefile to make sure QUIQQER re-reads all locale.xml files
         if (file_exists(VAR_DIR . 'locale/localefiles')) {
@@ -287,7 +286,7 @@ class Preset
     {
         foreach ($this->repositories as $repo) {
             $data['repositories'][] = array(
-                'url'  => $repo['url'],
+                'url' => $repo['url'],
                 'type' => $repo['type']
             );
 
@@ -297,7 +296,7 @@ class Preset
             );
 
             \QUI::getPackageManager()->addServer($repo['url'], array(
-                'type'   => $repo['type'],
+                'type' => $repo['type'],
                 'active' => 1
             ));
 
@@ -334,7 +333,7 @@ class Preset
         if (!empty($this->templateName) && !empty($this->projectName) && !empty($this->startLayout)) {
             foreach ($this->activeLanguages as $lang) {
                 $Project = new Project($this->projectName, $lang);
-                $Edit    = new Edit($Project, 1);
+                $Edit = new Edit($Project, 1);
                 $Edit->setAttribute('layout', $this->startLayout);
                 $Edit->save();
                 $Edit->activate();
@@ -345,7 +344,6 @@ class Preset
                 );
             }
         }
-
 
         $this->Output->writeLn(
             $this->Locale->getStringLang("applypreset.require.package", "Require Package :") . $this->templateName,
@@ -368,7 +366,6 @@ class Preset
         }
     }
 
-
     /**
      * Gets the available presets.
      *
@@ -378,7 +375,6 @@ class Preset
     {
         $presets = array();
 
-
         # Read all userdefined presets from templates/presets
         $presetDir = dirname(dirname(dirname(dirname(__FILE__)))) . '/templates/presets';
         if (is_dir($presetDir)) {
@@ -386,7 +382,7 @@ class Preset
 
             if (is_array($content) && !empty($content)) {
                 foreach ($content as $file) {
-                    $name   = explode('.', $file, 2)[0];
+                    $name = explode('.', $file, 2)[0];
                     $ending = explode('.', $file, 2)[1];
 
                     if ($file != '.' && $file != '..' && $ending == 'json') {
@@ -454,9 +450,9 @@ class Preset
     {
         $Composer->dumpAutoload();
         // namespaces
-        $map      = require OPT_DIR . 'composer/autoload_namespaces.php';
+        $map = require OPT_DIR . 'composer/autoload_namespaces.php';
         $classMap = require OPT_DIR . 'composer/autoload_classmap.php';
-        $psr4     = require OPT_DIR . 'composer/autoload_psr4.php';
+        $psr4 = require OPT_DIR . 'composer/autoload_psr4.php';
 
         foreach ($map as $namespace => $path) {
             Autoloader::$ComposerLoader->add($namespace, $path);

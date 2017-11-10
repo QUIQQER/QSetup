@@ -981,7 +981,7 @@ define('bin/js/Setup', [
             var self = this;
 
             var Popup = new QUIPopup({
-                maxWidth       : 600,
+                maxWidth       : 800,
                 maxHeight      : 700,
                 title          : 'System Check!',
                 closeButtonText: 'schließen',

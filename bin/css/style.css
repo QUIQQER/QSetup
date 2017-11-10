@@ -1272,14 +1272,14 @@ button.install-page-more-button .fa {
 
 .check-table-col-test {
     overflow: hidden;
-    width: 40%;
+    width: 30%;
     font-weight: 400;
     text-overflow: ellipsis;
     padding-right: 10px;
 }
 
 .check-table-col-message {
-    width: 60%;
+    width: 70%;
 }
 
 .test-message {

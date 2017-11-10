@@ -584,7 +584,7 @@ msgid "setup.web.system.check.header.desc"
 msgstr "Die Server Einstellungen entsprechen nicht den Mindestanforderungen von QUIQQER"
 
 msgid "setup.web.system.check.desc"
-msgstr "Folgende Fehler sind aufgetreten. Bitte beheben Sie diese und dann klicken Sie auf den <em>Neu laden-Button</em> oder laden Sie die Seite neu."
+msgstr "Folgende Fehler sind aufgetreten. Bitte beheben Sie diese und laden Sie die Seite neu."
 
 msgid "setup.web.system.check.button"
 msgstr "Neu laden"

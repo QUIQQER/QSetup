@@ -33,7 +33,7 @@
         "quiqqer\/composer": "dev-dev",
         "quiqqer\/utils": "dev-dev",
         "quiqqer\/qui-php": "dev-dev",
-        "quiqqer\/requirements": "dev-dev",
+        "quiqqer\/requirements": "2.0.0",
         "quiqqer\/qui": "dev-dev",
         "pcsg\/composer-assets": "dev-master"
     },

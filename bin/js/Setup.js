@@ -15,9 +15,18 @@ define('bin/js/Setup', [
     'qui/controls/windows/Confirm',
     'qui/controls/loader/Loader',
 
-    'text!bin/js/Setup.TemplateForm.html'
+    'text!bin/js/Setup.TemplateForm.html',
     // 'qui/controls/Control'
-], function (QUI, QUIFunctionUtils, QUIFormUtils, QUILocale, QUIPopup, QUIConfirm, QUILoader, templateForm) {
+], function (
+    QUI,
+    QUIFunctionUtils,
+    QUIFormUtils,
+    QUILocale,
+    QUIPopup,
+    QUIConfirm,
+    QUILoader,
+    templateForm
+) {
     "use strict";
 
     QUILocale.setCurrent(CURRENT_LOCALE);
@@ -46,6 +55,7 @@ define('bin/js/Setup', [
             'checkUserAndPassword',
             'disableAllTab',
             'activeTabForThisStep',
+            'openSystemCheckPopup',
             'createTemplatePopup',
             'openTemplatePopup',
             'checkProjectName',
@@ -64,32 +74,32 @@ define('bin/js/Setup', [
         ],
 
         initialize: function () {
-            this.NextStep         = null;
-            this.BackStep         = null;
-            this.StepsList        = null;
-            this.ListElement      = null;
+            this.NextStep = null;
+            this.BackStep = null;
+            this.StepsList = null;
+            this.ListElement = null;
             this.listElementWidth = null;
 
             this.NavList = null;
-            this.liElm   = null;
-            this.fa      = null;
+            this.liElm = null;
+            this.fa = null;
 
-            this.headerList          = null;
+            this.headerList = null;
             this.headerLogoContainer = null;
 
             this.inputRadioCheckbox = null;
-            this.inputText          = null;
-            this.inputSelect        = null;
-            this.allInputs          = null;
-            this.progressBarDone    = null;
-            this.progressbarText    = null;
-            this.textColorGrey      = null;
-            this.licenseCheckbox    = null;
-            this.licenseLabel       = null;
+            this.inputText = null;
+            this.inputSelect = null;
+            this.allInputs = null;
+            this.progressBarDone = null;
+            this.progressbarText = null;
+            this.textColorGrey = null;
+            this.licenseCheckbox = null;
+            this.licenseLabel = null;
 
-            this.userInputs    = null;
-            this.pass1         = null;
-            this.pass2         = null;
+            this.userInputs = null;
+            this.pass1 = null;
+            this.pass2 = null;
             this.buttonInstall = false;
 
             this.activeHeader = null;
@@ -107,64 +117,78 @@ define('bin/js/Setup', [
          * if the checkRequirements returns an array with failed test names
          */
         systemCheck: function () {
-            var self = this;
+            var self            = this,
+                ButtonContainer = document.getElement('.system-check-button-container');
             this.languageButtons();
 
             this.checkRequirements().then(function (response) {
 
-                var systemCheck    = document.getElement('.system-check'),
-                    stepsContainer = document.getElement('.steps-container');
+                var systemCheck       = document.getElement('.system-check'),
+                    stepsContainer    = document.getElement('.steps-container'),
+                    Response          = JSON.decode(response),
+                    icon              = ButtonContainer.getElement('.icon-placeholder'),
+                    systemCheckButton = document.getElement('#system-check');
 
-                if (response == "true" || response === true) {
-                    document.getElement('#back-button').setStyle('display', 'inline-block');
-                    systemCheck.setStyle('display', 'none');
-                    stepsContainer.setStyles({
-                        display   : 'block',
-                        visibility: 'visible',
-                        opacity   : 1
-                    });
+                ButtonContainer.addClass(Response.status);
+                icon.addClass(Response.icon);
 
-                    systemCheck.destroy();
+                if (Response.testsFailed) {
 
-                    document.getElement('.first-step-menu').addClass('step-active');
-                    self.load();
+                    var htmlContent = '',
+                        htmlHeader  = '',
+                        nextButton  = document.getElement('#next-button');
+
+
+                    htmlHeader += '<h1>' + LOCALE_TRANSLATIONS['setup.web.system.check.header'] + '</h1>';
+                    htmlHeader += '<p>' + LOCALE_TRANSLATIONS['setup.web.system.check.header.desc'] + '</p>';
+
+                    htmlContent += '<div class="system-check-error-container">';
+                    htmlContent += '<p>' + LOCALE_TRANSLATIONS['setup.web.system.check.desc'] + '</p>';
+
+                    htmlContent += Response.htmlResult;
+                    htmlContent += '</div>';
+
+                    document.getElement('.system-check-error-wrapper').set(
+                        'html', htmlContent
+                    );
+
+                    document.getElement('.header-right').set(
+                        'html', htmlHeader
+                    );
+
+                    nextButton.set(
+                        'html', LOCALE_TRANSLATIONS['setup.web.system.check.button']
+                    );
+
+                    systemCheckButton.setAttribute(
+                        'title', LOCALE_TRANSLATIONS['setup.web.system.check.button']
+                    );
+
+                    var reload = function () {
+                        window.location.reload();
+                    };
+
+                    nextButton.addEvent('click', reload);
+                    systemCheckButton.addEvent('click', reload);
                     return;
                 }
 
-                var htmlContent = '',
-                    htmlHeader  = '',
-                    nextButton  = document.getElement('#next-button');
+                // everything is ok, setup goes on
 
-                htmlHeader += '<h1>' + LOCALE_TRANSLATIONS['setup.web.system.check.header'] + '</h1>';
-                htmlHeader += '<p>' + LOCALE_TRANSLATIONS['setup.web.system.check.header.desc'] + '</p>';
-
-                htmlContent += '<div class="system-check-error-container">';
-                htmlContent += '<p>' + LOCALE_TRANSLATIONS['setup.web.system.check.desc'] + '</p>';
-
-                htmlContent += '<ul>';
-                JSON.decode(response).forEach(function (Elm) {
-                    htmlContent += '<li><span class="fa fa-times"></span>' + Elm + '</li>';
+                document.getElement('#back-button').setStyle('display', 'inline-block');
+                systemCheck.setStyle('display', 'none');
+                stepsContainer.setStyles({
+                    display   : 'block',
+                    visibility: 'visible',
+                    opacity   : 1
                 });
-                htmlContent += '</ul>';
-                htmlContent += '</div>';
 
-                document.getElement('.system-check-error-wrapper').set(
-                    'html', htmlContent
-                );
+                systemCheck.destroy();
 
-                document.getElement('.header-right').set(
-                    'html', htmlHeader
-                );
+                document.getElement('.first-step-menu').addClass('step-active');
+                self.load();
 
-                nextButton.set(
-                    'html', LOCALE_TRANSLATIONS['setup.web.system.check.button']
-                );
 
-                var reload = function () {
-                    window.location.reload();
-                };
-
-                nextButton.addEvent('click', reload);
             });
         },
 
@@ -178,11 +202,14 @@ define('bin/js/Setup', [
                 new Request({
                     url      : '/ajax/checkRequirements.php',
                     noCache  : true,
+                    data     : {
+                        lang: CURRENT_LOCALE
+                    },
                     onSuccess: function (response) {
                         resolve(response);
                     },
                     onFailure: function (response) {
-                        reject(response)
+                        reject(response);
                     }
                 }).send();
             });
@@ -195,32 +222,32 @@ define('bin/js/Setup', [
 
             this.FormSetup = document.getElement('#form-setup');
 
-            this.NextStep         = document.getElement('#next-button');
-            this.BackStep         = document.getElement('#back-button');
-            this.StepsList        = document.getElement('.steps-list');
-            this.ListElement      = document.getElements('.step');
+            this.NextStep = document.getElement('#next-button');
+            this.BackStep = document.getElement('#back-button');
+            this.StepsList = document.getElement('.steps-list');
+            this.ListElement = document.getElements('.step');
             this.listElementWidth = document.getElement('.step').getSize().x;
 
-            this.headerList          = document.getElement('.header-list');
+            this.headerList = document.getElement('.header-list');
             this.headerLogoContainer = document.getElement('.header-logo-container');
 
             this.NavList = document.getElement('.nav-list');
-            this.liElm   = this.NavList.getElements('li');
-            this.fa      = this.NavList.getElements('.fa');
+            this.liElm = this.NavList.getElements('li');
+            this.fa = this.NavList.getElements('.fa');
 
             this.inputRadioCheckbox = document.getElements('input[type="radio"], input[type="checkbox"]');
-            this.inputText          = document.getElements('input[type="text"], input[type="password"], input[type="number"]');
-            this.inputSelect        = document.getElements('select');
-            this.allInputs          = document.getElements('input, select');
-            this.progressBarDone    = document.getElement('.progress-bar-done');
-            this.progressbarText    = document.getElement('.progress-bar-text');
-            this.textColorGrey      = true;
-            this.licenseCheckbox    = document.getElement('.license-checkbox');
-            this.licenseLabel       = document.getElement('.license-label');
+            this.inputText = document.getElements('input[type="text"], input[type="password"], input[type="number"]');
+            this.inputSelect = document.getElements('select');
+            this.allInputs = document.getElements('input, select');
+            this.progressBarDone = document.getElement('.progress-bar-done');
+            this.progressbarText = document.getElement('.progress-bar-text');
+            this.textColorGrey = true;
+            this.licenseCheckbox = document.getElement('.license-checkbox');
+            this.licenseLabel = document.getElement('.license-label');
 
             this.userInputs = document.getElements('.input-text-user, .input-text-password');
-            this.pass1      = document.getElement('input[name="userPassword"]');
-            this.pass2      = document.getElement('input[name="userPasswordRepeat"]');
+            this.pass1 = document.getElement('input[name="userPassword"]');
+            this.pass2 = document.getElement('input[name="userPasswordRepeat"]');
 
             this.activeHeader = document.getElements('.header-list li');
 
@@ -281,9 +308,18 @@ define('bin/js/Setup', [
                 self.createTemplatePopup(Target);
             });
 
+            // open system check popup
+            var buttonSystemCheck = document.getElement('#system-check');
+            if (buttonSystemCheck) {
+                console.log(1)
+                buttonSystemCheck.addEvent('click', function () {
+                    self.openSystemCheckPopup();
+                })
+            }
+
             // change icon in input field (user step)
             this.userInputs.addEvent('change', function () {
-                var Elm  = this;
+                var Elm = this;
                 var Icon = Elm.getParent().getElement('.fa');
 
                 if (Elm.value) {
@@ -424,12 +460,12 @@ define('bin/js/Setup', [
             if (window.location.pathname != '/') {
                 subPath = window.location.pathname + '/';
             }
-            domain.placeholder     = window.location.origin;
-            domain.value           = window.location.origin;
-            rootPath.placeholder   = ROOT_PATH + '/';
-            rootPath.value         = ROOT_PATH + '/';
+            domain.placeholder = window.location.origin;
+            domain.value = window.location.origin;
+            rootPath.placeholder = ROOT_PATH + '/';
+            rootPath.value = ROOT_PATH + '/';
             urlSubPath.placeholder = subPath;
-            urlSubPath.value       = subPath;
+            urlSubPath.value = subPath;
 
         },
 
@@ -566,7 +602,7 @@ define('bin/js/Setup', [
                 this.BackStep.disabled = false;
             }
             var currentPos = this.StepsList.getStyle('left').toInt();
-            var pos        = currentPos - this.listElementWidth;
+            var pos = currentPos - this.listElementWidth;
 
             moofx(this.StepsList).animate({
                 left: pos
@@ -641,7 +677,7 @@ define('bin/js/Setup', [
          */
         recalc: function () {
             this.listElementWidth = document.getElement('.step').getSize().x;
-            this.$hideOnResize    = false;
+            this.$hideOnResize = false;
 
             this.StepsList.setStyle('opacity', 0);
             var newPos = (this.step - 1) * -this.listElementWidth;
@@ -766,7 +802,7 @@ define('bin/js/Setup', [
             var inputsNumber = this.countInputs() - 1;
 
             progress = (inputsDone / inputsNumber * 100).toString();
-            var arr  = progress.split('.');
+            var arr = progress.split('.');
             progress = arr[0];
 
             this.progressbarText.innerHTML = progress + "%";
@@ -939,6 +975,37 @@ define('bin/js/Setup', [
         },
 
         /**
+         * Open system check popup
+         */
+        openSystemCheckPopup: function () {
+            var self = this;
+
+            var Popup = new QUIPopup({
+                maxWidth       : 800,
+                maxHeight      : 700,
+                title          : 'System Check!',
+                closeButtonText: 'schließen',
+                events         : {
+                    onOpen: function (Win) {
+                        var Content = Win.getContent();
+                        self.checkRequirements().then(function (response) {
+                            var ResponseObj = JSON.decode(response);
+                            Content.set('html', ResponseObj.htmlResult);
+
+                        }).catch(function () {
+                            Content.set('html', 'System check konnte nicht ausgeführt werden');
+                        });
+
+                    }
+                }
+
+            });
+            Popup.open();
+
+        },
+
+
+        /**
          * Create template popup
          *
          * @param Target
@@ -986,7 +1053,7 @@ define('bin/js/Setup', [
                             en          = '',
                             lang        = [],
                             defaultLang = QUIFormUtils.getFormData(self.FormSetup)['project-language'];
-                        var presetData  = {
+                        var presetData = {
                             "project" : {
                                 "name"     : data['project-title'],
                                 "languages": {
@@ -1263,7 +1330,7 @@ define('bin/js/Setup', [
 
                 // if no checkbox is checked --> check the default
                 if (!checked && noChecked) {
-                    var name                      = 'input[name="project-lang-' + lang + '"]';
+                    var name = 'input[name="project-lang-' + lang + '"]';
                     Form.getElement(name).checked = true;
                 }
                 resolve();
@@ -1347,7 +1414,7 @@ define('bin/js/Setup', [
             url = url.split('&');
 
             for (var i = 0, len = url.length; i < len; i++) {
-                var parts        = url[i].split('=');
+                var parts = url[i].split('=');
                 Params[parts[0]] = parts[1];
             }
 
@@ -1361,7 +1428,7 @@ define('bin/js/Setup', [
                     }
 
                     button.addEvent('click', function () {
-                        var link        = window.location.origin + '/?language=' + lang;
+                        var link = window.location.origin + '/?language=' + lang;
                         window.location = link;
                     })
                 })

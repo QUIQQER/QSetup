@@ -75,6 +75,7 @@ $language = require_once "languageDetection.php";
         </div>
 
         <div class="header-left left-sidebar grid-20 pull-800 mobile-grid-100 hide-on-mobile">
+
             <div class="header-logo-container">
                 <img class="header-logo" src="/bin/img/logo.png" title="QUIQQER Logo" alt="Q-Logo"/>
                 <h4 style="font-weight: bold;">QUIQQER</h4>
@@ -156,7 +157,12 @@ $language = require_once "languageDetection.php";
     <div class="page">
         <div class="grid-container">
             <div class="nav left-sidebar grid-20 mobile-grid-100 hide-on-mobile">
+                <div class="system-check-button-container">
+                    <button id="system-check" title="System check"><span class="fa fa-fw icon-placeholder"></span>System check</button>
+
+                </div>
                 <ul class="nav-list">
+
                     <li class="first-step-menu">
                         <span class="fa fa-fw fa-check"></span>
                         <!--Sprache-->

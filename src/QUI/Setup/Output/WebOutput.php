@@ -14,23 +14,23 @@ class WebOutput implements Output
     /** @var  Locale $Locale */
     private $Locale;
 
-
     public function __construct($lang = "de_DE")
     {
-        $this->lang   = $lang;
+        $this->lang = $lang;
         $this->Locale = new Locale($lang);
     }
 
     /**
      * Writes a line to the output.
      *
-     * @param        $txt   - The message that should be written
-     * @param int    $level - The level it should use
+     * @param        $txt - The message that should be written
+     * @param int $level - The level it should use
      * @param string $color - The color of the message
      */
     public function writeLn($txt, $level = null, $color = null)
     {
         $msg = $txt;
+
         if ($level !== null) {
             switch ($level) {
                 case Output::LEVEL_DEBUG:
@@ -62,8 +62,8 @@ class WebOutput implements Output
             }
         }
 
-
         Log::append(strip_tags($msg));
+        $this->appendToStoredOutput($msg . "<br />");
 
         if ($color != null) {
             $msg = $this->getColoredString($msg, $color);
@@ -76,7 +76,7 @@ class WebOutput implements Output
     /**
      * Writes a line to the output and tries to translate the given key
      *
-     * @param     $key   - The lang-key.
+     * @param     $key - The lang-key.
      * @param int $level - The loglevel
      * @param int $color - The wanted color
      */
@@ -84,46 +84,7 @@ class WebOutput implements Output
     {
         $msg = $this->Locale->getStringLang($key, $key);
 
-        if ($level !== null) {
-            switch ($level) {
-                case Output::LEVEL_DEBUG:
-                    $msg = "[DEBUG] - " . $msg;
-                    $msg = $this->getColoredString($msg, Output::COLOR_INFO);
-                    break;
-
-                case Output::LEVEL_INFO:
-                    $msg = "[INFO] - " . $msg;
-                    $msg = $this->getColoredString($msg, Output::COLOR_INFO);
-                    break;
-
-                case Output::LEVEL_WARNING:
-                    $msg = "[WARNING] - " . $msg;
-                    $msg = $this->getColoredString($msg, Output::COLOR_WARNING);
-                    break;
-
-                case Output::LEVEL_ERROR:
-                    $msg = "[ERROR] - " . $msg;
-                    $msg = $this->getColoredString($msg, Output::COLOR_ERROR);
-                    Log::appendError(strip_tags($msg));
-                    break;
-
-                case Output::LEVEL_CRITICAL:
-                    $msg = "[!CRITICAL!] - " . $msg;
-                    $msg = $this->getColoredString($msg, Output::COLOR_ERROR);
-                    Log::appendError(strip_tags($msg));
-                    break;
-            }
-        }
-
-
-        Log::append(strip_tags($msg));
-
-        if ($color != null) {
-            $msg = $this->getColoredString($msg, $color);
-        }
-
-        echo $msg . " <br />";
-        $this->flush();
+        $this->writeLn($msg, $level, $color);
     }
 
     /**
@@ -135,7 +96,7 @@ class WebOutput implements Output
     {
         $this->lang = $lang;
         try {
-            $Locale       = new Locale($lang);
+            $Locale = new Locale($lang);
             $this->Locale = $Locale;
         } catch (LocaleException $Exception) {
             echo $this->Locale->getStringLang($Exception->getMessage());
@@ -158,7 +119,6 @@ class WebOutput implements Output
         }
         $paramString = rtrim($paramString, ",");
 
-
         $script = <<<SCRIPT
 <script>
     if (typeof window.parent !== 'undefined' &&
@@ -168,14 +128,15 @@ class WebOutput implements Output
 </script>
 SCRIPT;
 
-        $this->writeLn($script);
+        echo $script;
+        $this->flush();
     }
 
     /**
      * Surrounsds a string with color codes
      *
      * @param        $string - The String that should be colored
-     * @param string $color  - The color that should be used
+     * @param string $color - The color that should be used
      *
      * @return string
      */
@@ -211,6 +172,22 @@ SCRIPT;
         return $string;
     }
 
+    /**
+     * Appends the given teext to the web output log.
+     * This log is sued to store the displayed messages for the user.
+     * The logfile will be read and displayed after continuing to the next major step in iframe.php
+     *
+     * @param $text
+     */
+    protected function appendToStoredOutput($text)
+    {
+        $storedOutputFile = dirname(dirname(dirname(dirname(dirname(__FILE__))))) . "/var/weboutput.log";
+        file_put_contents($storedOutputFile, $text, FILE_APPEND);
+    }
+
+    /**
+     * Flushes the buffered output to the client.
+     */
     protected function flush()
     {
         echo '<script>window.scrollTo(0, document.body.scrollHeight);</script>';

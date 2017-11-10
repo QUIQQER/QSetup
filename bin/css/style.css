@@ -852,7 +852,7 @@ input[type=checkbox].button-checkbox:checked + label {
 }
 
 .header-logo {
-    max-width: 100%;
+    max-width: 120px;
     margin-bottom: 1em;
 }
 
@@ -866,7 +866,7 @@ input[type=checkbox].button-checkbox:checked + label {
 
 .header-right,
 .header-left {
-    padding-top: 3em;
+    padding-top: 2em;
 }
 
 .header-right {
@@ -1421,7 +1421,7 @@ pre code {
     .header-logo {
         display: block;
         margin: 20px auto;
-        width: 60px;
+        width: 80px;
     }
 
     .nav {

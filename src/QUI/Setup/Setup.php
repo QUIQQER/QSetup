@@ -217,33 +217,42 @@ class Setup
         $this->tableUsersWorkspaces = $this->data['database']['prefix'] . "users_workspaces";
 
         # Execute setup steps
+        QUI\Setup\Log\Log::append("New part - " . date("H:i:s"));
         switch ($step) {
             case self::STEP_SETUP_DATABASE:
                 $this->setupDatabase();
+                QUI\Setup\Log\Log::append("Database done - " . date("H:i:s"));
             //no break
             case self::STEP_SETUP_USER:
                 $this->setupUser();
+                QUI\Setup\Log\Log::append("User done - " . date("H:i:s"));
             //no break
             case self::STEP_SETUP_PATHS:
                 $this->setupPaths();
+                QUI\Setup\Log\Log::append("Paths done - " . date("H:i:s"));
             // no break
             case self::STEP_SETUP_COMPOSER:
                 $this->setupComposer();
+                QUI\Setup\Log\Log::append("Composer setup done - " . date("H:i:s"));
 
                 return;
 
             case self::STEP_SETUP_INSTALL_QUIQQER:
                 $this->setupComposerInstallQuiqqer();
+                QUI\Setup\Log\Log::append("Quiqqer install done - " . date("H:i:s"));
             //no break
             case self::STEP_SETUP_BOOTSTRAP:
                 $this->setupBootstrapFiles();
+                QUI\Setup\Log\Log::append("Bootstrap files done - " . date("H:i:s"));
                 return;
             //no break
             case self::STEP_SETUP_QUIQQERSETUP:
                 $this->executeQuiqqerSetups();
+                QUI\Setup\Log\Log::append("Setup done - " . date("H:i:s"));
             //no break
             case self::STEP_SETUP_CHECKS:
                 $this->executeQuiqqerChecks();
+                QUI\Setup\Log\Log::append("Checks done - " . date("H:i:s"));
             //no break
         }
 
@@ -265,10 +274,11 @@ class Setup
      * Applies a preset to an already setup Quiqqer installation
      *
      * @param $presetName - The name of the preset
+     * @param $step - (optional) The step of the preset application process. Only relevant for the web setup
      *
      * @throws SetupException
      */
-    public function applyPreset($presetName)
+    public function applyPreset($presetName, $step = 1)
     {
 
         $Output = null;
@@ -282,10 +292,13 @@ class Setup
 
         $webMode = ($this->mode == self::MODE_WEB) ? true : false;
         $Preset = new \QUI\Setup\Preset($presetName, $this->Locale, $Output, $webMode);
-        $Preset->apply(CMS_DIR);
+        $Preset->apply(CMS_DIR, $step);
 
-        // Due to timeout restrictions we will call the setup process in another request if the setup gets executed in the web mode
-        if ($this->mode == self::MODE_CLI) {
+        // Due to timeout restrictions in the web setup we split the proces into multiple steps.
+        // Each step gets executed in a separate request
+        // The CLI Setups can ignore those
+        if ($step == 1 && $this->mode == self::MODE_CLI) {
+            $Preset->apply(CMS_DIR, 2);
             $this->setupPreset();
         }
 
@@ -541,6 +554,7 @@ class Setup
         $varDir = ""
     ) {
     
+
         $paths = array();
         $cmsDir = Utils::normalizePath($cmsDir);
 
@@ -960,6 +974,7 @@ class Setup
                 'username' => $this->data['user']['name'],
                 'password' => $password,
                 'id' => $this->data['rootUID'],
+                'uuid' => "",
                 'usergroup' => $this->data['rootGID'],
                 'su' => 1,
                 'active' => 1,
@@ -1253,7 +1268,6 @@ class Setup
         chdir($composerDir);
 
         $res = $Composer->requirePackage('quiqqer/quiqqer', $this->data['version']);
-
         if ($res === false) {
             $this->exitWithError("setup.unknown.error");
         }
@@ -1357,7 +1371,6 @@ class Setup
 
         require OPT_DIR . 'quiqqer/quiqqer/lib/autoload.php';
 
-        QUI\Setup\Log\Log::append(print_r($this->data, true));
         if (!defined('ETC_DIR')) {
             define('ETC_DIR', $this->data['paths']['cms_dir'] . '/etc/');
         }

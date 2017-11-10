@@ -28,7 +28,7 @@ if (!isset($_GET['step'])) {
 
 require_once dirname(__FILE__) . '/vendor/autoload.php';
 // Load QUIQQER, if QUIQQER has been installed already.
-if ($_GET['step'] == "installpreset" || $_GET['step'] == "setuppreset") {
+if ($_GET['step'] == "installpreset" || $_GET['step'] == "installpreset2" || $_GET['step'] == "setuppreset") {
     # Apply preset
     if (!defined('QUIQQER_SYSTEM')) {
         define('QUIQQER_SYSTEM', true);
@@ -50,9 +50,8 @@ if (file_exists(dirname(__FILE__) . "/var/weboutput.log")) {
 // Configure the proper output
 error_reporting(E_ERROR | E_WARNING);
 ini_set('display_errors', 1);
-ini_set("error_log", dirname(__FILE__)."/var/log/setup.log");
+ini_set("error_log", dirname(__FILE__) . "/var/log/setup.log");
 ob_start();
-
 
 // Load stored setup data
 $dataFile = dirname(__FILE__) . "/setupdata.json";
@@ -90,11 +89,21 @@ if ($_GET['step'] === 'setupquiqqer') {
 }
 
 if ($_GET['step'] === 'installpreset') {
+    QUI\Setup\Log\Log::append("Install preset start - " . date("H:i:s"));
     installPreset();
+    QUI\Setup\Log\Log::append("Install preset end - " . date("H:i:s"));
+}
+
+if ($_GET['step'] === 'installpreset2') {
+    QUI\Setup\Log\Log::append("Install preset start - " . date("H:i:s"));
+    installPreset(2);
+    QUI\Setup\Log\Log::append("Install preset end - " . date("H:i:s"));
 }
 
 if ($_GET['step'] === 'setuppreset') {
+    QUI\Setup\Log\Log::append("Setup preset start - " . date("H:i:s"));
     setupPreset();
+    QUI\Setup\Log\Log::append("Setup preset end - " . date("H:i:s"));
 }
 
 if (file_exists($dataFile)) {
@@ -114,16 +123,8 @@ function prepareSetup()
     $Setup->runSetup();
     $Setup->storeSetupState();
 
-    if (isset($_REQUEST['language'])) {
-        echo "<script>window.location='?step=installquiqqer&language=" . $_REQUEST['language'] . "'</script>";
-    } else {
-        echo "<script>window.location='?step=installquiqqer'</script>";
-    }
-
     \QUI\Setup\Log\Log::append("Done preparing setup");
-    ob_flush();
-    flush();
-    exit;
+    continueWithStep("installquiqqer");
 }
 
 /**
@@ -145,16 +146,9 @@ function installQUIQQER()
     $Setup->runSetup(Setup::STEP_SETUP_INSTALL_QUIQQER);
     $Setup->storeSetupState();
 
-    if (isset($_REQUEST['language'])) {
-        echo "<script>window.location='?step=setupquiqqer&language=" . $_REQUEST['language'] . "'</script>";
-    } else {
-        echo "<script>window.location='?step=setupquiqqer'</script>";
-    }
 
     \QUI\Setup\Log\Log::append("QUIQQER Installation is done!");
-    ob_flush();
-    flush();
-    exit;
+    continueWithStep("setupquiqqer");
 }
 
 /**
@@ -169,8 +163,6 @@ function setupQUIQQER()
     if (!defined("QUIQQER_SETUP")) {
         define('QUIQQER_SETUP', true);
     }
-
-
 
     // Workaround to provide the correct data
     if (file_exists(dirname(__FILE__) . "/var/tmp/setup.json")) {
@@ -187,23 +179,19 @@ function setupQUIQQER()
 
     \QUI\Setup\Log\Log::append("QUIQQER Setup is done");
 
-    if (isset($_REQUEST['language'])) {
-        echo "<script>window.location='?step=installpreset&language=" . $_REQUEST['language'] . "'</script>";
-    } else {
-        echo "<script>window.location='?step=installpreset'</script>";
-    }
 
-    ob_flush();
-    flush();
-    exit;
+    continueWithStep("installpreset");
 }
 
 /**
  * Installs the packages associated with the preset and creates the project
+ * @param int $step - (optional) The step of the preset application process. Only relevant for the web setup!
  */
-function installPreset()
+function installPreset($step = 1)
 {
     global $Setup, $data;
+
+
 
     \QUI\Setup\Log\Log::append("Installing Preset");
 
@@ -226,25 +214,20 @@ function installPreset()
         );
 
         $Setup->restoreData();
-        $Setup->applyPreset("default");
+        $Setup->applyPreset("default", $step);
         $Setup->storeSetupState();
     } catch (\Exception $Exception) {
         echo "Error : " . $Exception->getMessage() . " <br />";
         ob_flush();
         flush();
     }
+    \QUI\Setup\Log\Log::append("Preset installed");
 
-    if (isset($_REQUEST['language'])) {
-        echo "<script>window.location='?step=setuppreset&language=" . $_REQUEST['language'] . "'</script>";
-    } else {
-        echo "<script>window.location='?step=setuppreset'</script>";
+    if ($step==1) {
+        continueWithStep("installpreset2");
     }
 
-    \QUI\Setup\Log\Log::append("Preset installed");
-    ob_flush();
-    flush();
-
-    exit;
+    continueWithStep("setuppreset");
 }
 
 /**
@@ -261,4 +244,20 @@ function setupPreset()
     $Setup->deleteSetupFiles();
 
     \QUI\Setup\Log\Log::append("Done with setting up the preset");
+}
+
+/**
+ * Executes a javascript snippet to continue with the given step.
+ */
+function continueWithStep($step)
+{
+    if (isset($_REQUEST['language'])) {
+        echo "<script>window.location='?step=" . $step . "&language=" . $_REQUEST['language'] . "'</script>";
+    } else {
+        echo "<script>window.location='?step=" . $step . "'</script>";
+    }
+
+    ob_flush();
+    flush();
+    exit;
 }

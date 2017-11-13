@@ -562,8 +562,8 @@ class Setup
         $binDir = "",
         $optDir = "",
         $varDir = ""
-    )
-    {
+    ) {
+    
 
         $paths = array();
         $cmsDir = Utils::normalizePath($cmsDir);

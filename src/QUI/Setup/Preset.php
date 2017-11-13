@@ -317,7 +317,11 @@ class Preset
 
         $Config = \QUI::getProjectManager()->getConfig();
 
-        $this->Composer->requirePackage($this->templateName, $this->templateVersion, array("prefer-source" => $this->developerMode));
+        $options = array();
+        if ($this->developerMode) {
+            $options["--prefer-source"] = true;
+        }
+        $this->Composer->requirePackage($this->templateName, $this->templateVersion, $options);
 
         # Config main project to use new template
         if (!empty($this->templateName) && !empty($this->projectName)) {
@@ -358,8 +362,13 @@ class Preset
      */
     protected function installPackages()
     {
+        $options = array();
+        if ($this->developerMode) {
+            $options["--prefer-source"] = true;
+        }
+
         foreach ($this->packages as $name => $version) {
-            $this->Composer->requirePackage($name, $version, array("prefer-source" => $this->developerMode));
+            $this->Composer->requirePackage($name, $version, $options);
 
             $this->Output->writeLn(
                 $this->Locale->getStringLang("applypreset.require.package", "Require Package :") . $name,

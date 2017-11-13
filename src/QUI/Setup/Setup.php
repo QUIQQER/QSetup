@@ -1222,7 +1222,11 @@ class Setup
             $Composer->setMode(Composer::MODE_WEB);
         }
 
-        $res = $Composer->update(array("prefer-source" => $this->developerMode));
+        $options = array();
+        if ($this->developerMode) {
+            $options["--prefer-source"] = true;
+        }
+        $res = $Composer->update($options);
         if ($res === false) {
             $this->exitWithError("setup.unknown.error");
         }
@@ -1235,7 +1239,11 @@ class Setup
         }
 
         # Execute composer again
-        $res = $Composer->requirePackage('quiqqer/quiqqer', $this->data['version'], array("prefer-source" => $this->developerMode));
+        $options = array();
+        if ($this->developerMode) {
+            $options["--prefer-source"] = true;
+        }
+        $res = $Composer->requirePackage('quiqqer/quiqqer', $this->data['version'], $options);
 
         if ($res === false) {
             $this->exitWithError("setup.unknown.error");
@@ -1277,7 +1285,11 @@ class Setup
 
         chdir($composerDir);
 
-        $res = $Composer->requirePackage('quiqqer/quiqqer', $this->data['version'], array("prefer-source" => $this->developerMode));
+        $options = array();
+        if ($this->developerMode) {
+            $options["--prefer-source"] = true;
+        }
+        $res = $Composer->requirePackage('quiqqer/quiqqer', $this->data['version'], $options);
         if ($res === false) {
             $this->exitWithError("setup.unknown.error");
         }

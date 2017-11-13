@@ -15,17 +15,22 @@ define('QUIQQER_SETUP', true);
 $args = array_slice($argv, 1);
 
 // Parameter
-if (count($args) != 3) {
+if (count($args) != 3 && count($args) != 4) {
     writeStatus(1, "Invalid parameter count");
     exit('Invalid parameter count');
 }
 
-
 # Make sure that there is a trailing slash
-$cmsDir   = rtrim($args[0], '/') . '/';
-$preset   = $args[1];
+$cmsDir = rtrim($args[0], '/') . '/';
+$preset = $args[1];
 $language = $args[2];
 
+
+
+$developerMode = false;
+if (in_array("--dev", array_map("strtolower", array_map("trim", $args)))) {
+    $developerMode = true;
+}
 
 // Execute
 if (empty($cmsDir)) {
@@ -35,14 +40,13 @@ if (empty($cmsDir)) {
 
 require_once $cmsDir . 'bootstrap.php';
 
-
 $Config = parse_ini_file(ETC_DIR . 'conf.ini.php', true);
 if ($Config === false) {
     writeStatus(1, "Could not parse config.");
 }
 
 try {
-    $uid  = $Config['globals']['rootuser'];
+    $uid = $Config['globals']['rootuser'];
     $User = QUI::getUsers()->get($uid);
 
     // Read user authentication details from passwd file
@@ -58,6 +62,11 @@ try {
     $Setup = new QUI\Setup\Setup(QUI\Setup\Setup::MODE_CLI);
     $Setup->restoreData();
     $Setup->setSetupLanguage($language);
+
+    if ($developerMode) {
+        $Setup->setDeveloperMode();
+    }
+
     $Setup->applyPreset($preset);
 } catch (Exception $Exception) {
     \QUI\Setup\Log\Log::error($Exception->getMessage());
@@ -72,14 +81,13 @@ function writeStatus($status, $msg = "")
     $file = dirname(dirname(dirname(dirname(__FILE__)))) . '/var/tmp/applypreset.json';
 
     $data = array(
-        'status'  => $status,
+        'status' => $status,
         'message' => $msg
     );
 
     if ($status != 0) {
         \QUI\Setup\Log\Log::error($msg);
     }
-
 
     $json = json_encode($data, JSON_PRETTY_PRINT);
     file_put_contents($file, $json);

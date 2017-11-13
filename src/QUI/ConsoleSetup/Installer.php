@@ -47,12 +47,14 @@ class Installer
     const LEVEL_ERROR = 3;
     const LEVEL_CRITICAL = 4;
 
-
-    private $logDir;
-
+    /** @var bool */
+    protected $developerMode = false;
+    /** @var string */
+    protected $logDir;
+    /** @var string */
     protected $langCode = "en";
-
-    private $url = "";
+    /** @var string */
+    protected $url = "";
 
     /**
      * Installer constructor.
@@ -169,6 +171,10 @@ class Installer
             # Continue Setup execution.
             # Switch fallthrough to execute all steps after last finished step
             $firstStep = $data['step'];
+        }
+
+        if ($this->developerMode) {
+            $this->Setup->setDeveloperMode();
         }
 
         $this->continueAfterStep($firstStep);
@@ -321,7 +327,7 @@ class Installer
 
         $this->Setup->storeSetupState();
     }
-    
+
     /**
      * Prompts the user for the language quiqqer should use
      */
@@ -937,6 +943,7 @@ SMILEY;
         $allowEmpty = false
     ) {
     
+
         if ($color != null) {
             $text = $this->getColoredString($text, $color);
         } else {
@@ -1171,6 +1178,10 @@ HEADER;
 
     #endregion
 
+    /**
+     * Echos the restorable data in a human readable form
+     * @param $data
+     */
     private function echoRestorableData($data)
     {
         $setupData = $data['data'];
@@ -1372,5 +1383,13 @@ HEADER;
                     break;
             }
         }
+    }
+
+    /**
+     * Sets the developer mode.
+     */
+    public function setDeveloperMode()
+    {
+        $this->developerMode = true;
     }
 }

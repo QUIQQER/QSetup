@@ -115,13 +115,13 @@ if (file_exists($dataFile)) {
  */
 function prepareSetup()
 {
-    global $Setup, $data;
+    global $Installer, $data;
 
     \QUI\Setup\Log\Log::append("Preparing setup");
 
-    $Setup->setData($data);
-    $Setup->runSetup();
-    $Setup->storeSetupState();
+    $Installer->setData($data);
+    $Installer->runSetup();
+    $Installer->storeSetupState();
 
     \QUI\Setup\Log\Log::append("Done preparing setup");
     continueWithStep("installquiqqer");
@@ -132,19 +132,19 @@ function prepareSetup()
  */
 function installQUIQQER()
 {
-    global $Setup, $data;
+    global $Installer, $data;
 
     \QUI\Setup\Log\Log::append("Installing QUIQQER");
 
-    $Setup->restoreData();
-    $data['salt'] = $Setup->getData()['salt'];
-    $data['saltlength'] = $Setup->getData()['saltlength'];
-    $data['rootGID'] = $Setup->getData()['rootGID'];
-    $data['rootUID'] = $Setup->getData()['rootUID'];
+    $Installer->restoreData();
+    $data['salt'] = $Installer->getData()['salt'];
+    $data['saltlength'] = $Installer->getData()['saltlength'];
+    $data['rootGID'] = $Installer->getData()['rootGID'];
+    $data['rootUID'] = $Installer->getData()['rootUID'];
 
-    $Setup->setData($data);
-    $Setup->runSetup(Setup::STEP_SETUP_INSTALL_QUIQQER);
-    $Setup->storeSetupState();
+    $Installer->setData($data);
+    $Installer->runSetup(Setup::STEP_SETUP_INSTALL_QUIQQER);
+    $Installer->storeSetupState();
 
 
     \QUI\Setup\Log\Log::append("QUIQQER Installation is done!");
@@ -157,7 +157,7 @@ function installQUIQQER()
 function setupQUIQQER()
 {
 
-    global $Setup, $data;
+    global $Installer, $data;
 
     //Workaround
     if (!defined("QUIQQER_SETUP")) {
@@ -173,9 +173,9 @@ function setupQUIQQER()
     }
 
     \QUI\Setup\Log\Log::append("Setting up QUIQQER");
-    $Setup->restoreData();
-    $Setup->runSetup(Setup::STEP_SETUP_QUIQQERSETUP);
-    $Setup->storeSetupState();
+    $Installer->restoreData();
+    $Installer->runSetup(Setup::STEP_SETUP_QUIQQERSETUP);
+    $Installer->storeSetupState();
 
     \QUI\Setup\Log\Log::append("QUIQQER Setup is done");
 
@@ -189,7 +189,7 @@ function setupQUIQQER()
  */
 function installPreset($step = 1)
 {
-    global $Setup, $data;
+    global $Installer, $data;
 
 
 
@@ -213,9 +213,9 @@ function installPreset($step = 1)
             $passwd
         );
 
-        $Setup->restoreData();
-        $Setup->applyPreset("default", $step);
-        $Setup->storeSetupState();
+        $Installer->restoreData();
+        $Installer->applyPreset("default", $step);
+        $Installer->storeSetupState();
     } catch (\Exception $Exception) {
         echo "Error : " . $Exception->getMessage() . " <br />";
         ob_flush();
@@ -235,13 +235,13 @@ function installPreset($step = 1)
  */
 function setupPreset()
 {
-    global $Setup, $data;
+    global $Installer, $data;
 
     \QUI\Setup\Log\Log::append("Setting up preset");
 
-    $Setup->restoreData();
-    $Setup->setupPreset();
-    $Setup->deleteSetupFiles();
+    $Installer->restoreData();
+    $Installer->setupPreset();
+    $Installer->deleteSetupFiles();
 
     \QUI\Setup\Log\Log::append("Done with setting up the preset");
 }

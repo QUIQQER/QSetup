@@ -20,12 +20,15 @@ Primarily aimed at __console applications__, where the setup object can be store
 2) Call its setters to provide neccessary data for each step
 3) Execute Setup::runSetup()
 
+
+
 ### Method 2 (Web Setup)
 
 Primarily aimed at __websetups__ , where the setup has to be executed in one request  (no consistent setupobject)
 1) Instantiate a new setup object
 2) call the Setup::setData(array $data) function and provide a valid data array with all parameters
 3) Execute Setup::runSetup()
+
 
 ## Folderstructure
 

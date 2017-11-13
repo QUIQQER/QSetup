@@ -72,6 +72,7 @@ class Setup
 
     /** @var  int $mode - The mode in which the setup is executed. Setup::MODE_CLI or Setup::MODE_WEB */
     private $mode;
+    protected $developerMode = false;
 
     # Tablenames (for easier access). Will be set in runSetup()
     private $tableUser;
@@ -80,9 +81,11 @@ class Setup
     private $tablePermissions2Groups;
     private $tableUsersWorkspaces;
 
+    // Directory paths for easy access.
     private $baseDir;
     private $tmpDir;
     private $logDir;
+
     # ----------------
     # Init
     # ----------------
@@ -270,6 +273,9 @@ class Setup
         }
     }
 
+    #endregion
+
+    #region Preset
     /**
      * Applies a preset to an already setup Quiqqer installation
      *
@@ -305,8 +311,6 @@ class Setup
         $this->Step = self::STEP_SETUP_PRESET;
     }
 
-    #endregion
-
     /**
      * Calls the setup methods for the freshly installed preset
      */
@@ -323,9 +327,6 @@ class Setup
 
         $this->Output->writeLn($this->Locale->getStringLang("applypreset.done", "Preset applied and configured!."), Output::COLOR_INFO);
     }
-
-
-    #region CLI Only
 
     /**
      * Calls the applyPresetCLI.php file.
@@ -344,7 +345,7 @@ class Setup
         file_put_contents(CMS_DIR . "var/tmp/.preset_pwd", $this->data['user']['pw']);
 
         exec(
-            $phpPath . " {$applyPresetFile} {$cmsDir} {$this->data['preset']} {$this->setupLang}",
+            $phpPath . " {$applyPresetFile} {$cmsDir} {$this->data['preset']} {$this->setupLang}" . ($this->developerMode ? ' --dev' : ''),
             $cmdOutput,
             $cmdStatus
         );
@@ -374,9 +375,18 @@ class Setup
 
         $this->publishSetupState();
     }
+
     #endregion
 
     #region Getter/Setter
+
+    /**
+     * Activates the developer mode
+     */
+    public function setDeveloperMode()
+    {
+        $this->developerMode = true;
+    }
 
     /**
      * Sets the Language, that the setup should use.
@@ -1212,7 +1222,7 @@ class Setup
             $Composer->setMode(Composer::MODE_WEB);
         }
 
-        $res = $Composer->update();
+        $res = $Composer->update(array("prefer-source" => $this->developerMode));
         if ($res === false) {
             $this->exitWithError("setup.unknown.error");
         }
@@ -1225,7 +1235,7 @@ class Setup
         }
 
         # Execute composer again
-        $res = $Composer->requirePackage('quiqqer/quiqqer', $this->data['version']);
+        $res = $Composer->requirePackage('quiqqer/quiqqer', $this->data['version'], array("prefer-source" => $this->developerMode));
 
         if ($res === false) {
             $this->exitWithError("setup.unknown.error");
@@ -1267,7 +1277,7 @@ class Setup
 
         chdir($composerDir);
 
-        $res = $Composer->requirePackage('quiqqer/quiqqer', $this->data['version']);
+        $res = $Composer->requirePackage('quiqqer/quiqqer', $this->data['version'], array("prefer-source" => $this->developerMode));
         if ($res === false) {
             $this->exitWithError("setup.unknown.error");
         }
@@ -1791,6 +1801,8 @@ LOGETC;
         return $data;
     }
 
+
+
     #endregion
 
     // ************************************************** //
@@ -1924,6 +1936,11 @@ LOGETC;
 
         $data['extra']['asset-installer-paths']['npm-asset-library'] = $this->data['paths']['opt_dir'] . "bin/";
         $data['extra']['asset-installer-paths']['bower-asset-library'] = $this->data['paths']['opt_dir'] . "bin/";
+
+        # Developer mode
+        if ($this->developerMode) {
+            $data["preferred-install"] = "source";
+        }
 
         # Add custom repositories
         $created = file_put_contents(

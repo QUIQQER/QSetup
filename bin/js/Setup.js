@@ -29,6 +29,7 @@ define('bin/js/Setup', [
 ) {
     "use strict";
 
+
     QUILocale.setCurrent(CURRENT_LOCALE);
 
     return new Class({

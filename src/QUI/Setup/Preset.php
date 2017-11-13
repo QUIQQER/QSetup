@@ -52,6 +52,8 @@ class Preset
 
     protected $presets = array();
 
+    protected $developerMode = false;
+
     # ======================================================================== #
 
     /**
@@ -315,7 +317,7 @@ class Preset
 
         $Config = \QUI::getProjectManager()->getConfig();
 
-        $this->Composer->requirePackage($this->templateName, $this->templateVersion);
+        $this->Composer->requirePackage($this->templateName, $this->templateVersion, array("prefer-source" => $this->developerMode));
 
         # Config main project to use new template
         if (!empty($this->templateName) && !empty($this->projectName)) {
@@ -357,7 +359,7 @@ class Preset
     protected function installPackages()
     {
         foreach ($this->packages as $name => $version) {
-            $this->Composer->requirePackage($name, $version);
+            $this->Composer->requirePackage($name, $version, array("prefer-source" => $this->developerMode));
 
             $this->Output->writeLn(
                 $this->Locale->getStringLang("applypreset.require.package", "Require Package :") . $name,
@@ -495,5 +497,13 @@ class Preset
         }
 
         return $result;
+    }
+
+    /**
+     * Activates the developer mode
+     */
+    protected function setDeveloperMode()
+    {
+        $this->developerMode = true;
     }
 }

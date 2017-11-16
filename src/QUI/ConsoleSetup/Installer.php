@@ -62,7 +62,7 @@ class Installer
     public function __construct()
     {
         try {
-            $this->Setup = new Setup(Setup::MODE_CLI);
+            $this->Setup  = new Setup(Setup::MODE_CLI);
             $this->Locale = new Locale('en_GB');
             $this->Setup->setSetupLanguage("en_GB");
         } catch (Exception $Exception) {
@@ -262,11 +262,11 @@ class Installer
             $this->Locale->getStringLang("message.step.requirements", "Requirements")
         );
 
-        $errors = false;
+        $errors   = false;
         $warnings = false;
 
         $Requirements = new Requirements($this->langCode);
-        $AllTests = $Requirements->getTests(array(
+        $AllTests     = $Requirements->getTests(array(
             "database",
             "webserver"
         ));
@@ -280,6 +280,7 @@ class Installer
 
                 switch ($Test->getResult()->getStatus()) {
                     case TestResult::STATUS_FAILED:
+                        $errors = true;
                         $status = "\e[91m" . $Test->getResult()->getStatusHumanReadable() . "\e[0m";
                         break;
                     case TestResult::STATUS_OK:
@@ -289,7 +290,8 @@ class Installer
                         $status = "\e[93m" . $Test->getResult()->getStatusHumanReadable() . "\e[0m";
                         break;
                     case TestResult::STATUS_WARNING:
-                        $status = "\e[93m" . $Test->getResult()->getStatusHumanReadable() . "\e[0m";
+                        $warnings = true;
+                        $status   = "\e[93m" . $Test->getResult()->getStatusHumanReadable() . "\e[0m";
                         break;
                 }
 
@@ -384,7 +386,7 @@ class Installer
      */
     private function stepPreset()
     {
-        $presets = Preset::getPresets();
+        $presets      = Preset::getPresets();
         $presetString = "";
         foreach ($presets as $name => $preset) {
             $presetString .= $name . ", ";
@@ -413,7 +415,7 @@ class Installer
         $presetData = $presets[$preset];
 
         $presetDataProjectName = !empty($presetData['project']['name']) ? $presetData['project']['name'] : false;
-        $projectName = $this->prompt(
+        $projectName           = $this->prompt(
             $this->Locale->getStringLang("prompt.preset.customize.projectname", "Projectname: "),
             $presetDataProjectName
         );
@@ -482,7 +484,7 @@ class Installer
 
         ## Template ##############
         $presetDataTemplate = isset($presetData['template']['name']) ? $presetData['template']['name'] : false;
-        $templateName = $this->prompt(
+        $templateName       = $this->prompt(
             $this->Locale->getStringLang("prompt.preset.customize.template", "Templatename: "),
             $presetDataTemplate
         );
@@ -578,9 +580,9 @@ class Installer
         // If the given database does not exist, the user will be prompted if the database should be created.
         // If he does not want to create the database he will be prompted for a new databasename
         // That way he does not have to enter all the credentials again if he made a typo.
-        $createNew = false;
+        $createNew     = false;
         $validDatabase = false;
-        $db = "";
+        $db            = "";
         while (!$validDatabase) {
             # Ask for Database name
             $db = $this->prompt(
@@ -615,7 +617,7 @@ class Installer
                         return $this->stepDatabase();
                     }
 
-                    $createNew = true;
+                    $createNew     = true;
                     $validDatabase = true;
                 }
             } elseif (!Database::checkDatabaseWriteAccess($driver, $host, $user, $pw, $db, $port)) {
@@ -740,7 +742,7 @@ class Installer
         if (substr($host, 0, 7) != 'http://' && substr($host, 0, 8) != 'https://') {
             $host = "http://" . $host;
         }
-        $host = rtrim($host, '/');
+        $host      = rtrim($host, '/');
         $this->url = $host;
         # CMS dir
         $continue = true;
@@ -942,7 +944,6 @@ SMILEY;
         $toLower = false,
         $allowEmpty = false
     ) {
-    
 
         if ($color != null) {
             $text = $this->getColoredString($text, $color);
@@ -956,7 +957,7 @@ SMILEY;
 
         # Continue to prompt userinput, until user input is not empty,
         # unless allowempty is true or default can be used
-        $result = "";
+        $result   = "";
         $continue = true;
         while ($continue) {
             echo $text . " ";
@@ -971,7 +972,7 @@ SMILEY;
 
             if (empty($result)) {
                 if ($default !== false) {
-                    $result = $default;
+                    $result   = $default;
                     $continue = false;
                 } else {
                     if (!$allowEmpty) {
@@ -1180,6 +1181,7 @@ HEADER;
 
     /**
      * Echos the restorable data in a human readable form
+     *
      * @param $data
      */
     private function echoRestorableData($data)

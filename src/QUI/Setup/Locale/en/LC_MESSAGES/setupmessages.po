@@ -665,3 +665,12 @@ msgstr "QUIQQER detected Apache (2.3 or higher) as webserver."
 
 msgid "setup.web.no.json"
 msgstr "The PHP module 'json' is required to continue. <br /> Please install the module and try again."
+
+msgid "exception.preset.not.writeable"
+msgstr "The Presetfile is not writeable. The Webserver may not have write permission to the document root folder"
+
+msgid "prompt.requirements.not.met"
+msgstr "Not all requirements could be met. Unfortunately QUIQQER can not get installed."
+
+msgid "warning.requirement.warning"
+msgstr "Some requirements resulted in warnings. QUIQQER will run but some functionalities might not work."

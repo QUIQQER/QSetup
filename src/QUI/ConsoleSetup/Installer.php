@@ -62,7 +62,7 @@ class Installer
     public function __construct()
     {
         try {
-            $this->Setup  = new Setup(Setup::MODE_CLI);
+            $this->Setup = new Setup(Setup::MODE_CLI);
             $this->Locale = new Locale('en_GB');
             $this->Setup->setSetupLanguage("en_GB");
         } catch (Exception $Exception) {
@@ -262,11 +262,12 @@ class Installer
             $this->Locale->getStringLang("message.step.requirements", "Requirements")
         );
 
-        $errors   = false;
-        $warnings = false;
+        $errors = array();
+        $warnings = array();
+        $unknown = array();
 
         $Requirements = new Requirements($this->langCode);
-        $AllTests     = $Requirements->getTests(array(
+        $AllTests = $Requirements->getTests(array(
             "database",
             "webserver"
         ));
@@ -280,18 +281,19 @@ class Installer
 
                 switch ($Test->getResult()->getStatus()) {
                     case TestResult::STATUS_FAILED:
-                        $errors = true;
+                        $errors[$Test->getName()] = $Test->getResult();
                         $status = "\e[91m" . $Test->getResult()->getStatusHumanReadable() . "\e[0m";
                         break;
                     case TestResult::STATUS_OK:
                         $status = "\e[92m" . $Test->getResult()->getStatusHumanReadable() . "\e[0m";
                         break;
                     case TestResult::STATUS_UNKNOWN:
+                        $unknown[$Test->getName()] = $Test->getResult();
                         $status = "\e[93m" . $Test->getResult()->getStatusHumanReadable() . "\e[0m";
                         break;
                     case TestResult::STATUS_WARNING:
-                        $warnings = true;
-                        $status   = "\e[93m" . $Test->getResult()->getStatusHumanReadable() . "\e[0m";
+                        $warnings[$Test->getName()] = $Test->getResult();
+                        $status = "\e[93m" . $Test->getResult()->getStatusHumanReadable() . "\e[0m";
                         break;
                 }
 
@@ -299,25 +301,42 @@ class Installer
             }
         }
 
-        if ($errors) {
-            $continue = $this->prompt(
+        if (!empty($errors)) {
+            $this->writeLn(
                 $this->Locale->getStringLang(
-                    "prompt.requirements.continue",
-                    "Not all Requirements could be met. If you still want to continue, we can not guaruantee the functionality of QUIQQER. Continue anyway? (y/n)"
+                    "prompt.requirements.not.met",
+                    "Not all Requirements could be met."
                 ),
-                "n",
-                COLOR_RED,
-                false,
-                true
+                self::LEVEL_CRITICAL
+            );
+            exit;
+        }
+
+        # Echo Warning for unknown requirements.
+        if (!empty($warnings)) {
+            $this->writeLn(
+                $this->Locale->getStringLang(
+                    "warning.requirement.warning",
+                    "Some requirements resulted in warnings. QUIQQER will run but some functionalities might not work."
+                ),
+                self::LEVEL_WARNING
             );
 
-            if ($continue != "y") {
-                exit;
+            $this->writeLn("");
+            $this->writeLn("");
+            /**
+             * @var string $testName
+             * @var  TestResult $TestResult
+             */
+            foreach ($warnings as $testName => $TestResult) {
+                $this->writeLn($TestResult->getStatusHumanReadable() . ": " . $testName, null, COLOR_YELLOW);
+                $this->writeLn($TestResult->getMessageConsole());
+                $this->writeLn("");
             }
         }
 
         # Echo Warning for unknown requirements.
-        if (!$errors && $warnings) {
+        if (empty($warnings) && !empty($unknown)) {
             $this->writeLn(
                 $this->Locale->getStringLang(
                     "warning.requirement.unknown",
@@ -325,6 +344,17 @@ class Installer
                 ),
                 self::LEVEL_WARNING
             );
+
+            /**
+             * @var string $testName
+             * @var  TestResult $TestResult
+             */
+            foreach ($errors as $testName => $TestResult) {
+                $this->writeLn($TestResult->getStatusHumanReadable() . ": " . $testName, null, COLOR_RED);
+                $this->writeLn($TestResult->getMessageConsole());
+                $this->writeLn("");
+                $this->writeLn("");
+            }
         }
 
         $this->Setup->storeSetupState();
@@ -386,7 +416,7 @@ class Installer
      */
     private function stepPreset()
     {
-        $presets      = Preset::getPresets();
+        $presets = Preset::getPresets();
         $presetString = "";
         foreach ($presets as $name => $preset) {
             $presetString .= $name . ", ";
@@ -415,7 +445,7 @@ class Installer
         $presetData = $presets[$preset];
 
         $presetDataProjectName = !empty($presetData['project']['name']) ? $presetData['project']['name'] : false;
-        $projectName           = $this->prompt(
+        $projectName = $this->prompt(
             $this->Locale->getStringLang("prompt.preset.customize.projectname", "Projectname: "),
             $presetDataProjectName
         );
@@ -484,7 +514,7 @@ class Installer
 
         ## Template ##############
         $presetDataTemplate = isset($presetData['template']['name']) ? $presetData['template']['name'] : false;
-        $templateName       = $this->prompt(
+        $templateName = $this->prompt(
             $this->Locale->getStringLang("prompt.preset.customize.template", "Templatename: "),
             $presetDataTemplate
         );
@@ -580,9 +610,9 @@ class Installer
         // If the given database does not exist, the user will be prompted if the database should be created.
         // If he does not want to create the database he will be prompted for a new databasename
         // That way he does not have to enter all the credentials again if he made a typo.
-        $createNew     = false;
+        $createNew = false;
         $validDatabase = false;
-        $db            = "";
+        $db = "";
         while (!$validDatabase) {
             # Ask for Database name
             $db = $this->prompt(
@@ -617,7 +647,7 @@ class Installer
                         return $this->stepDatabase();
                     }
 
-                    $createNew     = true;
+                    $createNew = true;
                     $validDatabase = true;
                 }
             } elseif (!Database::checkDatabaseWriteAccess($driver, $host, $user, $pw, $db, $port)) {
@@ -742,7 +772,7 @@ class Installer
         if (substr($host, 0, 7) != 'http://' && substr($host, 0, 8) != 'https://') {
             $host = "http://" . $host;
         }
-        $host      = rtrim($host, '/');
+        $host = rtrim($host, '/');
         $this->url = $host;
         # CMS dir
         $continue = true;
@@ -944,6 +974,7 @@ SMILEY;
         $toLower = false,
         $allowEmpty = false
     ) {
+    
 
         if ($color != null) {
             $text = $this->getColoredString($text, $color);
@@ -957,7 +988,7 @@ SMILEY;
 
         # Continue to prompt userinput, until user input is not empty,
         # unless allowempty is true or default can be used
-        $result   = "";
+        $result = "";
         $continue = true;
         while ($continue) {
             echo $text . " ";
@@ -972,7 +1003,7 @@ SMILEY;
 
             if (empty($result)) {
                 if ($default !== false) {
-                    $result   = $default;
+                    $result = $default;
                     $continue = false;
                 } else {
                     if (!$allowEmpty) {

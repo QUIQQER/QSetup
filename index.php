@@ -2,8 +2,26 @@
 
 require "vendor/autoload.php";
 
+
+
+
+
+
+
+
 // setup language
 $language = require_once "languageDetection.php";
+$Locale = new \QUI\Setup\Locale\Locale($language);
+
+$conf = QUI\Setup\Setup::getConfig();
+
+// Check for neccessary modules
+if(!function_exists('json_decode') || !function_exists('json_encode')){
+    echo "<div style='width:400px; margin: 100px auto; padding:10px; background: #F2D4CE; border: 1px solid #AE432E'>"
+        .$Locale->getStringLang('setup.web.no.json').
+        "</div>";
+    exit;
+}
 
 ?>
 <!DOCTYPE>
@@ -36,9 +54,7 @@ $language = require_once "languageDetection.php";
 
     <?php
 
-    $Locale = new \QUI\Setup\Locale\Locale($language);
 
-    $conf = QUI\Setup\Setup::getConfig();
 
     ?>
     <script>

@@ -666,3 +666,6 @@ msgstr "QUIQQER hat Apache in Version 2.3 oder höher als Webserver erkannt."
 
 msgid "setup.web.no.json"
 msgstr "Das PHP Modul 'json' wird benötigt um fortzufahren.<br /> Bitte installieren Sie das Modul und versuchen Sie es erneut."
+
+msgid "exception.preset.not.writeable"
+msgstr "Die presertDatei ist nicht schreibbar. Eventuell hat der Webserver keinen Schreibzugriff auf den DocumnetRoot."

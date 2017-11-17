@@ -1375,6 +1375,7 @@ define('bin/js/Setup', [
                         resolve();
                     },
                     onFailure: function (response) {
+                        console.log(response);
                         reject(response);
                     }
                 }).send();

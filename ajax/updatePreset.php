@@ -50,6 +50,11 @@ try {
 $json = json_encode($presetData, JSON_PRETTY_PRINT);
 
 $presetFile = dirname(dirname(__FILE__)) . "/templates/presets/" . $presetName . ".json";
+
+if(!is_writable($presetFile)){
+    \QUI\Setup\Utils\Ajax::output("exception.preset.not.writeable", 500);
+}
+
 file_put_contents($presetFile, $json);
 
 

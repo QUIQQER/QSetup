@@ -149,7 +149,7 @@ msgid "message.step.version"
 msgstr "Version selection"
 
 msgid "prompt.version"
-msgstr "Please enter the version of Quieer that should be installed: "
+msgstr "Please enter the version of QUIQQER that should be installed: "
 
 msgid "message.preset.available"
 msgstr "Following presets can be selected: "

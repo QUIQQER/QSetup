@@ -149,7 +149,7 @@ msgid "message.step.version"
 msgstr "Version selection"
 
 msgid "prompt.version"
-msgstr "Please enter the version of Quieer that should be installed: "
+msgstr "Please enter the version of QUIQQER that should be installed: "
 
 msgid "message.preset.available"
 msgstr "Following presets can be selected: "
@@ -662,3 +662,6 @@ msgstr "QUIQQER detected Apache (2.2 or less) as webserver."
 
 msgid "message.webserver.detected.apache24"
 msgstr "QUIQQER detected Apache (2.3 or higher) as webserver."
+
+msgid "setup.web.no.json"
+msgstr "The PHP module 'json' is required to continue. <br /> Please install the module and try again."

@@ -669,3 +669,9 @@ msgstr "Das PHP Modul 'json' wird benötigt um fortzufahren.<br /> Bitte install
 
 msgid "exception.preset.not.writeable"
 msgstr "Die presertDatei ist nicht schreibbar. Eventuell hat der Webserver keinen Schreibzugriff auf den DocumnetRoot."
+
+msgid "prompt.requirements.not.met"
+msgstr "Es konnten nicht alle Vorraussetzungen erfüllt werden. QUIQQER kann leider nicht installiert werden."
+
+msgid "warning.requirement.warning"
+msgstr "Die Tests ergaben Warnungen. QUIQQER wird funktionieren, aber manche Funktionen werden deaktiviert oder eingeschränkt."

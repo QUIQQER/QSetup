@@ -104,6 +104,10 @@ class GetTextLocale implements LocaleInterface
             array($this->current, $this->current . ".utf8", $this->current . ".UTF8")
         );
 
+        if ($res === false && substr($lang, 0, 2) != "en") {
+            $this->setLanguage("en_GB");
+        }
+
         if ($res === false) {
             throw new LocaleException("locale.localeset.failed");
         }

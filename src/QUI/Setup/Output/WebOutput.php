@@ -193,11 +193,11 @@ SCRIPT;
         echo '<script>window.scrollTo(0, document.body.scrollHeight);</script>';
 
         if (ob_get_level() > 0) {
-            ob_end_flush();
-            ob_flush();
+            @ob_end_flush();
+            @ob_flush();
         }
 
-        flush();
+        @flush();
         ob_start();
     }
 }

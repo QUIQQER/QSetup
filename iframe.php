@@ -14,8 +14,6 @@
     </style>
 </head>
 <body>
-<pre>
-
 
 <?php
 
@@ -64,11 +62,11 @@ $data = json_decode(file_get_contents($dataFile), true);
 
 // Initiliaze the setup
 $Setup = new Setup(Setup::MODE_WEB);
-if (isset($_REQUEST['language'])) {
-    try {
-        $Setup->setSetupLanguage($_REQUEST['language']);
-    } catch (\Exception $Exception) {
-    }
+
+$language = isset($_REQUEST['language']) ? $_REQUEST['language'] : "en_GB";
+try {
+    $Setup->setSetupLanguage($language);
+} catch (\Exception $Exception) {
 }
 
 ##############################################################################
@@ -146,7 +144,6 @@ function installQUIQQER()
     $Setup->runSetup(Setup::STEP_SETUP_INSTALL_QUIQQER);
     $Setup->storeSetupState();
 
-
     \QUI\Setup\Log\Log::append("QUIQQER Installation is done!");
     continueWithStep("setupquiqqer");
 }
@@ -179,7 +176,6 @@ function setupQUIQQER()
 
     \QUI\Setup\Log\Log::append("QUIQQER Setup is done");
 
-
     continueWithStep("installpreset");
 }
 
@@ -190,8 +186,6 @@ function setupQUIQQER()
 function installPreset($step = 1)
 {
     global $Setup, $data;
-
-
 
     \QUI\Setup\Log\Log::append("Installing Preset");
 
@@ -218,12 +212,12 @@ function installPreset($step = 1)
         $Setup->storeSetupState();
     } catch (\Exception $Exception) {
         echo "Error : " . $Exception->getMessage() . " <br />";
-        ob_flush();
-        flush();
+        @ob_flush();
+        @flush();
     }
     \QUI\Setup\Log\Log::append("Preset installed");
 
-    if ($step==1) {
+    if ($step == 1) {
         continueWithStep("installpreset2");
     }
 

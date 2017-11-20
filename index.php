@@ -2,13 +2,6 @@
 
 require "vendor/autoload.php";
 
-
-
-
-
-
-
-
 // setup language
 $language = require_once "languageDetection.php";
 $Locale = new \QUI\Setup\Locale\Locale($language);
@@ -16,9 +9,9 @@ $Locale = new \QUI\Setup\Locale\Locale($language);
 $conf = QUI\Setup\Setup::getConfig();
 
 // Check for neccessary modules
-if(!function_exists('json_decode') || !function_exists('json_encode')){
+if (!function_exists('json_decode') || !function_exists('json_encode')) {
     echo "<div style='width:400px; margin: 100px auto; padding:10px; background: #F2D4CE; border: 1px solid #AE432E'>"
-        .$Locale->getStringLang('setup.web.no.json').
+        . $Locale->getStringLang('setup.web.no.json') .
         "</div>";
     exit;
 }
@@ -54,14 +47,12 @@ if(!function_exists('json_decode') || !function_exists('json_encode')){
 
     <?php
 
-
-
     ?>
     <script>
-        var CURRENT_LOCALE      = '<?php echo $Locale->getCurrent(); ?>',
+        var CURRENT_LOCALE = '<?php echo $Locale->getCurrent(); ?>',
             LOCALE_TRANSLATIONS = <?php echo json_encode($Locale->getAll()); ?>,
-            ROOT_PATH           = '<?php echo dirname(__FILE__); ?>',
-            PASS_LENGHT         = '<?php echo $conf['requirements']['pw_min_length'] ?>';
+            ROOT_PATH = '<?php echo dirname(__FILE__); ?>',
+            PASS_LENGHT = '<?php echo $conf['requirements']['pw_min_length'] ?>';
     </script>
 </head>
 <body>
@@ -174,7 +165,9 @@ if(!function_exists('json_decode') || !function_exists('json_encode')){
         <div class="grid-container">
             <div class="nav left-sidebar grid-20 mobile-grid-100 hide-on-mobile">
                 <div class="system-check-button-container">
-                    <button id="system-check" title="System check"><span class="fa fa-fw icon-placeholder"></span>System check</button>
+                    <button id="system-check" title="System check"><span class="fa fa-fw icon-placeholder"></span>System
+                        check
+                    </button>
 
                 </div>
                 <ul class="nav-list">
@@ -226,7 +219,7 @@ if(!function_exists('json_decode') || !function_exists('json_encode')){
 
                                         <?php
                                         $availableLangs = QUI\Setup\Utils\Utils::getAvailalbeLanguages();
-                                        $currentLang    = substr($Locale->getCurrent(), 0, 2);
+                                        $currentLang = substr($Locale->getCurrent(), 0, 2);
 
                                         $checked = '';
                                         foreach ($availableLangs as $lang) {
@@ -237,7 +230,7 @@ if(!function_exists('json_decode') || !function_exists('json_encode')){
                                             }
 
                                             $localeVar = 'setup.web.content.lang.' . $lang;
-                                            $language  = $Locale->getStringLang($localeVar);
+                                            $language = $Locale->getStringLang($localeVar);
 
                                             $output = '<label class="input-wrapper" for="' . $lang . '">';
                                             $output .= '<input class="input-radio" name="project-language" type="radio" tabindex="-1"
@@ -279,12 +272,12 @@ if(!function_exists('json_decode') || !function_exists('json_encode')){
                                                 $icon = '<span class="fa fa-star-o button-icon-left"></span>';
                                         }
 
-                                        $output  = '<label class="input-wrapper">
+                                        $output = '<label class="input-wrapper">
                                         <input class="input-radio" name="version" tabindex="-1" 
                                                type="radio" value="' . $versions[$i] . '"' . $checked . ' />';
-                                        $output  .= '<div class="label-div">' . $icon;
-                                        $output  .= $versions[$i];
-                                        $output  .= '<span class="fa fa-check button-icon-right"></span>
+                                        $output .= '<div class="label-div">' . $icon;
+                                        $output .= $versions[$i];
+                                        $output .= '<span class="fa fa-check button-icon-right"></span>
                                         </div>
                                     </label>';
                                         $checked = '';
@@ -299,7 +292,7 @@ if(!function_exists('json_decode') || !function_exists('json_encode')){
 
                                     <?php
                                     $presets = \QUI\Setup\Preset::getPresets();
-                                    $lang    = $Locale->getCurrent();
+                                    $lang = $Locale->getCurrent();
 
                                     $checked = '';
                                     // $checked = 'checked="checked"';
@@ -370,7 +363,8 @@ if(!function_exists('json_decode') || !function_exists('json_encode')){
                                         <label class="animated-label ">
                                             <?php echo $Locale->getStringLang('setup.web.content.dbHost') ?>:
                                         </label>
-                                        <input class="input-text" type="text" name="databaseHost" value="localhost" required
+                                        <input class="input-text" type="text" name="databaseHost" value="localhost"
+                                               required
                                                placeholder="<?php echo $Locale->getStringLang('setup.web.content.dbHost') ?>"/>
                                     </div>
 
@@ -402,7 +396,7 @@ if(!function_exists('json_decode') || !function_exists('json_encode')){
                                                required
                                                placeholder="<?php echo $Locale->getStringLang('setup.web.content.dbPassword') ?>"/>
                                     </div>
-                                    
+
                                     <div class="input-wrapper">
                                         <!-- Datenbank Name -->
                                         <label class="animated-label">
@@ -420,7 +414,7 @@ if(!function_exists('json_decode') || !function_exists('json_encode')){
                                                tabindex="-1"
                                                placeholder="<?php echo $Locale->getStringLang('setup.web.content.dbPrefix') ?>"/>
                                     </div>
-                                    
+
                                 </li>
 
                                 <!-- step 5 -->

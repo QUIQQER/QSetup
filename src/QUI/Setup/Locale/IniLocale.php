@@ -48,20 +48,17 @@ class IniLocale implements LocaleInterface
      */
     public function setLanguage($langCode)
     {
-        echo "LANGCODE: ". $langCode. PHP_EOL;
+        $this->lang = $langCode;
+
         if (strpos($langCode, "_") !== false) {
             $langCode = substr($langCode, 0, strpos($langCode, "_"));
         }
-        echo "LANGCODE: ". $langCode. PHP_EOL;
 
-        $this->lang = $langCode;
-
-        if (!file_exists(dirname(__FILE__) . "/" . $this->lang . "/translations.ini")) {
+        if (!file_exists(dirname(__FILE__) . "/" . $langCode . "/translations.ini")) {
             throw new LocaleException("Language translations not found! " . dirname(__FILE__) . "/" . $this->lang . "/translations.ini");
         }
 
-        $this->translations = parse_ini_file(dirname(__FILE__) . "/" . $this->lang . "/translations.ini");
-
+        $this->translations = parse_ini_file(dirname(__FILE__) . "/" . $langCode . "/translations.ini");
         if ($this->translations === false) {
             throw new LocaleException("Could not read language translations!");
         }

@@ -438,10 +438,10 @@ msgid "setup.web.header.hostAndDirectory.text"
 msgstr "Here you can customize the main domain and the paths of your installation. The required data were determined automatically. You only need to make changes if you are sure that the data are not correct. <p class=\"smallFont\"> For more information, click the <i>Info Icon</i> </p>"
 
 msgid "setup.web.header.license"
-msgstr "License"
+msgstr "Licence"
 
 msgid "setup.web.header.license.text"
-msgstr "Please read the following license agreement carefully and accept it to proceed with the QUIQQER installation."
+msgstr "Please read the following licence agreement carefully and accept it to proceed with the QUIQQER installation."
 
 
 msgid "setup.web.nav.siteLang"
@@ -463,7 +463,7 @@ msgid "setup.web.nav.hostAndDirectory"
 msgstr "Host and directories"
 
 msgid "setup.web.nav.license"
-msgstr "License"
+msgstr "Licence"
 
 
 msgid "setup.web.content.lang.de"
@@ -542,10 +542,10 @@ msgstr "Please fill all fields."
 
 
 msgid "setup.web.content.license.text"
-msgstr "<h1>QUIQQER license agreement</h1><p>All license information on QUIQQER can be found in the installation files or at <a href=\"https://www.quiqqer.com/License=\" target=\"_blank\">https://www.quiqqer.com/Lizenz</a></p><p> Please read the license agreement carefully and agree to install it.</p><p class=\"smallFont\">By installing extensions or templates, license agreements can be added by third parties. Please inform yourself about possible licensing conditions and limitations due to extensions before the installation.</p>"
+msgstr "<h1>QUIQQER licence agreement</h1><p>All licence information on QUIQQER can be found in the installation files or at <a href=\"https://store.quiqqer.com/Licence\" target=\"_blank\">https://store.quiqqer.com/Licence</a></p><p> Please read the licence agreement carefully and agree to install it.</p><p class=\"smallFont\">By installing extensions or templates, licence agreements can be added by third parties. Please inform yourself about possible licensing conditions and limitations due to extensions before the installation.</p>"
 
 msgid "setup.web.content.license.checkbox"
-msgstr "Yes, I have read the license terms and agree to them"
+msgstr "Yes, I have read the licence terms and agree to them"
 
 msgid "setup.web.content.button.next"
 msgstr "next"

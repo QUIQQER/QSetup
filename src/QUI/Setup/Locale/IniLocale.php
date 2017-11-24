@@ -1,6 +1,5 @@
 <?php
 
-
 namespace QUI\Setup\Locale;
 
 class IniLocale implements LocaleInterface
@@ -25,7 +24,7 @@ class IniLocale implements LocaleInterface
     /**
      * Returns a translated String. Returns a fallback if translation is not found.
      *
-     * @param string $string   - The key to search for in the translation files.
+     * @param string $string - The key to search for in the translation files.
      * @param string $fallback - The fallback to use, if the key was not found
      *
      * @return string - A translated String.
@@ -50,17 +49,23 @@ class IniLocale implements LocaleInterface
     {
         $this->lang = $langCode;
 
-        if (strpos($langCode, "_") !== false) {
-            $langCode = substr($langCode, 0, strpos($langCode, "_"));
-        }
+        try {
+            if (strpos($langCode, "_") !== false) {
+                $langCode = substr($langCode, 0, strpos($langCode, "_"));
+            }
 
-        if (!file_exists(dirname(__FILE__) . "/" . $langCode . "/translations.ini")) {
-            throw new LocaleException("Language translations not found! " . dirname(__FILE__) . "/" . $this->lang . "/translations.ini");
-        }
+            if (!file_exists(dirname(__FILE__) . "/" . $langCode . "/translations.ini")) {
+                throw new LocaleException("Language translations not found! " . dirname(__FILE__) . "/" . $this->lang . "/translations.ini");
+            }
 
-        $this->translations = parse_ini_file(dirname(__FILE__) . "/" . $langCode . "/translations.ini");
-        if ($this->translations === false) {
-            throw new LocaleException("Could not read language translations!");
+            $this->translations = parse_ini_file(dirname(__FILE__) . "/" . $langCode . "/translations.ini");
+            if ($this->translations === false) {
+                throw new LocaleException("Could not read language translations!");
+            }
+        } catch (\Exception $Exception) {
+            if (substr($langCode, 0, 2) != "en") {
+                $this->setLanguage("en_GB");
+            }
         }
     }
 

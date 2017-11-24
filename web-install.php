@@ -25,6 +25,8 @@ if (!file_exists(dirname(__FILE__) . "/setupdata.json")) {
     <link rel="stylesheet" href="/bin/css/style.css" type="text/css"/>
     <link href='//fonts.googleapis.com/css?family=Open+Sans:300,400,600,800' rel='stylesheet' type='text/css'>
 
+    <title>QUIQQER Setup</title>
+
     <!-- wegen "componens" muss hier die baseUrl neu gesetzt werden -->
     <script>
         ROOT_DIR = "<?php echo dirname(__FILE__); ?>";

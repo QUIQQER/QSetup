@@ -1,6 +1,5 @@
 <?php
 
-
 namespace QUI\Setup\Locale;
 
 class Locale
@@ -9,7 +8,6 @@ class Locale
     protected $Locale = null;
 
     protected $mode = null;
-
 
     const MODE_GET_TEXT = 0;
     const MODE_INI_FILES = 1;
@@ -25,20 +23,26 @@ class Locale
     {
         $this->mode = $this->detectMode();
 
-        switch ($this->mode) {
-            case self::MODE_GET_TEXT:
-                $this->Locale = new GetTextLocale($lang);
-                break;
-            case self::MODE_INI_FILES:
-                $this->Locale = new IniLocale($lang);
-                break;
+        if ($this->mode == self::MODE_INI_FILES) {
+            $this->Locale = new IniLocale($lang);
+            \QUI\Setup\Log\Log::append("Using INI files as locale.");
+            return;
+        }
+
+        // Try get text first and use ini files as fallback
+        try {
+            $this->Locale = new GetTextLocale($lang);
+            \QUI\Setup\Log\Log::append("Using get text as locale.");
+        } catch (\Exception $Exception) {
+            $this->Locale = new IniLocale($lang);
+            \QUI\Setup\Log\Log::append("Using INI files as fallback locale.");
         }
     }
 
     /**
      * Returns a translated String. Returns a fallback if translation is not found.
      *
-     * @param string $string   - The key to search for in the translation files.
+     * @param string $string - The key to search for in the translation files.
      * @param string $fallback - The fallback to use, if the key was not found
      *
      * @return string - A translated String.

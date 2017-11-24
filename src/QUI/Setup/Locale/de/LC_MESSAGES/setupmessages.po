@@ -541,7 +541,7 @@ msgstr "Bitte alle Felder ausfüllen."
 
 
 msgid "setup.web.content.license.text"
-msgstr "<h1>QUIQQER - Lizenzvereinbahrung</h1><p> Alle Linzenzinformationen zu QUIQQER finden Sie bei den Installationsdateien oder unter <a href=\"https://www.quiqqer.com/Lizenz\" target=\"_blank\">https://www.quiqqer.com/Lizenz</a></p><p>Bitte lesen Sie die Lizenzvereinbarungen Sorgfältig durch und stimmen Sie diesen zu um QUIQQER zu instalieren</p><p class=\"smallFont\"> Durch die installation von Erweiterungen, Templates oder Vorlagen können Lizenzvereinbahrungen von Drittanbietern hinzukommen, bitte Informieren Sie sich vor der Installation über mögliche Lizenzbedingungen und Einschränkungen durch Erweiterungen.</p>"
+msgstr "<h1>QUIQQER - Lizenzvereinbahrung</h1><p> Alle Linzenzinformationen zu QUIQQER finden Sie bei den Installationsdateien oder unter <a href=\"https://store.quiqqer.de/Lizenz\" target=\"_blank\">https://store.quiqqer.de/Lizenz</a></p><p>Bitte lesen Sie die Lizenzvereinbarungen Sorgfältig durch und stimmen Sie diesen zu um QUIQQER zu instalieren</p><p class=\"smallFont\"> Durch die installation von Erweiterungen, Templates oder Vorlagen können Lizenzvereinbahrungen von Drittanbietern hinzukommen, bitte Informieren Sie sich vor der Installation über mögliche Lizenzbedingungen und Einschränkungen durch Erweiterungen.</p>"
 
 msgid "setup.web.content.license.checkbox"
 msgstr "Ja, ich habe die Lizenzinformationen gelesen und bin damit einverstanden"

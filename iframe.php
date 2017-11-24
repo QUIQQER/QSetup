@@ -1,3 +1,30 @@
+<?php
+
+#ini_set("display_errors", "on");
+use \QUI\Setup\Setup;
+
+if (!isset($_GET['step'])) {
+    $_GET['step'] = '';
+}
+
+require_once dirname(__FILE__) . '/vendor/autoload.php';
+
+// Load QUIQQER, if QUIQQER has been installed already.
+if ($_GET['step'] == "installpreset" || $_GET['step'] == "installpreset2" || $_GET['step'] == "setuppreset") {
+    # Apply preset
+    if (!defined('QUIQQER_SYSTEM')) {
+        define('QUIQQER_SYSTEM', true);
+    }
+
+    //Workaround
+    define('QUIQQER_SETUP', true);
+
+    require_once dirname(__FILE__) . "/bootstrap.php";
+    ini_set("display_errors", "on");
+}
+?>
+
+
 <html>
 <head>
     <style>
@@ -13,31 +40,9 @@
         }
     </style>
 </head>
-<body>
+
 
 <?php
-
-#ini_set("display_errors", "on");
-use \QUI\Setup\Setup;
-
-if (!isset($_GET['step'])) {
-    $_GET['step'] = '';
-}
-
-require_once dirname(__FILE__) . '/vendor/autoload.php';
-// Load QUIQQER, if QUIQQER has been installed already.
-if ($_GET['step'] == "installpreset" || $_GET['step'] == "installpreset2" || $_GET['step'] == "setuppreset") {
-    # Apply preset
-    if (!defined('QUIQQER_SYSTEM')) {
-        define('QUIQQER_SYSTEM', true);
-    }
-
-    //Workaround
-    define('QUIQQER_SETUP', true);
-
-    require_once dirname(__FILE__) . "/bootstrap.php";
-    ini_set("display_errors", "on");
-}
 
 // Output the previous steps log messages if they exists.
 if (file_exists(dirname(__FILE__) . "/var/weboutput.log")) {

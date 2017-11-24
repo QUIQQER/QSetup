@@ -213,7 +213,7 @@ function installPreset($step = 1)
         );
 
         $Setup->restoreData();
-        $Setup->applyPreset("default", $step);
+        $Setup->applyPreset($data['preset'], $step);
         $Setup->storeSetupState();
     } catch (\Exception $Exception) {
         echo "Error : " . $Exception->getMessage() . " <br />";

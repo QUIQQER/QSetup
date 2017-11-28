@@ -25,17 +25,14 @@ class Locale
 
         if ($this->mode == self::MODE_INI_FILES) {
             $this->Locale = new IniLocale($lang);
-            \QUI\Setup\Log\Log::append("Using INI files as locale.");
             return;
         }
 
         // Try get text first and use ini files as fallback
         try {
             $this->Locale = new GetTextLocale($lang);
-            \QUI\Setup\Log\Log::append("Using get text as locale.");
         } catch (\Exception $Exception) {
             $this->Locale = new IniLocale($lang);
-            \QUI\Setup\Log\Log::append("Using INI files as fallback locale.");
         }
     }
 

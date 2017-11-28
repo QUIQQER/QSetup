@@ -6,6 +6,7 @@ use QUI\Autoloader;
 use QUI\Composer\Composer;
 use QUI\Composer\Interfaces\ComposerInterface;
 use QUI\Exception;
+use QUI\Lockclient\Lockclient;
 use QUI\Projects\Project;
 use QUI\Projects\Site\Edit;
 use QUI\Setup\Locale\Locale;
@@ -133,34 +134,26 @@ class Preset
 
         // we need to split the process into multiple steps to avoid timeouts
         if ($step == 1) {
-            Log::append("Repos start - " . date("H:i:s"));
             # Add Repositories to composer.json
             if (!empty($this->repositories)) {
                 $this->addRepositories();
             }
-            Log::append("Repos end - " . date("H:i:s"));
 
             # Create project
-            Log::append("Project start - " . date("H:i:s"));
             if (!empty($this->projectName)) {
                 $this->createProject();
             }
-            Log::append("Project end - " . date("H:i:s"));
         }
 
         if ($step == 2) {
-            Log::append("Template start - " . date("H:i:s"));
             if (!empty($this->templateName)) {
                 $this->installTemplate();
             }
-            Log::append("template end - " . date("H:i:s"));
 
             # Require additional packages
-            Log::append("Packages start - " . date("H:i:s"));
             if (!empty($this->packages)) {
                 $this->installPackages();
             }
-            Log::append("Packages end - " . date("H:i:s"));
 
             $this->refreshNamespaces($this->Composer);
         }
@@ -321,8 +314,38 @@ class Preset
         if ($this->developerMode) {
             $options["--prefer-source"] = true;
         }
-        $this->Composer->requirePackage($this->templateName, $this->templateVersion, $options);
 
+        Log::append("Running composer: Require package '" . $this->templateName . "' in version '" . $this->templateVersion . "'");
+        try {
+            // We need to consider memory consumption in web mode.
+            // This is why we use an external service to create a composer.lock file
+            if ($this->forceWebMode) {
+                $Lockclient = new Lockclient();
+                try {
+                    $lockFileContent = $Lockclient->requirePackage(
+                        VAR_DIR . "/composer/composer.json",
+                        $this->templateName,
+                        $this->templateVersion
+                    );
+                    file_put_contents(VAR_DIR . "/composer/composer.lock", $lockFileContent);
+                } catch (\Exception $Exception) {
+                    //TODO Better Error Handling?
+                    Log::appendError($Exception->getMessage());
+                    throw new \Exception("Could not retrieve the composer.lock file.");
+                }
+
+                $output = $this->Composer->install($options);
+            } else {
+                $output = $this->Composer->requirePackage($this->templateName, $this->templateVersion, $options);
+            }
+        } catch (\Exception $Exception) {
+            Log::appendError($Exception->getMessage());
+            Log::append($Exception->getMessage());
+
+            return;
+        }
+
+        Log::append("Composer Output:" . PHP_EOL . print_r($output, true));
         # Config main project to use new template
         if (!empty($this->templateName) && !empty($this->projectName)) {
             $Config->setValue($this->projectName, 'template', $this->templateName);
@@ -332,7 +355,6 @@ class Preset
         if (!empty($this->templateName) && !empty($this->projectName) && !empty($this->defaultLayout)) {
             $Config->setValue($this->projectName, 'layout', $this->defaultLayout);
         }
-
         $Config->save();
 
         # Set the Mainpage Layout
@@ -367,13 +389,20 @@ class Preset
             $options["--prefer-source"] = true;
         }
 
+        $output = "";
         foreach ($this->packages as $name => $version) {
-            $this->Composer->requirePackage($name, $version, $options);
+            $result = $this->Composer->requirePackage($name, $version, $options);
+
+            $output .= implode(PHP_EOL, $result) . PHP_EOL;
 
             $this->Output->writeLn(
                 $this->Locale->getStringLang("applypreset.require.package", "Require Package :") . $name,
                 Output::LEVEL_INFO
             );
+        }
+
+        if (!empty($output)) {
+            Log::append("Composer Output:" . PHP_EOL . $output);
         }
     }
 

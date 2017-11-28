@@ -25,21 +25,21 @@ if ($_GET['step'] == "installpreset" || $_GET['step'] == "installpreset2" || $_G
 ?>
 
 
-<html>
-<head>
-    <style>
-        body {
-            background: #000;
-            color: #fff;
-            padding: 20px;
-        }
+    <html>
+    <head>
+        <style>
+            body {
+                background: #000;
+                color: #fff;
+                padding: 20px;
+            }
 
-        pre {
-            margin: 0;
-            padding: 0;
-        }
-    </style>
-</head>
+            pre {
+                margin: 0;
+                padding: 0;
+            }
+        </style>
+    </head>
 
 
 <?php
@@ -113,6 +113,8 @@ if (file_exists($dataFile)) {
     unlink($dataFile);
 }
 
+
+
 /**
  * Prepares the setup for installing QUIQQER
  */
@@ -126,7 +128,6 @@ function prepareSetup()
     $Setup->runSetup();
     $Setup->storeSetupState();
 
-    \QUI\Setup\Log\Log::append("Done preparing setup");
     continueWithStep("installquiqqer");
 }
 
@@ -186,13 +187,12 @@ function setupQUIQQER()
 
 /**
  * Installs the packages associated with the preset and creates the project
+ *
  * @param int $step - (optional) The step of the preset application process. Only relevant for the web setup!
  */
 function installPreset($step = 1)
 {
     global $Setup, $data;
-
-    \QUI\Setup\Log\Log::append("Installing Preset");
 
     try {
         $Config = parse_ini_file(ETC_DIR . 'conf.ini.php', true);
@@ -220,7 +220,6 @@ function installPreset($step = 1)
         @ob_flush();
         @flush();
     }
-    \QUI\Setup\Log\Log::append("Preset installed");
 
     if ($step == 1) {
         continueWithStep("installpreset2");
@@ -256,6 +255,11 @@ function continueWithStep($step)
         echo "<script>window.location='?step=" . $step . "'</script>";
     }
 
+    \QUI\Setup\Log\Log::append(
+        "[" . date("H:i:s", time()) . "] " .
+        "Max memory usage in step '" . $_GET['step'] . "':" .
+        number_format(memory_get_peak_usage(true), 0, ",", ".")
+    ); // TODO DEBUG
     ob_flush();
     flush();
     exit;

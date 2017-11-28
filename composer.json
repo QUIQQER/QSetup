@@ -35,6 +35,7 @@
         "quiqqer\/qui-php": "dev-dev",
         "quiqqer\/requirements": "2.0.0",
         "quiqqer\/qui": "dev-dev",
+        "quiqqer\/lockclient":"dev-dev",
         "pcsg\/composer-assets": "dev-master"
     },
     "extra": {

@@ -220,42 +220,37 @@ class Setup
         $this->tableUsersWorkspaces = $this->data['database']['prefix'] . "users_workspaces";
 
         # Execute setup steps
-        QUI\Setup\Log\Log::append("New part - " . date("H:i:s"));
         switch ($step) {
             case self::STEP_SETUP_DATABASE:
                 $this->setupDatabase();
-                QUI\Setup\Log\Log::append("Database done - " . date("H:i:s"));
             //no break
             case self::STEP_SETUP_USER:
                 $this->setupUser();
-                QUI\Setup\Log\Log::append("User done - " . date("H:i:s"));
             //no break
             case self::STEP_SETUP_PATHS:
                 $this->setupPaths();
-                QUI\Setup\Log\Log::append("Paths done - " . date("H:i:s"));
             // no break
             case self::STEP_SETUP_COMPOSER:
                 $this->setupComposer();
-                QUI\Setup\Log\Log::append("Composer setup done - " . date("H:i:s"));
 
                 return;
 
             case self::STEP_SETUP_INSTALL_QUIQQER:
                 $this->setupComposerInstallQuiqqer();
-                QUI\Setup\Log\Log::append("Quiqqer install done - " . date("H:i:s"));
+
             //no break
             case self::STEP_SETUP_BOOTSTRAP:
                 $this->setupBootstrapFiles();
-                QUI\Setup\Log\Log::append("Bootstrap files done - " . date("H:i:s"));
+
                 return;
             //no break
             case self::STEP_SETUP_QUIQQERSETUP:
                 $this->executeQuiqqerSetups();
-                QUI\Setup\Log\Log::append("Setup done - " . date("H:i:s"));
+
             //no break
             case self::STEP_SETUP_CHECKS:
                 $this->executeQuiqqerChecks();
-                QUI\Setup\Log\Log::append("Checks done - " . date("H:i:s"));
+
             //no break
         }
 
@@ -325,7 +320,10 @@ class Setup
         \QUI\Setup::executeMainSystemSetup();
         \QUI\Setup::importPermissions();
 
-        $this->Output->writeLn($this->Locale->getStringLang("applypreset.done", "Preset applied and configured!."), Output::COLOR_INFO);
+        $this->Output->writeLn(
+            $this->Locale->getStringLang("applypreset.done", "Preset applied and configured!."),
+            Output::COLOR_INFO
+        );
     }
 
     /**
@@ -563,7 +561,6 @@ class Setup
         $optDir = "",
         $varDir = ""
     ) {
-    
 
         $paths = array();
         $cmsDir = Utils::normalizePath($cmsDir);
@@ -1226,11 +1223,22 @@ class Setup
         if ($this->developerMode) {
             $options["--prefer-source"] = true;
         }
-        $res = $Composer->update($options);
+
+        // To avoid exceeding the memory limit, we will retrieve the composer.lock file from an external service.
+        if ($this->mode == SETUP::MODE_WEB) {
+            $Lockclient = new QUI\Lockclient\Lockclient();
+            $lockFileContent = $Lockclient->update($composerDir."/composer.json");
+            file_put_contents($composerDir."/composer.lock", $lockFileContent);
+            $res =$Composer->install($options);
+        } else {
+            $res = $Composer->update($options);
+        }
+
+
+
         if ($res === false) {
             $this->exitWithError("setup.unknown.error");
         }
-
         ######################################
         # Execute composer to install QUIQQER
         ######################################
@@ -1289,13 +1297,27 @@ class Setup
         if ($this->developerMode) {
             $options["--prefer-source"] = true;
         }
-        $res = $Composer->requirePackage('quiqqer/quiqqer', $this->data['version'], $options);
+
+        // We need to consider the memory limit, therefore we retrieve the lockfile from an external service
+        if ($this->mode == self::MODE_WEB) {
+            $Lockclient = new QUI\Lockclient\Lockclient();
+            try {
+                $lockFileContent = $Lockclient->requirePackage($composerDir."/composer.json", 'quiqqer/quiqqer', $this->data['version']);
+                file_put_contents($composerDir."/composer.lock", $lockFileContent);
+            } catch (\Exception $Exception) {
+                throw new \Exception("Could not retireve the lockfile: ".$Exception->getMessage());
+            }
+
+            $res = $Composer->install($options);
+        } else {
+            $res = $Composer->requirePackage('quiqqer/quiqqer', $this->data['version'], $options);
+        }
+
         if ($res === false) {
             $this->exitWithError("setup.unknown.error");
         }
 
         $this->Step = self::STEP_SETUP_COMPOSER;
-
         $this->publishSetupState();
     }
 
@@ -2095,8 +2117,6 @@ LOGETC;
 
             return $content;
         }
-
-        $this->Output->writeLn("Missing template file : " . $name);
 
         return null;
     }

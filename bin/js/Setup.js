@@ -312,7 +312,6 @@ define('bin/js/Setup', [
             // open system check popup
             var buttonSystemCheck = document.getElement('#system-check');
             if (buttonSystemCheck) {
-                console.log(1)
                 buttonSystemCheck.addEvent('click', function () {
                     self.openSystemCheckPopup();
                 })
@@ -1087,14 +1086,13 @@ define('bin/js/Setup', [
                                 }
                             };
 
-                            console.log('teraz validate preset')
                             return self.validatePresetData(presetData);
                         }).then(function () {
                             return self.updatePreset(presetData, presetName)
                         }).then(function () {
                             Win.close();
                         }).catch(function (error) {
-                            console.log(error)
+                            console.log(error);
                             Form.getElement(error).setStyle('borderColor', 'red');
                         });
 

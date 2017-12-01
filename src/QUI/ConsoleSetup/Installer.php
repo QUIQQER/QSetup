@@ -55,6 +55,8 @@ class Installer
     protected $langCode = "en";
     /** @var string */
     protected $url = "";
+    /** @var string */
+    protected $urlDir = "";
 
     /**
      * Installer constructor.
@@ -852,6 +854,7 @@ class Installer
 
         $urlDir = Utils::normalizePath($urlDir);
         $urlDir = "/" . ltrim($urlDir, '/');
+        $this->urlDir = $urlDir;
 
         try {
             $this->Setup->setPaths($host, $cmsDir, $urlDir);
@@ -936,17 +939,21 @@ SMILEY;
             COLOR_GREEN
         );
 
+        // print site url
+        $siteUrl = rtrim($this->url, '/') . $this->urlDir;
         $this->writeLn(
-            $this->Locale->getStringLang("setup.message.finished.url", "Website URL: ") . $this->url,
+            $this->Locale->getStringLang("setup.message.finished.url", "Website URL: ") . $siteUrl,
             self::LEVEL_INFO,
             COLOR_GREEN
         );
 
+        // Print Admin URl
+        $adminUrl = rtrim($this->url, '/') . rtrim($this->urlDir, '/') . "/admin";
         $this->writeLn(
             $this->Locale->getStringLang(
                 "setup.message.finished.admin.url",
                 "Adminarea URL: "
-            ) . rtrim($this->url, '/') . "/admin",
+            ) . $adminUrl,
             self::LEVEL_INFO,
             COLOR_GREEN
         );
@@ -974,7 +981,6 @@ SMILEY;
         $toLower = false,
         $allowEmpty = false
     ) {
-    
 
         if ($color != null) {
             $text = $this->getColoredString($text, $color);

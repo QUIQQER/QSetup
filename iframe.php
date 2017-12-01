@@ -23,8 +23,6 @@ if ($_GET['step'] == "installpreset" || $_GET['step'] == "installpreset2" || $_G
     ini_set("display_errors", "on");
 }
 ?>
-
-
     <html>
     <head>
         <style>
@@ -260,6 +258,7 @@ function continueWithStep($step)
         "Max memory usage in step '" . $_GET['step'] . "':" .
         number_format(memory_get_peak_usage(true), 0, ",", ".")
     ); // TODO DEBUG
+    
     ob_flush();
     flush();
     exit;

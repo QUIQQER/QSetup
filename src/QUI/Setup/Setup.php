@@ -1227,14 +1227,12 @@ class Setup
         // To avoid exceeding the memory limit, we will retrieve the composer.lock file from an external service.
         if ($this->mode == SETUP::MODE_WEB) {
             $Lockclient = new QUI\Lockclient\Lockclient();
-            $lockFileContent = $Lockclient->update($composerDir."/composer.json");
-            file_put_contents($composerDir."/composer.lock", $lockFileContent);
-            $res =$Composer->install($options);
+            $lockFileContent = $Lockclient->update($composerDir . "/composer.json");
+            file_put_contents($composerDir . "/composer.lock", $lockFileContent);
+            $res = $Composer->install($options);
         } else {
             $res = $Composer->update($options);
         }
-
-
 
         if ($res === false) {
             $this->exitWithError("setup.unknown.error");
@@ -1302,10 +1300,14 @@ class Setup
         if ($this->mode == self::MODE_WEB) {
             $Lockclient = new QUI\Lockclient\Lockclient();
             try {
-                $lockFileContent = $Lockclient->requirePackage($composerDir."/composer.json", 'quiqqer/quiqqer', $this->data['version']);
-                file_put_contents($composerDir."/composer.lock", $lockFileContent);
+                $lockFileContent = $Lockclient->requirePackage(
+                    $composerDir . "/composer.json",
+                    'quiqqer/quiqqer',
+                    $this->data['version']
+                );
+                file_put_contents($composerDir . "/composer.lock", $lockFileContent);
             } catch (\Exception $Exception) {
-                throw new \Exception("Could not retireve the lockfile: ".$Exception->getMessage());
+                throw new \Exception("Could not retireve the lockfile: " . $Exception->getMessage());
             }
 
             $res = $Composer->install($options);
@@ -1551,6 +1553,10 @@ LOGETC;
 
         $Defaults = new QUI\System\Console\Tools\Defaults();
         $Defaults->execute();
+
+        if ($this->developerMode) {
+            $this->setDeveloperSettings();
+        }
 
         $this->Step = self::STEP_SETUP_QUIQQERSETUP;
 
@@ -1942,6 +1948,29 @@ LOGETC;
         }
 
         file_put_contents($file, $tmp);
+    }
+
+    /**
+     * Configures QUIQQER for development
+     */
+    protected function setDeveloperSettings()
+    {
+        // Enable developer mode
+        QUI::$Conf->set("globals", "development", true);
+        QUI::$Conf->set("globals", "lockserver_enabled", false);
+        QUI::$Conf->save();
+
+        
+        $LogConfig = QUI::getPackage("quiqqer/log")->getConfig();
+        $LogConfig->set("log_levels", "debug", true);
+        $LogConfig->set("log_levels", "info", true);
+        $LogConfig->set("log_levels", "notice", true);
+        $LogConfig->set("log_levels", "warning", true);
+        $LogConfig->set("log_levels", "error", true);
+        $LogConfig->set("log_levels", "critical", true);
+        $LogConfig->set("log_levels", "alert", true);
+        $LogConfig->set("log_levels", "emergency", true);
+        $LogConfig->save();
     }
 
     # --> Composer

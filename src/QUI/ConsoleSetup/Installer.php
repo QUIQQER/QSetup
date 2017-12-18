@@ -271,7 +271,8 @@ class Installer
         $Requirements = new Requirements($this->langCode);
         $AllTests = $Requirements->getTests(array(
             "database",
-            "webserver"
+            "webserver",
+            "quiqqer"
         ));
 
         foreach ($AllTests as $groupName => $GroupTests) {

@@ -14,16 +14,18 @@ if (!isset($_REQUEST['lang'])) {
     $_REQUEST['lang'] = 'en';
 }
 
-$lang                 = substr($_REQUEST['lang'], 0, 2);
-$tests                = array();
-$tests['htmlResult']  = '';
+$lang = substr($_REQUEST['lang'], 0, 2);
+$tests = array();
+$tests['htmlResult'] = '';
 $tests['testsFailed'] = false;
-$tests['icon']        = 'fa-check';
-$tests['status']      = 'ok';
+$tests['icon'] = 'fa-check';
+$tests['status'] = 'ok';
 
 $Requirements = new \QUI\Requirements\Requirements($lang);
 
-$allTests = $Requirements->getAllTests();
+$allTests = $Requirements->getTests(array(
+    "quiqqer"
+));
 
 $html = '<div class="check-table">';
 
@@ -41,8 +43,8 @@ foreach ($allTests as $category => $Tests) {
     $html .= '<div class="check-table-col check-table-col-message">';
     $html .= '<ul>';
     foreach ($Tests as $Test) {
-        $test       = array();
-        $Result     = $Test->getResult();
+        $test = array();
+        $Result = $Test->getResult();
         $statusCode = $Result->getStatus();
 
         switch ($Result->getStatus()) {
@@ -56,8 +58,8 @@ foreach ($allTests as $category => $Tests) {
 
                 if ($tests['testsFailed'] === false) {
                     $tests['testsFailed'] = true;
-                    $tests['icon']        = 'fa-close';
-                    $tests['status']      = 'failed';
+                    $tests['icon'] = 'fa-close';
+                    $tests['status'] = 'failed';
                 }
                 break;
 
@@ -66,15 +68,15 @@ foreach ($allTests as $category => $Tests) {
                 $html .= '<li><span class="fa fa-exclamation-circle" title="';
 
                 if ($tests['testsFailed'] === false) {
-                    $tests['icon']   = 'fa-exclamation-circle';
+                    $tests['icon'] = 'fa-exclamation-circle';
                     $tests['status'] = 'warning';
                 }
                 break;
         }
 
-        $html .= $Result->getStatusHumanReadable() . '"></span>';
-        $html .= '<span class="test-name">' . $Test->getName() . '</span>';
-        $html .= '<div class="test-message">' . $Result->getMessage() . '</div>';
+        $html .= $Result->getStatusHumanReadable().'"></span>';
+        $html .= '<span class="test-name">'.$Test->getName().'</span>';
+        $html .= '<div class="test-message">'.$Result->getMessage().'</div>';
     }
     $html .= '</ul>';
     $html .= '</div>';
@@ -84,8 +86,5 @@ foreach ($allTests as $category => $Tests) {
 $html .= '</div>';
 
 $tests['htmlResult'] = $html;
-
-
-
 
 \QUI\Setup\Utils\Ajax::output($tests, 200);

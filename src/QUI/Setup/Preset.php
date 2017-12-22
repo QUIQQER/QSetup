@@ -15,6 +15,7 @@ use QUI\Setup\Output\Interfaces\Output;
 use QUI\Setup\Output\NullOutput;
 use QUI\Setup\Utils\Utils;
 use QUI\Setup\Utils\Validator;
+use QUI\System\VhostManager;
 use QUI\Translator;
 
 /**
@@ -106,12 +107,12 @@ class Preset
     public function apply($cmsDir, $step = 1)
     {
         $this->Output->writeLn(
-            $this->Locale->getStringLang("applypreset.applying.preset", "Applying preset: ") . $this->presetName,
+            $this->Locale->getStringLang("applypreset.applying.preset", "Applying preset: ").$this->presetName,
             Output::COLOR_INFO
         );
 
         $cmsDir = rtrim($cmsDir, '/');
-        $quiqqerConfig = parse_ini_file($cmsDir . '/etc/conf.ini.php', true);
+        $quiqqerConfig = parse_ini_file($cmsDir.'/etc/conf.ini.php', true);
 
         # Define quiqqer constants
         if (!defined('VAR_DIR')) {
@@ -127,7 +128,7 @@ class Preset
         }
 
         # Require Template and packages
-        $this->Composer = new Composer(VAR_DIR . "composer/", VAR_DIR . "composer/");
+        $this->Composer = new Composer(VAR_DIR."composer/", VAR_DIR."composer/");
         if ($this->forceWebMode) {
             $this->Composer->setMode(Composer::MODE_WEB);
         }
@@ -155,6 +156,18 @@ class Preset
                 $this->installPackages();
             }
 
+            try {
+                $this->createVHost();
+            } catch (\Exception $Exception) {
+                $this->Output->writeLn(
+                    $this->Locale->getStringLang(
+                        "preset.apply.vhost.failed",
+                        "Could not create the virtual host entry."
+                    ).
+                    $Exception->getMessage()
+                );
+            }
+
             $this->refreshNamespaces($this->Composer);
         }
     }
@@ -171,8 +184,7 @@ class Preset
         # Project
         $this->projectName = isset($presetData['project']['name']) ? $presetData['project']['name'] : "";
         $this->availableLanguages = isset($presetData['project']['languages']) ? $presetData['project']['languages'] : array();
-        $this->availableLanguages = array_unique($this->availableLanguages);
-
+        
         $this->activeLanguages = $this->getActiveLanguages();
 
         #Template
@@ -220,11 +232,11 @@ class Preset
                 "Could not create project: "
             );
 
-            throw new SetupException($exceptionMsg . ' ' . $Exception->getMessage());
+            throw new SetupException($exceptionMsg.' '.$Exception->getMessage());
         }
 
         $this->Output->writeLn(
-            $this->Locale->getStringLang("applypreset.creating.project", "Created Project :") . $this->projectName,
+            $this->Locale->getStringLang("applypreset.creating.project", "Created Project :").$this->projectName,
             Output::COLOR_INFO
         );
 
@@ -250,11 +262,15 @@ class Preset
         }
 
         // Perform a project setup to initialize the new languages
-        $Project->setup();
+        foreach ($this->availableLanguages as $lang) {
+            $LangProject = \QUI::getProjectManager()->getProject($this->projectName, $lang);
+            $LangProject->setup();
+        }
+//        $Project->setup();
 
         # Remove the cachefile to make sure QUIQQER re-reads all locale.xml files
-        if (file_exists(VAR_DIR . 'locale/localefiles')) {
-            unlink(VAR_DIR . 'locale/localefiles');
+        if (file_exists(VAR_DIR.'locale/localefiles')) {
+            unlink(VAR_DIR.'locale/localefiles');
         }
 
         \QUI::getPackage('quiqqer/quiqqer')->setup();
@@ -286,7 +302,7 @@ class Preset
             );
 
             $this->Output->writeLn(
-                $this->Locale->getStringLang("applypreset.adding.repository", "Adding Repository :") . $repo['url'],
+                $this->Locale->getStringLang("applypreset.adding.repository", "Adding Repository :").$repo['url'],
                 Output::LEVEL_INFO
             );
 
@@ -315,7 +331,7 @@ class Preset
             $options["--prefer-source"] = true;
         }
 
-        Log::append("Running composer: Require package '" . $this->templateName . "' in version '" . $this->templateVersion . "'");
+        Log::append("Running composer: Require package '".$this->templateName."' in version '".$this->templateVersion."'");
         try {
             // We need to consider memory consumption in web mode.
             // This is why we use an external service to create a composer.lock file
@@ -323,11 +339,11 @@ class Preset
                 $Lockclient = new Lockclient();
                 try {
                     $lockFileContent = $Lockclient->requirePackage(
-                        VAR_DIR . "/composer/composer.json",
+                        VAR_DIR."/composer/composer.json",
                         $this->templateName,
                         $this->templateVersion
                     );
-                    file_put_contents(VAR_DIR . "/composer/composer.lock", $lockFileContent);
+                    file_put_contents(VAR_DIR."/composer/composer.lock", $lockFileContent);
                 } catch (\Exception $Exception) {
                     //TODO Better Error Handling?
                     Log::appendError($Exception->getMessage());
@@ -345,7 +361,7 @@ class Preset
             return;
         }
 
-        Log::append("Composer Output:" . PHP_EOL . print_r($output, true));
+        Log::append("Composer Output:".PHP_EOL.print_r($output, true));
         # Config main project to use new template
         if (!empty($this->templateName) && !empty($this->projectName)) {
             $Config->setValue($this->projectName, 'template', $this->templateName);
@@ -367,16 +383,69 @@ class Preset
                 $Edit->activate();
 
                 $this->Output->writeLn(
-                    $this->Locale->getStringLang("applypreset.set.layout", "Set layout for language : ") . $lang,
+                    $this->Locale->getStringLang("applypreset.set.layout", "Set layout for language : ").$lang,
                     Output::LEVEL_INFO
                 );
             }
         }
 
         $this->Output->writeLn(
-            $this->Locale->getStringLang("applypreset.require.package", "Require Package :") . $this->templateName,
+            $this->Locale->getStringLang("applypreset.require.package", "Require Package :").$this->templateName,
             Output::LEVEL_INFO
         );
+    }
+
+    /**
+     * Creates a vhost with all neccessary configurations.
+     *
+     * @throws Exception
+     * @throws SetupException
+     */
+    protected function createVHost()
+    {
+        // Create VHost
+        $host = \QUI::conf("globals", "host");
+        if (strpos($host, '://') !== false) {
+            $parts = explode('://', $host);
+            $host = $parts[1];
+        }
+        $host  = trim($host, '/');
+        
+        
+        $projectName = $this->projectName;
+        $templateName = $this->templateName;
+        $languages = $this->getActiveLanguages();
+
+        
+        if (empty($host)) {
+            throw new Exception("Could not create the virtual host entry: Missing host");
+        }
+
+        if (empty($projectName)) {
+            throw new Exception("Could not create the virtual host entry: Missing projectname");
+        }
+
+        if (empty($templateName)) {
+            throw new Exception("Could not create the virtual host entry: Missing templatename");
+        }
+
+        if (empty($languages)) {
+            throw new Exception("Could not create the virtual host entry: Empty languages");
+        }
+
+        $VhostManager = new VhostManager();
+
+        $VhostManager->addVhost($host);
+
+        $vhostData = array(
+            "project" => $projectName,
+            "lang" => $languages[0],
+            "template" => $templateName,
+            "error" => "",
+            "httpshost" => $host,
+        );
+
+        $VhostManager->editVhost($host, $vhostData);
     }
 
     /**
@@ -393,16 +462,16 @@ class Preset
         foreach ($this->packages as $name => $version) {
             $result = $this->Composer->requirePackage($name, $version, $options);
 
-            $output .= implode(PHP_EOL, $result) . PHP_EOL;
+            $output .= implode(PHP_EOL, $result).PHP_EOL;
 
             $this->Output->writeLn(
-                $this->Locale->getStringLang("applypreset.require.package", "Require Package :") . $name,
+                $this->Locale->getStringLang("applypreset.require.package", "Require Package :").$name,
                 Output::LEVEL_INFO
             );
         }
 
         if (!empty($output)) {
-            Log::append("Composer Output:" . PHP_EOL . $output);
+            Log::append("Composer Output:".PHP_EOL.$output);
         }
     }
 
@@ -416,7 +485,7 @@ class Preset
         $presets = array();
 
         # Read all userdefined presets from templates/presets
-        $presetDir = dirname(dirname(dirname(dirname(__FILE__)))) . '/templates/presets';
+        $presetDir = dirname(dirname(dirname(dirname(__FILE__)))).'/templates/presets';
         if (is_dir($presetDir)) {
             $content = scandir($presetDir);
 
@@ -426,7 +495,7 @@ class Preset
                     $ending = explode('.', $file, 2)[1];
 
                     if ($file != '.' && $file != '..' && $ending == 'json') {
-                        $json = file_get_contents($presetDir . "/" . $file);
+                        $json = file_get_contents($presetDir."/".$file);
                         $data = json_decode($json, true);
 
                         $presets[$name] = $data;
@@ -451,15 +520,15 @@ class Preset
      */
     protected function getComposerJsonContent()
     {
-        if (!file_exists(VAR_DIR . '/composer/composer.json')) {
+        if (!file_exists(VAR_DIR.'/composer/composer.json')) {
             throw new SetupException("setup.filesystem.composerjson.not.found");
         }
 
-        $json = file_get_contents(VAR_DIR . '/composer/composer.json');
+        $json = file_get_contents(VAR_DIR.'/composer/composer.json');
         $data = json_decode($json, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new SetupException("setup.json.error" . " " . json_last_error_msg());
+            throw new SetupException("setup.json.error"." ".json_last_error_msg());
         }
 
         return $data;
@@ -475,7 +544,7 @@ class Preset
     protected function writeComposerJsonContent($data)
     {
         $json = json_encode($data, JSON_PRETTY_PRINT);
-        if (file_put_contents(VAR_DIR . '/composer/composer.json', $json) === false) {
+        if (file_put_contents(VAR_DIR.'/composer/composer.json', $json) === false) {
             # Writeprocess failed
             throw new SetupException("setup.filesystem.composerjson.not.writeable");
         }
@@ -490,9 +559,9 @@ class Preset
     {
         $Composer->dumpAutoload();
         // namespaces
-        $map = require OPT_DIR . 'composer/autoload_namespaces.php';
-        $classMap = require OPT_DIR . 'composer/autoload_classmap.php';
-        $psr4 = require OPT_DIR . 'composer/autoload_psr4.php';
+        $map = require OPT_DIR.'composer/autoload_namespaces.php';
+        $classMap = require OPT_DIR.'composer/autoload_classmap.php';
+        $psr4 = require OPT_DIR.'composer/autoload_psr4.php';
 
         foreach ($map as $namespace => $path) {
             Autoloader::$ComposerLoader->add($namespace, $path);

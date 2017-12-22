@@ -675,3 +675,6 @@ msgstr "Es konnten nicht alle Vorraussetzungen erfüllt werden. QUIQQER kann lei
 
 msgid "warning.requirement.warning"
 msgstr "Die Tests ergaben Warnungen. QUIQQER wird funktionieren, aber manche Funktionen werden deaktiviert oder eingeschränkt."
+
+msgid  "preset.apply.vhost.failed"
+msgstr "QUIQQER konnte den VirtualHost Eintrag nicht anlegen."

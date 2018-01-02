@@ -1495,7 +1495,7 @@ LOGETC;
 
         QUI\Permissions\Permission::setUser($User);
 
-        //TODO QUI\Setup::all();
+       
         QUI::getSession()->setup();
 
         QUI\Setup::makeDirectories();
@@ -1549,7 +1549,7 @@ LOGETC;
             unlink(VAR_DIR . 'locale/localefiles');
         }
 
-        //TODO QUI\Setup::all();
+        
 
         $Defaults = new QUI\System\Console\Tools\Defaults();
         $Defaults->execute();

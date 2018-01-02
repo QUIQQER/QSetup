@@ -620,7 +620,7 @@ class Installer
             # Ask for Database name
             $db = $this->prompt(
                 $this->Locale->getStringLang("prompt.database.db", "Database database name:"),
-                "quiqqer"
+                $user
             );
 
             # Check if database exists

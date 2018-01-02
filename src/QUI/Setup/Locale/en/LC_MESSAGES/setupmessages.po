@@ -674,3 +674,6 @@ msgstr "Not all requirements could be met. Unfortunately QUIQQER can not get ins
 
 msgid "warning.requirement.warning"
 msgstr "Some requirements resulted in warnings. QUIQQER will run but some functionalities might not work."
+
+msgid  "preset.apply.vhost.failed"
+msgstr "QUIQQER could not create the virtual host entry."

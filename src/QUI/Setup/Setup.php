@@ -705,10 +705,6 @@ class Setup
 
         $storedData = $this->data;
 
-        if (isset($storedData['user']['pw'])) {
-            $storedData['user']['pw'] = "";
-        }
-
         $data = array(
             'step' => $this->Step,
             'data' => $storedData,

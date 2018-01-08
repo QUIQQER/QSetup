@@ -58,13 +58,15 @@ class Installer
     /** @var string */
     protected $urlDir = "";
 
+    protected $interactive = true;
+
     /**
      * Installer constructor.
      */
     public function __construct()
     {
         try {
-            $this->Setup = new Setup(Setup::MODE_CLI);
+            $this->Setup  = new Setup(Setup::MODE_CLI);
             $this->Locale = new Locale('en_GB');
             $this->Setup->setSetupLanguage("en_GB");
         } catch (Exception $Exception) {
@@ -116,64 +118,37 @@ class Installer
             $this->echoRestorableData($data);
 
             # Check if the User wants to continue with the restored data
-            $continuePrompt = $this->prompt(
-                $this->Locale->getStringLang(
-                    "setup.prompt.continue.restored.data",
-                    "Do you want to continue with the restorable data? (y/n)"
-                ),
-                false,
-                null,
-                false,
-                true,
-                false
-            );
-        }
-
-        # Data restoration
-        if (isset($continuePrompt) && $continuePrompt == 'y') {
-            $this->Setup->restoreData();
-
-            #Remove files/directories that could get into the way of the new setup
-            $this->Setup->rollBack();
-
-            /*
-             * We did not store the users passwords.
-             * Because of that the user has to re-enter all passwords.
-             */
-
-            # User
-            if ($this->Setup->isStepCompleted(Setup::STEP_DATA_USER)) {
-                $this->writeLn($this->Locale->getStringLang(
-                    "setup.message.restoration.user.password.prompt",
-                    "Please enter your database password again:"
-                ));
-
-                do {
-                    $pw = $this->prompt(
-                        $this->Locale->getStringLang("setup.prompt.restoration.user.password", "User password:"),
-                        false,
-                        null,
-                        true
-                    );
-
-                    $pw2 = $this->prompt(
-                        $this->Locale->getStringLang(
-                            "setup.prompt.restoration.user.password.repeat",
-                            "Repeat user password:"
-                        ),
-                        false,
-                        null,
-                        true
-                    );
-                } while ($pw != $pw2);
-
-                $this->Setup->restoreUserPassword($pw);
+            if ($this->interactive) {
+                $continuePrompt = $this->prompt(
+                    $this->Locale->getStringLang(
+                        "setup.prompt.continue.restored.data",
+                        "Do you want to continue with the restorable data? (y/n)"
+                    ),
+                    false,
+                    null,
+                    false,
+                    true,
+                    false
+                );
+            } else {
+                $continuePrompt = 'y';
             }
 
-            # Continue Setup execution.
-            # Switch fallthrough to execute all steps after last finished step
-            $firstStep = $data['step'];
+
+            # Data restoration
+            if (isset($continuePrompt) && $continuePrompt == 'y') {
+                $this->Setup->restoreData();
+
+                #Remove files/directories that could get into the way of the new setup
+                $this->Setup->rollBack();
+
+                # Continue Setup execution.
+                # Switch fallthrough to execute all steps after last finished step
+                $firstStep = $data['step'];
+            }
         }
+
+
 
         if ($this->developerMode) {
             $this->Setup->setDeveloperMode();
@@ -235,7 +210,12 @@ class Installer
      */
     private function stepSetupLanguage()
     {
-        $lang = $this->prompt("Please select a Language for the Setupprocess (de_DE/en_GB) :", "de_DE", COLOR_PURPLE);
+        if ($this->interactive === false) {
+            $lang = "en_EN";
+        } else {
+            $lang = $this->prompt("Please select a Language for the Setupprocess (de_DE/en_GB) :", "de_DE", COLOR_PURPLE);
+        }
+
         try {
             $this->Setup->setSetupLanguage($lang);
             $this->Locale->setLanguage($lang);
@@ -264,12 +244,12 @@ class Installer
             $this->Locale->getStringLang("message.step.requirements", "Requirements")
         );
 
-        $errors = array();
+        $errors   = array();
         $warnings = array();
-        $unknown = array();
+        $unknown  = array();
 
         $Requirements = new Requirements($this->langCode);
-        $AllTests = $Requirements->getTests(array(
+        $AllTests     = $Requirements->getTests(array(
             "database",
             "webserver",
             "quiqqer"
@@ -285,18 +265,18 @@ class Installer
                 switch ($Test->getResult()->getStatus()) {
                     case TestResult::STATUS_FAILED:
                         $errors[$Test->getName()] = $Test->getResult();
-                        $status = "\e[91m" . $Test->getResult()->getStatusHumanReadable() . "\e[0m";
+                        $status                   = "\e[91m" . $Test->getResult()->getStatusHumanReadable() . "\e[0m";
                         break;
                     case TestResult::STATUS_OK:
                         $status = "\e[92m" . $Test->getResult()->getStatusHumanReadable() . "\e[0m";
                         break;
                     case TestResult::STATUS_UNKNOWN:
                         $unknown[$Test->getName()] = $Test->getResult();
-                        $status = "\e[93m" . $Test->getResult()->getStatusHumanReadable() . "\e[0m";
+                        $status                    = "\e[93m" . $Test->getResult()->getStatusHumanReadable() . "\e[0m";
                         break;
                     case TestResult::STATUS_WARNING:
                         $warnings[$Test->getName()] = $Test->getResult();
-                        $status = "\e[93m" . $Test->getResult()->getStatusHumanReadable() . "\e[0m";
+                        $status                     = "\e[93m" . $Test->getResult()->getStatusHumanReadable() . "\e[0m";
                         break;
                 }
 
@@ -419,7 +399,7 @@ class Installer
      */
     private function stepPreset()
     {
-        $presets = Preset::getPresets();
+        $presets      = Preset::getPresets();
         $presetString = "";
         foreach ($presets as $name => $preset) {
             $presetString .= $name . ", ";
@@ -448,7 +428,7 @@ class Installer
         $presetData = $presets[$preset];
 
         $presetDataProjectName = !empty($presetData['project']['name']) ? $presetData['project']['name'] : false;
-        $projectName = $this->prompt(
+        $projectName           = $this->prompt(
             $this->Locale->getStringLang("prompt.preset.customize.projectname", "Projectname: "),
             $presetDataProjectName
         );
@@ -517,7 +497,7 @@ class Installer
 
         ## Template ##############
         $presetDataTemplate = isset($presetData['template']['name']) ? $presetData['template']['name'] : false;
-        $templateName = $this->prompt(
+        $templateName       = $this->prompt(
             $this->Locale->getStringLang("prompt.preset.customize.template", "Templatename: "),
             $presetDataTemplate
         );
@@ -613,9 +593,9 @@ class Installer
         // If the given database does not exist, the user will be prompted if the database should be created.
         // If he does not want to create the database he will be prompted for a new databasename
         // That way he does not have to enter all the credentials again if he made a typo.
-        $createNew = false;
+        $createNew     = false;
         $validDatabase = false;
-        $db = "";
+        $db            = "";
         while (!$validDatabase) {
             # Ask for Database name
             $db = $this->prompt(
@@ -650,7 +630,7 @@ class Installer
                         return $this->stepDatabase();
                     }
 
-                    $createNew = true;
+                    $createNew     = true;
                     $validDatabase = true;
                 }
             } elseif (!Database::checkDatabaseWriteAccess($driver, $host, $user, $pw, $db, $port)) {
@@ -775,7 +755,7 @@ class Installer
         if (substr($host, 0, 7) != 'http://' && substr($host, 0, 8) != 'https://') {
             $host = "http://" . $host;
         }
-        $host = rtrim($host, '/');
+        $host      = rtrim($host, '/');
         $this->url = $host;
         # CMS dir
         $continue = true;
@@ -853,8 +833,8 @@ class Installer
             "/"
         );
 
-        $urlDir = Utils::normalizePath($urlDir);
-        $urlDir = "/" . ltrim($urlDir, '/');
+        $urlDir       = Utils::normalizePath($urlDir);
+        $urlDir       = "/" . ltrim($urlDir, '/');
         $this->urlDir = $urlDir;
 
         try {
@@ -995,7 +975,7 @@ SMILEY;
 
         # Continue to prompt userinput, until user input is not empty,
         # unless allowempty is true or default can be used
-        $result = "";
+        $result   = "";
         $continue = true;
         while ($continue) {
             echo $text . " ";
@@ -1010,7 +990,7 @@ SMILEY;
 
             if (empty($result)) {
                 if ($default !== false) {
-                    $result = $default;
+                    $result   = $default;
                     $continue = false;
                 } else {
                     if (!$allowEmpty) {
@@ -1423,6 +1403,16 @@ HEADER;
                     break;
             }
         }
+    }
+
+    /**
+     * En- or disables the interactive mode
+     *
+     * @param $interactive
+     */
+    public function setInteractive($interactive)
+    {
+        $this->interactive = $interactive;
     }
 
     /**

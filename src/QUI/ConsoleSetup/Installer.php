@@ -1389,7 +1389,7 @@ HEADER;
                     break;
 
                 case 'c':
-                    // This wil ltry to clear the database with saved tabledata.
+                    // This will try to clear the database with saved tabledata.
                     // If no data is found, all tables will get dropped!
                     try {
                         $storedTables = $this->Setup->getSavedDatabaseState();

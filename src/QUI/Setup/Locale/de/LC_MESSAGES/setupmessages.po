@@ -332,7 +332,7 @@ msgid "warning.requirement.unknown"
 msgstr "Nicht alle Systemvorraussetzungen konnten geprüft werden. Diese Warnung ist belanglos, falls Sie wissen, dass alle Vorraussetzungen erfüllt sind."
 
 msgid "prompt.database.not.empty.continue"
-msgstr "Wie möchten Sie fortfahren?\n   - n : Neue Datenbank wählen \n   - c : Datenbank leeren. Warnung! Alle Daten gehen verloren! \n   - q : Setup abbrechen"
+msgstr "Wie möchten Sie fortfahren? \n   - n : Neue Datenbank wählen \n   - c : Datenbank leeren. Warnung! Alle Daten gehen verloren! \n   - q : Setup abbrechen"
 
 msgid "help.prompt.host"
 msgstr "Die Domain unter welcher QUIQQER erreichbar sein wird. \nDie Domain sollte mit 'https://' beginnen und ohne Slash enden!\nBeispiel : https://example.com"

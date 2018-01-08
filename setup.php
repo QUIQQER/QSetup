@@ -14,4 +14,8 @@ if (in_array("--dev", $argv)) {
     $Installer->setDeveloperMode();
 }
 
+if (in_array("--no-interaction", $argv)) {
+    $Installer->setInteractive(false);
+}
+
 $Installer->execute();

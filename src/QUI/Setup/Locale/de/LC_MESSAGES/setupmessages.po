@@ -47,64 +47,64 @@ msgid "setup.filesystem.file.notwriteable"
 msgstr "Die Datei konnte nicht geschrieben werden"
 
 msgid "setup.language.set.success"
-msgstr "Setup verwendet nun folgende Sprache : "
+msgstr "Setup verwendet nun folgende Sprache: "
 
 msgid "data.missing.lang"
-msgstr "Fehlende Daten : Sprache"
+msgstr "Fehlende Daten: Sprache"
 
 msgid "data.missing.version"
-msgstr "Fehlende Daten : Version"
+msgstr "Fehlende Daten: Version"
 
 msgid "data.missing.template"
-msgstr "Fehlende Daten : Preset"
+msgstr "Fehlende Daten: Preset"
 
 msgid "data.missing.database.driver"
-msgstr "Fehlende Daten : Datenbank Treiber"
+msgstr "Fehlende Daten: Datenbank Treiber"
 
 msgid "data.missing.database.host"
-msgstr "Fehlende Daten : Datenbank Host"
+msgstr "Fehlende Daten: Datenbank Host"
 
 msgid "data.missing.database.user"
-msgstr "Fehlende Daten : Datenbank Benutzer"
+msgstr "Fehlende Daten: Datenbank Benutzer"
 
 msgid "data.missing.database.pw"
-msgstr "Fehlende Daten : Datenbank Password"
+msgstr "Fehlende Daten: Datenbank Password"
 
 msgid "data.missing.database.db"
-msgstr "Fehlende Daten : Datenbankname"
+msgstr "Fehlende Daten: Datenbankname"
 
 msgid "data.missing.database.prefix"
-msgstr "Fehlende Daten : Datenbank Prefix"
+msgstr "Fehlende Daten: Datenbank Prefix"
 
 msgid "data.missing.user.name"
-msgstr "Fehlende Daten : Administrativer Benutzername"
+msgstr "Fehlende Daten: Administrativer Benutzername"
 
 msgid "data.missing.user.pw"
-msgstr "Fehlende Daten : Administratives Passwort"
+msgstr "Fehlende Daten: Administratives Passwort"
 
 msgid "data.missing.paths.host"
-msgstr "Fehlende Daten : Host"
+msgstr "Fehlende Daten: Host"
 
 msgid "data.missing.paths.cms_dir"
-msgstr "Fehlende Daten : Pfad CMS_DIR"
+msgstr "Fehlende Daten: Pfad CMS_DIR"
 
 msgid "data.missing.paths.lib_dir"
-msgstr "Fehlende Daten : Pfad LIB_DIR"
+msgstr "Fehlende Daten: Pfad LIB_DIR"
 
 msgid "data.missing.paths.usr_dir"
-msgstr "Fehlende Daten : USR_DIR"
+msgstr "Fehlende Daten: USR_DIR"
 
 msgid "data.missing.paths.url_dir"
-msgstr "Fehlende Daten : URL_DIR"
+msgstr "Fehlende Daten: URL_DIR"
 
 msgid "data.missing.paths.bin_dir"
 msgstr "BIN_DIR"
 
 msgid "data.missing.paths.opt_dir"
-msgstr "Fehlende Daten : OPT_DIR"
+msgstr "Fehlende Daten: OPT_DIR"
 
 msgid "data.missing.paths.var_dir"
-msgstr "Fehlende Daten : VAR_DIR"
+msgstr "Fehlende Daten: VAR_DIR"
 
 msgid "database.no.database.selected"
 msgstr "Es wurde versucht eine Datenbankoperation durchzuführen, obwohl keine Datenbank ausgewählt ist."
@@ -119,10 +119,10 @@ msgid "setup.setup.message.apply.preset"
 msgstr "Wende Vorlage auf die Installation an."
 
 msgid "applypreset.adding.repository"
-msgstr "Füge ein Repository hinzu :"
+msgstr "Füge ein Repository hinzu: "
 
 msgid "applypreset.creating.project"
-msgstr "Erstelle Projekt : "
+msgstr "Erstelle Projekt: "
 
 msgid "applypreset.require.package"
 msgstr "Installiere Paket: "
@@ -158,16 +158,16 @@ msgid "message.step.template"
 msgstr "Vorlagenauswahl"
 
 msgid "prompt.template"
-msgstr "Bitte geben Sie den Namen der Vorlage ein, die Sie verwenden möchten :"
+msgstr "Bitte geben Sie den Namen der Vorlage ein, die Sie verwenden möchten: "
 
 msgid "message.step.database"
 msgstr "Datenbank Einstellungen"
 
 msgid "prompt.database.driver"
-msgstr "Datenbank Treiber :"
+msgstr "Datenbank Treiber: "
 
 msgid "prompt.database.host"
-msgstr "Datenbank Host :"
+msgstr "Datenbank Host: "
 
 msgid "prompt.database.port"
 msgstr "Datenbank Port: "
@@ -179,7 +179,7 @@ msgid "prompt.database.pw"
 msgstr "Datenbank Passwort: "
 
 msgid "prompt.database.db"
-msgstr "Datenbank Name : "
+msgstr "Datenbank Name: "
 
 msgid "prompt.database.createnew"
 msgstr "Die angegebene Datenbank existiert nicht. Soll QUIQQER versuchen sie zu erstellen? (y/n)"
@@ -200,7 +200,7 @@ msgid "message.step.paths"
 msgstr "Pfadeinstellungen"
 
 msgid "prompt.host"
-msgstr "Domain : "
+msgstr "Domain: "
 
 msgid "prompt.cms"
 msgstr "QUIQQER Rootverzeichnis: "
@@ -275,7 +275,7 @@ msgid "setup.restored.data.paths.url"
 msgstr "   URL Verzeichnis: "
 
 msgid "setup.restored.data.found"
-msgstr "Das Setup hat wiederherstellbare Daten gefunden :"
+msgstr "Das Setup hat wiederherstellbare Daten gefunden: "
 
 msgid "warning.database.not.empty"
 msgstr "Die angegebene Datenbank ist nicht leer!"
@@ -332,7 +332,7 @@ msgid "warning.requirement.unknown"
 msgstr "Nicht alle Systemvorraussetzungen konnten geprüft werden. Diese Warnung ist belanglos, falls Sie wissen, dass alle Vorraussetzungen erfüllt sind."
 
 msgid "prompt.database.not.empty.continue"
-msgstr "Wie möchten Sie fortfahren?\n   - n : Neue Datenbank wählen \n   - c : Datenbank leeren. Warnung! Alle Daten gehen verloren! \n   - q : Setup abbrechen"
+msgstr "Wie möchten Sie fortfahren? \n   - n : Neue Datenbank wählen \n   - c : Datenbank leeren. Warnung! Alle Daten gehen verloren! \n   - q : Setup abbrechen"
 
 msgid "help.prompt.host"
 msgstr "Die Domain unter welcher QUIQQER erreichbar sein wird. \nDie Domain sollte mit 'https://' beginnen und ohne Slash enden!\nBeispiel : https://example.com"
@@ -353,16 +353,16 @@ msgid "setup.message.restoration.user.password.prompt"
 msgstr "Bitte tippen Sie ihr Benutzer Passwort erneut ein."
 
 msgid "setup.prompt.restoration.database.password"
-msgstr "Datenbank Passwort:"
+msgstr "Datenbank Passwort: "
 
 msgid "setup.prompt.restoration.user.password"
-msgstr "Benutzer Passwort:"
+msgstr "Benutzer Passwort: "
 
 msgid "setup.prompt.restoration.database.password.repeat"
-msgstr "Datenbank Passwort wiederholen:"
+msgstr "Datenbank Passwort wiederholen: "
 
 msgid "setup.prompt.restoration.user.password.repeat"
-msgstr "Benutzer Passwort wiederholen:"
+msgstr "Benutzer Passwort wiederholen: "
 
 msgid "setup.message.restoration.database.password.invalid"
 msgstr "Das eingegebene Passwort scheint nicht korrekt zu sein. Bitte erneut versuchen."

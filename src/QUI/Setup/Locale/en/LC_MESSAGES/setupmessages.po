@@ -47,64 +47,64 @@ msgid "setup.filesystem.file.notwriteable"
 msgstr "Could not write file"
 
 msgid "setup.language.set.success"
-msgstr "Setup is now using the language : "
+msgstr "Setup is now using the language: "
 
 msgid "data.missing.lang"
 msgstr "Missing data: language"
 
 msgid "data.missing.version"
-msgstr "Missing data : version"
+msgstr "Missing data: version"
 
 msgid "data.missing.template"
-msgstr "Missing Data : template"
+msgstr "Missing Data: template"
 
 msgid "data.missing.database.driver"
-msgstr "Missing Data : database driver"
+msgstr "Missing Data: database driver"
 
 msgid "data.missing.database.host"
-msgstr "Missing Data : database host"
+msgstr "Missing Data: database host"
 
 msgid "data.missing.database.user"
-msgstr "Missing Data : database user name"
+msgstr "Missing Data: database user name"
 
 msgid "data.missing.database.pw"
-msgstr "Missing Data : database user password"
+msgstr "Missing Data: database user password"
 
 msgid "data.missing.database.db"
-msgstr "Missing Data : database databasename"
+msgstr "Missing Data: database databasename"
 
 msgid "data.missing.database.prefix"
-msgstr "Missing Data : database prefix"
+msgstr "Missing Data: database prefix"
 
 msgid "data.missing.user.name"
-msgstr "Missing Data : adminuser name"
+msgstr "Missing Data: adminuser name"
 
 msgid "data.missing.user.pw"
-msgstr "Missing Data : adminuser password"
+msgstr "Missing Data: adminuser password"
 
 msgid "data.missing.paths.host"
-msgstr "Missing Data : host"
+msgstr "Missing Data: host"
 
 msgid "data.missing.paths.cms_dir"
-msgstr "Missing Data : path CMS_DIR"
+msgstr "Missing Data: path CMS_DIR"
 
 msgid "data.missing.paths.lib_dir"
-msgstr "Missing Data : path LIB_DIR"
+msgstr "Missing Data: path LIB_DIR"
 
 msgid "data.missing.paths.usr_dir"
-msgstr "Missing Data : path USR_DIR"
+msgstr "Missing Data: path USR_DIR"
 
 msgid "data.missing.paths.url_dir"
-msgstr "Missing Data : path URL_DIR"
+msgstr "Missing Data: path URL_DIR"
 
 msgid "data.missing.paths.bin_dir"
-msgstr "Missing Data : path BIN_DIR"
+msgstr "Missing Data: path BIN_DIR"
 
 msgid "data.missing.paths.opt_dir"
-msgstr "Missing Data : path OPT_DIR"
+msgstr "Missing Data: path OPT_DIR"
 
 msgid "data.missing.paths.var_dir"
-msgstr "Missing Data : path VAR_DIR"
+msgstr "Missing Data: path VAR_DIR"
 
 msgid "database.no.database.selected"
 msgstr "Can not start database operations because no database was selected"
@@ -119,16 +119,16 @@ msgid "setup.setup.message.apply.preset"
 msgstr "Applying preset to installation."
 
 msgid "applypreset.adding.repository"
-msgstr "Adding repository :"
+msgstr "Adding repository: "
 
 msgid "applypreset.creating.project"
-msgstr "Creating project : "
+msgstr "Creating project: "
 
 msgid "applypreset.require.package"
 msgstr "Installing package: "
 
 msgid "applypreset.set.config"
-msgstr "Applying configuration : "
+msgstr "Applying configuration: "
 
 msgid "applypreset.set.layout"
 msgstr "Set layout: "
@@ -164,10 +164,10 @@ msgid "message.step.database"
 msgstr "Database settings"
 
 msgid "prompt.database.driver"
-msgstr "Database driver :"
+msgstr "Database driver: "
 
 msgid "prompt.database.host"
-msgstr "Database host :"
+msgstr "Database host: "
 
 msgid "prompt.database.port"
 msgstr "Database port: "
@@ -179,7 +179,7 @@ msgid "prompt.database.pw"
 msgstr "Database password: "
 
 msgid "prompt.database.db"
-msgstr "Database databasename : "
+msgstr "Database databasename: "
 
 msgid "prompt.database.createnew"
 msgstr "The given database does not exist. Do you want QUIQQER to try and create it? (y/n)"
@@ -200,7 +200,7 @@ msgid "message.step.paths"
 msgstr "Pathsettings"
 
 msgid "prompt.host"
-msgstr "URL : "
+msgstr "URL: "
 
 msgid "prompt.cms"
 msgstr "Installation directory: "
@@ -275,7 +275,7 @@ msgid "setup.restored.data.paths.url"
 msgstr "   URL directory: "
 
 msgid "setup.restored.data.found"
-msgstr "The setup has found restorable data :"
+msgstr "The setup has found restorable data: "
 
 msgid "warning.database.not.empty"
 msgstr "The given database is not empty!"
@@ -347,22 +347,22 @@ msgid "setup.message.finished.filerights"
 msgstr "Please make sure that the executing PHP-User owns the files and the Webserver has read-access."
 
 msgid "setup.message.restoration.database.password.prompt"
-msgstr "Please enter your database password again:"
+msgstr "Please enter your database password again: "
 
 msgid "setup.message.restoration.user.password.prompt"
-msgstr "Please enter your user password again:"
+msgstr "Please enter your user password again: "
 
 msgid "setup.prompt.restoration.database.password"
-msgstr "Database password:"
+msgstr "Database password: "
 
 msgid "setup.prompt.restoration.user.password"
-msgstr "User password:"
+msgstr "User password: "
 
 msgid "setup.prompt.restoration.database.password.repeat"
-msgstr "Repeat database password:"
+msgstr "Repeat database password: "
 
 msgid "setup.prompt.restoration.user.password.repeat"
-msgstr "Repeat user password:"
+msgstr "Repeat user password: "
 
 msgid "setup.message.restoration.database.password.invalid"
 msgstr "The given password seems to be incorrect. Try again!"

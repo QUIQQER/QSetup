@@ -2,8 +2,8 @@
     "project": {
         "name": "",
         "languages": {
-            "de": "true",
-            "en": "false"
+            "de": true,
+            "en": false
         }
     },
     "template": {

@@ -36,7 +36,8 @@
         "quiqqer\/requirements": "2.0.0",
         "quiqqer\/qui": "dev-dev",
         "quiqqer\/lockclient":"dev-dev",
-        "pcsg\/composer-assets": "dev-master"
+        "pcsg\/composer-assets": "dev-master",
+	"symfony\/console":"3.4"
     },
     "extra": {
         "asset-registry-options": {

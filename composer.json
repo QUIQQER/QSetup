@@ -37,7 +37,11 @@
         "quiqqer\/qui": "dev-dev",
         "quiqqer\/lockclient":"dev-dev",
         "pcsg\/composer-assets": "dev-master",
-	"symfony\/console":"3.4"
+	"symfony\/console":"3.4",
+	"symfony\/debug":"3.4",
+	"symfony\/filesystem":"3.4",
+	"symfony\/finder":"3.4",
+	"symfony\/process":"3.4"
     },
     "extra": {
         "asset-registry-options": {

@@ -2,9 +2,10 @@
     "name": "quiqqer\/setup",
     "type": "quiqqer-library",
     "description": "Load essential packages for quiqqer setup",
-    "version": "dev-master",
+    "version": "dev-dev",
     "license": "",
     "minimum-stability": "dev",
+    "prefer-stable": true,
     "authors": [
         {
             "name": "PCSG OHG",
@@ -35,13 +36,13 @@
         "quiqqer\/qui-php": "dev-dev",
         "quiqqer\/requirements": "2.0.0",
         "quiqqer\/qui": "dev-dev",
-        "quiqqer\/lockclient":"dev-dev",
-        "pcsg\/composer-assets": "dev-master",
-	"symfony\/console":"3.4",
-	"symfony\/debug":"3.4",
-	"symfony\/filesystem":"3.4",
-	"symfony\/finder":"3.4",
-	"symfony\/process":"3.4"
+        "quiqqer\/lockclient": "dev-dev",
+        "pcsg\/composer-assets": "1.0.0|dev-master|dev-dev",
+        "symfony\/console": "3.4",
+        "symfony\/debug": "3.4",
+        "symfony\/filesystem": "3.4",
+        "symfony\/finder": "3.4",
+        "symfony\/process": "3.4"
     },
     "extra": {
         "asset-registry-options": {

@@ -105,6 +105,7 @@ class Installer
         $this->stepSetupLanguage();
         $data = array();
 
+        
         $firstStep = Setup::STEP_BEGIN;
 
         # Check if we can restore any data from a previous setup which might have been cancelled or interrupted
@@ -974,7 +975,7 @@ SMILEY;
         }
 
         # Continue to prompt userinput, until user input is not empty,
-        # unless allowempty is true or default can be used
+        # unless allow empty is true or default can be used
         $result   = "";
         $continue = true;
         while ($continue) {
@@ -1352,6 +1353,9 @@ HEADER;
                 self::LEVEL_WARNING
             );
 
+
+         
+            
             $nonEmptyDbPromptResult = $this->prompt(
                 $this->Locale->getStringLang(
                     "prompt.database.not.empty.continue",
@@ -1363,6 +1367,8 @@ HEADER;
                 true
             );
 
+         
+            
             switch ($nonEmptyDbPromptResult) {
                 case 'n':
                     return $this->stepDatabase();

@@ -462,7 +462,10 @@ class Preset
         foreach ($this->packages as $name => $version) {
             $result = $this->Composer->requirePackage($name, $version, $options);
 
-            $output .= implode(PHP_EOL, $result).PHP_EOL;
+            if (is_array($result)) {
+                $output .= implode(PHP_EOL, $result).PHP_EOL;
+            }
+           
 
             $this->Output->writeLn(
                 $this->Locale->getStringLang("applypreset.require.package", "Require Package :").$name,
@@ -588,12 +591,7 @@ class Preset
         $result = array();
 
         foreach ($this->availableLanguages as $lang => $active) {
-            if ($active === true) {
-                $result[] = $lang;
-                continue;
-            }
-
-            if ($active === "true") {
+            if ($active) {
                 $result[] = $lang;
                 continue;
             }

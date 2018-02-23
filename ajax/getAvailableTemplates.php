@@ -11,26 +11,38 @@ require 'header.php';
 $templates = array();
 
 $packagesJson = file_get_contents("https://update.quiqqer.com/packages.json");
-$packages = json_decode($packagesJson, true);
-$packages = $packages['packages'];
+$packages     = json_decode($packagesJson, true);
+$packages     = $packages['packages'];
 
 foreach ($packages as $pckg) {
     if (!isset($pckg['dev-master'])) {
         continue;
     }
 
-    $pckg = $pckg['dev-master'];
-    if (!isset($pckg['type'])) {
+
+    $availableVersions = array_keys($pckg);
+    $availableVersions = \Composer\Semver\Semver::rsort($availableVersions);
+
+    $highestVersionName = $availableVersions[0];
+
+    if (substr($highestVersionName, 0, 3) == "dev") {
         continue;
     }
 
-    $type = $pckg['type'];
+
+    // extract data from master
+    $highestVersionData = $pckg[$highestVersionName];
+    if (!isset($highestVersionData['type'])) {
+        continue;
+    }
+
+    $type = $highestVersionData['type'];
     if ($type != "quiqqer-template") {
         continue;
     }
 
-    $templates[] = $pckg['name'];
-}
 
+    $templates[] = $highestVersionData['name'];
+}
 
 \QUI\Setup\Utils\Ajax::output($templates, 200);

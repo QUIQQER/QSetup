@@ -2,7 +2,7 @@
     "name": "quiqqer\/setup",
     "type": "quiqqer-library",
     "description": "Load essential packages for quiqqer setup",
-    "version": "dev-dev",
+    "version": "dev-master",
     "license": "GPL-3.0+",
     "minimum-stability": "dev",
     "prefer-stable": true,

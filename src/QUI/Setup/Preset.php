@@ -210,6 +210,8 @@ class Preset
      * Creates the project of the preset
      *
      * @throws SetupException
+     * @throws Exception
+     * @throws \Exception
      */
     protected function createProject()
     {
@@ -261,20 +263,29 @@ class Preset
             );
         }
 
-        // Perform a project setup to initialize the new languages
-        foreach ($this->availableLanguages as $lang) {
-            $LangProject = \QUI::getProjectManager()->getProject($this->projectName, $lang);
-            $LangProject->setup();
-        }
-//        $Project->setup();
+        
+        // Perform a project setup to initialize the new languages, because the languages were added
+        // to the config directly and the current project object does not know about the change yet
+        $Project->refresh();
+        $Project->setup();
+        
 
         # Remove the cachefile to make sure QUIQQER re-reads all locale.xml files
         if (file_exists(VAR_DIR.'locale/localefiles')) {
             unlink(VAR_DIR.'locale/localefiles');
         }
 
-        \QUI::getPackage('quiqqer/quiqqer')->setup();
-        \QUI::getLocale()->refresh();
+        \QUI\Cache\Manager::$noClearing = true;
+        
+        \QUI\Setup::executeEachPackageSetup();
+
+        \QUI\Translator::importFromPackage(
+            \QUI::getPackage('quiqqer/quiqqer'),
+            true,
+            true
+        );
+
+        \QUI\Setup::finish();
 
         if (!defined("ADMIN")) {
             define("ADMIN", 1);

@@ -226,7 +226,9 @@ class Preset
         } catch (\Exception $Exception) {
             $this->projectName = Utils::sanitizeProjectName($this->projectName);
         }
-
+        
+        Translator\Setup::onPackageSetup(\QUI::getPackage('quiqqer/translator'));
+        
         try {
             $Project = \QUI::getProjectManager()->createProject(
                 $this->projectName,
@@ -248,52 +250,16 @@ class Preset
         );
 
         $this->refreshNamespaces($this->Composer);
-
-        # Add new languages if neccessary
-        if (!empty($this->projectName)) {
-//            $Config = \QUI::getProjectManager()->getConfig();
-//            $Config->setValue($this->projectName, 'langs', implode(',', $this->activeLanguages));
-//            $Config->save();
-//
-//            $installedLangsMsg = $this->Locale->getStringLang(
-//                "applypreset.installed.languages",
-//                "Installed languages %LANGS% for project %PROJECT%"
-//            );
-//            $installedLangsMsg = str_replace("%LANGS%", implode(',', $this->activeLanguages), $installedLangsMsg);
-//            $installedLangsMsg = str_replace("%PROJECT%", $this->projectName, $installedLangsMsg);
-//
-//            $this->Output->writeLn(
-//                $installedLangsMsg,
-//                Output::COLOR_INFO
-//            );
-        }
-
-        // Perform a project setup to initialize the new languages, because the languages were added
-        // to the config directly and the current project object does not know about the change yet
-//        $Project->refresh();
-//        $Project->setup();
-
-        # Remove the cachefile to make sure QUIQQER re-reads all locale.xml files
-//        if (file_exists(VAR_DIR.'locale/localefiles')) {
-//            $this->Output->writeLn('Deleted localefiles');
-//            unlink(VAR_DIR.'locale/localefiles');
-//        }
-
+        
         \QUI\Cache\Manager::$noClearing = true;
 
 //        \QUI\Setup::executeEachPackageSetup([
-////            'localePublish' => false,
-////            'localeImport' => true,
-////            'forceImport' => true
+//            'localePublish' => false,
+//            'localeImport' => true,
+//            'forceImport' => true
 //        ]);
-//
-//        \QUI\Translator::importFromPackage(
-//            \QUI::getPackage('quiqqer/quiqqer'),
-//            true,
-//            true,
-//            true
-//        );
 
+        
         \QUI\Setup::finish();
 
         if (!defined("ADMIN")) {

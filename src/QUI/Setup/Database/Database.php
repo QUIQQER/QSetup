@@ -567,7 +567,9 @@ class Database
                 }
 
                 if (isset($table['index'])) {
-                    $Table->setIndex($tbl, explode(',', $table['index']));
+                    foreach ($table['index'] as $ind) {
+                        $Table->setIndex($tbl, explode(',', $ind));
+                    }
                 }
 
                 if (isset($table['auto_increment'])) {

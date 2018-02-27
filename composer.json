@@ -32,10 +32,10 @@
   ],
   "require": {
     "quiqqer\/composer": "^1.3.1",
-    "quiqqer\/utils": "^1.11.0",
-    "quiqqer\/qui-php": "^0.11.0",
+    "quiqqer\/utils": "dev-master",
+    "quiqqer\/qui-php": "dev-master",
     "quiqqer\/requirements": "2.0.0",
-    "quiqqer\/qui": "^1.0.0",
+    "quiqqer\/qui": "dev-master",
     "quiqqer\/lockclient": "^1.0.0",
     "pcsg\/composer-assets": "1.0.0|dev-master|dev-dev",
     "symfony\/console": "3.4",

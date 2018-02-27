@@ -678,3 +678,6 @@ msgstr "Die Tests ergaben Warnungen. QUIQQER wird funktionieren, aber manche Fun
 
 msgid  "preset.apply.vhost.failed"
 msgstr "QUIQQER konnte den VirtualHost Eintrag nicht anlegen."
+
+msgid "warning.setup.error.log.found"
+msgstr "Während des Setups wurden Fehler erkannt. Bitte überprüfe das Fehlerlog:"

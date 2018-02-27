@@ -1090,7 +1090,15 @@ SMILEY;
      */
     private function getColoredString($text, $color)
     {
-        return "\033[" . $color . "m" . $text . "\033[0m";
+        $lines = explode(PHP_EOL, $text);
+        $result = "";
+        foreach ($lines as $line) {
+            $result .= "\033[" . $color . "m" . $line . "\033[0m" . PHP_EOL;
+        }
+
+        $result = trim($result);
+
+        return $result;
     }
     #endregion
 

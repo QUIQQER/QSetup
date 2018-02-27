@@ -677,3 +677,6 @@ msgstr "Some requirements resulted in warnings. QUIQQER will run but some functi
 
 msgid  "preset.apply.vhost.failed"
 msgstr "QUIQQER could not create the virtual host entry."
+
+msgid "warning.setup.error.log.found"
+msgstr "It seems like an error happened. Please check: "

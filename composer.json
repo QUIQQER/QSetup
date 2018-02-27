@@ -1,66 +1,66 @@
 {
-    "name": "quiqqer\/setup",
-    "type": "quiqqer-library",
-    "description": "Load essential packages for quiqqer setup",
-    "version": "dev-dev",
-    "license": "GPL-3.0+",
-    "minimum-stability": "dev",
-    "prefer-stable": true,
-    "authors": [
-        {
-            "name": "PCSG OHG",
-            "email": "support@pcsg.de",
-            "homepage": "http:\/\/www.pcsg.de",
-            "role": "Developer"
-        }
-    ],
-    "support": {
-        "email": "support@pcsg.de"
-    },
-    "repositories": [
-        {
-            "packagist": false
-        },
-        {
-            "type": "composer",
-            "url": "https:\/\/update.quiqqer.com\/"
-        },
-        {
-            "type": "composer",
-            "url": "https:\/\/composer.quiqqer.com\/"
-        }
-    ],
-    "require": {
-        "quiqqer\/composer": "dev-dev",
-        "quiqqer\/utils": "dev-dev",
-        "quiqqer\/qui-php": "dev-dev",
-        "quiqqer\/requirements": "2.0.0",
-        "quiqqer\/qui": "dev-dev",
-        "quiqqer\/lockclient": "dev-dev",
-        "pcsg\/composer-assets": "1.0.0|dev-master|dev-dev",
-        "symfony\/console": "3.4",
-        "symfony\/debug": "3.4",
-        "symfony\/filesystem": "3.4",
-        "symfony\/finder": "3.4",
-        "symfony\/process": "3.4"
-    },
-    "extra": {
-        "asset-registry-options": {
-            "npm": false,
-            "bower": false,
-            "npm-searchable": false,
-            "bower-searchable": false
-        },
-        "asset-custom-npm-registries": {
-            "npm.quiqqer.com": "https:\/\/npm.quiqqer.com\/"
-        }
-    },
-    "autoload": {
-        "psr-4": {
-            "QUI\\Setup\\": "src\/QUI\/Setup",
-            "QUI\\ConsoleSetup\\": "src\/QUI\/ConsoleSetup",
-            "QUI\\Setup\\Locale\\": "src\/QUI\/Setup\/Locale",
-            "QUI\\Setup\\Database\\": "src\/QUI\/Setup\/Database"
-        }
+  "name": "quiqqer\/setup",
+  "type": "quiqqer-library",
+  "description": "Load essential packages for quiqqer setup",
+  "version": "dev-dev",
+  "license": "GPL-3.0+",
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "authors": [
+    {
+      "name": "PCSG OHG",
+      "email": "support@pcsg.de",
+      "homepage": "http:\/\/www.pcsg.de",
+      "role": "Developer"
     }
+  ],
+  "support": {
+    "email": "support@pcsg.de"
+  },
+  "repositories": [
+    {
+      "packagist": false
+    },
+    {
+      "type": "composer",
+      "url": "https:\/\/update.quiqqer.com\/"
+    },
+    {
+      "type": "composer",
+      "url": "https:\/\/composer.quiqqer.com\/"
+    }
+  ],
+  "require": {
+    "quiqqer\/composer": "^1.3.1",
+    "quiqqer\/utils": "^1.11.0",
+    "quiqqer\/qui-php": "^0.11.0",
+    "quiqqer\/requirements": "2.0.0",
+    "quiqqer\/qui": "^1.0.0",
+    "quiqqer\/lockclient": "^1.0.0",
+    "pcsg\/composer-assets": "1.0.0|dev-master|dev-dev",
+    "symfony\/console": "3.4",
+    "symfony\/debug": "3.4",
+    "symfony\/filesystem": "3.4",
+    "symfony\/finder": "3.4",
+    "symfony\/process": "3.4"
+  },
+  "extra": {
+    "asset-registry-options": {
+      "npm": false,
+      "bower": false,
+      "npm-searchable": false,
+      "bower-searchable": false
+    },
+    "asset-custom-npm-registries": {
+      "npm.quiqqer.com": "https:\/\/npm.quiqqer.com\/"
+    }
+  },
+  "autoload": {
+    "psr-4": {
+      "QUI\\Setup\\": "src\/QUI\/Setup",
+      "QUI\\ConsoleSetup\\": "src\/QUI\/ConsoleSetup",
+      "QUI\\Setup\\Locale\\": "src\/QUI\/Setup\/Locale",
+      "QUI\\Setup\\Database\\": "src\/QUI\/Setup\/Database"
+    }
+  }
 }

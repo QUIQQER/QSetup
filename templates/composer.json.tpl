@@ -40,8 +40,8 @@
     "pcsg\/composer-assets": "dev-master"
   },
   "minimum-stability": "dev",
-  "preferred-install": "dist",
   "config": {
+    "preferred-install": "dist",
     "vendor-dir": "",
     "cache-dir": "",
     "component-dir": "",

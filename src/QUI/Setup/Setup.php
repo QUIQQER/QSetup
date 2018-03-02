@@ -1998,7 +1998,7 @@ LOGETC;
 
         # Developer mode
         if ($this->developerMode) {
-            $data["preferred-install"] = "source";
+            $data['config']["preferred-install"] = "source";
         }
 
         # Add custom repositories

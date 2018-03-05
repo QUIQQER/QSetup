@@ -4,6 +4,6 @@ before_script:
 - apt-get dist-upgrade
 - apt-get install -y --no-install-recommends git curl ssh wget
 - docker-php-ext-install zip
-test:app:
+build:setup:
   script:
   - php create.php -y

@@ -5,5 +5,7 @@ before_script:
 - apt-get install -y --no-install-recommends git curl ssh wget
 - docker-php-ext-install zip
 build:setup:
+  tags:
+  - build
   script:
   - php create.php -y

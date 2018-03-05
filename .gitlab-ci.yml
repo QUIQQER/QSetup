@@ -1,0 +1,9 @@
+image: php:7.0
+before_script:
+- apt-get update
+- apt-get dist-upgrade
+- apt-get install -y --no-install-recommends git curl ssh wget
+- docker-php-ext-install zip
+test:app:
+  script:
+  - php create.php -y

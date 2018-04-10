@@ -922,7 +922,7 @@ SMILEY;
         );
 
         // print site url
-        $siteUrl = rtrim($this->url, '/') . $this->urlDir;
+        $siteUrl = rtrim($this->Setup->getHost(), '/') . $this->Setup->getUrlDir();
         $this->writeLn(
             $this->Locale->getStringLang("setup.message.finished.url", "Website URL: ") . $siteUrl,
             self::LEVEL_INFO,
@@ -930,7 +930,7 @@ SMILEY;
         );
 
         // Print Admin URl
-        $adminUrl = rtrim($this->url, '/') . rtrim($this->urlDir, '/') . "/admin";
+        $adminUrl =  rtrim($siteUrl, '/') . "/admin";
         $this->writeLn(
             $this->Locale->getStringLang(
                 "setup.message.finished.admin.url",

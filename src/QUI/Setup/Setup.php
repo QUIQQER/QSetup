@@ -103,25 +103,25 @@ class Setup
 
     # Data-array
     private $data = array(
-        'lang' => "",
-        'version' => "",
+        'lang'     => "",
+        'version'  => "",
         'template' => "",
         'database' => array(
             'create_new' => false,
-            'driver' => "",
-            'host' => "",
-            'user' => "",
-            'pw' => "",
-            'name' => "",
-            'prefix' => "",
-            'port' => "3306"
+            'driver'     => "",
+            'host'       => "",
+            'user'       => "",
+            'pw'         => "",
+            'name'       => "",
+            'prefix'     => "",
+            'port'       => "3306"
         ),
-        'user' => array(
+        'user'     => array(
             'name' => '',
-            'pw' => ''
+            'pw'   => ''
         ),
-        'paths' => array(
-            'host' => '',
+        'paths'    => array(
+            'host'    => '',
             'cms_dir' => '',
             'lib_dir' => '',
             'usr_dir' => '',
@@ -153,18 +153,18 @@ class Setup
         $this->baseDir = dirname(dirname(dirname(dirname(__FILE__))));
 
         # TMP Dir
-        $this->tmpDir = dirname(dirname(dirname(dirname(__FILE__)))) . '/var/tmp/';
+        $this->tmpDir = dirname(dirname(dirname(dirname(__FILE__)))).'/var/tmp/';
         if (!is_dir($this->tmpDir)) {
             mkdir($this->tmpDir, 0755, true);
         }
 
         # Log Dir
-        $this->logDir = dirname(dirname(dirname(dirname(__FILE__)))) . '/logs/';
+        $this->logDir = dirname(dirname(dirname(dirname(__FILE__)))).'/logs/';
         if (!is_dir($this->logDir)) {
             mkdir($this->logDir, 0755, true);
         }
 
-        ini_set('error_log', $this->logDir . 'error.log');
+        ini_set('error_log', $this->logDir.'error.log');
 
         // Initialize Logging
         $this->mode = $mode;
@@ -213,11 +213,11 @@ class Setup
         }
 
         # Set Tablenames
-        $this->tableUser = $this->data['database']['prefix'] . "users";
-        $this->tableGroups = $this->data['database']['prefix'] . "groups";
-        $this->tablePermissions = $this->data['database']['prefix'] . "permissions";
-        $this->tablePermissions2Groups = $this->data['database']['prefix'] . "permissions2groups";
-        $this->tableUsersWorkspaces = $this->data['database']['prefix'] . "users_workspaces";
+        $this->tableUser               = $this->data['database']['prefix']."users";
+        $this->tableGroups             = $this->data['database']['prefix']."groups";
+        $this->tablePermissions        = $this->data['database']['prefix']."permissions";
+        $this->tablePermissions2Groups = $this->data['database']['prefix']."permissions2groups";
+        $this->tableUsersWorkspaces    = $this->data['database']['prefix']."users_workspaces";
 
         # Execute setup steps
         switch ($step) {
@@ -292,7 +292,7 @@ class Setup
         }
 
         $webMode = ($this->mode == self::MODE_WEB) ? true : false;
-        $Preset = new \QUI\Setup\Preset($presetName, $this->Locale, $Output, $webMode);
+        $Preset  = new \QUI\Setup\Preset($presetName, $this->Locale, $Output, $webMode);
         $Preset->apply(CMS_DIR, $step);
 
         // Due to timeout restrictions in the web setup we split the proces into multiple steps.
@@ -334,16 +334,16 @@ class Setup
     protected function cliCallApplyPreset()
     {
         $this->Output->writeLnLang("setup.message.step.preset", Output::LEVEL_INFO);
-        $applyPresetFile = dirname(dirname(__FILE__)) . '/ConsoleSetup/applyPresetCLI.php';
-        $cmsDir = CMS_DIR;
+        $applyPresetFile = dirname(dirname(__FILE__)).'/ConsoleSetup/applyPresetCLI.php';
+        $cmsDir          = CMS_DIR;
 
         $phpPath = defined('PHP_BINARY') ? PHP_BINARY : "php";
 
         // Store user details in temporary password file
-        file_put_contents(CMS_DIR . "var/tmp/.preset_pwd", $this->data['user']['pw']);
+        file_put_contents(CMS_DIR."var/tmp/.preset_pwd", $this->data['user']['pw']);
 
         exec(
-            $phpPath . " {$applyPresetFile} {$cmsDir} {$this->data['preset']} {$this->setupLang}" . ($this->developerMode ? ' --dev' : ''),
+            $phpPath." {$applyPresetFile} {$cmsDir} {$this->data['preset']} {$this->setupLang}".($this->developerMode ? ' --dev' : ''),
             $cmdOutput,
             $cmdStatus
         );
@@ -357,11 +357,11 @@ class Setup
 
         # IF Apply preset script did write its error message into the tmp/applypreset.json file.
         # Output its error
-        if (!file_exists(VAR_DIR . 'tmp/applypreset.json')) {
+        if (!file_exists(VAR_DIR.'tmp/applypreset.json')) {
             $this->exitWithError("setup.unknown.error");
         }
 
-        $json = file_get_contents(VAR_DIR . 'tmp/applypreset.json');
+        $json = file_get_contents(VAR_DIR.'tmp/applypreset.json');
         $data = json_decode($json, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
             $this->exitWithError("setup.unknown.error");
@@ -398,7 +398,7 @@ class Setup
         try {
             $Locale = new Locale($lang);
 
-            $this->Locale = $Locale;
+            $this->Locale    = $Locale;
             $this->setupLang = $lang;
             $this->Output->changeLang($lang);
         } catch (LocaleException $Exception) {
@@ -422,7 +422,7 @@ class Setup
     {
         $this->data['lang'] = $lang;
 
-        $this->Step = Setup::STEP_DATA_LANGUAGE;
+        $this->Step    = Setup::STEP_DATA_LANGUAGE;
         $this->stepSum += Setup::STEP_DATA_LANGUAGE;
     }
 
@@ -443,7 +443,7 @@ class Setup
             throw $Exception;
         }
 
-        $this->Step = Setup::STEP_DATA_VERSION;
+        $this->Step    = Setup::STEP_DATA_VERSION;
         $this->stepSum += Setup::STEP_DATA_VERSION;
     }
 
@@ -459,7 +459,7 @@ class Setup
             Validator::validatePreset($preset);
             $this->data['preset'] = $preset;
 
-            $this->Step = Setup::STEP_DATA_PRESET;
+            $this->Step    = Setup::STEP_DATA_PRESET;
             $this->stepSum += Setup::STEP_DATA_PRESET;
         } catch (SetupException $Exception) {
             echo $Exception->getMessage();
@@ -493,16 +493,16 @@ class Setup
             exit;
         }
 
-        $this->data['database']['driver'] = $dbDriver;
-        $this->data['database']['host'] = $dbHost;
-        $this->data['database']['user'] = $dbUser;
-        $this->data['database']['pw'] = $dbPw;
-        $this->data['database']['name'] = $dbName;
-        $this->data['database']['port'] = $dbPort;
-        $this->data['database']['prefix'] = $dbPrefix;
+        $this->data['database']['driver']     = $dbDriver;
+        $this->data['database']['host']       = $dbHost;
+        $this->data['database']['user']       = $dbUser;
+        $this->data['database']['pw']         = $dbPw;
+        $this->data['database']['name']       = $dbName;
+        $this->data['database']['port']       = $dbPort;
+        $this->data['database']['prefix']     = $dbPrefix;
         $this->data['database']['create_new'] = $createNew;
 
-        $this->Step = Setup::STEP_DATA_DATABASE;
+        $this->Step    = Setup::STEP_DATA_DATABASE;
         $this->stepSum += Setup::STEP_DATA_DATABASE;
     }
 
@@ -529,9 +529,9 @@ class Setup
         }
 
         $this->data['user']['name'] = $user;
-        $this->data['user']['pw'] = $pw;
+        $this->data['user']['pw']   = $pw;
 
-        $this->Step = Setup::STEP_DATA_USER;
+        $this->Step    = Setup::STEP_DATA_USER;
         $this->stepSum += Setup::STEP_DATA_USER;
 
         return true;
@@ -562,7 +562,7 @@ class Setup
         $varDir = ""
     ) {
 
-        $paths = array();
+        $paths  = array();
         $cmsDir = Utils::normalizePath($cmsDir);
 
         // Generate missing paths
@@ -570,37 +570,37 @@ class Setup
             if (Validator::validatePath($cmsDir) && !empty($urlDir)) {
                 # Filesystem paths
                 if (empty($varDir)) {
-                    $varDir = $cmsDir . "var/";
+                    $varDir = $cmsDir."var/";
                 }
 
                 if (empty($optDir)) {
-                    $optDir = $cmsDir . "packages/";
+                    $optDir = $cmsDir."packages/";
                 }
 
                 if (empty($usrDir)) {
-                    $usrDir = $cmsDir . "usr/";
+                    $usrDir = $cmsDir."usr/";
                 }
 
                 # URL Paths
                 if (empty($binDir)) {
-                    $binDir = $urlDir . "bin/";
+                    $binDir = $urlDir."bin/";
                 }
 
                 if (empty($libDir)) {
-                    $libDir = $urlDir . "lib/";
+                    $libDir = $urlDir."lib/";
                 }
             }
         } catch (SetupException $Exception) {
             $this->Output->writeLnLang($Exception->getMessage(), Output::LEVEL_WARNING);
         }
 
-        $paths['host'] = $host;
-        $paths['httpshost'] = '';
-        $paths['cms_dir'] = $cmsDir;
-        $paths['var_dir'] = $varDir;
-        $paths['usr_dir'] = $usrDir;
-        $paths['opt_dir'] = $optDir;
-        $paths['url_dir'] = $urlDir;
+        $paths['host']        = $host;
+        $paths['httpshost']   = '';
+        $paths['cms_dir']     = $cmsDir;
+        $paths['var_dir']     = $varDir;
+        $paths['usr_dir']     = $usrDir;
+        $paths['opt_dir']     = $optDir;
+        $paths['url_dir']     = $urlDir;
         $paths['url_lib_dir'] = $libDir;
         $paths['url_bin_dir'] = $binDir;
 
@@ -616,7 +616,7 @@ class Setup
         define('VAR_DIR', $varDir);
         $this->data['paths'] = $paths;
 
-        $this->Step = Setup::STEP_DATA_PATHS;
+        $this->Step    = Setup::STEP_DATA_PATHS;
         $this->stepSum += Setup::STEP_DATA_PATHS;
     }
 
@@ -643,7 +643,7 @@ class Setup
             $this->data['paths']['httpshost'] = "";
         }
 
-        $this->Step = Setup::STEP_DATA_COMPLETE;
+        $this->Step    = Setup::STEP_DATA_COMPLETE;
         $this->stepSum = Setup::STEP_DATA_COMPLETE;
     }
 
@@ -655,8 +655,18 @@ class Setup
      */
     public function setStep($step)
     {
-        $this->Step = $step;
+        $this->Step    = $step;
         $this->stepSum = ($step - 1);
+    }
+
+    public function getHost()
+    {
+        return $this->data['paths']['host'];
+    }
+
+    public function getUrlDir()
+    {
+        return $this->data['paths']['url_dir'];
     }
 
     #endregion
@@ -669,15 +679,15 @@ class Setup
      */
     public function restoreData()
     {
-        if (!file_exists($this->tmpDir . "setup.json")) {
+        if (!file_exists($this->tmpDir."setup.json")) {
             return;
         }
 
-        $json = file_get_contents($this->tmpDir . "setup.json");
+        $json = file_get_contents($this->tmpDir."setup.json");
         $data = json_decode($json, true);
 
         if (json_last_error() != JSON_ERROR_NONE) {
-            $this->Output->writeLn("Json Error : " . json_last_error_msg());
+            $this->Output->writeLn("Json Error : ".json_last_error_msg());
         }
 
         if (key_exists('data', $data)) {
@@ -706,12 +716,12 @@ class Setup
         $storedData = $this->data;
 
         $data = array(
-            'step' => $this->Step,
-            'data' => $storedData,
+            'step'    => $this->Step,
+            'data'    => $storedData,
             'stepsum' => $this->stepSum
         );
         $json = json_encode($data, JSON_PRETTY_PRINT);
-        file_put_contents($this->tmpDir . "setup.json", $json);
+        file_put_contents($this->tmpDir."setup.json", $json);
     }
 
     /**
@@ -723,8 +733,8 @@ class Setup
      */
     public function getRestorableData()
     {
-        if (file_exists($this->tmpDir . "setup.json")) {
-            $json = file_get_contents($this->tmpDir . "setup.json");
+        if (file_exists($this->tmpDir."setup.json")) {
+            $json = file_get_contents($this->tmpDir."setup.json");
             $data = json_decode($json, true);
             if (json_last_error() == JSON_ERROR_NONE) {
                 return $data;
@@ -743,7 +753,7 @@ class Setup
      */
     public function checkRestorableData()
     {
-        if (file_exists($this->tmpDir . "setup.json")) {
+        if (file_exists($this->tmpDir."setup.json")) {
             return true;
         }
 
@@ -779,12 +789,12 @@ class Setup
      */
     public function removeStoredData()
     {
-        if (file_exists($this->tmpDir . "setup.json")) {
-            unlink($this->tmpDir . "setup.json");
+        if (file_exists($this->tmpDir."setup.json")) {
+            unlink($this->tmpDir."setup.json");
         }
 
-        if (file_exists($this->tmpDir . "databaseState.json")) {
-            unlink($this->tmpDir . "databaseState.json");
+        if (file_exists($this->tmpDir."databaseState.json")) {
+            unlink($this->tmpDir."databaseState.json");
         }
     }
 
@@ -800,44 +810,44 @@ class Setup
         }
 
         # Backup stored setup data
-        if (file_exists(CMS_DIR . "setup.json")) {
-            rename(CMS_DIR . "setup.json", $this->baseDir . "/setup.json");
+        if (file_exists(CMS_DIR."setup.json")) {
+            rename(CMS_DIR."setup.json", $this->baseDir."/setup.json");
         }
 
         # Backup stored "apply preset" info
-        if (file_exists(CMS_DIR . 'var/tmp/applypreset.json')) {
-            rename(CMS_DIR . 'var/tmp/applypreset.json', $this->baseDir . "/applypreset.json");
+        if (file_exists(CMS_DIR.'var/tmp/applypreset.json')) {
+            rename(CMS_DIR.'var/tmp/applypreset.json', $this->baseDir."/applypreset.json");
         }
 
         # Backup stored "apply preset" password
-        if (file_exists(CMS_DIR . 'var/tmp/.preset_pwd')) {
-            rename(CMS_DIR . 'var/tmp/.preset_pwd', $this->baseDir . "/.preset_pwd");
+        if (file_exists(CMS_DIR.'var/tmp/.preset_pwd')) {
+            rename(CMS_DIR.'var/tmp/.preset_pwd', $this->baseDir."/.preset_pwd");
         }
 
         /////////////////////////////////////////////////////////////////////
         # Remove var dir
-        if (is_dir(CMS_DIR . "var/")) {
-            QUI\Utils\System\File::deleteDir(CMS_DIR . "var/");
+        if (is_dir(CMS_DIR."var/")) {
+            QUI\Utils\System\File::deleteDir(CMS_DIR."var/");
         }
 
         # Remove etc dir
-        if (is_dir(CMS_DIR . "etc/")) {
-            QUI\Utils\System\File::deleteDir(CMS_DIR . "etc/");
+        if (is_dir(CMS_DIR."etc/")) {
+            QUI\Utils\System\File::deleteDir(CMS_DIR."etc/");
         }
 
         # Restore stored setup data
-        if (file_exists($this->baseDir . "setup.json")) {
-            rename($this->baseDir . "/setup.json", CMS_DIR . "setup.json");
+        if (file_exists($this->baseDir."setup.json")) {
+            rename($this->baseDir."/setup.json", CMS_DIR."setup.json");
         }
 
         # Restore stored "apply preset" info
-        if (file_exists($this->baseDir . "setup.json")) {
-            rename($this->baseDir . "/applypreset.json", CMS_DIR . 'var/tmp/applypreset.json');
+        if (file_exists($this->baseDir."setup.json")) {
+            rename($this->baseDir."/applypreset.json", CMS_DIR.'var/tmp/applypreset.json');
         }
 
         # Restore stored "apply preset" password
-        if (file_exists($this->baseDir . "setup.json")) {
-            rename($this->baseDir . "/.preset_pwd", CMS_DIR . 'var/tmp/.preset_pwd');
+        if (file_exists($this->baseDir."setup.json")) {
+            rename($this->baseDir."/.preset_pwd", CMS_DIR.'var/tmp/.preset_pwd');
         }
     }
     #endregion
@@ -899,11 +909,11 @@ class Setup
         }
 
         # Load the database tables from xml file
-        $xmlDir = dirname(dirname(dirname(dirname(__FILE__)))) . "/xml";
-        $xmlFile = $xmlDir . "/" . $version . "/database.xml";
+        $xmlDir  = dirname(dirname(dirname(dirname(__FILE__))))."/xml";
+        $xmlFile = $xmlDir."/".$version."/database.xml";
 
         # Download the newest database.xml
-        $remoteFileContent = file_get_contents("https://dev.quiqqer.com/quiqqer/quiqqer/raw/" . $version . "/database.xml");
+        $remoteFileContent = file_get_contents("https://dev.quiqqer.com/quiqqer/quiqqer/raw/".$version."/database.xml");
         file_put_contents($xmlFile, $remoteFileContent);
 
         # Check if xml file exists
@@ -913,7 +923,7 @@ class Setup
                 Output::LEVEL_WARNING
             );
             # Try master databasefile as backup-plan
-            $xmlFile = $xmlDir . "/master/database.xml";
+            $xmlFile = $xmlDir."/master/database.xml";
             if (!file_exists($xmlFile)) {
                 throw new SetupException(
                     $this->Locale->getStringLang("setup.missing.database.xml", "No valid database.xml found."),
@@ -926,7 +936,7 @@ class Setup
             $this->Database->importTables(QUI\Utils\Text\XML::getDataBaseFromXml($xmlFile));
         } catch (\Exception $Exception) {
             throw new SetupException(
-                $this->Locale->getStringLang("setup.error.mysql", "MySql encountered an error: ") .
+                $this->Locale->getStringLang("setup.error.mysql", "MySql encountered an error: ").
                 $Exception->getMessage(),
                 SetupException::ERROR_MISSING_RESSOURCE
             );
@@ -951,38 +961,38 @@ class Setup
 
         $this->Output->writeLnLang("setup.message.step.user", Output::LEVEL_INFO);
         # Generate random values (security precautions)
-        $this->data['salt'] = md5(uniqid(rand(), true));
+        $this->data['salt']       = md5(uniqid(rand(), true));
         $this->data['saltlength'] = mt_rand(10, 20);
-        $this->data['rootGID'] = mt_rand(10, 1000000000);
-        $this->data['rootUID'] = mt_rand(100, 1000000000);
+        $this->data['rootGID']    = mt_rand(10, 1000000000);
+        $this->data['rootUID']    = mt_rand(100, 1000000000);
 
         # Creates admin group
         $this->Database->insert(
             $this->tableGroups,
             array(
-                'id' => $this->data['rootGID'],
-                'name' => 'Administrator',
-                'active' => 1,
+                'id'      => $this->data['rootGID'],
+                'name'    => 'Administrator',
+                'active'  => 1,
                 'toolbar' => ''
             )
         );
 
         # Creates admin user
-        $salt = substr($this->data['salt'], 0, $this->data['saltlength']);
-        $password = $salt . md5($salt . $this->data['user']['pw']);
+        $salt     = substr($this->data['salt'], 0, $this->data['saltlength']);
+        $password = $salt.md5($salt.$this->data['user']['pw']);
 
         $this->Database->insert(
             $this->tableUser,
             array(
-                'username' => $this->data['user']['name'],
-                'password' => $password,
-                'id' => $this->data['rootUID'],
-                'uuid' => "",
+                'username'  => $this->data['user']['name'],
+                'password'  => $password,
+                'id'        => $this->data['rootUID'],
+                'uuid'      => "",
                 'usergroup' => $this->data['rootGID'],
-                'su' => 1,
-                'active' => 1,
-                'lang' => $this->Locale->getCurrent() == 'de_DE' ? 'de' : 'en',
-                'regdate' => time()
+                'su'        => 1,
+                'active'    => 1,
+                'lang'      => $this->Locale->getCurrent() == 'de_DE' ? 'de' : 'en',
+                'regdate'   => time()
             )
         );
 
@@ -996,43 +1006,43 @@ class Setup
         $this->Database->insert(
             $this->tableUsersWorkspaces,
             array(
-                'uid' => $this->data['rootUID'],
-                'title' => $twoColumnName,
-                'data' => $twoColumnJson,
+                'uid'       => $this->data['rootUID'],
+                'title'     => $twoColumnName,
+                'data'      => $twoColumnJson,
                 'minHeight' => (int)500,
-                'minWidth' => (int)700
+                'minWidth'  => (int)700
             )
         );
 
         $this->Database->insert(
             $this->tableUsersWorkspaces,
             array(
-                'uid' => $this->data['rootUID'],
-                'title' => $threeColumnName,
-                'data' => $threeColumnJson,
+                'uid'       => $this->data['rootUID'],
+                'title'     => $threeColumnName,
+                'data'      => $threeColumnJson,
                 'minHeight' => (int)500,
-                'minWidth' => (int)700
+                'minWidth'  => (int)700
             )
         );
 
         # Grants permissions to admin group
         $permissions = array(
-            "quiqqer.admin.users.edit" => true,
-            "quiqqer.admin.groups.edit" => true,
-            "quiqqer.admin.users.view" => true,
-            "quiqqer.admin.groups.view" => true,
-            "quiqqer.system.cache" => true,
+            "quiqqer.admin.users.edit"   => true,
+            "quiqqer.admin.groups.edit"  => true,
+            "quiqqer.admin.users.view"   => true,
+            "quiqqer.admin.groups.view"  => true,
+            "quiqqer.system.cache"       => true,
             "quiqqer.system.permissions" => true,
-            "quiqqer.system.update" => true,
-            "quiqqer.su" => true,
-            "quiqqer.admin" => true,
-            "quiqqer.projects.create" => true
+            "quiqqer.system.update"      => true,
+            "quiqqer.su"                 => true,
+            "quiqqer.admin"              => true,
+            "quiqqer.projects.create"    => true
         );
 
         $this->Database->insert(
             $this->tablePermissions2Groups,
             array(
-                'group_id' => $this->data['rootGID'],
+                'group_id'    => $this->data['rootGID'],
                 'permissions' => json_encode($permissions)
             )
         );
@@ -1063,7 +1073,7 @@ class Setup
 
         $cmsDir = CMS_DIR;
         $etcDir = ETC_DIR;
-        $tmpDir = VAR_DIR . "temp/";
+        $tmpDir = VAR_DIR."temp/";
         $optDir = OPT_DIR;
         $usrDir = $this->cleanPath($paths['usr_dir']);
         $varDir = VAR_DIR;
@@ -1085,9 +1095,9 @@ class Setup
             !QUI\Utils\System\File::mkdir($optDir, 0755) ||
             !QUI\Utils\System\File::mkdir($usrDir, 0755) ||
             !QUI\Utils\System\File::mkdir($varDir, 0755) ||
-            !QUI\Utils\System\File::mkdir($varDir . 'composer/', 0755) ||
-            !QUI\Utils\System\File::mkdir($etcDir . 'wysiwyg/', 0755) ||
-            !QUI\Utils\System\File::mkdir($etcDir . 'wysiwyg/toolbars/', 0755)
+            !QUI\Utils\System\File::mkdir($varDir.'composer/', 0755) ||
+            !QUI\Utils\System\File::mkdir($etcDir.'wysiwyg/', 0755) ||
+            !QUI\Utils\System\File::mkdir($etcDir.'wysiwyg/toolbars/', 0755)
         ) {
             throw new SetupException(
                 "setup.filesystem.directory.creation.failed",
@@ -1100,12 +1110,12 @@ class Setup
         # Create config files
         # -------------------
         #region Configs
-        if (file_put_contents($etcDir . 'conf.ini.php', '') === false
-            || file_put_contents($etcDir . 'plugins.ini.php', '') === false
-            || file_put_contents($etcDir . 'projects.ini.php', '') === false
-            || file_put_contents($etcDir . 'source.list.ini.php', '') === false
-            || file_put_contents($etcDir . 'wysiwyg/editors.ini.php', '') === false
-            || file_put_contents($etcDir . 'wysiwyg/conf.ini.php', '') === false
+        if (file_put_contents($etcDir.'conf.ini.php', '') === false
+            || file_put_contents($etcDir.'plugins.ini.php', '') === false
+            || file_put_contents($etcDir.'projects.ini.php', '') === false
+            || file_put_contents($etcDir.'source.list.ini.php', '') === false
+            || file_put_contents($etcDir.'wysiwyg/editors.ini.php', '') === false
+            || file_put_contents($etcDir.'wysiwyg/conf.ini.php', '') === false
         ) {
             throw new SetupException(
                 "setup.filesystem.config.creation.failed",
@@ -1113,25 +1123,25 @@ class Setup
             );
         }
         #Mainconfig etc/conf.ini.php
-        $this->writeIni($etcDir . 'conf.ini.php', $this->createConfigArray());
+        $this->writeIni($etcDir.'conf.ini.php', $this->createConfigArray());
 
         #Sourcesconfig etc/sources.list.ini.php
-        $this->writeIni($etcDir . 'source.list.ini.php', array(
-            'packagist' => array(
+        $this->writeIni($etcDir.'source.list.ini.php', array(
+            'packagist'                     => array(
                 'active' => 1
             ),
-            'https://update.quiqqer.com/' => array(
+            'https://update.quiqqer.com/'   => array(
                 'active' => 1,
-                'type' => "composer"
+                'type'   => "composer"
             ),
             'https://composer.quiqqer.com/' => array(
                 'active' => 1,
-                'type' => "composer"
+                'type'   => "composer"
             )
         ));
 
         #Wysiqygeditor config etc/wysiwyg/conf.ini.php
-        $this->writeIni($etcDir . 'wysiwyg/conf.ini.php', array(
+        $this->writeIni($etcDir.'wysiwyg/conf.ini.php', array(
             'settings' => array(
                 'standard' => 'ckeditor4'
             )
@@ -1140,11 +1150,11 @@ class Setup
         # Create /etc/plugins/quiqqer/log.ini.php
         $contentLog = $this->getTemplateContent('log.ini.php');
         if ($contentLog != null) {
-            if (!is_dir($etcDir . 'plugins/quiqqer/')) {
-                mkdir($etcDir . 'plugins/quiqqer/', 0755, true);
+            if (!is_dir($etcDir.'plugins/quiqqer/')) {
+                mkdir($etcDir.'plugins/quiqqer/', 0755, true);
             }
 
-            file_put_contents($etcDir . 'plugins/quiqqer/log.conf.ini', $contentLog);
+            file_put_contents($etcDir.'plugins/quiqqer/log.conf.ini', $contentLog);
         }
 
         #endregion
@@ -1173,13 +1183,13 @@ class Setup
         # Copy and prepare composer.phar
         ######################################
 
-        $composerDir = VAR_DIR . 'composer/';
+        $composerDir = VAR_DIR.'composer/';
         # Copy the composer.phar
         copy(
-            dirname(dirname(dirname(dirname(__FILE__)))) . "/lib/composer.phar",
-            VAR_DIR . "composer/composer.phar"
+            dirname(dirname(dirname(dirname(__FILE__))))."/lib/composer.phar",
+            VAR_DIR."composer/composer.phar"
         );
-        chmod(VAR_DIR . "composer/composer.phar", 0755);
+        chmod(VAR_DIR."composer/composer.phar", 0755);
 
         ######################################
         # Prepare composer.json
@@ -1188,20 +1198,20 @@ class Setup
         # Create the Composer.json with default values.
         $this->createComposerJson();
 
-        if (!file_exists(CMS_DIR . "composer.json")) {
+        if (!file_exists(CMS_DIR."composer.json")) {
             throw new SetupException(
                 "setup.missing.composerjson",
                 SetupException::ERROR_MISSING_RESSOURCE
             );
         }
 
-        if (file_exists(CMS_DIR . "composer.json")) {
+        if (file_exists(CMS_DIR."composer.json")) {
             copy(
-                CMS_DIR . "composer.json",
-                VAR_DIR . "composer/composer.json"
+                CMS_DIR."composer.json",
+                VAR_DIR."composer/composer.json"
             );
 
-            unlink(CMS_DIR . "composer.json");
+            unlink(CMS_DIR."composer.json");
             chdir($composerDir);
         }
 
@@ -1222,9 +1232,9 @@ class Setup
 
         // To avoid exceeding the memory limit, we will retrieve the composer.lock file from an external service.
         if ($this->mode == SETUP::MODE_WEB) {
-            $Lockclient = new QUI\Lockclient\Lockclient();
-            $lockFileContent = $Lockclient->update($composerDir . "/composer.json");
-            file_put_contents($composerDir . "/composer.lock", $lockFileContent);
+            $Lockclient      = new QUI\Lockclient\Lockclient();
+            $lockFileContent = $Lockclient->update($composerDir."/composer.json");
+            file_put_contents($composerDir."/composer.lock", $lockFileContent);
             $res = $Composer->install($options);
         } else {
             $res = $Composer->update($options);
@@ -1266,7 +1276,7 @@ class Setup
     private function setupComposerInstallQuiqqer()
     {
         $this->loadEnvironment();
-        $composerDir = VAR_DIR . 'composer/';
+        $composerDir = VAR_DIR.'composer/';
 
         # Rebuild the composer instance to load freshly installed plugins
         chdir($composerDir);
@@ -1281,7 +1291,7 @@ class Setup
         if ($Composer->getMode() == Composer::MODE_WEB) {
             /* @var $Application Application */
             $Application = $Composer->getRunner()->getApplication();
-            $Comp = $Application->getComposer();
+            $Comp        = $Application->getComposer();
             $Comp->getPluginManager()->loadInstalledPlugins();
         }
 
@@ -1297,13 +1307,13 @@ class Setup
             $Lockclient = new QUI\Lockclient\Lockclient();
             try {
                 $lockFileContent = $Lockclient->requirePackage(
-                    $composerDir . "/composer.json",
+                    $composerDir."/composer.json",
                     'quiqqer/quiqqer',
                     $this->data['version']
                 );
-                file_put_contents($composerDir . "/composer.lock", $lockFileContent);
+                file_put_contents($composerDir."/composer.lock", $lockFileContent);
             } catch (\Exception $Exception) {
-                throw new \Exception("Could not retireve the lockfile: " . $Exception->getMessage());
+                throw new \Exception("Could not retireve the lockfile: ".$Exception->getMessage());
             }
 
             $res = $Composer->install($options);
@@ -1334,32 +1344,32 @@ class Setup
 
         # Create index.php
         file_put_contents(
-            CMS_DIR . 'index.php',
+            CMS_DIR.'index.php',
             "<?php
             require 'bootstrap.php';
-            require '" . OPT_DIR . "quiqqer/quiqqer/index.php';"
+            require '".OPT_DIR."quiqqer/quiqqer/index.php';"
         );
 
         # Create image.php
         file_put_contents(
-            CMS_DIR . 'image.php',
+            CMS_DIR.'image.php',
             "<?php
             require 'bootstrap.php';
-            require '" . OPT_DIR . "quiqqer/quiqqer/image.php';"
+            require '".OPT_DIR."quiqqer/quiqqer/image.php';"
         );
 
         # Create quiqqer.php
 
         file_put_contents(
-            CMS_DIR . 'quiqqer.php',
+            CMS_DIR.'quiqqer.php',
             "<?php
             #require 'bootstrap.php';
-            require '" . OPT_DIR . "quiqqer/quiqqer/quiqqer.php';"
+            require '".OPT_DIR."quiqqer/quiqqer/quiqqer.php';"
         );
 
         # Create bootstrap.php
         file_put_contents(
-            CMS_DIR . 'bootstrap.php',
+            CMS_DIR.'bootstrap.php',
             '<?php
             $etc_dir = dirname(__FILE__).\'/etc/\';
 
@@ -1372,7 +1382,7 @@ class Setup
                 define(\'ETC_DIR\', $etc_dir);
             }
 
-            $boot = \'' . OPT_DIR . 'quiqqer/quiqqer/bootstrap.php\';
+            $boot = \''.OPT_DIR.'quiqqer/quiqqer/bootstrap.php\';
 
             if (file_exists($boot)) {
                 require $boot;
@@ -1411,14 +1421,14 @@ class Setup
             define("OPT_DIR", $this->data['paths']['opt_dir']);
         }
 
-        require OPT_DIR . 'quiqqer/quiqqer/lib/autoload.php';
+        require OPT_DIR.'quiqqer/quiqqer/lib/autoload.php';
 
         if (!defined('ETC_DIR')) {
-            define('ETC_DIR', $this->data['paths']['cms_dir'] . '/etc/');
+            define('ETC_DIR', $this->data['paths']['cms_dir'].'/etc/');
         }
 
         if (!defined('HOST')) {
-            define('HOST', $this->data['paths']['host'] . '/etc/');
+            define('HOST', $this->data['paths']['host'].'/etc/');
         }
 
 //        ini_set("error_log", VAR_DIR . 'log/error' . date('-Y-m-d') . '.log');
@@ -1427,7 +1437,7 @@ class Setup
 
         // Add the npm server to the ini files.
         QUI::getPackageManager()->addServer("https://npm.quiqqer.com/", array(
-            'type' => 'npm',
+            'type'   => 'npm',
             'active' => true
         ));
         QUI::getPackageManager()->setServerStatus("https://npm.quiqqer.com/", true);
@@ -1435,13 +1445,13 @@ class Setup
 
         // Adjust Loglevel
         QUI\Log\Logger::$logLevels = array(
-            'debug' => false,
-            'info' => false,
-            'notice' => false,
-            'warning' => false,
-            'error' => true,
-            'critical' => true,
-            'alert' => true,
+            'debug'     => false,
+            'info'      => false,
+            'notice'    => false,
+            'warning'   => false,
+            'error'     => true,
+            'critical'  => true,
+            'alert'     => true,
             'emergency' => true
         );
 
@@ -1482,16 +1492,15 @@ appname=""
 host=""
 port="0"
 LOGETC;
-        file_put_contents(ETC_DIR . '/plugins/quiqqer/log.ini.php', $logConfig);
+        file_put_contents(ETC_DIR.'/plugins/quiqqer/log.ini.php', $logConfig);
 
-        QUI\Update::importDatabase(OPT_DIR . '/quiqqer/translator/database.xml');
+        QUI\Update::importDatabase(OPT_DIR.'/quiqqer/translator/database.xml');
 
         $User = QUI::getUsers()->get($this->data['rootUID']);
         QUI::getSession()->set('uid', $this->data['rootUID']);
 
         QUI\Permissions\Permission::setUser($User);
 
-       
         QUI::getSession()->setup();
 
         QUI\Setup::makeDirectories();
@@ -1541,11 +1550,9 @@ LOGETC;
         QUI\Translator::addLang($this->data['lang']);
         QUI\Translator::create();
 
-        if (file_exists(VAR_DIR . 'locale/localefiles')) {
-            unlink(VAR_DIR . 'locale/localefiles');
+        if (file_exists(VAR_DIR.'locale/localefiles')) {
+            unlink(VAR_DIR.'locale/localefiles');
         }
-
-        
 
         $Defaults = new QUI\System\Console\Tools\Defaults();
         $Defaults->execute();
@@ -1599,17 +1606,17 @@ LOGETC;
         $this->Output->writeLnLang("setup.message.step.delete", Output::LEVEL_INFO);
 
         $files = array(
-            $this->baseDir . "/quiqqer.zip",
-            $this->baseDir . "/quiqqer.setup",
-            $this->baseDir . "/setup.php",
-            $this->baseDir . "/README.md",
-            CMS_DIR . "composer.json",
-            CMS_DIR . "languageDetection.php",
-            CMS_DIR . "web-install.php",
-            CMS_DIR . "iframe.php",
-            CMS_DIR . "INSTALL.stub.md",
-            CMS_DIR . "create.php",
-            CMS_DIR . "compileTranslations.sh"
+            $this->baseDir."/quiqqer.zip",
+            $this->baseDir."/quiqqer.setup",
+            $this->baseDir."/setup.php",
+            $this->baseDir."/README.md",
+            CMS_DIR."composer.json",
+            CMS_DIR."languageDetection.php",
+            CMS_DIR."web-install.php",
+            CMS_DIR."iframe.php",
+            CMS_DIR."INSTALL.stub.md",
+            CMS_DIR."create.php",
+            CMS_DIR."compileTranslations.sh"
         );
 
         foreach ($files as $file) {
@@ -1619,8 +1626,8 @@ LOGETC;
         }
 
         # Remove asset Plugin from root composer.json
-        if (file_exists(VAR_DIR . "composer/composer.json")) {
-            $json = file_get_contents(VAR_DIR . "composer/composer.json");
+        if (file_exists(VAR_DIR."composer/composer.json")) {
+            $json = file_get_contents(VAR_DIR."composer/composer.json");
 
             if (!empty($json)) {
                 $data = json_decode($json, true);
@@ -1629,12 +1636,12 @@ LOGETC;
                 }
 
                 $json = json_encode($data, JSON_PRETTY_PRINT);
-                file_put_contents(VAR_DIR . "composer/composer.json", $json);
+                file_put_contents(VAR_DIR."composer/composer.json", $json);
             }
         }
 
-        if (file_exists(CMS_DIR . "composer.lock")) {
-            unlink(CMS_DIR . "composer.lock");
+        if (file_exists(CMS_DIR."composer.lock")) {
+            unlink(CMS_DIR."composer.lock");
         }
 
         # Move directories to tmp
@@ -1653,13 +1660,13 @@ LOGETC;
         );
 
         foreach ($dirs as $dir) {
-            if (is_dir(CMS_DIR . $dir)) {
+            if (is_dir(CMS_DIR.$dir)) {
                 QUI\Utils\System\File::dircopy(
-                    CMS_DIR . $dir,
-                    VAR_DIR . 'tmp/' . $dir
+                    CMS_DIR.$dir,
+                    VAR_DIR.'tmp/'.$dir
                 );
 
-                QUI\Utils\System\File::deleteDir(CMS_DIR . $dir);
+                QUI\Utils\System\File::deleteDir(CMS_DIR.$dir);
             }
         }
 
@@ -1724,8 +1731,8 @@ LOGETC;
     {
         $presets = array();
 
-        if (file_exists(dirname(__FILE__) . '/presets.json')) {
-            $json = file_get_contents(dirname(__FILE__) . '/presets.json');
+        if (file_exists(dirname(__FILE__).'/presets.json')) {
+            $json = file_get_contents(dirname(__FILE__).'/presets.json');
             $data = json_decode($json, true);
             if (json_last_error() == JSON_ERROR_NONE && is_array($data)) {
                 foreach ($data as $name => $preset) {
@@ -1735,17 +1742,17 @@ LOGETC;
         }
 
         # Read all userdefined presets from templates/presets
-        $presetDir = dirname(dirname(dirname(dirname(__FILE__)))) . '/templates/presets';
+        $presetDir = dirname(dirname(dirname(dirname(__FILE__)))).'/templates/presets';
         if (is_dir($presetDir)) {
             $content = scandir($presetDir);
 
             if (is_array($content) && !empty($content)) {
                 foreach ($content as $file) {
-                    $name = explode('.', $file, 2)[0];
+                    $name   = explode('.', $file, 2)[0];
                     $ending = explode('.', $file, 2)[1];
 
                     if ($file != '.' && $file != '..' && $ending == 'json') {
-                        $json = file_get_contents($presetDir . "/" . $file);
+                        $json = file_get_contents($presetDir."/".$file);
                         $data = json_decode($json, true);
 
                         $presets[$name] = $data;
@@ -1773,7 +1780,7 @@ LOGETC;
             '1.0'
         );
 
-        $url = Setup::getConfig()['general']['url_updateserver'] . "/packages.json";
+        $url  = Setup::getConfig()['general']['url_updateserver']."/packages.json";
         $json = file_get_contents($url);
         if (!empty($json)) {
             $packages = json_decode($json, true);
@@ -1783,7 +1790,7 @@ LOGETC;
             foreach ($quiqqer as $v => $branch) {
                 $v = explode('.', $v);
                 if (isset($v[0]) && isset($v[1])) {
-                    $v = $v[0] . "." . $v[1];
+                    $v = $v[0].".".$v[1];
 
                     if (in_array($v, $blacklistedVersions)) {
                         continue;
@@ -1823,15 +1830,15 @@ LOGETC;
      */
     public function getSavedDatabaseState()
     {
-        if (!file_exists($this->tmpDir . 'databaseState.json')) {
+        if (!file_exists($this->tmpDir.'databaseState.json')) {
             throw new \Exception("No DatabaseState saved");
         }
 
-        $json = file_get_contents($this->tmpDir . 'databaseState.json');
+        $json = file_get_contents($this->tmpDir.'databaseState.json');
         $data = json_decode($json, true);
 
         if (json_last_error() != JSON_ERROR_NONE) {
-            throw new \Exception("JSON Error: " . json_last_error_msg());
+            throw new \Exception("JSON Error: ".json_last_error_msg());
         }
 
         return $data;
@@ -1862,42 +1869,42 @@ LOGETC;
         $optDir = $this->cleanPath($paths['opt_dir']);
         $usrDir = $this->cleanPath($paths['usr_dir']);
         $urlDir = $this->cleanPath($paths['url_dir']);
-        $etcDir = $cmsDir . "etc/";
-        $tmpDir = $varDir . "temp/";
+        $etcDir = $cmsDir."etc/";
+        $tmpDir = $varDir."temp/";
 
         $config = array(
-            "globals" => array(
-                "cms_dir" => $cmsDir,
-                "var_dir" => $varDir,
-                "usr_dir" => $usrDir,
-                "opt_dir" => $optDir,
-                "url_dir" => $urlDir,
-                "url_lib_dir" => $urlDir . 'lib/',
-                "url_bin_dir" => $urlDir . 'bin/',
-                "url_sys_dir" => $urlDir . 'admin/',
-                "salt" => $this->data['salt'],
-                "saltlength" => $this->data['saltlength'],
-                "rootuser" => $this->data['rootUID'],
-                "root" => $this->data['rootGID'],
-                "cache" => 0,
-                "host" => $this->data['paths']['host'],
-                "httpshost" => $this->data['paths']['httpshost'],
-                "development" => 0,
-                "debug_mode" => 0,
-                "emaillogin" => 0,
-                "maintenance" => 0,
+            "globals"  => array(
+                "cms_dir"        => $cmsDir,
+                "var_dir"        => $varDir,
+                "usr_dir"        => $usrDir,
+                "opt_dir"        => $optDir,
+                "url_dir"        => $urlDir,
+                "url_lib_dir"    => $urlDir.'lib/',
+                "url_bin_dir"    => $urlDir.'bin/',
+                "url_sys_dir"    => $urlDir.'admin/',
+                "salt"           => $this->data['salt'],
+                "saltlength"     => $this->data['saltlength'],
+                "rootuser"       => $this->data['rootUID'],
+                "root"           => $this->data['rootGID'],
+                "cache"          => 0,
+                "host"           => $this->data['paths']['host'],
+                "httpshost"      => $this->data['paths']['httpshost'],
+                "development"    => 0,
+                "debug_mode"     => 0,
+                "emaillogin"     => 0,
+                "maintenance"    => 0,
                 "mailprotection" => 1,
-                "timezone" => $this->autodetectTimezone()
+                "timezone"       => $this->autodetectTimezone()
             ),
-            "db" => array(
-                "driver" => $this->data['database']['driver'],
-                "host" => $this->data['database']['host'],
+            "db"       => array(
+                "driver"   => $this->data['database']['driver'],
+                "host"     => $this->data['database']['host'],
                 "database" => $this->data['database']['name'],
-                "user" => $this->data['database']['user'],
+                "user"     => $this->data['database']['user'],
                 "password" => $this->data['database']['pw'],
-                "prfx" => $this->data['database']['prefix']
+                "prfx"     => $this->data['database']['prefix']
             ),
-            "auth" => array(
+            "auth"     => array(
                 "type" => "standard"
             ),
             "template" => array(
@@ -1956,7 +1963,6 @@ LOGETC;
         QUI::$Conf->set("globals", "lockserver_enabled", false);
         QUI::$Conf->save();
 
-        
         $LogConfig = QUI::getPackage("quiqqer/log")->getConfig();
         $LogConfig->set("log_levels", "debug", true);
         $LogConfig->set("log_levels", "info", true);
@@ -1988,13 +1994,13 @@ LOGETC;
         }
 
         #Set Composer paths
-        $data['config']['vendor-dir'] = $this->data['paths']['opt_dir'];
-        $data['config']['cache-dir'] = $this->data['paths']['var_dir'] . "composer/";
-        $data['config']['component-dir'] = $this->data['paths']['opt_dir'] . "bin/";
-        $data['config']['quiqqer-dir'] = $this->data['paths']['cms_dir'];
+        $data['config']['vendor-dir']    = $this->data['paths']['opt_dir'];
+        $data['config']['cache-dir']     = $this->data['paths']['var_dir']."composer/";
+        $data['config']['component-dir'] = $this->data['paths']['opt_dir']."bin/";
+        $data['config']['quiqqer-dir']   = $this->data['paths']['cms_dir'];
 
-        $data['extra']['asset-installer-paths']['npm-asset-library'] = $this->data['paths']['opt_dir'] . "bin/";
-        $data['extra']['asset-installer-paths']['bower-asset-library'] = $this->data['paths']['opt_dir'] . "bin/";
+        $data['extra']['asset-installer-paths']['npm-asset-library']   = $this->data['paths']['opt_dir']."bin/";
+        $data['extra']['asset-installer-paths']['bower-asset-library'] = $this->data['paths']['opt_dir']."bin/";
 
         # Developer mode
         if ($this->developerMode) {
@@ -2003,7 +2009,7 @@ LOGETC;
 
         # Add custom repositories
         $created = file_put_contents(
-            $this->data['paths']['cms_dir'] . "composer.json",
+            $this->data['paths']['cms_dir']."composer.json",
             json_encode($data, JSON_PRETTY_PRINT)
         );
 
@@ -2024,9 +2030,9 @@ LOGETC;
     {
         $Composer->dumpAutoload();
         // namespaces
-        $map = require OPT_DIR . 'composer/autoload_namespaces.php';
-        $classMap = require OPT_DIR . 'composer/autoload_classmap.php';
-        $psr4 = require OPT_DIR . 'composer/autoload_psr4.php';
+        $map      = require OPT_DIR.'composer/autoload_namespaces.php';
+        $classMap = require OPT_DIR.'composer/autoload_classmap.php';
+        $psr4     = require OPT_DIR.'composer/autoload_psr4.php';
 
         foreach ($map as $namespace => $path) {
             QUI\Autoloader::$ComposerLoader->add($namespace, $path);
@@ -2056,8 +2062,8 @@ LOGETC;
         $optDir = $this->cleanPath($paths['opt_dir']);
         $usrDir = $this->cleanPath($paths['usr_dir']);
         $urlDir = $this->cleanPath($paths['url_dir']);
-        $etcDir = $cmsDir . "etc/";
-        $tmpDir = $varDir . "temp/";
+        $etcDir = $cmsDir."etc/";
+        $tmpDir = $varDir."temp/";
 
         $urlLibDir = $this->cleanPath($paths['url_lib_dir']);
 
@@ -2087,15 +2093,15 @@ LOGETC;
         }
 
         if (!defined('URL_USR_DIR')) {
-            define('URL_USR_DIR', $urlDir . str_replace($cmsDir, '', $usrDir));
+            define('URL_USR_DIR', $urlDir.str_replace($cmsDir, '', $usrDir));
         }
 
         if (!defined('URL_OPT_DIR')) {
-            define('URL_OPT_DIR', $urlDir . str_replace($cmsDir, '', $optDir));
+            define('URL_OPT_DIR', $urlDir.str_replace($cmsDir, '', $optDir));
         }
 
         if (!defined('URL_VAR_DIR')) {
-            define('URL_VAR_DIR', $urlDir . str_replace($cmsDir, '', $varDir));
+            define('URL_VAR_DIR', $urlDir.str_replace($cmsDir, '', $varDir));
         }
 
         if (!defined('URL_BIN_DIR')) {
@@ -2103,7 +2109,7 @@ LOGETC;
         }
 
         if (!defined('URL_SYS_DIR')) {
-            define('URL_SYS_DIR', $this->cleanPath(URL_DIR . "admin/"));
+            define('URL_SYS_DIR', $this->cleanPath(URL_DIR."admin/"));
         }
     }
 
@@ -2116,7 +2122,7 @@ LOGETC;
      */
     private function cleanPath($path)
     {
-        return rtrim($path, '/') . '/';
+        return rtrim($path, '/').'/';
     }
 
     /**
@@ -2129,16 +2135,16 @@ LOGETC;
      */
     private function getTemplateContent($name)
     {
-        $templateDir = dirname(dirname(dirname(dirname(__FILE__)))) . '/templates/';
+        $templateDir = dirname(dirname(dirname(dirname(__FILE__)))).'/templates/';
 
-        if (file_exists($templateDir . $name . '.tpl')) {
-            $content = file_get_contents($templateDir . $name . '.tpl');
+        if (file_exists($templateDir.$name.'.tpl')) {
+            $content = file_get_contents($templateDir.$name.'.tpl');
 
             return $content;
         }
 
-        if (file_exists($templateDir . $name)) {
-            $content = file_get_contents($templateDir . $name);
+        if (file_exists($templateDir.$name)) {
+            $content = file_get_contents($templateDir.$name);
 
             return $content;
         }
@@ -2211,9 +2217,9 @@ LOGETC;
     protected function saveDatabaseState()
     {
         $tables = $this->Database->getTables();
-        $json = json_encode($tables, JSON_PRETTY_PRINT);
+        $json   = json_encode($tables, JSON_PRETTY_PRINT);
 
-        file_put_contents($this->tmpDir . 'databaseState.json', $json);
+        file_put_contents($this->tmpDir.'databaseState.json', $json);
     }
 
     /**
@@ -2223,7 +2229,7 @@ LOGETC;
     {
         $step = $forceStep == 0 ? $this->Step : $forceStep;
 
-        $stepNo = 0;
+        $stepNo   = 0;
         $maxSteps = 10;
 
         switch ($step) {

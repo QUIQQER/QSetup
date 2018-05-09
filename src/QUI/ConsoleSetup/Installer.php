@@ -72,25 +72,25 @@ class Installer
         } catch (Exception $Exception) {
             if ($Exception->getMessage() == 'locale.localeset.failed') {
                 $this->writeLn(
-                    "Setup could not be initialized. The Setup process requires the locale 'en' to be installed on your system!" . PHP_EOL . " A possible fix is to execute 'sudo locale-gen en_GB'",
+                    "Setup could not be initialized. The Setup process requires the locale 'en' to be installed on your system!".PHP_EOL." A possible fix is to execute 'sudo locale-gen en_GB'",
                     self::LEVEL_CRITICAL
                 );
                 exit;
             } else {
                 $this->writeLn(
-                    "An unknown error appeared while initializing setup : " . $Exception->getMessage(),
+                    "An unknown error appeared while initializing setup : ".$Exception->getMessage(),
                     self::LEVEL_CRITICAL
                 );
                 exit;
             }
         }
 
-        $this->logDir = dirname(dirname(dirname(dirname(__FILE__)))) . '/logs/';
+        $this->logDir = dirname(dirname(dirname(dirname(__FILE__)))).'/logs/';
 
         if (!is_dir($this->logDir)) {
             mkdir($this->logDir, 0755, true);
         }
-        ini_set('error_log', $this->logDir . 'error.log');
+        ini_set('error_log', $this->logDir.'error.log');
     }
 
     /**
@@ -105,7 +105,6 @@ class Installer
         $this->stepSetupLanguage();
         $data = array();
 
-        
         $firstStep = Setup::STEP_BEGIN;
 
         # Check if we can restore any data from a previous setup which might have been cancelled or interrupted
@@ -135,7 +134,6 @@ class Installer
                 $continuePrompt = 'y';
             }
 
-
             # Data restoration
             if (isset($continuePrompt) && $continuePrompt == 'y') {
                 $this->Setup->restoreData();
@@ -149,8 +147,6 @@ class Installer
             }
         }
 
-
-
         if ($this->developerMode) {
             $this->Setup->setDeveloperMode();
         }
@@ -162,7 +158,7 @@ class Installer
             $this->writeLn(
                 $this->Locale->getStringLang(
                     "warning.setup.error.log.found",
-                    "It seems like an error happened. Please check : " . Log::getErrorLogFile()
+                    "It seems like an error happened. Please check : ".Log::getErrorLogFile()
                 ),
                 self::LEVEL_WARNING
             );
@@ -214,7 +210,8 @@ class Installer
         if ($this->interactive === false) {
             $lang = "en_EN";
         } else {
-            $lang = $this->prompt("Please select a Language for the Setupprocess (de_DE/en_GB) :", "de_DE", COLOR_PURPLE);
+            $lang = $this->prompt("Please select a Language for the Setupprocess (de_DE/en_GB) :", "de_DE",
+                COLOR_PURPLE);
         }
 
         try {
@@ -257,7 +254,7 @@ class Installer
         ));
 
         foreach ($AllTests as $groupName => $GroupTests) {
-            echo "\e[96m" . $groupName . "\e[0m" . PHP_EOL;
+            echo "\e[96m".$groupName."\e[0m".PHP_EOL;
 
             /** @var Test $Test */
             foreach ($GroupTests as $Test) {
@@ -266,22 +263,22 @@ class Installer
                 switch ($Test->getResult()->getStatus()) {
                     case TestResult::STATUS_FAILED:
                         $errors[$Test->getName()] = $Test->getResult();
-                        $status                   = "\e[91m" . $Test->getResult()->getStatusHumanReadable() . "\e[0m";
+                        $status                   = "\e[91m".$Test->getResult()->getStatusHumanReadable()."\e[0m";
                         break;
                     case TestResult::STATUS_OK:
-                        $status = "\e[92m" . $Test->getResult()->getStatusHumanReadable() . "\e[0m";
+                        $status = "\e[92m".$Test->getResult()->getStatusHumanReadable()."\e[0m";
                         break;
                     case TestResult::STATUS_UNKNOWN:
                         $unknown[$Test->getName()] = $Test->getResult();
-                        $status                    = "\e[93m" . $Test->getResult()->getStatusHumanReadable() . "\e[0m";
+                        $status                    = "\e[93m".$Test->getResult()->getStatusHumanReadable()."\e[0m";
                         break;
                     case TestResult::STATUS_WARNING:
                         $warnings[$Test->getName()] = $Test->getResult();
-                        $status                     = "\e[93m" . $Test->getResult()->getStatusHumanReadable() . "\e[0m";
+                        $status                     = "\e[93m".$Test->getResult()->getStatusHumanReadable()."\e[0m";
                         break;
                 }
 
-                echo "  [" . $status . "] " . $Test->getName() . PHP_EOL;
+                echo "  [".$status."] ".$Test->getName().PHP_EOL;
             }
         }
 
@@ -313,7 +310,7 @@ class Installer
              * @var  TestResult $TestResult
              */
             foreach ($warnings as $testName => $TestResult) {
-                $this->writeLn($TestResult->getStatusHumanReadable() . ": " . $testName, null, COLOR_YELLOW);
+                $this->writeLn($TestResult->getStatusHumanReadable().": ".$testName, null, COLOR_YELLOW);
                 $this->writeLn($TestResult->getMessageConsole());
                 $this->writeLn("");
             }
@@ -334,7 +331,7 @@ class Installer
              * @var  TestResult $TestResult
              */
             foreach ($errors as $testName => $TestResult) {
-                $this->writeLn($TestResult->getStatusHumanReadable() . ": " . $testName, null, COLOR_RED);
+                $this->writeLn($TestResult->getStatusHumanReadable().": ".$testName, null, COLOR_RED);
                 $this->writeLn($TestResult->getMessageConsole());
                 $this->writeLn("");
                 $this->writeLn("");
@@ -373,6 +370,12 @@ class Installer
         $this->echoSectionHeader(
             $this->Locale->getStringLang("message.step.version", "Version")
         );
+
+        $this->writeLn(
+            $this->Locale->getStringLang("message.versions.available", "Following versions are available: ").
+            implode(", ", Setup::getVersions()),
+            self::LEVEL_INFO
+        );
         $version = $this->prompt(
             $this->Locale->getStringLang("prompt.version", "Please enter a version"),
             "dev-master"
@@ -403,7 +406,7 @@ class Installer
         $presets      = Preset::getPresets();
         $presetString = "";
         foreach ($presets as $name => $preset) {
-            $presetString .= $name . ", ";
+            $presetString .= $name.", ";
         }
         $presetString = trim($presetString, " ,");
 
@@ -411,7 +414,7 @@ class Installer
             $this->Locale->getStringLang("message.step.template", "Preset")
         );
         $this->writeLn(
-            $this->Locale->getStringLang("message.preset.available", "Available presets: ") . $presetString,
+            $this->Locale->getStringLang("message.preset.available", "Available presets: ").$presetString,
             self::LEVEL_INFO
         );
         $preset = $this->prompt(
@@ -448,7 +451,7 @@ class Installer
                     $this->Locale->getStringLang(
                         "setup.preset.customization.projectname.fixed",
                         "QUIQQER attempted to fix the projectname: "
-                    ) .
+                    ).
                     Utils::sanitizeProjectName($projectName),
                     Installer::LEVEL_INFO
                 );
@@ -481,7 +484,7 @@ class Installer
                 if (!$active) {
                     continue;
                 }
-                $languagesString .= $langCode . ",";
+                $languagesString .= $langCode.",";
             }
             $languagesString = rtrim($languagesString, ",");
         }
@@ -519,7 +522,7 @@ class Installer
             Validator::validatePresetData($presetData);
         } catch (\Exception $Exception) {
             $this->writeLn(
-                $this->Locale->getStringLang("exception.preset.customization.data", "The entered data is not valid") .
+                $this->Locale->getStringLang("exception.preset.customization.data", "The entered data is not valid").
                 $Exception->getMessage()
             );
 
@@ -527,7 +530,7 @@ class Installer
         }
 
         ## Save presetdata to preset file
-        $presetFile = dirname(dirname(dirname(dirname(__FILE__)))) . "/templates/presets/" . $preset . ".json";
+        $presetFile = dirname(dirname(dirname(dirname(__FILE__))))."/templates/presets/".$preset.".json";
         if (!file_exists($presetFile)) {
             throw new SetupException("Presetfile not found!");
         }
@@ -582,7 +585,7 @@ class Installer
                 $this->Locale->getStringLang(
                     "database.credentials.not.valid",
                     "The given database credentials seem to be incorrect. Please try again. Errormessage: "
-                ) . PHP_EOL .
+                ).PHP_EOL.
                 $this->Locale->getStringLang($Exception->getMessage()),
                 self::LEVEL_ERROR
             );
@@ -744,7 +747,7 @@ class Installer
 
         $this->writeHelp($this->Locale->getStringLang(
             "help.prompt.host",
-            "The Domain. Should start with http:// and must NOT end with a trailing slash." . PHP_EOL .
+            "The Domain. Should start with http:// and must NOT end with a trailing slash.".PHP_EOL.
             "Example : http://example.com "
         ));
 
@@ -754,7 +757,7 @@ class Installer
 
         # Make sure the host starts with http:// and does not have a trailing slash
         if (substr($host, 0, 7) != 'http://' && substr($host, 0, 8) != 'https://') {
-            $host = "http://" . $host;
+            $host = "http://".$host;
         }
         $host      = rtrim($host, '/');
         $this->url = $host;
@@ -763,7 +766,7 @@ class Installer
 
         $this->writeHelp($this->Locale->getStringLang(
             "help.prompt.cms",
-            "Absolute path to the location of Quiqqer on the servers filesystem." . PHP_EOL .
+            "Absolute path to the location of Quiqqer on the servers filesystem.".PHP_EOL.
             "Should start with slash and end with slash."
         ));
 
@@ -776,7 +779,7 @@ class Installer
             );
 
             $cmsDir = Utils::normalizePath($cmsDir);
-            $cmsDir = "/" . ltrim($cmsDir, '/');
+            $cmsDir = "/".ltrim($cmsDir, '/');
             try {
                 Validator::validatePath($cmsDir);
             } catch (SetupException $Exception) {
@@ -824,8 +827,8 @@ class Installer
 
         $this->writeHelp($this->Locale->getStringLang(
             "help.prompt.url",
-            "If you install Quiqqer into a subfolder of your document root." . PHP_EOL .
-            "Example :  /quiqqer/ for http://example.com/quiqqer/" . PHP_EOL .
+            "If you install Quiqqer into a subfolder of your document root.".PHP_EOL.
+            "Example :  /quiqqer/ for http://example.com/quiqqer/".PHP_EOL.
             "Should start with slash and end with slash."
         ));
 
@@ -835,7 +838,7 @@ class Installer
         );
 
         $urlDir       = Utils::normalizePath($urlDir);
-        $urlDir       = "/" . ltrim($urlDir, '/');
+        $urlDir       = "/".ltrim($urlDir, '/');
         $this->urlDir = $urlDir;
 
         try {
@@ -871,11 +874,11 @@ class Installer
     private function stepFinish()
     {
         $this->writeLn(
-            " --- " .
+            " --- ".
             $this->Locale->getStringLang(
                 "setup.message.finished.header",
                 "Setup finished"
-            ) .
+            ).
             " --- ",
             self::LEVEL_INFO,
             COLOR_GREEN
@@ -922,20 +925,20 @@ SMILEY;
         );
 
         // print site url
-        $siteUrl = rtrim($this->Setup->getHost(), '/') . $this->Setup->getUrlDir();
+        $siteUrl = rtrim($this->Setup->getHost(), '/').$this->Setup->getUrlDir();
         $this->writeLn(
-            $this->Locale->getStringLang("setup.message.finished.url", "Website URL: ") . $siteUrl,
+            $this->Locale->getStringLang("setup.message.finished.url", "Website URL: ").$siteUrl,
             self::LEVEL_INFO,
             COLOR_GREEN
         );
 
         // Print Admin URl
-        $adminUrl =  rtrim($siteUrl, '/') . "/admin";
+        $adminUrl = rtrim($siteUrl, '/')."/admin";
         $this->writeLn(
             $this->Locale->getStringLang(
                 "setup.message.finished.admin.url",
                 "Adminarea URL: "
-            ) . $adminUrl,
+            ).$adminUrl,
             self::LEVEL_INFO,
             COLOR_GREEN
         );
@@ -971,7 +974,7 @@ SMILEY;
         }
 
         if ($default !== false) {
-            $text .= " [" . $default . "] ";
+            $text .= " [".$default."] ";
         }
 
         # Continue to prompt userinput, until user input is not empty,
@@ -979,7 +982,7 @@ SMILEY;
         $result   = "";
         $continue = true;
         while ($continue) {
-            echo $text . " ";
+            echo $text." ";
             if ($hidden) {
                 system('stty -echo');
             }
@@ -1031,32 +1034,32 @@ SMILEY;
         if ($level != null) {
             switch ($level) {
                 case self::LEVEL_DEBUG:
-                    $msg = "[DEBUG] - " . $msg;
+                    $msg = "[DEBUG] - ".$msg;
                     Log::append($msg);
                     $msg = $this->getColoredString($msg, COLOR_CYAN);
                     break;
 
                 case self::LEVEL_INFO:
-                    $msg = "[INFO] - " . $msg;
+                    $msg = "[INFO] - ".$msg;
                     Log::append($msg);
                     $msg = $this->getColoredString($msg, COLOR_CYAN);
                     break;
 
                 case self::LEVEL_WARNING:
-                    $msg = "[WARNING] - " . $msg;
+                    $msg = "[WARNING] - ".$msg;
                     Log::append($msg);
                     $msg = $this->getColoredString($msg, COLOR_YELLOW);
                     break;
 
                 case self::LEVEL_ERROR:
-                    $msg = "[ERROR] - " . $msg;
+                    $msg = "[ERROR] - ".$msg;
                     Log::append($msg);
                     Log::appendError($msg);
                     $msg = $this->getColoredString($msg, COLOR_RED);
                     break;
 
                 case self::LEVEL_CRITICAL:
-                    $msg = "[!CRITICAL!] - " . $msg;
+                    $msg = "[!CRITICAL!] - ".$msg;
                     Log::append($msg);
                     Log::appendError($msg);
                     $msg = $this->getColoredString($msg, COLOR_RED);
@@ -1068,7 +1071,7 @@ SMILEY;
             $msg = $this->getColoredString($msg, $color);
         }
 
-        echo $msg . PHP_EOL;
+        echo $msg.PHP_EOL;
 
         return;
     }
@@ -1077,7 +1080,7 @@ SMILEY;
     {
         $msg = $this->getColoredString($msg, COLOR_GREY);
         # Add another empty line before the help text.
-        echo PHP_EOL . $msg . PHP_EOL;
+        echo PHP_EOL.$msg.PHP_EOL;
     }
 
     /**
@@ -1090,10 +1093,10 @@ SMILEY;
      */
     private function getColoredString($text, $color)
     {
-        $lines = explode(PHP_EOL, $text);
+        $lines  = explode(PHP_EOL, $text);
         $result = "";
         foreach ($lines as $line) {
-            $result .= "\033[" . $color . "m" . $line . "\033[0m" . PHP_EOL;
+            $result .= "\033[".$color."m".$line."\033[0m".PHP_EOL;
         }
 
         $result = trim($result);
@@ -1113,7 +1116,7 @@ SMILEY;
     private function echoSectionHeader($sectionName)
     {
         # Create top bar
-        $header = PHP_EOL . "##########";
+        $header = PHP_EOL."##########";
         for ($i = 0; $i < strlen($sectionName); $i++) {
             $header .= "#";
         }
@@ -1121,7 +1124,7 @@ SMILEY;
 
         # Create middle bar
         $header .= PHP_EOL;
-        $header .= "#         " . $sectionName . "         #";
+        $header .= "#         ".$sectionName."         #";
         $header .= PHP_EOL;
 
         # Create bottom bar
@@ -1129,7 +1132,7 @@ SMILEY;
         for ($i = 0; $i < strlen($sectionName); $i++) {
             $header .= "#";
         }
-        $header .= "##########" . PHP_EOL;
+        $header .= "##########".PHP_EOL;
 
         $this->writeLn($header, null, COLOR_GREEN);
     }
@@ -1218,7 +1221,7 @@ HEADER;
         # Saved Quiqqer Language
         if (key_exists('lang', $setupData)) {
             $this->writeLn(
-                $this->Locale->getStringLang("setup.restored.data.lang", "Language :") . $setupData['lang'],
+                $this->Locale->getStringLang("setup.restored.data.lang", "Language :").$setupData['lang'],
                 self::LEVEL_INFO
             );
         }
@@ -1226,7 +1229,7 @@ HEADER;
         # Saved Quiqqer Version
         if (key_exists('version', $setupData) && !empty($setupData['version'])) {
             $this->writeLn(
-                $this->Locale->getStringLang("setup.restored.data.version", "Version :") . $setupData['version'],
+                $this->Locale->getStringLang("setup.restored.data.version", "Version :").$setupData['version'],
                 self::LEVEL_INFO
             );
         }
@@ -1234,7 +1237,7 @@ HEADER;
         # Saved Quiqqer Preset
         if (key_exists('template', $setupData) && !empty($setupData['template'])) {
             $this->writeLn(
-                $this->Locale->getStringLang("setup.restored.data.preset", "Preset :") . $setupData['template'],
+                $this->Locale->getStringLang("setup.restored.data.preset", "Preset :").$setupData['template'],
                 self::LEVEL_INFO
             );
         }
@@ -1251,7 +1254,7 @@ HEADER;
                 $this->Locale->getStringLang(
                     "setup.restored.data.database.driver",
                     "   Driver: "
-                ) . $setupData['database']['driver'],
+                ).$setupData['database']['driver'],
                 self::LEVEL_INFO
             );
 
@@ -1260,7 +1263,7 @@ HEADER;
                 $this->Locale->getStringLang(
                     "setup.restored.data.database.host",
                     "   Host: "
-                ) . $setupData['database']['host'],
+                ).$setupData['database']['host'],
                 self::LEVEL_INFO
             );
 
@@ -1269,7 +1272,7 @@ HEADER;
                 $this->Locale->getStringLang(
                     "setup.restored.data.database.user",
                     "   User: "
-                ) . $setupData['database']['user'],
+                ).$setupData['database']['user'],
                 self::LEVEL_INFO
             );
 
@@ -1278,7 +1281,7 @@ HEADER;
                 $this->Locale->getStringLang(
                     "setup.restored.data.database.db",
                     "   Database: "
-                ) . $setupData['database']['name'],
+                ).$setupData['database']['name'],
                 self::LEVEL_INFO
             );
 
@@ -1287,7 +1290,7 @@ HEADER;
                 $this->Locale->getStringLang(
                     "setup.restored.data.database.prefix",
                     "   Prefix: "
-                ) . $setupData['database']['prefix'],
+                ).$setupData['database']['prefix'],
                 self::LEVEL_INFO
             );
         }
@@ -1295,7 +1298,7 @@ HEADER;
         # Saved Quiqqer Username
         if (key_exists('user', $setupData) && !empty($setupData['user']['name'])) {
             $this->writeLn(
-                $this->Locale->getStringLang("setup.restored.data.adminuser", "User :") . $setupData['user']['name'],
+                $this->Locale->getStringLang("setup.restored.data.adminuser", "User :").$setupData['user']['name'],
                 self::LEVEL_INFO
             );
         }
@@ -1312,7 +1315,7 @@ HEADER;
                 $this->Locale->getStringLang(
                     "setup.restored.data.paths.host",
                     "   Host :"
-                ) . $setupData['paths']['host'],
+                ).$setupData['paths']['host'],
                 self::LEVEL_INFO
             );
 
@@ -1321,7 +1324,7 @@ HEADER;
                 $this->Locale->getStringLang(
                     "setup.restored.data.paths.cms",
                     "   CMS Directory :"
-                ) . $setupData['paths']['cms_dir'],
+                ).$setupData['paths']['cms_dir'],
                 self::LEVEL_INFO
             );
 
@@ -1330,7 +1333,7 @@ HEADER;
                 $this->Locale->getStringLang(
                     "setup.restored.data.paths.url",
                     "   URL Directory :"
-                ) . $setupData['paths']['url_dir'],
+                ).$setupData['paths']['url_dir'],
                 self::LEVEL_INFO
             );
         }
@@ -1361,9 +1364,6 @@ HEADER;
                 self::LEVEL_WARNING
             );
 
-
-         
-            
             $nonEmptyDbPromptResult = $this->prompt(
                 $this->Locale->getStringLang(
                     "prompt.database.not.empty.continue",
@@ -1375,8 +1375,6 @@ HEADER;
                 true
             );
 
-         
-            
             switch ($nonEmptyDbPromptResult) {
                 case 'n':
                     return $this->stepDatabase();
@@ -1390,16 +1388,16 @@ HEADER;
                         Database::resetDatabase($storedTables, $driver, $host, $user, $pw, $db, $prefix, $port);
                     } catch (\Exception $Exception) {
                         if ($this->prompt(
-                            $this->Locale->getStringLang(
-                                "prompt.database.hard.reset.warning",
-                                "The Setup will DROP! all tables in the given database. Are you sure you want to continue? (y/n)"
-                            ),
-                            false,
-                            COLOR_RED,
-                            false,
-                            true,
-                            false
-                        ) === 'y'
+                                $this->Locale->getStringLang(
+                                    "prompt.database.hard.reset.warning",
+                                    "The Setup will DROP! all tables in the given database. Are you sure you want to continue? (y/n)"
+                                ),
+                                false,
+                                COLOR_RED,
+                                false,
+                                true,
+                                false
+                            ) === 'y'
                         ) {
                             Database::hardResetDatabase($driver, $host, $user, $pw, $db, $prefix, $port);
                         } else {

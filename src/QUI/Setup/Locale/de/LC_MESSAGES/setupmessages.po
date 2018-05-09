@@ -681,3 +681,6 @@ msgstr "QUIQQER konnte den VirtualHost Eintrag nicht anlegen."
 
 msgid "warning.setup.error.log.found"
 msgstr "Während des Setups wurden Fehler erkannt. Bitte überprüfe das Fehlerlog:"
+
+msgid "message.versions.available"
+msgstr "Folgende Versionen sind verfügbar: "

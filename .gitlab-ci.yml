@@ -1,0 +1,13 @@
+image: php:7.0
+before_script:
+- apt-get update
+- apt-get dist-upgrade -y
+- apt-get install -y --no-install-recommends git curl ssh wget zip unzip
+- docker-php-ext-install zip
+build:setup:
+  tags:
+  - build
+  script:
+  - php create.php -y
+  only:
+  - master@quiqqer/qsetup

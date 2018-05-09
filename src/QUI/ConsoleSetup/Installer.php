@@ -210,8 +210,11 @@ class Installer
         if ($this->interactive === false) {
             $lang = "en_EN";
         } else {
-            $lang = $this->prompt("Please select a Language for the Setupprocess (de_DE/en_GB) :", "de_DE",
-                COLOR_PURPLE);
+            $lang = $this->prompt(
+                "Please select a Language for the Setupprocess (de_DE/en_GB) :",
+                "de_DE",
+                COLOR_PURPLE
+            );
         }
 
         try {
@@ -1388,16 +1391,16 @@ HEADER;
                         Database::resetDatabase($storedTables, $driver, $host, $user, $pw, $db, $prefix, $port);
                     } catch (\Exception $Exception) {
                         if ($this->prompt(
-                                $this->Locale->getStringLang(
-                                    "prompt.database.hard.reset.warning",
-                                    "The Setup will DROP! all tables in the given database. Are you sure you want to continue? (y/n)"
-                                ),
-                                false,
-                                COLOR_RED,
-                                false,
-                                true,
-                                false
-                            ) === 'y'
+                            $this->Locale->getStringLang(
+                                "prompt.database.hard.reset.warning",
+                                "The Setup will DROP! all tables in the given database. Are you sure you want to continue? (y/n)"
+                            ),
+                            false,
+                            COLOR_RED,
+                            false,
+                            true,
+                            false
+                        ) === 'y'
                         ) {
                             Database::hardResetDatabase($driver, $host, $user, $pw, $db, $prefix, $port);
                         } else {

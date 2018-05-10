@@ -6,6 +6,7 @@ error_reporting(E_ALL);
 ini_set("display_errors", 1);
 
 use Composer\Console\Application;
+use Composer\Semver\Semver;
 use QUI;
 use QUI\Composer\Composer;
 use QUI\Setup\Database\Database;
@@ -912,8 +913,29 @@ class Setup
         $xmlDir  = dirname(dirname(dirname(dirname(__FILE__))))."/xml";
         $xmlFile = $xmlDir."/".$version."/database.xml";
 
+        if (!is_dir($xmlDir."/".$version)) {
+            mkdir($xmlDir."/".$version);
+        }
+        
+        // Find the correct full version name to download the database.xml from
+        if ($version != "dev-master" &&
+            $version != "dev-dev" &&
+            count(explode(".", $version)) <= 2
+        ) {
+            $availableVersions = Setup::getAllQuiqqerVersions();
+            $matchingVersions  = Semver::satisfiedBy($availableVersions, "^".$version);
+            $matchingVersions  = Semver::rsort($matchingVersions);
+            
+            if (!empty($matchingVersions[0])) {
+                $fullVersion = $matchingVersions[0];
+            } else {
+                // Fallback
+                $fullVersion = $version.".0";
+            }
+        }
+
         # Download the newest database.xml
-        $remoteFileContent = file_get_contents("https://dev.quiqqer.com/quiqqer/quiqqer/raw/".$version."/database.xml");
+        $remoteFileContent = file_get_contents("https://dev.quiqqer.com/quiqqer/quiqqer/raw/".$fullVersion."/database.xml");
         file_put_contents($xmlFile, $remoteFileContent);
 
         # Check if xml file exists
@@ -1318,7 +1340,7 @@ class Setup
 
             $res = $Composer->install($options);
         } else {
-            $res = $Composer->requirePackage('quiqqer/quiqqer', $this->data['version'], $options);
+            $res = $Composer->requirePackage('quiqqer/quiqqer', "^".$this->data['version'], $options);
         }
 
         if ($res === false) {
@@ -1765,7 +1787,7 @@ LOGETC;
     }
 
     /**
-     * Gets all available versions for quiqqer/quiqqer
+     * Gets all installable versions for quiqqer/quiqqer
      *
      * @return array
      */
@@ -1799,6 +1821,35 @@ LOGETC;
                     if (!in_array($v, $validVersions)) {
                         $validVersions[] = $v;
                     }
+                }
+            }
+        }
+
+        return $validVersions;
+    }
+
+    /**
+     * Fetches all available versions of QUIQQER as full version names
+     *
+     * @return array
+     */
+    public static function getAllQuiqqerVersions()
+    {
+        $validVersions = array(
+            'dev-dev',
+            'dev-master'
+        );
+
+        $url  = Setup::getConfig()['general']['url_updateserver']."/packages.json";
+        $json = file_get_contents($url);
+        if (!empty($json)) {
+            $packages = json_decode($json, true);
+            $packages = $packages['packages'];
+
+            $quiqqer = $packages['quiqqer/quiqqer'];
+            foreach ($quiqqer as $v => $branch) {
+                if (!in_array($v, $validVersions)) {
+                    $validVersions[] = $v;
                 }
             }
         }

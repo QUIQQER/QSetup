@@ -916,16 +916,17 @@ class Setup
         if (!is_dir($xmlDir."/".$version)) {
             mkdir($xmlDir."/".$version);
         }
-        
+
         // Find the correct full version name to download the database.xml from
-        if ($version != "dev-master" &&
-            $version != "dev-dev" &&
+        $fullVersion = $version;
+        if ($version != "master" &&
+            $version != "dev" &&
             count(explode(".", $version)) <= 2
         ) {
             $availableVersions = Setup::getAllQuiqqerVersions();
             $matchingVersions  = Semver::satisfiedBy($availableVersions, "^".$version);
             $matchingVersions  = Semver::rsort($matchingVersions);
-            
+
             if (!empty($matchingVersions[0])) {
                 $fullVersion = $matchingVersions[0];
             } else {
@@ -1277,7 +1278,9 @@ class Setup
         if ($this->developerMode) {
             $options["--prefer-source"] = true;
         }
-        $res = $Composer->requirePackage('quiqqer/quiqqer', $this->data['version'], $options);
+
+        $requiredVersion = $this->getVersionContraint($this->data['version']);
+        $res             = $Composer->requirePackage('quiqqer/quiqqer', $requiredVersion, $options);
 
         if ($res === false) {
             $this->exitWithError("setup.unknown.error");
@@ -1325,13 +1328,14 @@ class Setup
         }
 
         // We need to consider the memory limit, therefore we retrieve the lockfile from an external service
+        $requiredVersion = $this->getVersionContraint($this->data['version']);
         if ($this->mode == self::MODE_WEB) {
             $Lockclient = new QUI\Lockclient\Lockclient();
             try {
                 $lockFileContent = $Lockclient->requirePackage(
                     $composerDir."/composer.json",
                     'quiqqer/quiqqer',
-                    $this->data['version']
+                    $requiredVersion
                 );
                 file_put_contents($composerDir."/composer.lock", $lockFileContent);
             } catch (\Exception $Exception) {
@@ -1340,7 +1344,7 @@ class Setup
 
             $res = $Composer->install($options);
         } else {
-            $res = $Composer->requirePackage('quiqqer/quiqqer', "^".$this->data['version'], $options);
+            $res = $Composer->requirePackage('quiqqer/quiqqer', $requiredVersion, $options);
         }
 
         if ($res === false) {
@@ -2096,6 +2100,36 @@ LOGETC;
         if ($classMap) {
             QUI\Autoloader::$ComposerLoader->addClassMap($classMap);
         }
+    }
+
+    /**
+     * Returns the neccessary composer version contraint to install the proper version
+     *
+     * @param $desiredVersion
+     *
+     * @return string
+     */
+    protected function getVersionContraint($desiredVersion)
+    {
+
+        if ($desiredVersion == "dev-master" || $desiredVersion == "dev-dev") {
+            return $desiredVersion;
+        }
+
+        $versionParts = explode(".", $desiredVersion);
+        if (isset($versionParts[0]) &&
+            isset($versionParts[1]) &&
+            is_numeric($versionParts[0]) &&
+            is_numeric($versionParts[1])
+        ) {
+            // This will result in a version constraint like 1.1.0, which equals to >= 1.1.0 && < 1.2.0
+            return "~".$versionParts[0].".".$versionParts[1].".0";
+        }
+
+        $availableVersions = Setup::getAllQuiqqerVersions();
+        $matchingVersions  = Semver::rsort($availableVersions);
+
+        return "~".$matchingVersions[0];
     }
 
     # --> Other

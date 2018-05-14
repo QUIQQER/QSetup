@@ -24,7 +24,7 @@ const COLOR_YELLOW = '1;33';
 const COLOR_PURPLE = '1;35';
 const COLOR_WHITE  = '1;37';
 
-const SETUP_REPO   = 'git@dev.quiqqer.com:quiqqer/qsetup.git';
+const SETUP_REPO   = 'https://dev.quiqqer.com/quiqqer/qsetup.git';
 const SETUP_BRANCH = 'master';
 
 /** @var array $exclude - Patterns which should be excluded in the zip */
@@ -45,7 +45,7 @@ define('CLONE_DIR', $workingDir . '/setup');
 # Working directory erstellen
 mkdir($workingDir, 0755, true);
 
-writeLn("=== Executing Quiqqer.zip creation ===");
+writeLn("=== Executing QUIQQER.zip creation ===");
 
 # Rename existing quiqqer.zip to quiqqer.zip.bak
 if (file_exists(CLONE_DIR . '/quiqqer.zip')) {
@@ -83,8 +83,12 @@ foreach ($versions as $version) {
 # Prepare the readme
 createReadme();
 
+if (in_array("-n", $argv) ||in_array("--no-interaction", $argv)  || in_array("-y", $argv)) {
+    $upload = true;
+} else {
+    $upload = prompt("Do you want to upload the File to the updateserver? (y/n)", false);
+}
 
-$upload = prompt("Do you want to upload the File to the updateserver? (y/n)", false);
 # Create the zip file
 $zipLocation = createZip($workingDir . '/setup/');
 $zipChecksumFilename = createChecksums($zipLocation);

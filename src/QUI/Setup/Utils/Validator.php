@@ -34,7 +34,7 @@ class Validator
             );
         }
 
-        $url  = Setup::getConfig()['general']['url_updateserver'] . "/packages.json";
+        $url  = Setup::getConfig()['general']['url_updateserver']."/packages.json";
         $json = file_get_contents($url);
 
         if (empty($json)) {
@@ -44,6 +44,10 @@ class Validator
             );
         }
 
+        // Remove minor version for user friendly check
+        if (isset(explode(".", $version)[2]) && is_numeric(explode(".", $version)[2])) {
+            $version = explode(".", $version)[0].".".explode(".", $version)[1];
+        }
 
         $validVersions = Setup::getVersions();
 
@@ -101,7 +105,6 @@ class Validator
                 SetupException::ERROR_INVALID_ARGUMENT
             );
         }
-
 
         if (self::getSpecialcharCount($string) < $conf['requirements']['pw_must_have_special']) {
             throw new SetupException(
@@ -170,7 +173,6 @@ class Validator
     public static function validatePreset($name)
     {
         $presets = Preset::getPresets();
-
 
         if (empty($name) || !key_exists($name, $presets)) {
             throw new SetupException("setup.exception.validation.preset.not.exist");
@@ -326,7 +328,6 @@ class Validator
         if (substr($paths['url_dir'], -1) != "/") {
             throw new SetupException("exception.validation.trailingslash.missing");
         }
-
 
         # Check for leading slashes
         if (substr($paths['cms_dir'], 0, 1) != "/") {

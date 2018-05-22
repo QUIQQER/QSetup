@@ -37,7 +37,7 @@
     "quiqqer\/requirements": "2.0.0",
     "quiqqer\/qui": "dev-master",
     "quiqqer\/lockclient": "^1.0.0",
-    "pcsg\/composer-assets": "^1.0.0",
+    "pcsg\/composer-assets": "^1.0.1",
     "symfony\/console": "3.4",
     "symfony\/debug": "3.4",
     "symfony\/filesystem": "3.4",

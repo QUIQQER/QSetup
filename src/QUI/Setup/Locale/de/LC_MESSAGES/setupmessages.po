@@ -140,7 +140,7 @@ msgid "message.step.language"
 msgstr "Spracheinstellung"
 
 msgid "prompt.language"
-msgstr "Bitte geben Sie die Sprache ein, die QUIQQER verwenden soll: "
+msgstr "Bitte wählen Sie die Standardsprache: "
 
 msgid "message.step.requirements"
 msgstr "Systemvorraussetzungen"

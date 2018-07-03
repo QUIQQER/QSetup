@@ -140,7 +140,7 @@ msgid "message.step.language"
 msgstr "Language settings"
 
 msgid "prompt.language"
-msgstr "Please enter the main language for quiqqer: "
+msgstr "Please enter the default language for QUIQQER: "
 
 msgid "message.step.requirements"
 msgstr "System requirements"

@@ -37,7 +37,7 @@
   "require": {
     "php": ">=5.5",
     "hirak\/prestissimo": "^0.3",
-    "pcsg\/composer-assets": "^1.0.1"
+    "pcsg\/composer-assets": "^1.0.1|dev-dev|dev-master"
   },
   "minimum-stability": "dev",
   "config": {

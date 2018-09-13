@@ -414,7 +414,7 @@ msgid "setup.web.header.version.text"
 msgstr "The latest stable version is recommended for productive use. Developers can also choose between the dev-dev and dev-master versions. These versions are always up-to-date, but may be unstable."
 
 msgid "setup.web.header.template"
-msgstr "Template"
+msgstr "Preset"
 
 msgid "setup.web.header.template.text"
 msgstr "Select the type of your project from a template. You can change the project name and the project settings by clicking on the settings icon. <p class=\"smallFont \">The templates allow you to quickly and easily access pre-configured packages, e.g. a blog, a company presentation, a landing page or complete applications. You can also upload your own templates to the /templates/presets directory (for detailed instructions, see the QUIQQER FAQ).</p>"
@@ -451,7 +451,7 @@ msgid "setup.web.nav.version"
 msgstr "Version"
 
 msgid "setup.web.nav.template"
-msgstr "Template"
+msgstr "Preset"
 
 msgid "setup.web.nav.dataBase"
 msgstr "Database"

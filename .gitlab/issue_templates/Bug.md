@@ -1,4 +1,3 @@
-
 ## Summary
 
 ## Steps to reproduce
@@ -18,6 +17,7 @@
 * **Installed QUIQQER Version:**
 * **Installed Templatename and version:**
 * **Projectname:**
+* **Installed languages:**
 
 ## Logs/ Screenshots
 

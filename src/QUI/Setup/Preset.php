@@ -448,7 +448,7 @@ class Preset
         $output = "";
 
         // Use lock client if setup gets executed as web setup
-        if($this->forceWebMode) {
+        if ($this->forceWebMode) {
             foreach ($this->packages as $name => $version) {
                 $Lockclient = new Lockclient();
                 try {

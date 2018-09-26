@@ -70,7 +70,7 @@ class Preset
      */
     public function __construct($presetName, $Locale, $Output = null, $forceWebMode = false)
     {
-        
+
         $this->presetName = $presetName;
         $this->Locale     = $Locale;
 
@@ -226,9 +226,9 @@ class Preset
         } catch (\Exception $Exception) {
             $this->projectName = Utils::sanitizeProjectName($this->projectName);
         }
-        
+
         Translator\Setup::onPackageSetup(\QUI::getPackage('quiqqer/translator'));
-        
+
         try {
             $Project = \QUI::getProjectManager()->createProject(
                 $this->projectName,
@@ -250,7 +250,7 @@ class Preset
         );
 
         $this->refreshNamespaces($this->Composer);
-        
+
         \QUI\Cache\Manager::$noClearing = true;
 
 //        \QUI\Setup::executeEachPackageSetup([
@@ -259,7 +259,6 @@ class Preset
 //            'forceImport' => true
 //        ]);
 
-        
         \QUI\Setup::finish();
 
         if (!defined("ADMIN")) {
@@ -283,7 +282,7 @@ class Preset
     {
         foreach ($this->repositories as $repo) {
             $data['repositories'][] = array(
-                'url' => $repo['url'],
+                'url'  => $repo['url'],
                 'type' => $repo['type']
             );
 
@@ -293,7 +292,7 @@ class Preset
             );
 
             \QUI::getPackageManager()->addServer($repo['url'], array(
-                'type' => $repo['type'],
+                'type'   => $repo['type'],
                 'active' => 1
             ));
 
@@ -311,7 +310,7 @@ class Preset
         }
 
         $Config = \QUI::getProjectManager()->getConfig();
-        
+
         $options = array(
             "--no-scripts" => true
         );
@@ -424,10 +423,10 @@ class Preset
         $VhostManager->addVhost($host);
 
         $vhostData = array(
-            "project" => $projectName,
-            "lang" => $languages[0],
-            "template" => $templateName,
-            "error" => "",
+            "project"   => $projectName,
+            "lang"      => $languages[0],
+            "template"  => $templateName,
+            "error"     => "",
             "httpshost" => $host,
         );
 
@@ -447,6 +446,32 @@ class Preset
         }
 
         $output = "";
+
+        // Use lock client if setup gets executed as web setup
+        if($this->forceWebMode) {
+            foreach ($this->packages as $name => $version) {
+                $Lockclient = new Lockclient();
+                try {
+                    $lockFileContent = $Lockclient->requirePackage(
+                        VAR_DIR."/composer/composer.json",
+                        $name,
+                        $version
+                    );
+                    file_put_contents(VAR_DIR."/composer/composer.lock", $lockFileContent);
+                } catch (\Exception $Exception) {
+                    Log::appendError($Exception->getMessage());
+                    throw new \Exception("Could not retrieve the composer.lock file.");
+                }
+            }
+
+            $output = $this->Composer->install($options);
+            if (!empty($output)) {
+                Log::append("Composer Output:".PHP_EOL.$output);
+            }
+            return;
+        }
+
+        // Execute normal composer, when the setup runs in the cli
         foreach ($this->packages as $name => $version) {
             $result = $this->Composer->requirePackage($name, $version, $options);
 
@@ -459,7 +484,7 @@ class Preset
                 Output::LEVEL_INFO
             );
         }
-
+        
         if (!empty($output)) {
             Log::append("Composer Output:".PHP_EOL.$output);
         }

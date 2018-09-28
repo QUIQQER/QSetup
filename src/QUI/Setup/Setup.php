@@ -1457,9 +1457,27 @@ class Setup
             define('HOST', $this->data['paths']['host'].'/etc/');
         }
 
-//        ini_set("error_log", VAR_DIR . 'log/error' . date('-Y-m-d') . '.log');
-
         QUI::load();
+
+        // Complete the QUIQQER config in 'etc/conf.ini'
+        $defaults = \QUI\Utils\Text\XML::getConfigParamsFromXml(OPT_DIR.'quiqqer/quiqqer/admin/settings/conf.xml');
+        $Config   = QUI::getConfig('/etc/conf.ini.php');
+        foreach ($defaults as $category => $settings) {
+            foreach ($settings as $setting => $data) {
+                $defaultValue = $data['default'];
+
+                if (empty($defaultValue)) {
+                    continue;
+                }
+
+                if ($Config->existValue($category, $setting)) {
+                    continue;
+                }
+
+                $Config->set($category, $setting, $defaultValue);
+            }
+        }
+        $Config->save();
 
         // Add the npm server to the ini files.
         QUI::getPackageManager()->addServer("https://npm.quiqqer.com/", array(

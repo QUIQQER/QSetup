@@ -1651,6 +1651,9 @@ LOGETC;
 
         $files = array(
             $this->baseDir."/quiqqer.zip",
+            $this->baseDir."/quiqqer.tar",
+            $this->baseDir."/quiqqer.tgz",
+            $this->baseDir."/quiqqer.bz2",
             $this->baseDir."/quiqqer.setup",
             $this->baseDir."/setup.php",
             $this->baseDir."/README.md",

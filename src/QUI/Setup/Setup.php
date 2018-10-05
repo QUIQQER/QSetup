@@ -342,7 +342,7 @@ class Setup
 
         // Store user details in temporary password file
         file_put_contents(CMS_DIR."var/tmp/.preset_pwd", $this->data['user']['pw']);
-
+        
         exec(
             $phpPath." {$applyPresetFile} {$cmsDir} {$this->data['preset']} {$this->setupLang}".($this->developerMode ? ' --dev' : ''),
             $cmdOutput,
@@ -2264,13 +2264,15 @@ LOGETC;
     private function autodetectTimezone()
     {
         $timezone = "UTC";
+        
+        
 
         if (is_link('/etc/localtime')) {
             $filename = readlink('/etc/localtime');
             if (strpos($filename, '/usr/share/zoneinfo/') === 0) {
                 $timezone = str_replace('/usr/share/zoneinfo/', '', $filename);
             }
-        } elseif (file_exists('etc/timezone')) {
+        } elseif (file_exists('/etc/timezone')) {
             $data = file_get_contents('/etc/timezone');
             if ($data) {
                 $timezone = $data;

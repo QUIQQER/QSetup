@@ -311,9 +311,7 @@ class Preset
 
         $Config = \QUI::getProjectManager()->getConfig();
 
-        $options = array(
-            "--no-scripts" => true
-        );
+        $options = [];  
         if ($this->developerMode) {
             $options["--prefer-source"] = true;
         }
@@ -438,9 +436,7 @@ class Preset
      */
     protected function installPackages()
     {
-        $options = array(
-            "--no-scripts" => true
-        );
+        $options = [];
         if ($this->developerMode) {
             $options["--prefer-source"] = true;
         }

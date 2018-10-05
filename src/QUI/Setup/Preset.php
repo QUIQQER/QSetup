@@ -311,7 +311,7 @@ class Preset
 
         $Config = \QUI::getProjectManager()->getConfig();
 
-        $options = [];  
+        $options = [];
         if ($this->developerMode) {
             $options["--prefer-source"] = true;
         }

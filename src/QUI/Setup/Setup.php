@@ -2266,10 +2266,8 @@ LOGETC;
      */
     private function autodetectTimezone()
     {
-        $timezone = "UTC";
+        $timezone = (ini_get('date.timezone') !== '') ?: "UTC";
         
-        
-
         if (is_link('/etc/localtime')) {
             $filename = readlink('/etc/localtime');
             if (strpos($filename, '/usr/share/zoneinfo/') === 0) {

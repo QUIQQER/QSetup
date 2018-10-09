@@ -5,9 +5,8 @@ namespace QUI\ConsoleSetup;
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
 
-use QUI\Control\Manager;
+use Composer\Semver\Semver;
 use QUI\Exception;
-use QUI\Output;
 use QUI\Requirements\Requirements;
 use QUI\Requirements\TestResult;
 use QUI\Requirements\Tests\Test;
@@ -374,14 +373,23 @@ class Installer
             $this->Locale->getStringLang("message.step.version", "Version")
         );
 
+        $availableVersions = Semver::rsort(Setup::getVersions());
         $this->writeLn(
             $this->Locale->getStringLang("message.versions.available", "Following versions are available: ").
-            implode(", ", Setup::getVersions()),
+            implode(", ", $availableVersions),
             self::LEVEL_INFO
         );
+
+        // Select default version
+        $defaultVersion          = "dev-master";
+        $availableStableVersions = array_values(array_diff($availableVersions, ['dev-dev', 'dev-master']));
+        if (isset($availableStableVersions[0])) {
+            $defaultVersion = $availableStableVersions[0];
+        }
+
         $version = $this->prompt(
             $this->Locale->getStringLang("prompt.version", "Please enter a version"),
-            "dev-master"
+            $defaultVersion
         );
 
         try {

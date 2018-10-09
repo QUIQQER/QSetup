@@ -4,12 +4,13 @@ $detection = function () {
     if (isset($_REQUEST['language'])) {
         switch ($_REQUEST['language']) {
             case 'de':
-            case 'en':
                 return strtolower($_REQUEST['language']) . '_' . strtoupper($_REQUEST['language']);
+            case 'en':
+                return strtolower($_REQUEST['language']) . '_' . 'GB';
                 break;
         }
 
-        return 'en_EN';
+        return 'en_GB';
     }
 
     echo '<script>

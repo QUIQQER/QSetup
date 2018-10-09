@@ -382,7 +382,7 @@ class Installer
 
         // Select default version
         $defaultVersion          = "dev-master";
-        $availableStableVersions = array_values(array_diff($availableVersions,['dev-dev', 'dev-master']));
+        $availableStableVersions = array_values(array_diff($availableVersions, ['dev-dev', 'dev-master']));
         if (isset($availableStableVersions[0])) {
             $defaultVersion = $availableStableVersions[0];
         }
@@ -1399,16 +1399,16 @@ HEADER;
                         Database::resetDatabase($storedTables, $driver, $host, $user, $pw, $db, $prefix, $port);
                     } catch (\Exception $Exception) {
                         if ($this->prompt(
-                                $this->Locale->getStringLang(
-                                    "prompt.database.hard.reset.warning",
-                                    "The Setup will DROP! all tables in the given database. Are you sure you want to continue? (y/n)"
-                                ),
-                                false,
-                                COLOR_RED,
-                                false,
-                                true,
-                                false
-                            ) === 'y'
+                            $this->Locale->getStringLang(
+                                "prompt.database.hard.reset.warning",
+                                "The Setup will DROP! all tables in the given database. Are you sure you want to continue? (y/n)"
+                            ),
+                            false,
+                            COLOR_RED,
+                            false,
+                            true,
+                            false
+                        ) === 'y'
                         ) {
                             Database::hardResetDatabase($driver, $host, $user, $pw, $db, $prefix, $port);
                         } else {

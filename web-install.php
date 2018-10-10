@@ -77,7 +77,6 @@ if (!file_exists(dirname(__FILE__) . "/setupdata.json")) {
         window.setSetupStatus = function (status, from) {
             var Progress = document.getElement('.progress-bar-done');
 
-            console.log(status, from);
             Progress.setStyle('width', parseInt((status / from) * 100) + '%');
         };
 

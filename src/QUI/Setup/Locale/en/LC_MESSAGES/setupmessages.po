@@ -592,9 +592,26 @@ msgstr "Refresh"
 msgid "setup.web.webInstall.more-button"
 msgstr "Show details"
 
+msgid "setup.web.webInstall.finishTitle"
+msgstr "Installation is completed"
 
 msgid "setup.web.webInstall.finishText"
-msgstr "The installation is complete. You can now log in to the admin panel."
+msgstr "The installation is complete. You can now login to admin panel."
+
+msgid "setup.web.webInstall.button.admin"
+msgstr "Admin-Panel"
+
+msgid "setup.web.webInstall.button.admin.title"
+msgstr "This takes you directly to the administration panel."
+
+msgid "setup.web.webInstall.button.site"
+msgstr "Your Website"
+
+msgid "setup.web.webInstall.button.site.title"
+msgstr "Under this link you will find your website."
+
+msgid "setup.web.webInstall.error"
+msgstr "An error has occurred"
 
 
 msgid "exception.validation.database.connection"

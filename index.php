@@ -37,7 +37,7 @@ if (!function_exists('json_decode') || !function_exists('json_encode')) {
 
     <title>QUIQQER Setup</title>
 
-    <!-- wegen "componens" muss hier die baseUrl neu gesetzt werden -->
+    <!-- wegen "components" muss hier die baseUrl neu gesetzt werden -->
     <script>
         require.config({
             baseUrl: ''

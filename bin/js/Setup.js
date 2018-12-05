@@ -874,10 +874,8 @@ define('bin/js/Setup', [
                     }
                     break;
                 case 4: // test only
-                    // this.fillTestData(4);
                     break;
                 case 5: // test only
-                    // this.fillTestData(5);
                     break;
             }
         },
@@ -1003,7 +1001,6 @@ define('bin/js/Setup', [
             Popup.open();
 
         },
-
 
         /**
          * Create template popup
@@ -1452,7 +1449,8 @@ define('bin/js/Setup', [
                     data: data
                 },
                 onSuccess: function () {
-                    window.location = window.location.origin + '/web-install.php';
+                    var lang = CURRENT_LOCALE.substr(0,2);
+                    window.location = window.location.origin + '/web-install.php?language=' + lang;
                 },
                 onFailure: function (error) {
                     Loader.hide();

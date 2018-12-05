@@ -342,7 +342,7 @@ if (!function_exists('json_decode') || !function_exists('json_encode')) {
 
                                     <!-- Datenbank driver -->
                                     <div class="select-wrapper">
-                                        <label class="animated-label">Datenbank Treiber:</label>
+                                        <label class="animated-label"><?php echo $Locale->getStringLang('setup.web.content.dbDriver') ?></label>
                                         <select name="databaseDriver" required
                                                 title="<?php echo $Locale->getStringLang('setup.web.content.dbDriver') ?>">
                                             <option value="" disabled selected>

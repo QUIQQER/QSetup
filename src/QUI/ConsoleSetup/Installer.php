@@ -6,6 +6,7 @@ error_reporting(E_ALL);
 ini_set("display_errors", 1);
 
 use Composer\Semver\Semver;
+use QUI\Demodata\DemoData;
 use QUI\Exception;
 use QUI\Requirements\Requirements;
 use QUI\Requirements\TestResult;
@@ -102,7 +103,7 @@ class Installer
     {
         $this->echoSetupHeader();
         $this->stepSetupLanguage();
-        $data = array();
+        $data = [];
 
         $firstStep = Setup::STEP_BEGIN;
 
@@ -244,16 +245,16 @@ class Installer
             $this->Locale->getStringLang("message.step.requirements", "Requirements")
         );
 
-        $errors   = array();
-        $warnings = array();
-        $unknown  = array();
+        $errors   = [];
+        $warnings = [];
+        $unknown  = [];
 
         $Requirements = new Requirements($this->langCode);
-        $AllTests     = $Requirements->getTests(array(
+        $AllTests     = $Requirements->getTests([
             "database",
             "webserver",
             "quiqqer"
-        ));
+        ]);
 
         foreach ($AllTests as $groupName => $GroupTests) {
             echo "\e[96m".$groupName."\e[0m".PHP_EOL;
@@ -505,17 +506,52 @@ class Installer
             $languagesString
         );
 
-        $languages = array();
+        $languages = [];
         foreach (explode(",", $languageInput) as $langCode) {
             $languages[$langCode] = true;
         }
 
         ## Template ##############
         $presetDataTemplate = isset($presetData['template']['name']) ? $presetData['template']['name'] : false;
-        $templateName       = $this->prompt(
-            $this->Locale->getStringLang("prompt.preset.customize.template", "Templatename: "),
-            $presetDataTemplate
-        );
+
+        // ask the user for the desired template and validate his input
+        // Repeat until the user entered valid data
+        $templateValid = false;
+        do {
+            try {
+                $templateName = $this->prompt(
+                    $this->Locale->getStringLang("prompt.preset.customize.template", "Templatename: "),
+                    $presetDataTemplate
+                );
+                Validator::validateTemplateName($templateName);
+
+                $templateVersion = $this->prompt(
+                    $this->Locale->getStringLang("prompt.preset.customize.template.version", "Templateversion: "),
+                    $presetData['template']['version'] ?? false
+                );
+
+                if (Validator::validateTemplate($templateName, $templateVersion)) {
+                    $templateValid = true;
+                }
+            } catch (\Exception $Exception) {
+                $this->writeLn(
+                    $Exception->getMessage(),
+                    self::LEVEL_WARNING
+                );
+            }
+        } while (!$templateValid);
+
+        $applyDemoData = false;
+        if (Utils::templateSupportsDemoData($templateName, $templateVersion)) {
+            $applyDemoData = $this->prompt(
+                $this->Locale->getStringLang("prompt.demodata", "Do you wish to install demo data?"),
+                false,
+                false,
+                false,
+                true,
+                false
+            );
+        }
 
         // Compile the presetfile again
         if (!empty($projectName)) {
@@ -526,6 +562,12 @@ class Installer
         }
         if (!empty($templateName)) {
             $presetData['template']['name'] = $templateName;
+        }
+        if (!empty($templateVersion)) {
+            $presetData['template']['version'] = $templateVersion;
+        }
+        if ($applyDemoData === "y") {
+            $presetData['template']['demodata'] = true;
         }
 
         # Validate the entered data
@@ -1363,6 +1405,7 @@ HEADER;
      * @param $port
      *
      * @return bool
+     * @throws SetupException
      */
     protected function clearDatabaseIfNotEmpty($driver, $host, $user, $pw, $db, $prefix, $port)
     {

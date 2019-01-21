@@ -142,6 +142,9 @@ msgstr "Language settings"
 msgid "prompt.language"
 msgstr "Please enter the default language for QUIQQER: "
 
+msgid "prompt.demodata"
+msgstr "Do you want QUIQQeR to install demodata for you? (y/n) "
+
 msgid "message.step.requirements"
 msgstr "System requirements"
 
@@ -618,6 +621,9 @@ msgstr "The password does not contain a special character."
 msgid "exception.validation.password.numbercount"
 msgstr "The password does not contain a number."
 
+msgid "exception.preset.demodata"
+msgstr "An unknown error occured while installing the demo data"
+
 msgid "applypreset.done"
 msgstr "The preset has been applied"
 
@@ -683,3 +689,18 @@ msgstr "It seems like an error happened. Please check: "
 
 msgid "message.versions.available"
 msgstr "Following versions are available: "
+
+msgid "exception.validation.template.version.invalid"
+msgstr "The given version of the template is not valid. This can be caused by a typo or because the template version does not exist."
+
+msgid "exception.validation.template.name.invalid"
+msgstr "The given template name is not valid. This can be caused by a typo or because the version does not exists."
+
+msgid "exception.validation.template.name.empty"
+msgstr "The template name must not be empty"
+
+msgid "exception.validation.template.version.empty"
+msgstr "The template version must not be empty"
+
+msgid "prompt.preset.customize.template.version"
+msgstr "Templateversion:"

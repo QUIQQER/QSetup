@@ -5,6 +5,8 @@ namespace QUI\Setup;
 use QUI\Autoloader;
 use QUI\Composer\Composer;
 use QUI\Composer\Interfaces\ComposerInterface;
+use QUI\Demodata\DemoData;
+use QUI\Demodata\Parser\DemoDataParser;
 use QUI\Exception;
 use QUI\Lockclient\Lockclient;
 use QUI\Projects\Project;
@@ -49,10 +51,10 @@ class Preset
 
     protected $forceWebMode;
 
-    protected $packages = array();
-    protected $repositories = array();
+    protected $packages = [];
+    protected $repositories = [];
 
-    protected $presets = array();
+    protected $presets = [];
 
     protected $developerMode = false;
 
@@ -184,7 +186,7 @@ class Preset
 
         # Project
         $this->projectName        = isset($presetData['project']['name']) ? $presetData['project']['name'] : "";
-        $this->availableLanguages = isset($presetData['project']['languages']) ? $presetData['project']['languages'] : array();
+        $this->availableLanguages = isset($presetData['project']['languages']) ? $presetData['project']['languages'] : [];
 
         $this->activeLanguages = $this->getActiveLanguages();
 
@@ -195,15 +197,15 @@ class Preset
         $this->startLayout     = isset($presetData['template']['start_layout']) ? $presetData['template']['start_layout'] : "";
 
         # Packages
-        $this->packages = isset($presetData['packages']) ? $presetData['packages'] : array();
+        $this->packages = isset($presetData['packages']) ? $presetData['packages'] : [];
         if (!is_array($this->packages)) {
-            $this->packages = array();
+            $this->packages = [];
         }
 
         # Repositories
-        $this->repositories = isset($presetData['repositories']) ? $presetData['repositories'] : array();
+        $this->repositories = isset($presetData['repositories']) ? $presetData['repositories'] : [];
         if (!is_array($this->repositories)) {
-            $this->repositories = array();
+            $this->repositories = [];
         }
     }
 
@@ -252,13 +254,7 @@ class Preset
         $this->refreshNamespaces($this->Composer);
 
         \QUI\Cache\Manager::$noClearing = true;
-
-//        \QUI\Setup::executeEachPackageSetup([
-//            'localePublish' => false,
-//            'localeImport' => true,
-//            'forceImport' => true
-//        ]);
-
+        
         \QUI\Setup::finish();
 
         if (!defined("ADMIN")) {
@@ -281,20 +277,20 @@ class Preset
     protected function addRepositories()
     {
         foreach ($this->repositories as $repo) {
-            $data['repositories'][] = array(
+            $data['repositories'][] = [
                 'url'  => $repo['url'],
                 'type' => $repo['type']
-            );
+            ];
 
             $this->Output->writeLn(
                 $this->Locale->getStringLang("applypreset.adding.repository", "Adding Repository :").$repo['url'],
                 Output::LEVEL_INFO
             );
 
-            \QUI::getPackageManager()->addServer($repo['url'], array(
+            \QUI::getPackageManager()->addServer($repo['url'], [
                 'type'   => $repo['type'],
                 'active' => 1
-            ));
+            ]);
 
             \QUI::getPackageManager()->setServerStatus($repo['url'], true);
         }
@@ -345,6 +341,7 @@ class Preset
 
             return;
         }
+        $this->refreshNamespaces($this->Composer);
 
         Log::append("Composer Output:".PHP_EOL.print_r($output, true));
         # Config main project to use new template
@@ -371,6 +368,26 @@ class Preset
                     $this->Locale->getStringLang("applypreset.set.layout", "Set layout for language : ").$lang,
                     Output::LEVEL_INFO
                 );
+            }
+        }
+
+        // DemoData
+        if (isset($this->presetData['template']['demodata']) && $this->presetData['template']['demodata'] === true) {
+            try {
+                \QUI\Utils\Project::applyDemoDataToProject(
+                    \QUI::getProject($this->projectName),
+                    $this->templateName
+                );
+            } catch (\Exception $Exception) {
+                $this->Output->writeLn(
+                    $this->Locale->getStringLang(
+                        'exception.preset.demodata',
+                        'An unexpected error occured while installing the demo data'
+                    ),
+                    Output::LEVEL_ERROR,
+                    Output::COLOR_ERROR
+                );
+                Log::error($Exception->getMessage());
             }
         }
 
@@ -420,13 +437,13 @@ class Preset
 
         $VhostManager->addVhost($host);
 
-        $vhostData = array(
+        $vhostData = [
             "project"   => $projectName,
             "lang"      => $languages[0],
             "template"  => $templateName,
             "error"     => "",
             "httpshost" => $host,
-        );
+        ];
 
         $VhostManager->editVhost($host, $vhostData);
     }
@@ -464,6 +481,7 @@ class Preset
             if (!empty($output)) {
                 Log::append("Composer Output:".PHP_EOL.$output);
             }
+
             return;
         }
 
@@ -480,7 +498,7 @@ class Preset
                 Output::LEVEL_INFO
             );
         }
-        
+
         if (!empty($output)) {
             Log::append("Composer Output:".PHP_EOL.$output);
         }
@@ -493,7 +511,7 @@ class Preset
      */
     public static function getPresets()
     {
-        $presets = array();
+        $presets = [];
 
         # Read all userdefined presets from templates/presets
         $presetDir = dirname(dirname(dirname(dirname(__FILE__)))).'/templates/presets';
@@ -596,7 +614,7 @@ class Preset
      */
     protected function getActiveLanguages()
     {
-        $result = array();
+        $result = [];
 
         foreach ($this->availableLanguages as $lang => $active) {
             if ($active) {

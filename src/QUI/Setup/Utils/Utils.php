@@ -14,7 +14,7 @@ class Utils
      */
     public static function getAvailalbeLanguages()
     {
-        $langs = array();
+        $langs = [];
 
         $langs[] = "de";
         $langs[] = "en";
@@ -31,9 +31,8 @@ class Utils
      */
     public static function normalizePath($path)
     {
-        return rtrim(trim($path), '/') . '/';
+        return rtrim(trim($path), '/').'/';
     }
-
 
     /**
      * Checks if a directory is empty.
@@ -71,7 +70,7 @@ class Utils
             return false;
         }
 
-        $fileHashes = array();
+        $fileHashes = [];
 
         $directory = dir($dir);
 
@@ -80,10 +79,10 @@ class Utils
                 continue;
             }
 
-            if (is_dir($dir . '/' . $entry)) {
-                $fileHashes[] = self::getDirMD5($dir . '/' . $entry);
+            if (is_dir($dir.'/'.$entry)) {
+                $fileHashes[] = self::getDirMD5($dir.'/'.$entry);
             } else {
-                $fileHashes[] = md5($dir . '/' . $entry);
+                $fileHashes[] = md5($dir.'/'.$entry);
             }
         }
         $directory->close();
@@ -100,7 +99,7 @@ class Utils
      */
     public static function sanitizeProjectName($name)
     {
-        $forbiddenCharacters = array(
+        $forbiddenCharacters = [
             '-',
             '.',
             ',',
@@ -121,7 +120,7 @@ class Utils
             '\'',
             '"',
             " "
-        );
+        ];
 
         $name = str_replace($forbiddenCharacters, "", $name);
         $name = trim($name);
@@ -190,7 +189,6 @@ class Utils
             }
         }
 
-
         ##############
         #   Nginx   #
         ##############
@@ -212,5 +210,29 @@ class Utils
         $result = $nginx ? $result + 4 : $result;
 
         return $result;
+    }
+
+    /**
+     * @param $templateName
+     *
+     * @return bool
+     */
+    public static function templateSupportsDemoData($templateName, $version)
+    {
+        $packagesJson = file_get_contents("https://update.quiqqer.com/packages.json");
+        $packages     = json_decode($packagesJson, true);
+        $packages     = $packages['packages'];
+        
+        if (!isset($packages[$templateName][$version])) {
+            return false;
+        }
+        
+        $templateData = $packages[$templateName][$version];
+        if (!isset($templateData['extra']['quiqqer']['demodata'])) {
+            return false;
+        }
+        
+        
+        return $templateData['extra']['quiqqer']['demodata'];
     }
 }

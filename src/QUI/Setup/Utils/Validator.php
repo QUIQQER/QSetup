@@ -124,6 +124,95 @@ class Validator
     }
 
     /**
+     * Checks if the given template name and version are valid.
+     * Returns true if successfull or will throw an eception if validation failed
+     *
+     * @param $templateName
+     * @param $templateVersion
+     *
+     * @return bool
+     * @throws SetupException
+     */
+    public static function validateTemplate($templateName, $templateVersion)
+    {
+        if (empty($templateName)) {
+            throw new SetupException(
+                "exception.validation.template.name.empty",
+                SetupException::ERROR_MISSING_RESSOURCE
+            );
+        }
+
+        if (empty($templateVersion)) {
+            throw new SetupException(
+                "exception.validation.template.name.empty",
+                SetupException::ERROR_MISSING_RESSOURCE
+            );
+        }
+
+        $url      = Setup::getConfig()['general']['url_updateserver']."/packages.json";
+        $json     = file_get_contents($url);
+        $packages = json_decode($json, true);
+        $packages = $packages['packages'];
+
+        if (empty($json)) {
+            throw new SetupException(
+                "exception.validation.missing.packagesjson",
+                SetupException::ERROR_MISSING_RESSOURCE
+            );
+        }
+
+        if (!isset($packages[$templateName])) {
+            throw new SetupException("exception.validation.template.name.invalid");
+        }
+
+        if (!isset($packages[$templateName][$templateVersion])) {
+            throw new SetupException("exception.validation.template.version.invalid");
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks if the given template name is valid.
+     * Returns true if successfull or will throw an eception if validation failed
+     *
+     * @param $templateName
+     * @param $templateVersion
+     *
+     * @return bool
+     * @throws SetupException
+     */
+    public static function validateTemplateName($templateName)
+    {
+        if (empty($templateName)) {
+            throw new SetupException(
+                "exception.validation.template.name.empty",
+                SetupException::ERROR_MISSING_RESSOURCE
+            );
+        }
+        
+
+        $url      = Setup::getConfig()['general']['url_updateserver']."/packages.json";
+        $json     = file_get_contents($url);
+        $packages = json_decode($json, true);
+        $packages = $packages['packages'];
+
+        if (empty($json)) {
+            throw new SetupException(
+                "exception.validation.missing.packagesjson",
+                SetupException::ERROR_MISSING_RESSOURCE
+            );
+        }
+
+        if (!isset($packages[$templateName])) {
+            throw new SetupException("exception.validation.template.name.invalid");
+        }
+        
+        return true;
+    }
+
+   
+    /**
      * Checks the given database credentials for correctness
      * If an PDO Error happens it will throw a setupException with the PODException message and code.
      *
@@ -516,7 +605,7 @@ class Validator
     {
         $name = trim($name);
 
-        $forbiddenCharacters = array(
+        $forbiddenCharacters = [
             '-',
             '.',
             ',',
@@ -537,7 +626,7 @@ class Validator
             '\'',
             '"',
             " "
-        );
+        ];
 
         if (strlen($name) <= 2) {
             throw new SetupException("exception.invalid.too.short");
@@ -545,7 +634,7 @@ class Validator
 
         foreach ($forbiddenCharacters as $character) {
             if (strpos($name, $character) !== false) {
-                throw new SetupException("exception.invalid.character", 0, array("character" => $character));
+                throw new SetupException("exception.invalid.character", 0, ["character" => $character]);
             }
         }
 

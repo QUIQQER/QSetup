@@ -160,6 +160,9 @@ msgstr "Vorlagenauswahl"
 msgid "prompt.template"
 msgstr "Bitte geben Sie den Namen der Vorlage ein, die Sie verwenden möchten: "
 
+msgid "prompt.demodata"
+msgstr "Möchten Sie, dass QUIQQER Demo Daten vorinstalliert? (y/n) "
+
 msgid "message.step.database"
 msgstr "Datenbank Einstellungen"
 
@@ -321,6 +324,9 @@ msgstr "Der angegebene Pfad existiert nicht"
 
 msgid "exception.validation.path.not.writeable"
 msgstr "Der angegebene Pfad konnte nicht beschrieben werden"
+
+msgid "exception.preset.demodata"
+msgstr "Es ist ein unerwarter Fehler beim Installieren der Demo Daten aufgetreten"
 
 msgid "setup.warning.database.not.writeable"
 msgstr "Die angegebene Datenbank konnte nicht verändert werden. (Tabellen erstellen)"
@@ -701,3 +707,18 @@ msgstr "Während des Setups wurden Fehler erkannt. Bitte überprüfe das Fehlerl
 
 msgid "message.versions.available"
 msgstr "Folgende Versionen sind verfügbar: "
+
+msgid "exception.validation.template.version.invalid"
+msgstr "Die angegebene Version des Templates ist nicht gültig. Dies kann durch einen Tippfehler verursacht werden oder die Version existiert nicht."
+
+msgid "exception.validation.template.name.invalid"
+msgstr "Der angegebene Name des Templates ist nicht gültig. Dies kann durch einen Tippfehler verursacht werden oder die Version existiert nicht."
+
+msgid "exception.validation.template.name.empty"
+msgstr "Der angegebene name des Templates darf nicht leer sein."
+
+msgid "exception.validation.template.version.empty"
+msgstr "Die angegebene Version des Templates darf nicht leer sein."
+
+msgid "prompt.preset.customize.template.version"
+msgstr "Templateversion:"

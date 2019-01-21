@@ -77,7 +77,6 @@ if (!file_exists(dirname(__FILE__) . "/setupdata.json")) {
         window.setSetupStatus = function (status, from) {
             var Progress = document.getElement('.progress-bar-done');
 
-            console.log(status, from);
             Progress.setStyle('width', parseInt((status / from) * 100) + '%');
         };
 
@@ -90,12 +89,16 @@ if (!file_exists(dirname(__FILE__) . "/setupdata.json")) {
             document.getElement('.progress-bar').destroy();
             loader.destroy();
 
-            html += '<h1><span class="fa fa-check"></span>Installation ist abgeschlossen</h1>';
+            html += '<h1><span class="fa fa-check"></span>' + LOCALE_TRANSLATIONS['setup.web.webInstall.finishTitle'] + '</h1>';
             html += '<p>' + LOCALE_TRANSLATIONS['setup.web.webInstall.finishText'] + '</p>';
 
             html += '<div class="button-container">';
-            html += '<a href="' + window.location.origin + '/admin" ' + ' class="button" target="_blank"><button>Admin-Panel</button></a>';
-            html += '<a href="' + window.location.origin + '" class="button" target="_blank"><button>Ihre Seite</button></a>';
+            html += '<a href="' + window.location.origin + '/admin" ' + ' class="button" target="_blank" ';
+            html += 'title="'+ LOCALE_TRANSLATIONS['setup.web.webInstall.button.admin.title'] + '">';
+            html += '<button>' + LOCALE_TRANSLATIONS['setup.web.webInstall.button.admin'] + '</button></a>';
+            html += '<a href="' + window.location.origin + '" ' + ' class="button" target="_blank" ';
+            html += 'title="'+ LOCALE_TRANSLATIONS['setup.web.webInstall.button.site.title'] + '">';
+            html += '<button>' + LOCALE_TRANSLATIONS['setup.web.webInstall.button.site'] + '</button></a>';
 
             header.set('html', html);
         };
@@ -109,7 +112,7 @@ if (!file_exists(dirname(__FILE__) . "/setupdata.json")) {
             document.getElement('.progress-bar').destroy();
             loader.destroy();
 
-            html += '<h1><span class="fa fa-times"></span>Fehler bei der Installation</h1>';
+            html += '<h1><span class="fa fa-times"></span>' + LOCALE_TRANSLATIONS['setup.web.webInstall.error'] + '</h1>';
             html += '<p>Error code: ' + code + '</p>';
             html += '<p>Error message: ' + message + '</p>';
 

@@ -599,9 +599,26 @@ msgstr "Neu laden"
 msgid "setup.web.webInstall.more-button"
 msgstr "Details anzeigen"
 
+msgid "setup.web.webInstall.finishTitle"
+msgstr "Installation ist abgeschlossen"
 
 msgid "setup.web.webInstall.finishText"
 msgstr "Die Installation ist abgeschlossen. Sie können sich jetzt im Admin-Panel einloggen."
+
+msgid "setup.web.webInstall.button.admin"
+msgstr "Admin-Panel"
+
+msgid "setup.web.webInstall.button.admin.title"
+msgstr "Hier gelangen Sie direkt in das Administrationsoberfläche."
+
+msgid "setup.web.webInstall.button.site"
+msgstr "Ihre Website"
+
+msgid "setup.web.webInstall.button.site.title"
+msgstr "Unter diesem Link finden Sie Ihre Website."
+
+msgid "setup.web.webInstall.error"
+msgstr "Es ist ein Fehler aufgetreten"
 
 
 msgid "exception.validation.database.connection"

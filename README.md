@@ -45,3 +45,14 @@ Primarily aimed at __websetups__ , where the setup has to be executed in one req
 
 ## Setup Guide
 - [Installation](https://dev.quiqqer.com/quiqqer/quiqqer/wikis/setup/installation)
+
+## For developer
+
+If you want to regenerate the translations, got to the setup folder and use the following commands:
+```bash
+# for EN lang
+msgfmt -o src/QUI/Setup/Locale/en/LC_MESSAGES/setupmessages.mo src/QUI/Setup/Locale/en/LC_MESSAGES/setupmessages.po
+
+# for DE lang
+src/QUI/Setup/Locale/de/LC_MESSAGES/setupmessages.mo src/QUI/Setup/Locale/de/LC_MESSAGES/setupmessages.po
+```  

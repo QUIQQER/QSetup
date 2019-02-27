@@ -535,7 +535,11 @@ if (!function_exists('json_decode') || !function_exists('json_encode')) {
                                 <li class="step step-7">
                                     <div class="license-box-wrapper">
                                         <div class="license-box">
-                                            <?php echo $Locale->getStringLang('setup.web.content.license.text'); ?>
+                                            <?php
+                                            $licenseStr = $Locale->getStringLang('setup.web.content.license.text');
+
+                                            echo str_replace('{{year}}', date('Y'), $licenseStr);
+                                            ?>
                                         </div>
                                     </div>
                                     <div class="license-checkbox-wrapper">

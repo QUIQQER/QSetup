@@ -102,6 +102,7 @@ class Installer
     public function execute()
     {
         $this->echoSetupHeader();
+        $this->printLegalText();
         $this->stepSetupLanguage();
         $data = [];
 
@@ -1253,11 +1254,35 @@ CUP;
                    | |   | |                                 | |    
                    |_|   |_|                                 |_|
 
-
-
 HEADER;
 
         $this->writeLn($header, null, COLOR_GREEN);
+    }
+
+    private function printLegalText()
+    {
+        $year = date('Y');
+        $legalInfo = <<<LEGAL
+QUIQQER - The all around carefree Enterprise Content Management System
+Copyright (C) $year PCSG - Computer & Internet Service OHG
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see https://store.quiqqer.com/Licence/GNU-GENERAL-PUBLIC-LICENSE.
+
+
+LEGAL;
+        
+        $this->writeLn($legalInfo, null, COLOR_CYAN);
     }
 
     #endregion

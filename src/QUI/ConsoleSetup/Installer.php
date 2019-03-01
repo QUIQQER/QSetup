@@ -1468,7 +1468,8 @@ LEGAL;
                         $storedTables = $this->Setup->getSavedDatabaseState();
                         Database::resetDatabase($storedTables, $driver, $host, $user, $pw, $db, $prefix, $port);
                     } catch (\Exception $Exception) {
-                        if ($this->prompt(
+                        if (
+                            $this->prompt(
                                 $this->Locale->getStringLang(
                                     "prompt.database.hard.reset.warning",
                                     "The Setup will DROP! all tables in the given database. Are you sure you want to continue? (y/n)"

@@ -920,6 +920,8 @@ class Installer
         $this->Setup->runSetup();
         $this->Setup->runSetup(Setup::STEP_SETUP_INSTALL_QUIQQER);
         $this->Setup->runSetup(Setup::STEP_SETUP_QUIQQERSETUP);
+
+        QUI::fireEvent('quiqqerInstallFinish');
     }
 
     /**
@@ -1261,7 +1263,7 @@ HEADER;
 
     private function printLegalText()
     {
-        $year = date('Y');
+        $year      = date('Y');
         $legalInfo = <<<LEGAL
 QUIQQER - The all around carefree Enterprise Content Management System
 Copyright (C) $year PCSG - Computer & Internet Service OHG
@@ -1281,7 +1283,7 @@ along with this program.  If not, see https://store.quiqqer.com/Licence/GNU-GENE
 
 
 LEGAL;
-        
+
         $this->writeLn($legalInfo, null, COLOR_CYAN);
     }
 
@@ -1467,16 +1469,16 @@ LEGAL;
                         Database::resetDatabase($storedTables, $driver, $host, $user, $pw, $db, $prefix, $port);
                     } catch (\Exception $Exception) {
                         if ($this->prompt(
-                            $this->Locale->getStringLang(
-                                "prompt.database.hard.reset.warning",
-                                "The Setup will DROP! all tables in the given database. Are you sure you want to continue? (y/n)"
-                            ),
-                            false,
-                            COLOR_RED,
-                            false,
-                            true,
-                            false
-                        ) === 'y'
+                                $this->Locale->getStringLang(
+                                    "prompt.database.hard.reset.warning",
+                                    "The Setup will DROP! all tables in the given database. Are you sure you want to continue? (y/n)"
+                                ),
+                                false,
+                                COLOR_RED,
+                                false,
+                                true,
+                                false
+                            ) === 'y'
                         ) {
                             Database::hardResetDatabase($driver, $host, $user, $pw, $db, $prefix, $port);
                         } else {
